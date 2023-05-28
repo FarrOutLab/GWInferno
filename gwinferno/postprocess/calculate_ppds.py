@@ -76,7 +76,7 @@ def calculate_powerbspline_rate_of_z_ppds(lamb, z_cs, rate, model):
     return rs, zs
 
 
-def calculate_iid_spin_bspline_ppds(coefs, model, nknots, rate=None, xmin=0, xmax=1, k=4, ngrid=500, **model_kwargs):
+def calculate_iid_spin_bspline_ppds(coefs, model, nknots, rate=None, xmin=0, xmax=1, k=4, ngrid=500, pop_frac=None, pop_num=None, **model_kwargs):
     xs = np.linspace(xmin, xmax, ngrid)
     pdf = model(nknots, xs, xs, xs, xs, order=k - 1, **model_kwargs)
     pdfs = np.zeros((coefs.shape[0], len(xs)))
@@ -89,8 +89,13 @@ def calculate_iid_spin_bspline_ppds(coefs, model, nknots, rate=None, xmin=0, xma
     calc_pdf = jit(calc_pdf)
     _ = calc_pdf(coefs[0], rate[0])
     # loop through hyperposterior samples
-    for ii in trange(coefs.shape[0]):
-        pdfs[ii] = calc_pdf(coefs[ii], rate[ii])
+
+    if pop_frac is None:
+        for ii in trange(coefs.shape[0]):
+            pdfs[ii] = calc_pdf(coefs[ii], rate[ii])
+    else:
+        for ii in trange(coefs.shape[0]):
+            pdfs[ii] = calc_pdf(coefs[ii], rate[ii]) * pop_frac[ii][pop_num]
     return pdfs, xs
 
 
@@ -153,9 +158,49 @@ def calculate_m1q_bspline_ppds(
     calc_pdf = jit(calc_pdf)
     _ = calc_pdf(mcoefs[0], qcoefs[0], rate[0], pop_frac[0][0])
     # loop through hyperposterior samples
-    for ii in trange(mcoefs.shape[0]):
-        mpdfs[ii], qpdfs[ii] = calc_pdf(mcoefs[ii], qcoefs[ii], rate[ii], pop_frac[ii][num - 1])
+    if isinstance(pop_frac, int):
+        for ii in trange(mcoefs.shape[0]):
+            mpdfs[ii], qpdfs[ii] = calc_pdf(mcoefs[ii], qcoefs[ii], rate[ii], pop_frac)
+    else:
+        for ii in trange(mcoefs.shape[0]):
+            mpdfs[ii], qpdfs[ii] = calc_pdf(mcoefs[ii], qcoefs[ii], rate[ii], pop_frac[ii][num - 1])
     return mpdfs, qpdfs, ms, qs
+
+
+def calculate_m1q_bspline_weights(
+    m, q, mcoefs, qcoefs, mass_model, nknots, qknots, rate=None, mmin=3.0, m1mmin=3.0, mmax=100.0, num=None, **model_kwargs
+):
+    mass_pdf = mass_model(nknots, qknots, m, m, q, q, m1min=mmin, m2min=mmin, mmax=mmax, **model_kwargs)
+    rate = 1
+
+    def calc_pdf(mcs, qcs, r):
+        p_mq = mass_pdf(2, mcs, qcs)
+        p_mq = jnp.where(jnp.less(m, m1mmin) | jnp.less(m * q, mmin), 0, p_mq)
+        return r * p_mq
+
+    calc_pdf = jit(calc_pdf)
+    # loop through hyperposterior samples
+
+    return calc_pdf(mcoefs, qcoefs, rate)
+
+
+def calculate_iid_spin_bspline_weights(xs, coefs, model, nknots, rate=1, xmin=0, xmax=1, k=4, ngrid=500, pop_frac=None, pop_num=None, **model_kwargs):
+    pdf = model(nknots, xs, xs, xs, xs, order=k - 1, **model_kwargs)
+    pdfs = np.zeros((coefs.shape[0], len(xs)))
+
+    def calc_pdf(cs, r):
+        return pdf.primary_model(1, cs)  # * r
+
+    calc_pdf = jit(calc_pdf)
+    # loop through hyperposterior samples
+    try:
+        for ii in range(coefs.shape[0]):
+            pdfs[ii] = calc_pdf(coefs[ii], rate[ii])
+    except IndexError:
+        for ii in range(coefs.shape[0]):
+            pdfs[ii] = calc_pdf(coefs[ii], rate)
+
+    return pdfs
 
 
 def calculate_m1_bspline_q_powerlaw_ppds(

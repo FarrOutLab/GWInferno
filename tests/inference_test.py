@@ -12,27 +12,17 @@ from numpyro.infer import MCMC
 from numpyro.infer import NUTS
 
 from gwinferno.models.gwpopulation.gwpopulation import PowerlawRedshiftModel
+from gwinferno.models.gwpopulation.gwpopulation import powerlaw_primary_ratio_pdf
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.preprocess.data_collection import load_posterior_samples
 from gwinferno.preprocess.selection import load_injections
-
-
-def truncated_powerlaw(xx, alpha, low, high):
-    prob = jnp.power(xx, alpha)
-    return jnp.where(jnp.less(xx, low) | jnp.greater(xx, high), 0.0, prob)
-
-
-def truncated(m1, q, alpha, beta, mmin, mmax):
-    p_m1 = truncated_powerlaw(m1, alpha=-alpha, low=mmin, high=mmax)
-    p_q = truncated_powerlaw(q, alpha=beta, low=mmin / m1, high=1)
-    return p_m1 * p_q / norm_mass_model(alpha=alpha, beta=beta, mmin=mmin, mmax=mmax)
 
 
 def norm_mass_model(alpha, beta, mmin, mmax):
     ms = jnp.linspace(3, 100, 750)
     qs = jnp.linspace(0.01, 1, 500)
     mm, qq = jnp.meshgrid(ms, qs)
-    p_mq = truncated_powerlaw(mm, alpha=-alpha, low=mmin, high=mmax) * truncated_powerlaw(qq, alpha=beta, low=mmin / mm, high=1)
+    p_mq = powerlaw_primary_ratio_pdf(mm, qq, alpha=alpha, beta=beta, mmin=mmin, mmax=mmax)
     return jnp.trapz(jnp.trapz(p_mq, qs, axis=0), ms)
 
 
@@ -119,7 +109,7 @@ class TestTruncatedModelInference(unittest.TestCase):
                 mmax = 85.0
 
                 def get_weights(m1, q, z, prior):
-                    p_m1q = truncated(m1, q, alpha=alpha, beta=beta, mmin=mmin, mmax=mmax)
+                    p_m1q = powerlaw_primary_ratio_pdf(m1, q, alpha=alpha, beta=beta, mmin=mmin, mmax=mmax)
                     p_z = z_model(z, lamb)
                     wts = p_m1q * p_z / prior
                     return jnp.where(jnp.isnan(wts) | jnp.isinf(wts), 0, wts)
