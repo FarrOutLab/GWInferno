@@ -150,6 +150,8 @@ def hierarchical_likelihood(
     Nobs,
     Tobs,
     categorical=False,
+    marginal_qs=False,
+    indv_weights=None,
     rngkey=None,
     pop_frac=None,
     surv_hypervolume_fct=TotalVTCalculator(),
@@ -178,6 +180,8 @@ def hierarchical_likelihood(
         Nobs (int): Total number of observed events analyzing
         Tobs (float): Time spent observing to produce catalog (in yrs)
         categorical (bool, optional): set to True if using categorical model. Defaults to False.
+        marginal_qs (bool, optional):
+        indv_weights (jax.DeviceArray):
         rngkey (jax.random.PRNGKey, optional): RNG Key to be passed to sample categorical variable.
             Needed if categorical=True. Defaults to None.
         pop_frac (tuple of floats, optional): Tuple of true astrophysical population fractions.
@@ -266,7 +270,6 @@ def hierarchical_likelihood(
                 0,
                 inj_weights,
             )
-
             for ev in range(Nobs):
                 k = random.PRNGKey(ev)
                 k1, k2 = random.split(k)
@@ -275,6 +278,11 @@ def hierarchical_likelihood(
                     pe_weights.shape[1],
                     p=pe_weights[ev, :] / jnp.sum(pe_weights[ev, :]),
                 )
+
+                if marginal_qs:
+                    for i in range(len(indv_weights)):
+                        numpyro.deterministic(f"cat_frac_subpop_{i+1}_event_{ev}", indv_weights[i][ev, obs_idx] / pe_weights[ev, obs_idx])
+
                 pred_idx = random.choice(k2, inj_weights.shape[0], p=inj_weights / jnp.sum(inj_weights))
                 for p in param_names:
                     numpyro.deterministic(f"{p}_obs_event_{ev}", pedata[p][ev, obs_idx])

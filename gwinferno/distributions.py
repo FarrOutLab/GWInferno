@@ -81,37 +81,22 @@ def truncnorm_pdf(xx, mu, sig, low, high, log=False):
     """
     $$ p(x) \propto \mathcal{N}(x | \mu, \sigma)\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$
     """
-    prob = jnp.exp(-jnp.power(xx - mu, 2) / (2 * sig**2))
+
     if log:
-        norm_num = 2**0.5 / jnp.pi**0.5 / sig / jnp.exp(xx)
+        prob = jnp.exp(-jnp.power(jnp.log(xx) - mu, 2) / (2 * sig**2))
+        continuous_norm = 1 / (xx * sig * (2 * jnp.pi) ** 0.5)
+        left_tail_cdf = 0.5 * (1 + erf((jnp.log(low) - mu) / (sig * (2**0.5))))
+        right_tail_cdf = 0.5 * (1 + erf((jnp.log(high) - mu) / (sig * (2**0.5))))
+        denom = right_tail_cdf - left_tail_cdf
     else:
-        norm_num = 2**0.5 / jnp.pi**0.5 / sig
-    norm_denom = erf((high - mu) / 2**0.5 / sig) + erf((mu - low) / 2**0.5 / sig)
-    norm = norm_num / norm_denom
+        prob = jnp.exp(-jnp.power(xx - mu, 2) / (2 * sig**2))
+        continuous_norm = 1 / (sig * (2 * jnp.pi) ** 0.5)
+        left_tail_cdf = 0.5 * (1 + erf((low - mu) / (sig * (2**0.5))))
+        right_tail_cdf = 0.5 * (1 + erf((high - mu) / (sig * (2**0.5))))
+        denom = right_tail_cdf - left_tail_cdf
+
+    norm = continuous_norm / denom
     return jnp.where(jnp.greater(xx, high) | jnp.less(xx, low), 0, prob * norm)
-
-
-"""
-def truncnorm_pdf(xx, mu, sig, low, high, floor=0.0):
-    truncnorm_pdf pdf of high mass truncated normal distributon:
-        $$ p(x) \propto \mathcal{N}(x | \mu, \sigma)\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$
-
-    Args:
-        xx (array_like): points to evaluate pdf at
-        mu (float): mean of normal distributon
-        sig (float): standar deviation of the normal distribution
-        low (float): low end truncation bound
-        high (float): high end truncation bound
-        floor (float, optional): lower bound of pdf (Defaults to 0.0)
-
-    Returns:
-        array_like: pdf evaluated at xx
-    prob = jnp.exp(-jnp.power(xx - mu, 2) / (2 * sig**2))
-    norm_num = 2**0.5 / jnp.pi**0.5 / sig
-    norm_denom = erf((high - mu) / 2**0.5 / sig) + erf((mu - low) / 2**0.5 / sig)
-    norm = norm_num / norm_denom
-    return jnp.where(jnp.greater(xx, high) | jnp.less(xx, low), floor, prob * norm)
-    """
 
 
 def ln_beta_fct(alpha, beta):

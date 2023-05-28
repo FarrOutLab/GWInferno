@@ -32,23 +32,18 @@ class BasisSpline(object):
         self.xrange = xrange
         if knots is None:
             if interior_knots is None:
-                interior_knots = np.linspace(*xrange, n_df - k + 2)
+                interior_knots = np.linspace(*(0, 1), n_df - k + 2)
             if proper:
                 dx = interior_knots[1] - interior_knots[0]
-                knots = np.concatenate(
-                    [
-                        xrange[0] - dx * np.arange(1, k)[::-1],
-                        interior_knots,
-                        xrange[1] + dx * np.arange(1, k),
-                    ]
-                )
+                knots = (xrange[1] - xrange[0]) * jnp.linspace(-dx * (k - 1), 1 + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
+
             else:
                 knots = np.append(
                     np.append(np.array([xrange[0]] * (k - 1)), interior_knots),
                     np.array([xrange[1]] * (k - 1)),
                 )
         self.knots = knots
-        self.interior_knots = knots
+        self.interior_knots = (xrange[1] - xrange[0]) * interior_knots
         assert len(self.knots) == self.N + self.order
 
         self.normalize = normalize
@@ -117,6 +112,24 @@ class BasisSpline(object):
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
         return jnp.concatenate(self._bases(xs)).reshape(self.N, *xs.shape)
+
+    def get_coefficients(self, xs, ys):
+        """
+        computes the coefficients of the basis components given data 1-D data (xs, ys)
+
+        Args:
+            xs (array_like): The x values of data
+            ys (array_like): The y values of data
+
+        Returns:
+            the coefficients (array_like), interpolated y-values evaluated at xs (array_like),
+            the design matrix evaluated at xs with shape (N, *xs.shape)
+        """
+
+        design_matrix = jnp.transpose(self.bases(xs))
+        BtBi = jnp.linalg.inv(jnp.matmul(jnp.transpose(design_matrix), design_matrix))
+        alpha = jnp.matmul(jnp.matmul(BtBi, jnp.transpose(design_matrix)), ys)
+        return alpha, np.einsum("ji,i->j", design_matrix, alpha), design_matrix
 
     def project(self, bases, coefs):
         """
