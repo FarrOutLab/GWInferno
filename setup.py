@@ -24,7 +24,7 @@ with open("requirements.txt", "r") as ff:
 
 setup(
     name="gwinferno",
-    description="Gravitational Wave Hierarchical Inference with NumPyro",
+    description="Gravitational-Wave Hierarchical Inference with NumPyro",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://git.ligo.org/bruce.edelman/gwinferno",
@@ -34,7 +34,7 @@ setup(
     version=VERSION,
     packages=find_packages(exclude=["tests"]),
     package_dir={"gwinferno": "gwinferno"},
-    scripts=["bin/create_py39_cpu_env.sh", "bin/create_py39_gpu_env.sh", "bin/parse_events.sh", "bin/prepare_sampleDict_from_metadata.py"],
+    scripts=["bin/create_py39_cpu_env.sh", "bin/create_py39_gpu_env.sh"],
     install_requires=requirements,
     classifiers=[
         "Programming Language :: Python :: 3.9",
