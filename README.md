@@ -1,3 +1,5 @@
+[![Python package](https://github.com/FarrOutLab/GWInferno/actions/workflows/python-package.yml/badge.svg)](https://github.com/FarrOutLab/GWInferno/actions/workflows/python-package.yml)
+
 # GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
 
 - [Documentation](https://gwinferno.readthedocs.io/en/latest/)
@@ -7,7 +9,7 @@
 Make sure to install the cuda compatible versions of jax and numpyro before installation if you want to use GPU computing. (see `bin/create_py39_gpu_env.sh`)
 
 ```bash
-git clone git@git.ligo.org:bruce.edelman/gwinferno.git
+git clone https://github.com/FarrOutLab/gwinferno.git
 cd gwinferno
 pip install .
 ```
