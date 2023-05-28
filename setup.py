@@ -19,8 +19,6 @@ def get_long_description():
 VERSION = "0.0.2"
 long_description = get_long_description()
 
-with open("requirements.txt", "r") as ff:
-    requirements = ff.readlines()
 
 setup(
     name="gwinferno",
@@ -34,13 +32,11 @@ setup(
     version=VERSION,
     packages=find_packages(exclude=["tests"]),
     package_dir={"gwinferno": "gwinferno"},
-    scripts=["bin/create_py39_cpu_env.sh", "bin/create_py39_gpu_env.sh"],
-    install_requires=requirements,
+    scripts=["bin/create_py310_cpu_env.sh", "bin/create_py310_gpu_env.sh"],
     classifiers=[
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires=">=3.9",
+    python_requires=">=3.10",
 )

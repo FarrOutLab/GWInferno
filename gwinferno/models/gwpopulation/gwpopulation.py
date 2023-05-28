@@ -22,7 +22,13 @@ MASS MODELS
 """
 
 
-def powerlaw_primary_ratio_pdf(m1, q, alpha, beta, mmin, mmax, fall_off):
+def powerlaw_primary_ratio_pdf(m1, q, alpha, beta, mmin, mmax):
+    p_q = powerlaw_pdf(q, beta, mmin / m1, 1)
+    p_m1 = powerlaw_pdf(m1, -alpha, mmin, mmax)
+    return p_q * p_m1
+
+
+def powerlaw_primary_ratio_fall_off_pdf(m1, q, alpha, beta, mmin, mmax, fall_off):
     p_q = powerlaw_pdf(q, beta, mmin / m1, 1)
     p_m1 = powerlaw_logit_pdf(m1, alpha, mmin, mmax, fall_off)
     return p_q * p_m1

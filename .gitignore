@@ -24,3 +24,4 @@ pytest.xml
 **.log
 .vscode
 new_work
+*env.yml
