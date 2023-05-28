@@ -5,11 +5,6 @@ name: Python package
 
 on:
   push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build:
@@ -49,7 +44,7 @@ jobs:
         pre-commit run --all-files --verbose --show-diff-on-failure
     - name: Test with pytest
       run: |
-        source tests/download_data.sh
+        source tests/download_test_data.sh
         pytest --cov gwinferno -ra --color yes --cov-report=xml --junitxml=pytest.xml
     - name: Publish coverage to Codecov
       uses: codecov/codecov-action@v1.2.1
