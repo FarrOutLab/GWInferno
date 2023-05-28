@@ -19,6 +19,12 @@ def get_long_description():
 VERSION = "0.0.2"
 long_description = get_long_description()
 
+with open("pip_requirements.txt", "r") as ff:
+    requirements = ff.readlines()
+    requirements.append("numpyro")
+    requirements.append("jax")
+    requirements.append("jaxlib")
+    requirements.append("h5py")
 
 setup(
     name="gwinferno",
@@ -33,6 +39,7 @@ setup(
     packages=find_packages(exclude=["tests"]),
     package_dir={"gwinferno": "gwinferno"},
     scripts=["bin/create_py310_cpu_env.sh", "bin/create_py310_gpu_env.sh"],
+    install_requires=requirements,
     classifiers=[
         "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",

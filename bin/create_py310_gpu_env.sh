@@ -4,7 +4,7 @@ conda create -n gwinferno_gpu --override-channels -c conda-forge -c nvidia pytho
 conda init bash
 conda activate gwinferno_gpu
 pip install --upgrade pip
-pip install astropy tqdm xarray deepdish arviz funsor pre-commit
+pip install -r pip_requirements.txt
 python -m pip install -e .
 conda env export > gwinferno_py310_gpu_env.yml
 conda deactivate

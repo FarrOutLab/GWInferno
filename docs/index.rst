@@ -13,9 +13,6 @@ API:
    :toctree: api
    :template: custom-module-template.rst
    :caption: API:
-   :recursive:
+   :recursive: True
 
-    models
-    parameter_estimation
-    postprocess
-    preprocess
+    gwinferno

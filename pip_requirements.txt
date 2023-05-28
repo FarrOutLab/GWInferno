@@ -1,0 +1,7 @@
+astropy
+tqdm
+xarray
+deepdish
+arviz
+funsor
+pre-commit
