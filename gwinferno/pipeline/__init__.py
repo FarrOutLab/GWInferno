@@ -1,3 +1,4 @@
 from . import analysis
-from . import parser
+from . import config_reader
 from . import meta_model
+from . import parser

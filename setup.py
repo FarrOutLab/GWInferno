@@ -38,7 +38,7 @@ setup(
     version=VERSION,
     packages=find_packages(exclude=["tests"]),
     package_dir={"gwinferno": "gwinferno"},
-    scripts=["bin/create_py310_cpu_env.sh", "bin/create_py310_gpu_env.sh"],
+    scripts=["bin/create_py310_cpu_env.sh", "bin/create_py310_gpu_env.sh", "bin/gwinferno_run_from_config.py"],
     install_requires=requirements,
     classifiers=[
         "Programming Language :: Python :: 3.10",
