@@ -25,9 +25,9 @@ def plot_mass_dist(pm1s, pqs, ms, qs, mmin=5.0, mmax=100.0, priors=None):
     axs[1].set_yscale("log")
     axs[0].set_xscale("log")
     axs[0].set_xlim(mmin, mmax)
-    axs[0].set_ylim(5e-6, 1e0)
+    axs[0].set_ylim(1e-7, 1e0)
     axs[1].set_xlim(mmin / mmax, 1)
-    axs[1].set_ylim(2e-3, 2e1)
+    axs[1].set_ylim(1e-5, 1e0)
     return fig
 
 
