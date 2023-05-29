@@ -47,7 +47,10 @@ def dl_2_prior_on_z(z):
 
 
 def p_m1src_q_z_lal_pe_prior(posts, spin=False):
-    z_max = max([1.9, max([max(p["redshift"]) for _, p in posts.items()])])
+    z_max = 1.9
+    for ev in posts.keys():
+        if max(posts[ev]["redshift"]) > z_max:
+            z_max = max(posts[ev]["redshift"])
     zs = np.linspace(0, z_max * 1.01, 1000)
     p_z = dl_2_prior_on_z(zs)
     p_z /= np.trapz(p_z, zs)

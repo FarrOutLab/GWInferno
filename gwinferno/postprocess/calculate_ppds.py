@@ -30,21 +30,32 @@ def calculate_m1q_ppds_plbspline_model(posterior, mass_model, nknots, rate=None,
             mpdfs[ii], qpdfs[ii] = calc_pdf(
                 posterior["alpha"][ii],
                 posterior["beta"][ii],
-                mmin,
+                posterior["mmin"][ii],
                 posterior["mmax"][ii],
                 posterior["mass_cs"][ii],
                 rate[ii],
             )
     except KeyError:
-        for ii in trange(posterior["alpha"].shape[0]):
-            mpdfs[ii], qpdfs[ii] = calc_pdf(
-                posterior["alpha"][ii],
-                posterior["beta"][ii],
-                mmin,
-                81.08,
-                posterior["mass_cs"][ii],
-                rate[ii],
-            )
+        try:
+            for ii in trange(posterior["alpha"].shape[0]):
+                mpdfs[ii], qpdfs[ii] = calc_pdf(
+                    posterior["alpha"][ii],
+                    posterior["beta"][ii],
+                    mmin,
+                    posterior["mmax"][ii],
+                    posterior["mass_cs"][ii],
+                    rate[ii],
+                )
+        except KeyError:
+            for ii in trange(posterior["alpha"].shape[0]):
+                mpdfs[ii], qpdfs[ii] = calc_pdf(
+                    posterior["alpha"][ii],
+                    posterior["beta"][ii],
+                    mmin,
+                    85.0,
+                    posterior["mass_cs"][ii],
+                    rate[ii],
+                )
     return mpdfs, qpdfs, ms, qs
 
 
