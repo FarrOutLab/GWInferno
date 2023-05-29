@@ -1,18 +1,22 @@
 import jax.numpy as jnp
 from jax import lax
-from jax import vmap
 from jax import random
+from jax import vmap
 from numpyro.distributions import Distribution
 from numpyro.distributions import constraints
 from numpyro.distributions.util import is_prng_key
 from numpyro.distributions.util import promote_shapes
 from numpyro.distributions.util import validate_sample
 
+from ..interpolation import NaturalCubicUnivariateSpline
+
+
 def cumtrapz(y, x):
     difs = jnp.diff(x)
-    idxs = jnp.array([i for i in range(1,len(y))])
-    res = jnp.cumsum(vmap(lambda i,d: d * (y[i] + y[i+1]) / 2.0)(idxs,difs))
+    idxs = jnp.array([i for i in range(1, len(y))])
+    res = jnp.cumsum(vmap(lambda i, d: d * (y[i] + y[i + 1]) / 2.0)(idxs, difs))
     return jnp.concatenate([jnp.array([0]), res])
+
 
 class Sine(Distribution):
     arg_constraints = {
@@ -154,7 +158,7 @@ class PowerlawRedshift(Distribution):
         super(PowerlawRedshift, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
         self.zs = zgrid
         self.dVdc_ = dVcdz
-        self.pdfs = self.dVdc_ * (1 + self.zs)**(lamb - 1)
+        self.pdfs = self.dVdc_ * (1 + self.zs) ** (lamb - 1)
         self.norm = jnp.trapz(self.pdfs, self.zs)
         self.pdfs /= self.norm
         self.cdfgrid = cumtrapz(self.pdfs, self.zs)
@@ -166,16 +170,121 @@ class PowerlawRedshift(Distribution):
 
     def sample(self, key, sample_shape=()):
         assert is_prng_key(key)
-        return self.icdf(random.uniform(key, shape=sample_shape+self.batch_shape))
+        return self.icdf(random.uniform(key, shape=sample_shape + self.batch_shape))
 
     @validate_sample
     def log_prob(self, value, dVdc=None):
         if dVdc is None:
             dVdc = jnp.interp(value, self.zs, self.dVdc_)
-        return jnp.where(jnp.less_equal(value, self.maximum), jnp.log(dVdc) + (self.lamb - 1.0) * jnp.log(1.0 + value) - jnp.log(self.norm), jnp.nan_to_num(-jnp.inf))
+        return jnp.where(
+            jnp.less_equal(value, self.maximum),
+            jnp.log(dVdc) + (self.lamb - 1.0) * jnp.log(1.0 + value) - jnp.log(self.norm),
+            jnp.nan_to_num(-jnp.inf),
+        )
 
     def cdf(self, value):
         return jnp.interp(value, self.zs, self.cdfgrid)
 
     def icdf(self, q):
         return jnp.interp(q, self.cdfgrid, self.zs)
+
+
+class NumericallyNormalizedDistribition(Distribution):
+    arg_constraints = {
+        "maximum": constraints.real,
+        "minimum": constraints.real,
+    }
+    reparametrized_params = ["maximum", "minimum"]
+
+    def __init__(self, minimum, maximum, Ngrid=1000, validate_args=None):
+        self.maximum, self.minimum = promote_shapes(maximum, minimum)
+        self._support = constraints.interval(minimum, maximum)
+        batch_shape = lax.broadcast_shapes(
+            jnp.shape(maximum),
+            jnp.shape(minimum),
+        )
+        super(NumericallyNormalizedDistribition, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
+        self.grid = jnp.linspace(self.minimum, self.maximum, Ngrid)
+        self.pdfs = jnp.exp(self._log_prob_nonorm(self.grid))
+        self.norm = jnp.trapz(self.pdfs, self.grid)
+        self.pdfs /= self.norm
+        self.cdfgrid = cumtrapz(self.pdfs, self.grid)
+        self.cdfgrid = self.cdfgrid.at[-1].set(1)
+
+    @constraints.dependent_property(is_discrete=False, event_dim=0)
+    def support(self):
+        return self._support
+
+    def sample(self, key, sample_shape=()):
+        assert is_prng_key(key)
+        return self.icdf(random.uniform(key, shape=sample_shape + self.batch_shape))
+
+    def _log_prob_nonorm(self, value):
+        raise NotImplementedError
+
+    @validate_sample
+    def log_prob(self, value):
+        raise self._log_prob_nonorm(value) - jnp.log(self.norm)
+
+    def cdf(self, value):
+        return jnp.interp(value, self.grid, self.cdfgrid)
+
+    def icdf(self, q):
+        return jnp.interp(q, self.cdfgrid, self.grid)
+
+
+class LinearInterpolatedPerturbation(NumericallyNormalizedDistribition):
+    arg_constraints = {
+        "yinterps": constraints.real_vector,
+        "xinterps": constraints.ordered_vector,
+        "maximum": constraints.real,
+        "minimum": constraints.real,
+    }
+    reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum"]
+
+    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None):
+        self.base_dist = base_dist
+        self.xinterps = xinterps
+        self.yinterps = yinterps
+        super(LinearInterpolatedPerturbation, self).__init__(minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
+
+    def _log_prob_nonorm(self, value):
+        return self.base_dist.log_prob(value) + jnp.interp(value, self.xinterps, self.yinterps)
+
+
+class CubicInterpolatedPerturbation(NumericallyNormalizedDistribition):
+    arg_constraints = {
+        "yinterps": constraints.real_vector,
+        "xinterps": constraints.ordered_vector,
+        "maximum": constraints.real,
+        "minimum": constraints.real,
+    }
+    reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum"]
+
+    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None):
+        self.base_dist = base_dist
+        self.xinterps = xinterps
+        self.yinterps = yinterps
+        self.interpolator = NaturalCubicUnivariateSpline(self.xinterps, self.yinterps)
+        super(CubicInterpolatedPerturbation, self).__init__(minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
+
+    def _log_prob_nonorm(self, value):
+        return self.base_dist.log_prob(value) + self.interpolator(value)
+
+
+class PowerlawSpline(CubicInterpolatedPerturbation):
+    arg_constraints = {
+        "yinterps": constraints.real_vector,
+        "xinterps": constraints.ordered_vector,
+        "maximum": constraints.real,
+        "minimum": constraints.real,
+        "alpha": constraints.real,
+    }
+    reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum", "alpha"]
+
+    def __init__(self, alpha, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None):
+        self.alpha = alpha
+        super(PowerlawSpline, self).__init__(xinterps, yinterps, minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
+
+    def _log_prob_nonorm(self, value):
+        return self.alpha * jnp.log(value) + self.interpolator(value)
