@@ -43,6 +43,8 @@ redshift:
     maximum:
       value: 2.3
 a_1:
+  iid:
+   shared_parameter: a_2
   model: numpyro.distributions.TruncatedNormal
   hyper_params:
     loc:
@@ -59,9 +61,6 @@ a_1:
       value: 0.0
     high:
       value: 1.0
-a_2:
-  model: iid
-  shared_parameter: a_1
 
 # Sampler Configuration Args
 sampler_args:

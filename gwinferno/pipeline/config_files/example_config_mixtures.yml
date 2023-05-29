@@ -4,48 +4,48 @@ label: TruncatedPlusPeak_PowerlawRedshift_MDC_smoothed_power_law_0
 # Population Parameters, Models, HyperParameters, and Priors
 mass_1:
   model: numpyro.distributions.Mixture
-  mixture_dist: numpyro.distributions.Categorical
-  mixture_dist_params:
-    probs:
-      prior: numpyro.distributions.Dirichlet
-      prior_params:
-        concentration: [0.5, 0.5]
-  component_dists:
-    component_1:
-      model: gwinferno.parameter_estimation.numpyro_distributions.Powerlaw
-      hyper_params:
-        alpha:
-          prior: numpyro.distributions.Normal
-          prior_params:
-            loc: 0.0
-            scale: 3.0
-        minimum:
-          prior: numpyro.distributions.Uniform
-          prior_params:
-            low: 2.0
-            high: 10.0
-        maximum:
-          prior: numpyro.distributions.Uniform
-          prior_params:
-            low: 50.0
-            high: 100.0
-    component_2:
-      model: numpyro.distributions.TruncatedNormal
-      hyper_params:
-        loc:
-          prior: numpyro.distributions.Uniform
-          prior_params:
-            low: 20.0
-            high: 80.0
-        scale:
-          prior: numpyro.distributions.Uniform
-          prior_params:
-            low: 1.0
-            high: 10.0
-        low:
-          value: 2.0
-        high:
-          value: 100.0
+  mixture_dist: 
+    model: numpyro.distributions.Categorical
+    hyper_params:
+      probs:
+        prior: numpyro.distributions.Dirichlet
+        prior_params:
+          concentration: [0.5, 0.5]
+  component_1:
+    model: gwinferno.parameter_estimation.numpyro_distributions.Powerlaw
+    hyper_params:
+      alpha:
+        prior: numpyro.distributions.Normal
+        prior_params:
+          loc: 0.0
+          scale: 3.0
+      minimum:
+        prior: numpyro.distributions.Uniform
+        prior_params:
+          low: 2.0
+          high: 10.0
+      maximum:
+        prior: numpyro.distributions.Uniform
+        prior_params:
+          low: 50.0
+          high: 100.0
+  component_2:
+    model: numpyro.distributions.TruncatedNormal
+    hyper_params:
+      loc:
+        prior: numpyro.distributions.Uniform
+        prior_params:
+          low: 20.0
+          high: 80.0
+      scale:
+        prior: numpyro.distributions.Uniform
+        prior_params:
+          low: 1.0
+          high: 10.0
+      low:
+        value: 2.0
+      high:
+        value: 100.0
 mass_ratio:
   model: gwinferno.parameter_estimation.numpyro_distributions.Powerlaw
   hyper_params:
