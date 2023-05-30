@@ -11,7 +11,7 @@ class NaturalCubicUnivariateSpline(object):
     """
 
     def __init__(self, x, y, coefficients=None):
-        k, x, y = 3, np.atleast_1d(x), np.atleast_1d(y)
+        k, x, y = 3, jnp.atleast_1d(x), jnp.atleast_1d(y)
         assert len(x) == len(y), "Input arrays must be the same length."
         assert x.ndim == 1 and y.ndim == 1, "Input arrays must be 1D."
         n_data = len(x)

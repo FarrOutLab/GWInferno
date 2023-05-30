@@ -254,9 +254,9 @@ class LinearInterpolatedPowerlaw(NumericallyNormalizedDistribition):
 
 
 class CubicInterpolatedPowerlaw(LinearInterpolatedPowerlaw):
-    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None):
-        super(CubicInterpolatedPowerlaw, self).__init__(base_dist, xinterps, yinterps, minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
-        self.interpolator = NaturalCubicUnivariateSpline(self.xinterps, self.yinterps)
+    def __init__(self, xinterps, yinterps, minimum, maximum, alpha, Ngrid=1000, validate_args=None):
+        self.interpolator = NaturalCubicUnivariateSpline(xinterps, yinterps)
+        super(CubicInterpolatedPowerlaw, self).__init__(xinterps, yinterps, minimum, maximum, alpha, Ngrid=Ngrid, validate_args=validate_args)
 
     def _log_prob_nonorm(self, value):
         return self.alpha * jnp.log(value) + self.interpolator(value)
