@@ -24,7 +24,7 @@ def construct_hierarchical_model(model_dict, prior_dict):
             rsps = {} if k != "redshift" else {"zgrid": z_grid, "dVcdz": dVcdz_grid}
             if isinstance(v, PopMixtureModel):
                 components = [
-                    v.components[i](**{p: hyper_params[f"{k}_component_{i+1}_{p}"][i] for p in v.component_params[i]}, **rsps)
+                    v.components[i](**{p: hyper_params[f"{k}_component_{i+1}_{p}"] for p in v.component_params[i]}, **rsps)
                     for i in range(len(v.components))
                 ]
                 mixing_dist = v.mixing_dist(**{p: hyper_params[f"{k}_mixture_dist_{p}"] for p in v.mixing_params})
@@ -59,9 +59,9 @@ def construct_hierarchical_model(model_dict, prior_dict):
             pedata=samps,
             injdata=injs,
             param_names=source_param_names,
-            m1min=hyper_params["mass_1_minimum"],
+            m1min=2.0,
             m2min=2.0,
-            mmax=hyper_params["mass_1_maximum"],
+            mmax=100.0,
         )
 
     return model

@@ -10,7 +10,7 @@ from astropy.cosmology import Planck15
 from jax import random
 from numpyro.infer import MCMC
 
-from gwinferno.pipeline.config_reader import load_config_from_yaml
+from gwinferno.pipeline.config_reader import ConfigReader
 from gwinferno.pipeline.meta_model import NP_KERNEL_MAP
 from gwinferno.pipeline.meta_model import construct_hierarchical_model
 from gwinferno.preprocess.data_collection import load_catalog_from_metadata
@@ -37,7 +37,11 @@ def setup(data_conf, params):
 
 
 def run_inference(config_yml, PRNG_seed=0):
-    model_dict, prior_dict, data_conf, sampler_conf, sampling_params, label = load_config_from_yaml(config_yml)
+    config_reader = ConfigReader()
+    config_reader.parse(config_yml)
+    model_dict, prior_dict = config_reader.models, config_reader.priors
+    data_conf, sampler_conf = config_reader.data_args, config_reader.sampler_args
+    sampling_params, label = config_reader.sampling_params, config_reader.label
     model = construct_hierarchical_model(model_dict, prior_dict)
 
     pe_dict, inj_dict, Ninj, Nobs, Tobs = setup(data_conf, [k for k in model_dict.keys()])

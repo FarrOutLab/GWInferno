@@ -1,5 +1,5 @@
 from importlib import import_module
-
+import jax.numpy as jnp
 import yaml
 
 
@@ -57,6 +57,9 @@ class ConfigReader(object):
 
     def add_prior(self, key, subd):
         if "prior" in subd and "prior_params" in subd:
+            if "concentration" in subd["prior_params"]:
+                tmp = subd["prior_params"]["concentration"]
+                subd["prior_params"]["concentration"] = jnp.array(tmp)
             self.priors[key] = PopPrior(load_dist_from_string(subd["prior"]), subd["prior_params"])
             self.sampling_params.append(key)
         elif "value" in subd:
@@ -78,15 +81,15 @@ class ConfigReader(object):
         mix_params = [p for p in subd["mixture_dist"]["hyper_params"]]
         N = len(subd["mixture_dist"]["hyper_params"][mix_params[0]]["prior_params"]["concentration"])
         for hp in mix_params:
-            self.add_prior(f"{param}_mixture_dist_{hp}", subd["mixture_dist"][hp])
+            self.add_prior(f"{param}_mixture_dist_{hp}", subd["mixture_dist"]["hyper_params"][hp])
         components = []
         component_params = []
         for i in range(N):
-            subd = subd[f"component_{i+1}"]
-            components.append(load_dist_from_string(subd["model"]))
-            component_params.append([p for p in subd["hyper_params"]])
-            for hp in subd["hyper_params"]:
-                self.add_prior(f"{param}_component_{i+1}_{hp}", subd["hyper_params"][hp])
+            name = f"component_{i+1}"
+            components.append(load_dist_from_string(subd[name]["model"]))
+            component_params.append([p for p in subd[name]["hyper_params"]])
+            for hp in subd[name]["hyper_params"]:
+                self.add_prior(f"{param}_component_{i+1}_{hp}", subd[name]["hyper_params"][hp])
         self.models[param] = PopMixtureModel(model, mix_dist, mix_params, components, component_params)
-        if "iid" in subd:
-            self.add_iid_model(param, subd["iid"]["shared_parameter"])
+        if "iid" in subd[name]:
+            self.add_iid_model(param, subd[name]["iid"]["shared_parameter"])

@@ -196,7 +196,7 @@ class NumericallyNormalizedDistribition(Distribution):
     }
     reparametrized_params = ["maximum", "minimum"]
 
-    def __init__(self, minimum, maximum, Ngrid=1000, validate_args=None):
+    def __init__(self, minimum, maximum, Ngrid=1000, grid=None, validate_args=None):
         self.maximum, self.minimum = promote_shapes(maximum, minimum)
         self._support = constraints.interval(minimum, maximum)
         batch_shape = lax.broadcast_shapes(
@@ -204,7 +204,7 @@ class NumericallyNormalizedDistribition(Distribution):
             jnp.shape(minimum),
         )
         super(NumericallyNormalizedDistribition, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
-        self.grid = jnp.linspace(self.minimum, self.maximum, Ngrid)
+        self.grid = grid if grid is not None else jnp.linspace(self.minimum, self.maximum, Ngrid)
         self.pdfs = jnp.exp(self._log_prob_nonorm(self.grid))
         self.norm = jnp.trapz(self.pdfs, self.grid)
         self.pdfs /= self.norm
@@ -242,8 +242,12 @@ class LinearInterpolatedPerturbation(NumericallyNormalizedDistribition):
     }
     reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum"]
 
-    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None):
-        self.base_dist = base_dist
+    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None, **kwargs):
+        self.base_dist = base_dist(**kwargs)
+        for k,v in self.base_dist.arg_constraints:
+            if k not in self.reparametrized_params:
+                self.arg_constraints[k] = v
+                self.reparametrized_params.append(k)
         self.xinterps = xinterps
         self.yinterps = yinterps
         super(LinearInterpolatedPerturbation, self).__init__(minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
@@ -252,39 +256,78 @@ class LinearInterpolatedPerturbation(NumericallyNormalizedDistribition):
         return self.base_dist.log_prob(value) + jnp.interp(value, self.xinterps, self.yinterps)
 
 
-class CubicInterpolatedPerturbation(NumericallyNormalizedDistribition):
-    arg_constraints = {
-        "yinterps": constraints.real_vector,
-        "xinterps": constraints.ordered_vector,
-        "maximum": constraints.real,
-        "minimum": constraints.real,
-    }
-    reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum"]
-
-    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None):
-        self.base_dist = base_dist
-        self.xinterps = xinterps
-        self.yinterps = yinterps
+class CubicInterpolatedPerturbation(LinearInterpolatedPerturbation):
+    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None, **kwargs):
+        super(CubicInterpolatedPerturbation, self).__init__(base_dist, xinterps, yinterps, minimum, maximum, Ngrid=Ngrid, validate_args=validate_args, **kwargs)
         self.interpolator = NaturalCubicUnivariateSpline(self.xinterps, self.yinterps)
-        super(CubicInterpolatedPerturbation, self).__init__(minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
 
     def _log_prob_nonorm(self, value):
         return self.base_dist.log_prob(value) + self.interpolator(value)
 
 
-class PowerlawSpline(CubicInterpolatedPerturbation):
+class PowerlawSpline(NumericallyNormalizedDistribition):
     arg_constraints = {
         "yinterps": constraints.real_vector,
         "xinterps": constraints.ordered_vector,
         "maximum": constraints.real,
         "minimum": constraints.real,
-        "alpha": constraints.real,
+        "alpha": constraints.real
     }
     reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum", "alpha"]
 
-    def __init__(self, alpha, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None):
+    def __init__(self, alpha, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None,**kwargs):
         self.alpha = alpha
-        super(PowerlawSpline, self).__init__(xinterps, yinterps, minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
+        self.xinterps = xinterps
+        self.yinterps = yinterps
+        self.interpolator = NaturalCubicUnivariateSpline(self.xinterps, self.yinterps)
+        super(PowerlawSpline, self).__init__(minimum, maximum, Ngrid=Ngrid, validate_args=validate_args, **kwargs)
 
     def _log_prob_nonorm(self, value):
         return self.alpha * jnp.log(value) + self.interpolator(value)
+
+
+class BSplineDistribution(Distribution):
+    arg_constraints = {
+        "maximum": constraints.real,
+        "minimum": constraints.real,
+        "cs": constraints.real_vector,
+    }
+    reparametrized_params = ["maximum", "minimum", "cs"]
+
+    def __init__(self, minimum, maximum, cs, grid, grid_dmat, validate_args=None):
+        self.maximum, self.minimum, self.cs = promote_shapes(maximum, minimum, cs)
+        self._support = constraints.interval(minimum, maximum)
+        batch_shape = lax.broadcast_shapes(
+            jnp.shape(maximum),
+            jnp.shape(minimum),
+            jnp.shape(cs)
+        )
+        super(BSplineDistribution, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
+        self.grid = grid
+        self.lpdfs = jnp.einsum('i,i...->...',self.cs,grid_dmat)
+        self.pdfs =  jnp.exp(self.lpdfs)
+        self.norm = jnp.trapz(self.pdfs, self.grid)
+        self.pdfs /= self.norm
+        self.cdfgrid = cumtrapz(self.pdfs, self.grid)
+        self.cdfgrid = self.cdfgrid.at[-1].set(1)
+
+    @constraints.dependent_property(is_discrete=False, event_dim=0)
+    def support(self):
+        return self._support
+
+    def sample(self, key, sample_shape=()):
+        assert is_prng_key(key)
+        return self.icdf(random.uniform(key, shape=sample_shape + self.batch_shape))
+
+    def _log_prob_nonorm(self, value):
+        raise jnp.interp(value, self.grid, self.lpdfs)
+
+    @validate_sample
+    def log_prob(self, value):
+        raise self._log_prob_nonorm(value) - jnp.log(self.norm)
+
+    def cdf(self, value):
+        return jnp.interp(value, self.grid, self.cdfgrid)
+
+    def icdf(self, q):
+        return jnp.interp(q, self.cdfgrid, self.grid)
