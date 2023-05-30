@@ -42,7 +42,6 @@ jobs:
         conda list
     - name: Run pre-commit checks
       run: |
-        export SKIP="no-commit-to-branch"
         pre-commit run --all-files --verbose --show-diff-on-failure
     - name: Test with pytest
       run: |
