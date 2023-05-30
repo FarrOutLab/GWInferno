@@ -243,7 +243,8 @@ class LinearInterpolatedPerturbation(NumericallyNormalizedDistribition):
     reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum"]
 
     def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None, **kwargs):
-        self.base_dist = base_dist(**kwargs)
+        shared_paramas = {"minimum": minimum, "maximum": maximum, "validate_args": validate_args}
+        self.base_dist = base_dist(**shared_paramas, **kwargs)
         for k, v in self.base_dist.arg_constraints:
             if k not in self.reparametrized_params:
                 self.arg_constraints[k] = v

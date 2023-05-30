@@ -59,13 +59,16 @@ class ConfigReader(object):
 
     def add_prior(self, key, subd):
         if "prior" in subd and "prior_params" in subd:
-            if "concentration" in subd["prior_params"]:
-                tmp = subd["prior_params"]["concentration"]
-                subd["prior_params"]["concentration"] = jnp.array(tmp)
+            for k in subd["prior_params"]:
+                if type(subd["prior_params"][k]) == list:
+                    subd["prior_params"][k] = jnp.array(subd["prior_params"][k])
             self.priors[key] = PopPrior(load_dist_from_string(subd["prior"]), subd["prior_params"])
             self.sampling_params.append(key)
         elif "value" in subd:
-            self.priors[key] = subd["value"]
+            if type(subd["value"]) == list:
+                self.priors[key] = jnp.array(subd["value"])
+            else:
+                self.priors[key] = subd["value"]
 
     def add_model(self, param, subd):
         self.models[param] = PopModel(load_dist_from_string(subd["model"]), [p for p in subd["hyper_params"]])
