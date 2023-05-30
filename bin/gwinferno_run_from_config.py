@@ -16,6 +16,8 @@ from gwinferno.pipeline.meta_model import construct_hierarchical_model
 from gwinferno.preprocess.data_collection import load_catalog_from_metadata
 from gwinferno.preprocess.selection import load_injections
 
+az.style.use("arviz-darkgrid")
+
 
 def setup(data_conf, params):
     catalog_info = data_conf["catalog_summary_json"]

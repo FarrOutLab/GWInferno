@@ -102,17 +102,9 @@ def logmu_logneff_injections_log(logweights, Ninj):
         (jax.DeviceArray,jax.DeviceArray):  array of log detection efficiency, array of log N_eff from Monte Carlo Integral
     """
     logmu = logsumexp(logweights) - jnp.log(Ninj)
-    logvar = logsumexp(
-        jnp.array(
-            [
-                logsumexp(2 * logweights) - 2 * jnp.log(Ninj) ** 2,
-                2 * logmu - jnp.log(Ninj),
-            ]
-        ),
-        b=jnp.array([1.0, -1]),
-    )
-    logn_eff = 2 * logmu - logvar
-    return logmu, logn_eff
+    mu = jnp.exp(logmu)
+    var =  jnp.sum(jnp.exp(logweights)**2) / Ninj**2 - mu**2 / Ninj
+    return logmu, jnp.log(mu**2/var)
 
 
 class TotalVTCalculator(object):
