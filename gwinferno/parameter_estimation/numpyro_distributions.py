@@ -233,42 +233,7 @@ class NumericallyNormalizedDistribition(Distribution):
         return jnp.interp(q, self.cdfgrid, self.grid)
 
 
-class LinearInterpolatedPerturbation(NumericallyNormalizedDistribition):
-    arg_constraints = {
-        "yinterps": constraints.real_vector,
-        "xinterps": constraints.ordered_vector,
-        "maximum": constraints.real,
-        "minimum": constraints.real,
-    }
-    reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum"]
-
-    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None, **kwargs):
-        shared_paramas = {"minimum": minimum, "maximum": maximum, "validate_args": validate_args}
-        self.base_dist = base_dist(**shared_paramas, **kwargs)
-        for k, v in self.base_dist.arg_constraints:
-            if k not in self.reparametrized_params:
-                self.arg_constraints[k] = v
-                self.reparametrized_params.append(k)
-        self.xinterps = xinterps
-        self.yinterps = yinterps
-        super(LinearInterpolatedPerturbation, self).__init__(minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
-
-    def _log_prob_nonorm(self, value):
-        return self.base_dist.log_prob(value) + jnp.interp(value, self.xinterps, self.yinterps)
-
-
-class CubicInterpolatedPerturbation(LinearInterpolatedPerturbation):
-    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None, **kwargs):
-        super(CubicInterpolatedPerturbation, self).__init__(
-            base_dist, xinterps, yinterps, minimum, maximum, Ngrid=Ngrid, validate_args=validate_args, **kwargs
-        )
-        self.interpolator = NaturalCubicUnivariateSpline(self.xinterps, self.yinterps)
-
-    def _log_prob_nonorm(self, value):
-        return self.base_dist.log_prob(value) + self.interpolator(value)
-
-
-class PowerlawSpline(NumericallyNormalizedDistribition):
+class LinearInterpolatedPowerlaw(NumericallyNormalizedDistribition):
     arg_constraints = {
         "yinterps": constraints.real_vector,
         "xinterps": constraints.ordered_vector,
@@ -278,12 +243,20 @@ class PowerlawSpline(NumericallyNormalizedDistribition):
     }
     reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum", "alpha"]
 
-    def __init__(self, alpha, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None, **kwargs):
+    def __init__(self, xinterps, yinterps, minimum, maximum, alpha, Ngrid=1000, validate_args=None):
         self.alpha = alpha
         self.xinterps = xinterps
         self.yinterps = yinterps
+        super(LinearInterpolatedPowerlaw, self).__init__(minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
+
+    def _log_prob_nonorm(self, value):
+        return self.alpha * jnp.log(value) + jnp.interp(value, self.xinterps, self.yinterps)
+
+
+class CubicInterpolatedPowerlaw(LinearInterpolatedPowerlaw):
+    def __init__(self, base_dist, xinterps, yinterps, minimum, maximum, Ngrid=1000, validate_args=None):
+        super(CubicInterpolatedPowerlaw, self).__init__(base_dist, xinterps, yinterps, minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
         self.interpolator = NaturalCubicUnivariateSpline(self.xinterps, self.yinterps)
-        super(PowerlawSpline, self).__init__(minimum, maximum, Ngrid=Ngrid, validate_args=validate_args, **kwargs)
 
     def _log_prob_nonorm(self, value):
         return self.alpha * jnp.log(value) + self.interpolator(value)
