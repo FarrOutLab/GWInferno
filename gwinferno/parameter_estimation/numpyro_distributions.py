@@ -224,7 +224,7 @@ class NumericallyNormalizedDistribition(Distribution):
 
     @validate_sample
     def log_prob(self, value):
-        raise self._log_prob_nonorm(value) - jnp.log(self.norm)
+        return self._log_prob_nonorm(value) - jnp.log(self.norm)
 
     def cdf(self, value):
         return jnp.interp(value, self.grid, self.cdfgrid)
@@ -292,11 +292,11 @@ class BSplineDistribution(Distribution):
         return self.icdf(random.uniform(key, shape=sample_shape + self.batch_shape))
 
     def _log_prob_nonorm(self, value):
-        raise jnp.interp(value, self.grid, self.lpdfs)
+        return jnp.interp(value, self.grid, self.lpdfs)
 
     @validate_sample
     def log_prob(self, value):
-        raise self._log_prob_nonorm(value) - jnp.log(self.norm)
+        return self._log_prob_nonorm(value) - jnp.log(self.norm)
 
     def cdf(self, value):
         return jnp.interp(value, self.grid, self.cdfgrid)
