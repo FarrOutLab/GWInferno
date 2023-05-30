@@ -8,7 +8,7 @@ from numpyro.distributions.util import is_prng_key
 from numpyro.distributions.util import promote_shapes
 from numpyro.distributions.util import validate_sample
 
-from ..interpolation import NaturalCubicUnivariateSpline
+from .interpolation import NaturalCubicUnivariateSpline
 
 
 def cumtrapz(y, x):

@@ -3,7 +3,7 @@ label: Truncated_PowerlawRedshift_MDC_smoothed_power_law_0
 
 # Population Parameters, Models, HyperParameters, and Priors
 mass_1:
-  model: gwinferno.parameter_estimation.numpyro_distributions.Powerlaw
+  model: gwinferno.numpyro_distributions.Powerlaw
   hyper_params:
     alpha:
       prior: numpyro.distributions.Normal
@@ -21,7 +21,7 @@ mass_1:
         low: 50.0
         high: 100.0
 mass_ratio:
-  model: gwinferno.parameter_estimation.numpyro_distributions.Powerlaw
+  model: gwinferno.numpyro_distributions.Powerlaw
   hyper_params:
     alpha:
       prior: numpyro.distributions.Normal
@@ -33,7 +33,7 @@ mass_ratio:
     maximum:
       value: 1.0
 redshift:
-  model: gwinferno.parameter_estimation.numpyro_distributions.PowerlawRedshift
+  model: gwinferno.numpyro_distributions.PowerlawRedshift
   hyper_params:
     lamb:
       prior: numpyro.distributions.Normal

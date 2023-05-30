@@ -12,7 +12,7 @@ mass_1:
         prior_params:
           concentration: [0.5, 0.5]
   component_1:
-    model: gwinferno.parameter_estimation.numpyro_distributions.Powerlaw
+    model: gwinferno.numpyro_distributions.Powerlaw
     hyper_params:
       alpha:
         prior: numpyro.distributions.Normal
@@ -47,7 +47,7 @@ mass_1:
       high:
         value: 100.0
 mass_ratio:
-  model: gwinferno.parameter_estimation.numpyro_distributions.Powerlaw
+  model: gwinferno.numpyro_distributions.Powerlaw
   hyper_params:
     alpha:
       prior: numpyro.distributions.Normal
@@ -59,7 +59,7 @@ mass_ratio:
     maximum:
       value: 1.0
 redshift:
-  model: gwinferno.parameter_estimation.numpyro_distributions.PowerlawRedshift
+  model: gwinferno.numpyro_distributions.PowerlawRedshift
   hyper_params:
     lamb:
       prior: numpyro.distributions.Normal
