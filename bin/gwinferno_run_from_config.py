@@ -10,9 +10,9 @@ from astropy.cosmology import Planck15
 from jax import random
 from numpyro.infer import MCMC
 
-from gwinferno.pipeline.config_reader import ConfigReader
-from gwinferno.pipeline.meta_model import NP_KERNEL_MAP
-from gwinferno.pipeline.meta_model import construct_hierarchical_model
+from gwinferno.pipeline.analysis import NP_KERNEL_MAP
+from gwinferno.pipeline.analysis import construct_hierarchical_model
+from gwinferno.pipeline.parser import ConfigReader
 from gwinferno.preprocess.data_collection import load_catalog_from_metadata
 from gwinferno.preprocess.selection import load_injections
 
