@@ -65,7 +65,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         Nsamples = pedata.shape[-1]
         idxs = np.random.choice(Nsamples, size=max_samps, replace=False)
         pedict = {k: pedata[self.param_map[k]][:, idxs] for k in self.param_names}
-        return pedict, Nobs, Nsamples
+        return pedict, Nobs, max_samps
 
     def test_load_pe_samples(self):
         fns = glob.glob(f"{self.data_dir}/S*.h5")
