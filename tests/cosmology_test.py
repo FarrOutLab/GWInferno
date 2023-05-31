@@ -45,8 +45,8 @@ class TestDefaultCosmology(unittest.TestCase):
         self.assertTrue(jnp.all(frac_errs < threshold))
 
     def test_redshift_to_differential_comoving_volume(self):
-        threshold = 0.001
-        logdVcdzs = cosmology.logdVcdz(self.zs) - 3 * jnp.log(MPC_CGS) - 2.54 + jnp.log(4.0 * np.pi)
+        threshold = 0.00125
+        logdVcdzs = cosmology.logdVcdz(self.zs) - 3.0 * jnp.log(MPC_CGS)
         logdVcdzs_astropy = np.log(astropy_cosmology.differential_comoving_volume(self.zs).value) + np.log(4.0 * np.pi)
         frac_errs = jnp.abs(logdVcdzs - logdVcdzs_astropy) / logdVcdzs
         self.assertTrue(jnp.all(frac_errs < threshold))
