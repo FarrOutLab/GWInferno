@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from tqdm import trange
 
-from ..cosmology import MPC_CGS
 from ..cosmology import PLANCK_2018_Cosmology as cosmo
 from .conversions import chieff_from_q_component_spins
 from .conversions import chip_from_q_component_spins
@@ -41,8 +40,8 @@ EVENTS_WITH_NS = [
 
 
 def dl_2_prior_on_z(z):
-    dl = cosmo.z2DL(z) / (MPC_CGS * 1e3)
-    return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z) / (MPC_CGS * 1e3))
+    dl = cosmo.z2DL(z) / 1e3
+    return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z, mpc=True) / 1e3)
 
 
 def p_m1src_q_z_lal_pe_prior(posts, spin=False):
@@ -75,7 +74,7 @@ def _standardize_new_post(df, param_mapping):
 
 def _standardize_GWTC1_post(df):
     post = pd.DataFrame()
-    post["redshift"] = cosmo.DL2z(df["luminosity_distance_Mpc"] * MPC_CGS)
+    post["redshift"] = cosmo.DL2z(df["luminosity_distance_Mpc"])
     for ii in [1, 2]:
         post[f"mass_{ii}"] = df[f"m{ii}_detector_frame_Msun"] / (1 + post["redshift"])
         post[f"a_{ii}"] = df[f"spin{ii}"]
