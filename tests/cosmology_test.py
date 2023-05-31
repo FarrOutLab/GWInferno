@@ -28,16 +28,16 @@ class TestDefaultCosmology(unittest.TestCase):
 
     def test_luminosity_distance_to_redshift(self):
         threshold = 0.01
-        zs = cosmology.DL2z(self.dls_mpc * MPC_CGS)
+        zs = cosmology.DL2z(self.dLs_mpc * MPC_CGS)
         zs_astropy = z_at_value(astropy_cosmology.luminosity_distance, self.dLs_mpc * u.Mpc)
         frac_errs = jnp.abs(zs - zs_astropy) / zs
         self.assertTrue(jnp.all(frac_errs < threshold))
 
     def test_luminosity_distance_squared_prior_in_redshift(self):
         threshold = 0.02
-        dl_gpc = cosmology.z2dL(self.zs) / (MPC_CGS * 1e3)
+        dl_gpc = cosmology.z2DL(self.zs) / (MPC_CGS * 1e3)
         dl_gpc_astropy = astropy_cosmology.luminosity_distance(self.zs).to(u.Gpc).value
-        dl2_prior = dl_gpc**2 * (dl_gpc / (1 + self.zsz) + (1 + self.zs) * cosmology.dDcdz(self.zs) / (MPC_CGS * 1e3))
+        dl2_prior = dl_gpc**2 * (dl_gpc / (1 + self.zs) + (1 + self.zs) * cosmology.dDcdz(self.zs) / (MPC_CGS * 1e3))
         dl2_prior_astropy = dl_gpc_astropy**2 * (
             dl_gpc_astropy / (1 + self.zs) + (1 + self.zs) * astropy_cosmology.hubble_distance.to(u.Gpc).value / astropy_cosmology.efunc(self.zs)
         )
