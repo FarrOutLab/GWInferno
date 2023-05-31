@@ -54,7 +54,7 @@ def p_m1src_q_z_lal_pe_prior(posts, spin=False):
     p_z = dl_2_prior_on_z(zs)
     p_z /= jnp.trapz(p_z, zs)
     for event, post in posts.items():
-        posts[event]["prior"] = jnp.interp(post["redshift"], zs, p_z) * post["mass_1"] * (1 + post["redshift"]) ** 2
+        posts[event]["prior"] = jnp.interp(np.array(post["redshift"]), zs, p_z) * post["mass_1"] * (1 + post["redshift"]) ** 2
         if spin:
             posts[event]["prior"] /= 4
     return posts

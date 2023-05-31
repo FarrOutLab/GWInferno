@@ -72,7 +72,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         evs = [s.split("/")[-1].replace(".h5", "") for s in fns]
         run_map = {e: "C01:Mixed" for e in evs}
         pe_samples, names = load_posterior_samples(self.data_dir, run_map=run_map, spin=False)
-        pedata = jnp.array([[pe_samples[e][p] for e in names] for p in self.param_names])
+        pedata = jnp.array([[pe_samples[e][p].values for e in names] for p in self.param_names])
         Nobs = pedata.shape[1]
         Nsamples = pedata.shape[-1]
         pedict = {k: pedata[self.param_map[k]] for k in self.param_names}
