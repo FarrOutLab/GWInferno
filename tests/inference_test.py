@@ -6,7 +6,6 @@ import deepdish as dd
 import jax.numpy as jnp
 import numpyro
 import numpyro.distributions as dist
-import pytest
 from jax import random
 from numpyro.infer import MCMC
 from numpyro.infer import NUTS
@@ -66,7 +65,6 @@ class TestTruncatedModelInference(unittest.TestCase):
         pedict = {k: pedata[self.param_map[k]] for k in self.param_names}
         return pedict, Nobs, Nsamples
 
-    @pytest.mark.order(0)
     def test_load_pe_samples(self):
         fns = glob.glob(f"{self.data_dir}/S*.h5")
         evs = [s.split("/")[-1].replace(".h5", "") for s in fns]
@@ -79,7 +77,6 @@ class TestTruncatedModelInference(unittest.TestCase):
         for param in pedict.keys():
             self.assertEqual(pedict[param].shape, (Nobs, Nsamples))
 
-    @pytest.mark.order(1)
     def test_pe_shape(self):
         for param in self.pedict.keys():
             self.assertEqual(self.pedict[param].shape, (self.Nobs, self.Nsamples))
@@ -92,7 +89,6 @@ class TestTruncatedModelInference(unittest.TestCase):
         injdict = {k: injdata[self.param_map[k]] for k in self.param_names}
         return injdict, float(total_inj), obs_time
 
-    @pytest.mark.order(2)
     def test_injection_shape(self):
         self.assertGreater(self.total_inj, len(self.injdict[self.param_names[0]]))
 
@@ -144,7 +140,6 @@ class TestTruncatedModelInference(unittest.TestCase):
 
         return model
 
-    @pytest.mark.order(3)
     def test_truncated_prior_sample(self):
         RNG = random.PRNGKey(3)
         kernel = NUTS(self.truncated_numpyro_model, dense_mass=True)
@@ -155,7 +150,6 @@ class TestTruncatedModelInference(unittest.TestCase):
         self.assertEqual(samples["beta"].shape, (50,))
         self.assertEqual(samples["lamb"].shape, (50,))
 
-    @pytest.mark.order(4)
     def test_truncated_posterior_sample(self):
         RNG = random.PRNGKey(4)
         kernel = NUTS(self.truncated_numpyro_model, dense_mass=True)
