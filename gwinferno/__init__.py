@@ -1,3 +1,4 @@
+from . import cosmology
 from . import distributions
 from . import interpolation
 from . import numpyro_distributions
