@@ -34,8 +34,9 @@ class Cosmology(object):
     **NOTE**, we work in CGS units throughout, so Ho must be specified in s**-1 and distances are specified in cm
     """
 
-    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda):
+    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, distance_unit="mpc"):
         self._Ho = Ho
+        self.unit_mod = MPC_CGS if distance_unit == "mpc" else 1.0
         self._OmegaMatter = omega_matter
         self._OmegaRadiation = omega_radiation
         self._OmegaLambda = omega_lambda
@@ -146,11 +147,14 @@ class Cosmology(object):
             self.OmegaLambda + self.OmegaKappa * one_plus_z**2 + self.OmegaMatter * one_plus_z**3 + self.OmegaRadiation * one_plus_z**4
         ) ** 0.5
 
-    def dDcdz(self, z):
+    def dDcdz(self, z, mpc=False):
         """
         returns (c/Ho)/E(z)
         """
-        return self.c_over_Ho / self.z2E(z)
+        dDc = self.c_over_Ho / self.z2E(z)
+        if mpc:
+            dDc /= MPC_CGS
+        return dDc
 
     def dVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
         """
@@ -166,7 +170,7 @@ class Cosmology(object):
         """
         if Dc is None:
             Dc = self.z2Dc(z, dz=dz)
-        return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z))
+        return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z)) - 3.0 * jnp.log(self.unit_mod)
 
     def z2Dc(self, z, dz=DEFAULT_DZ):
         """
@@ -181,6 +185,7 @@ class Cosmology(object):
         """
         returns redshifts for each DL specified.
         """
+        DL *= self.unit_mod
         max_DL = jnp.max(DL)
         if max_DL > jnp.max(self.DL):  # need to extend the integration
             self.extend(max_DL=max_DL, dz=dz)
@@ -193,7 +198,7 @@ class Cosmology(object):
         max_z = jnp.max(z)
         if max_z > jnp.max(self.z):
             self.extend(max_z=max_z, dz=dz)
-        return jnp.interp(z, self.z, self.DL)
+        return jnp.interp(z, self.z, self.DL) / self.unit_mod
 
 
 # define default cosmology
