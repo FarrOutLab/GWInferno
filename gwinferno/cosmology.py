@@ -152,15 +152,9 @@ class Cosmology(object):
         """
         return self.c_over_Ho / self.z2E(z)
 
-    def dDLdz(self, z, dz=DEFAULT_DZ):
-        """
-        returns Dc + (1+z)*dDcdz
-        """
-        return self.z2Dc(z, dz=dz) + (1 + z) * self.dDcdz(z)
-
     def dVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
         """
-        returns dVc/dz
+        return dVc/dz
         """
         if Dc is None:
             Dc = self.z2Dc(z, dz=dz)
@@ -173,15 +167,6 @@ class Cosmology(object):
         if Dc is None:
             Dc = self.z2Dc(z, dz=dz)
         return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z))
-
-    def Dc2z(self, Dc, dz=DEFAULT_DZ):
-        """
-        return redshifts for each Dc specified.
-        """
-        max_Dc = jnp.max(Dc)
-        if max_Dc > jnp.max(self.Dc):
-            self.extend(max_Dc=max_Dc, dz=dz)
-        return jnp.interp(Dc, self.Dc, self.z)
 
     def z2Dc(self, z, dz=DEFAULT_DZ):
         """
@@ -209,22 +194,6 @@ class Cosmology(object):
         if max_z > jnp.max(self.z):
             self.extend(max_z=max_z, dz=dz)
         return jnp.interp(z, self.z, self.DL)
-
-    def Vc2z(self, Vc, dz=DEFAULT_DZ):
-        max_Vc = jnp.max(Vc)
-        if max_Vc > jnp.max(self.Vc):
-            self.extend(max_Vc=max_Vc, dz=dz)
-
-        return jnp.interp(Vc, self.Vc, self.z)
-
-    def z2Vc(self, z, dz=DEFAULT_DZ):
-        max_z = jnp.max(z)
-        if max_z > jnp.max(self.z):
-            self.extend(max_z=max_z, dz=dz)
-        return jnp.interp(z, self.z, self.Vc)
-
-    def z2dVcdz(self, z, dz=DEFAULT_DZ):
-        return self.dVcdz(z, dz=dz)
 
 
 # define default cosmology
