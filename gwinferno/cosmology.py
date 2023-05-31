@@ -185,11 +185,11 @@ class Cosmology(object):
         """
         returns redshifts for each DL specified.
         """
-        DL *= self.unit_mod
-        max_DL = jnp.max(DL)
+        DL_cgs = DL * self.unit_mod
+        max_DL = jnp.max(DL_cgs)
         if max_DL > jnp.max(self.DL):  # need to extend the integration
             self.extend(max_DL=max_DL, dz=dz)
-        return jnp.interp(DL, self.DL, self.z)
+        return jnp.interp(DL_cgs, self.DL, self.z)
 
     def z2DL(self, z, dz=DEFAULT_DZ):
         """

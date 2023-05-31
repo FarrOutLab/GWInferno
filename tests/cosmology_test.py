@@ -36,7 +36,7 @@ class TestDefaultCosmology(unittest.TestCase):
         threshold = 0.02
         dl_gpc = cosmology.z2DL(self.zs) / 1e3
         dl_gpc_astropy = astropy_cosmology.luminosity_distance(self.zs).to(u.Gpc).value
-        dl2_prior = dl_gpc**2 * (dl_gpc / (1 + self.zs) + (1 + self.zs) * cosmology.dDcdz(self.zs) / 1e3)
+        dl2_prior = dl_gpc**2 * (dl_gpc / (1 + self.zs) + (1 + self.zs) * cosmology.dDcdz(self.zs, mpc=True) / 1e3)
         dl2_prior_astropy = dl_gpc_astropy**2 * (
             dl_gpc_astropy / (1 + self.zs) + (1 + self.zs) * astropy_cosmology.hubble_distance.to(u.Gpc).value / astropy_cosmology.efunc(self.zs)
         )
