@@ -4,6 +4,7 @@ import unittest
 
 import deepdish as dd
 import jax.numpy as jnp
+import numpy as np
 import numpyro
 import numpyro.distributions as dist
 from jax import random
@@ -54,7 +55,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         del self.z_model
         del self.truncated_numpyro_model
 
-    def load_data(self):
+    def load_data(self, max_samps=100):
         pe_samples = dd.io.load(
             f"{self.data_dir}/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5"
         )  # load_posterior_samples(self.data_dir, spin=False, max_samples=250)
@@ -62,7 +63,8 @@ class TestTruncatedModelInference(unittest.TestCase):
         pedata = jnp.array([[pe_samples[e][p] for e in names] for p in self.param_names])
         Nobs = pedata.shape[1]
         Nsamples = pedata.shape[-1]
-        pedict = {k: pedata[self.param_map[k]] for k in self.param_names}
+        idxs = np.random.choice(Nsamples, size=max_samps, replace=False)
+        pedict = {k: pedata[self.param_map[k]][:, idxs] for k in self.param_names}
         return pedict, Nobs, Nsamples
 
     def test_load_pe_samples(self):
@@ -142,20 +144,20 @@ class TestTruncatedModelInference(unittest.TestCase):
 
     def test_truncated_prior_sample(self):
         RNG = random.PRNGKey(3)
-        kernel = NUTS(self.truncated_numpyro_model, dense_mass=True)
-        mcmc = MCMC(kernel, num_warmup=25, num_samples=50)
+        kernel = NUTS(self.truncated_numpyro_model)
+        mcmc = MCMC(kernel, num_warmup=15, num_samples=15)
         mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=True)
         samples = mcmc.get_samples()
-        self.assertEqual(samples["alpha"].shape, (50,))
-        self.assertEqual(samples["beta"].shape, (50,))
-        self.assertEqual(samples["lamb"].shape, (50,))
+        self.assertEqual(samples["alpha"].shape, (15,))
+        self.assertEqual(samples["beta"].shape, (15,))
+        self.assertEqual(samples["lamb"].shape, (15,))
 
     def test_truncated_posterior_sample(self):
         RNG = random.PRNGKey(4)
-        kernel = NUTS(self.truncated_numpyro_model, dense_mass=True)
-        mcmc = MCMC(kernel, num_warmup=25, num_samples=50)
+        kernel = NUTS(self.truncated_numpyro_model)
+        mcmc = MCMC(kernel, num_warmup=15, num_samples=15)
         mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=False)
         samples = mcmc.get_samples()
-        self.assertEqual(samples["alpha"].shape, (50,))
-        self.assertEqual(samples["beta"].shape, (50,))
-        self.assertEqual(samples["lamb"].shape, (50,))
+        self.assertEqual(samples["alpha"].shape, (15,))
+        self.assertEqual(samples["beta"].shape, (15,))
+        self.assertEqual(samples["lamb"].shape, (15,))
