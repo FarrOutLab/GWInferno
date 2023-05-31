@@ -8,6 +8,8 @@ from numpyro.distributions.util import is_prng_key
 from numpyro.distributions.util import promote_shapes
 from numpyro.distributions.util import validate_sample
 
+from .cosmology import MPC_CGS
+from .cosmology import PLANCK_2018_Cosmology as cosmo
 from .interpolation import NaturalCubicUnivariateSpline
 
 
@@ -141,54 +143,6 @@ class Powerlaw(Distribution):
         return jnp.where(jnp.equal(self.alpha, -1.0), icdf_neg1, icdf)
 
 
-class PowerlawRedshift(Distribution):
-    arg_constraints = {
-        "maximum": constraints.positive,
-        "lamb": constraints.real,
-    }
-    reparametrized_params = ["maximum", "lamb"]
-
-    def __init__(self, lamb, maximum, zgrid, dVcdz, validate_args=None):
-        self.maximum, self.lamb = promote_shapes(maximum, lamb)
-        self._support = constraints.interval(0, maximum)
-        batch_shape = lax.broadcast_shapes(
-            jnp.shape(maximum),
-            jnp.shape(lamb),
-        )
-        super(PowerlawRedshift, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
-        self.zs = zgrid
-        self.dVdc_ = dVcdz
-        self.pdfs = self.dVdc_ * (1 + self.zs) ** (lamb - 1)
-        self.norm = jnp.trapz(self.pdfs, self.zs)
-        self.pdfs /= self.norm
-        self.cdfgrid = cumtrapz(self.pdfs, self.zs)
-        self.cdfgrid = self.cdfgrid.at[-1].set(1)
-
-    @constraints.dependent_property(is_discrete=False, event_dim=0)
-    def support(self):
-        return self._support
-
-    def sample(self, key, sample_shape=()):
-        assert is_prng_key(key)
-        return self.icdf(random.uniform(key, shape=sample_shape + self.batch_shape))
-
-    @validate_sample
-    def log_prob(self, value, dVdc=None):
-        if dVdc is None:
-            dVdc = jnp.interp(value, self.zs, self.dVdc_)
-        return jnp.where(
-            jnp.less_equal(value, self.maximum),
-            jnp.log(dVdc) + (self.lamb - 1.0) * jnp.log(1.0 + value) - jnp.log(self.norm),
-            jnp.nan_to_num(-jnp.inf),
-        )
-
-    def cdf(self, value):
-        return jnp.interp(value, self.zs, self.cdfgrid)
-
-    def icdf(self, q):
-        return jnp.interp(q, self.cdfgrid, self.zs)
-
-
 class NumericallyNormalizedDistribition(Distribution):
     arg_constraints = {
         "maximum": constraints.real,
@@ -231,6 +185,22 @@ class NumericallyNormalizedDistribition(Distribution):
 
     def icdf(self, q):
         return jnp.interp(q, self.cdfgrid, self.grid)
+
+
+class PowerlawRedshift(NumericallyNormalizedDistribition):
+    arg_constraints = {"maximum": constraints.positive, "lamb": constraints.real}
+    reparametrized_params = ["maximum", "lamb"]
+
+    def __init__(self, lamb, maximum, Ngrid=1000, grid=None, validate_args=None):
+        self.lamb = lamb
+        super().__init__(minimum=1e-11, maximum=maximum, Ngrid=Ngrid, grid=grid, validate_args=validate_args)
+
+    @staticmethod
+    def logdVcdz_cubic_GPC(z):
+        return cosmo.logdVcdz(z) - 3.0 * jnp.log(MPC_CGS) - 2.54 + jnp.log(4.0 * jnp.pi)
+
+    def _log_prob_nonorm(self, value):
+        return (self.lamb - 1) * jnp.log(1 + value) + jnp.log(cosmo.logdVcdz(value))
 
 
 class LinearInterpolatedPowerlaw(NumericallyNormalizedDistribition):

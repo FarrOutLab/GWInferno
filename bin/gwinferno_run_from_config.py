@@ -6,7 +6,6 @@ import deepdish as dd
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
 import numpy as np
-from astropy.cosmology import Planck15
 from jax import random
 from numpyro.infer import MCMC
 
@@ -47,17 +46,13 @@ def run_inference(config_yml, PRNG_seed=0):
     model = construct_hierarchical_model(model_dict, prior_dict)
 
     pe_dict, inj_dict, Ninj, Nobs, Tobs = setup(data_conf, [k for k in model_dict.keys()])
-    z_max = max([jnp.max(pe_dict["redshift"]), jnp.max(inj_dict["redshift"])])
 
     kernel = NP_KERNEL_MAP[sampler_conf["kernel"]](model, **sampler_conf["kernel_kwargs"])
     mcmc = MCMC(kernel, **sampler_conf["mcmc_kwargs"])
 
-    z_grid = jnp.linspace(1e-9, z_max, 1500)
-    dVcdz_grid = jnp.array(Planck15.differential_comoving_volume(np.array(z_grid)).value * 4.0 * np.pi)
-
     rng_key = random.PRNGKey(PRNG_seed)
     rng_key, rng_key_ = random.split(rng_key)
-    mcmc.run(rng_key_, pe_dict, inj_dict, Ninj=Ninj, Nobs=Nobs, Tobs=Tobs, z_grid=z_grid, dVcdz_grid=dVcdz_grid)
+    mcmc.run(rng_key_, pe_dict, inj_dict, Ninj=Ninj, Nobs=Nobs, Tobs=Tobs)
     mcmc.print_summary()
     return mcmc, sampling_params, label
 

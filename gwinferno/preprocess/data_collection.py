@@ -5,11 +5,10 @@ import h5py
 import jax.numpy as jnp
 import numpy as np
 import pandas as pd
-from astropy import units
-from astropy.cosmology import Planck15
-from scipy.interpolate import interp1d
 from tqdm import trange
 
+from ..cosmology import MPC_CGS
+from ..cosmology import PLANCK_2018_Cosmology as cosmo
 from .conversions import chieff_from_q_component_spins
 from .conversions import chip_from_q_component_spins
 from .priors import chi_effective_prior_from_isotropic_spins
@@ -42,8 +41,8 @@ EVENTS_WITH_NS = [
 
 
 def dl_2_prior_on_z(z):
-    dl = Planck15.luminosity_distance(z).to(units.Gpc).value
-    return dl**2 * (dl / (1 + z) + (1 + z) * Planck15.hubble_distance.to(units.Gpc).value / Planck15.efunc(z))
+    dl = cosmo.z2DL(z) / (MPC_CGS * 1e3)
+    return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z) / (MPC_CGS * 1e3))
 
 
 def p_m1src_q_z_lal_pe_prior(posts, spin=False):
@@ -51,12 +50,11 @@ def p_m1src_q_z_lal_pe_prior(posts, spin=False):
     for ev in posts.keys():
         if max(posts[ev]["redshift"]) > z_max:
             z_max = max(posts[ev]["redshift"])
-    zs = np.linspace(0, z_max * 1.01, 1000)
+    zs = jnp.linspace(0, z_max * 1.01, 1000)
     p_z = dl_2_prior_on_z(zs)
-    p_z /= np.trapz(p_z, zs)
-    interpolated_p_z = interp1d(zs, p_z)
+    p_z /= jnp.trapz(p_z, zs)
     for event, post in posts.items():
-        posts[event]["prior"] = interpolated_p_z(post["redshift"]) * post["mass_1"] * (1 + post["redshift"]) ** 2
+        posts[event]["prior"] = jnp.interp(post["redshift"], zs, p_z) * post["mass_1"] * (1 + post["redshift"]) ** 2
         if spin:
             posts[event]["prior"] /= 4
     return posts
@@ -75,9 +73,9 @@ def _standardize_new_post(df, param_mapping):
         return pd.DataFrame({key: df[new_key] for key, new_key in param_map.items()})
 
 
-def _standardize_GWTC1_post(df, interp):
+def _standardize_GWTC1_post(df):
     post = pd.DataFrame()
-    post["redshift"] = interp(df["luminosity_distance_Mpc"])
+    post["redshift"] = cosmo.DL2z(df["luminosity_distance_Mpc"] * MPC_CGS)
     for ii in [1, 2]:
         post[f"mass_{ii}"] = df[f"m{ii}_detector_frame_Msun"] / (1 + post["redshift"])
         post[f"a_{ii}"] = df[f"spin{ii}"]
@@ -86,7 +84,7 @@ def _standardize_GWTC1_post(df, interp):
     return post
 
 
-def _standardize_posterior_fmt(df, interp, k):
+def _standardize_posterior_fmt(df, k):
     param_mapping = dict(
         mass_1="mass_1_source",
         mass_2="mass_2_source",
@@ -100,7 +98,7 @@ def _standardize_posterior_fmt(df, interp, k):
     if isinstance(df, pd.DataFrame) and k not in GWTC1:
         post = _standardize_new_post(df, param_mapping)
     elif k in GWTC1:  # GWTC1 posterior fmt has detector frame -- we need to convert to source
-        post = _standardize_GWTC1_post(df, interp)
+        post = _standardize_GWTC1_post(df)
     else:
         raise ValueError(f"Event {k} not able to converted to correct parameters...")
     return post
@@ -136,11 +134,8 @@ def preprocess_data(data_dir, run_map, ignore=[], spin=False, max_samples=10000,
             with h5py.File(f"{data_dir}/{event}.h5", "r") as ff:
                 post = np.array(ff[f"{wf}_posterior"])
                 posteriors[event] = post
-    z_grid = np.expm1(np.linspace(np.log(1), np.log(11), 1000))
-    dls = Planck15.luminosity_distance(z_grid).to(units.Mpc).value
-    interp = interp1d(dls, z_grid)
     posteriors = p_m1src_q_z_lal_pe_prior(
-        {k: _standardize_posterior_fmt(v, interp, k) for k, v in posteriors.items()},
+        {k: _standardize_posterior_fmt(v, k) for k, v in posteriors.items()},
         spin=spin,
     )
     print(f"Loaded {len(posteriors.keys())} Single Event Posteriors")
@@ -151,11 +146,8 @@ def preprocess_data(data_dir, run_map, ignore=[], spin=False, max_samples=10000,
 
 
 def apply_priors(posteriors, spin=False, downsample=True, max_samples=10000):
-    z_grid = np.expm1(np.linspace(np.log(1), np.log(11), 1000))
-    dls = Planck15.luminosity_distance(z_grid).to(units.Mpc).value
-    interp = interp1d(dls, z_grid)
     posteriors = p_m1src_q_z_lal_pe_prior(
-        {k: _standardize_posterior_fmt(v, interp, k) for k, v in posteriors.items()},
+        {k: _standardize_posterior_fmt(v, k) for k, v in posteriors.items()},
         spin=spin,
     )
     print(f"Loaded {len(posteriors.keys())} Single Event Posteriors")
