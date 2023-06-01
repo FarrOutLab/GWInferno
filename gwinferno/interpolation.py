@@ -1,3 +1,7 @@
+"""
+a module for interpolation calculations using jax
+"""
+
 import jax.numpy as jnp
 import numpy as np
 from jax.tree_util import register_pytree_node_class
