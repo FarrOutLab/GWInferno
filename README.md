@@ -1,4 +1,4 @@
-[![Python package](https://github.com/FarrOutLab/GWInferno/actions/workflows/python-package.yml/badge.svg)](https://github.com/FarrOutLab/GWInferno/actions/workflows/python-package.yml)
+[![Python package](https://github.com/FarrOutLab/GWInferno/actions/workflows/gwinferno-testing.yml/badge.svg)](https://github.com/FarrOutLab/GWInferno/actions/workflows/gwinferno-testing.yml)
 
 # GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
 
