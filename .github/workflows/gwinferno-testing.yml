@@ -46,7 +46,7 @@ jobs:
         source tests/download_test_data.sh
         pytest --cov gwinferno -ra --color yes --cov-report=xml --junitxml=pytest.xml
     - name: Publish coverage to Codecov
-      uses: codecov/codecov-action@v1.2.1
+      uses: codecov/codecov-action@v2
       with:
         files: coverage.xml
         flags: python${{ matrix.python-version }}
