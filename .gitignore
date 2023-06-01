@@ -28,3 +28,5 @@ new_work
 *env.yml
 docs/api
 docs/_build
+docs/api/*
+docs/_build/*
