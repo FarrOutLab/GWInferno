@@ -30,7 +30,8 @@ jobs:
       run: |
         conda install flake8 pytest-cov codespell
         conda install pip setuptools
-        conda install -c conda-forge numpyro
+        pip install --upgrade pip
+        pip install numpyro
         pip install -r pip_requirements.txt
         pre-commit install
     - name: Install GWInferno
