@@ -26,3 +26,5 @@ pytest.xml
 .vscode
 new_work
 *env.yml
+docs/api
+docs/_build
