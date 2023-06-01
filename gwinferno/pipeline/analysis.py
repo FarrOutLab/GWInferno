@@ -1,3 +1,7 @@
+"""
+a module that stores the meat of the calculations for hierarhical population inference
+"""
+
 import jax.numpy as jnp
 import numpy as np
 import numpyro

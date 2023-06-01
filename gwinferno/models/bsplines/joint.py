@@ -1,3 +1,7 @@
+"""
+a module that stores 2D joint population models constructed from bsplines
+"""
+
 import jax.numpy as jnp
 
 from ...interpolation import RectBivariateBasisSpline

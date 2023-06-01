@@ -1,3 +1,7 @@
+"""
+a module with utilities for calculating population posterior distributions (i.e. Rates on Grids)
+"""
+
 import jax.numpy as jnp
 import numpy as np
 from jax import jit

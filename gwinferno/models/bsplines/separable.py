@@ -1,3 +1,7 @@
+"""
+a module that stores 2D seperable (i.e. independent) population models constructed from bsplines
+"""
+
 import jax.numpy as jnp
 
 from ...distributions import powerlaw_pdf
