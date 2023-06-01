@@ -12,7 +12,6 @@ from numpyro.distributions.util import is_prng_key
 from numpyro.distributions.util import promote_shapes
 from numpyro.distributions.util import validate_sample
 
-from .cosmology import MPC_CGS
 from .cosmology import PLANCK_2018_Cosmology as cosmo
 from .interpolation import NaturalCubicUnivariateSpline
 
@@ -198,10 +197,6 @@ class PowerlawRedshift(NumericallyNormalizedDistribition):
     def __init__(self, lamb, maximum, Ngrid=1000, grid=None, validate_args=None):
         self.lamb = lamb
         super().__init__(minimum=1e-11, maximum=maximum, Ngrid=Ngrid, grid=grid, validate_args=validate_args)
-
-    @staticmethod
-    def logdVcdz_cubic_GPC(z):
-        return cosmo.logdVcdz(z) - 3.0 * jnp.log(MPC_CGS) - 2.54 + jnp.log(4.0 * jnp.pi)
 
     def _log_prob_nonorm(self, value):
         return (self.lamb - 1) * jnp.log(1 + value) + jnp.log(cosmo.logdVcdz(value))
