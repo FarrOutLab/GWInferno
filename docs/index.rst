@@ -21,21 +21,23 @@ GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
 ---------------------------------------------------------------------
 API:
 ---------------------------------------------------------------------
-.. autosummary::
-   :toctree: api
-   :template: custom-module-template.rst
-   :caption: API:
-   :recursive:
+.. automodule:: gwinferno
+    :members:
 
-    gwinferno
-    gwinferno.models
-    gwinferno.parameter_estimation
-    gwinferno.pipeline
-    gwinferno.preprocess
-    gwinferno.postprocess
-    gwinferno.cosmology
-    gwinferno.interpolation
-    gwinferno.distributions
+.. autosummary::
+    :toctree: api
+    :template: custom-module-template.rst
+    :caption: API:
+    :recursive:
+
+    cosmology
+    distributions
+    interpolation
+    models
+    parameter_estimation
+    pipeline
+    postprocess
+    preprocess
 
 
 Citation

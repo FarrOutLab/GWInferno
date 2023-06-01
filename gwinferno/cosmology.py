@@ -1,7 +1,9 @@
 """
-a module that houses basic cosmology logic -- adapted from code written by Reed Essick included in the gw-distributions package at:
-https://git.ligo.org/reed.essick/gw-distributions/-/blob/master/gwdistributions/utils/cosmology.py
+a module for basic cosmology calculations using jax
 """
+
+# adapted from code written by Reed Essick included in the gw-distributions package at:
+# https://git.ligo.org/reed.essick/gw-distributions/-/blob/master/gwdistributions/utils/cosmology.py
 
 import jax.numpy as jnp
 import numpy as np

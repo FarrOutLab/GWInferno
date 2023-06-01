@@ -1,3 +1,7 @@
+"""
+a module defining additional numpyro distributions
+"""
+
 import jax.numpy as jnp
 from jax import lax
 from jax import random

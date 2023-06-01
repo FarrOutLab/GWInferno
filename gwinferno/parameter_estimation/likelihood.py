@@ -1,3 +1,7 @@
+"""
+a module to calculate GW likleihoods (i.e Whittle) in jax
+"""
+
 import jax.numpy as jnp
 import numpyro
 
