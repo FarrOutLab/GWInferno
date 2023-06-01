@@ -1,3 +1,7 @@
+"""
+a module that stores functions for calculating smoothing priors (i.e. P-Splines)
+"""
+
 import jax.numpy as jnp
 import numpyro
 from numpyro import distributions as dist

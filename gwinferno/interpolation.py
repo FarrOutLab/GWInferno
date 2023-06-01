@@ -1,3 +1,7 @@
+"""
+a module for interpolation calculations using jax
+"""
+
 import jax.numpy as jnp
 import numpy as np
 

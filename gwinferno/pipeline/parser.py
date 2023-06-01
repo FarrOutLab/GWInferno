@@ -1,3 +1,7 @@
+"""
+a module that stores tools for parsing CLI arguments and config files for analysis pipelines
+"""
+
 from argparse import ArgumentParser
 
 

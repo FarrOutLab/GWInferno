@@ -1,3 +1,7 @@
+"""
+a module that stores useful plotting functions
+"""
+
 import matplotlib.pyplot as plt
 import numpy as np
 

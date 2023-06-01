@@ -6,8 +6,7 @@
 
 ## Installation
 
-Make sure to install the cuda compatible versions of jax and numpyro before installation if you want to use GPU computing. (see `bin/create_py39_gpu_env.sh`)
-
+Make sure to install the cuda compatible versions of jax and numpyro before installation if you want to use GPU computing
 ```bash
 git clone https://github.com/FarrOutLab/gwinferno.git
 cd gwinferno
@@ -31,4 +30,5 @@ We make use of and build upon other open source software projects, please cite t
 
 - Bruce Edelman -- bedelman@uoregon.edu
 - Jaxen Godfrey -- jaxeng@uoregon.edu
+- Gino Carrillo -- gcarrilo3@uoregon.edu
 - Ben Farr -- bfarr@uoregon.edu

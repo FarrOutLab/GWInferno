@@ -1,3 +1,7 @@
+"""
+a module that stores spline perturbation related population models
+"""
+
 import jax.numpy as jnp
 import numpy as np
 
