@@ -1,0 +1,59 @@
+# Run Label
+label: Truncated_PowerlawRedshift_MDC_smoothed_power_law_0
+
+# Population Parameters, Models, HyperParameters, and Priors
+mass_1:
+  model: gwinferno.numpyro_distributions.Powerlaw
+  hyper_params:
+    alpha:
+      prior: numpyro.distributions.Normal
+      prior_params:
+        loc: 0.0
+        scale: 3.0
+    minimum:
+      prior: numpyro.distributions.Uniform
+      prior_params:
+        low: 2.0
+        high: 10.0
+    maximum:
+      prior: numpyro.distributions.Uniform
+      prior_params:
+        low: 50.0
+        high: 100.0
+mass_ratio:
+  model: gwinferno.numpyro_distributions.Powerlaw
+  hyper_params:
+    alpha:
+      prior: numpyro.distributions.Normal
+      prior_params:
+        loc: 0.0
+        scale: 3.0
+    minimum:
+      value: 0.02
+    maximum:
+      value: 1.0
+redshift:
+  model: gwinferno.numpyro_distributions.PowerlawRedshift
+  hyper_params:
+    lamb:
+      prior: numpyro.distributions.Normal
+      prior_params:
+        loc: 0.0
+        scale: 3.0
+    maximum:
+      value: 2.3
+
+# Sampler Configuration Args
+sampler_args:
+  kernel: NUTS
+  kernel_kwargs:
+    dense_mass: true
+  mcmc_kwargs:
+    num_warmup: 500
+    num_samples: 1500
+    num_chains: 1
+
+# Data Configuration Args
+data_args:
+  catalog_summary_json: /home/bruce.edelman/projects/O4_prep/o4_gwinferno_mdcs/data/smoothed_powerlaw/realization_0/catalog.json
+  seminanalytic_injs: true
