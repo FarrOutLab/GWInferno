@@ -4,6 +4,7 @@ https://git.ligo.org/reed.essick/gw-distributions/-/blob/master/gwdistributions/
 """
 
 import jax.numpy as jnp
+import numpy as np
 
 # define units in SI
 C_SI = 299792458.0
@@ -35,108 +36,48 @@ class Cosmology(object):
     """
 
     def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, distance_unit="mpc"):
-        self._Ho = Ho
+        self.Ho = Ho
+        self.c_over_Ho = C_CGS / self.Ho
         self.unit_mod = MPC_CGS if distance_unit == "mpc" else 1.0
-        self._OmegaMatter = omega_matter
-        self._OmegaRadiation = omega_radiation
-        self._OmegaLambda = omega_lambda
+        self.OmegaMatter = omega_matter
+        self.OmegaRadiation = omega_radiation
+        self.OmegaLambda = omega_lambda
+        self.OmegaKappa = 1.0 - (self.OmegaMatter + self.OmegaRadiation + self.OmegaLambda)
         assert self.OmegaKappa == 0, "we only implement flat cosmologies! OmegaKappa must be 0"
-        self._distances = {
-            "z": jnp.array([0]),
-            "DL": jnp.array([0]),
-            "Dc": jnp.array([0]),
-            "Vc": jnp.array([0]),
-        }
-
-    @property
-    def Ho(self):
-        return self._Ho
-
-    @property
-    def c_over_Ho(self):
-        return C_CGS / self.Ho
-
-    @property
-    def OmegaMatter(self):
-        return self._OmegaMatter
-
-    @property
-    def OmegaRadiation(self):
-        return self._OmegaRadiation
-
-    @property
-    def OmegaLambda(self):
-        return self._OmegaLambda
-
-    @property
-    def OmegaKappa(self):
-        return 1.0 - (self.OmegaMatter + self.OmegaRadiation + self.OmegaLambda)
-
-    @property
-    def distances(self):
-        return self._distances
-
-    @property
-    def z(self):
-        return self.distances["z"]
+        self.z = np.array([0.0])
+        self.Dc = np.array([0.0])
+        self.Vc = np.array([0.0])
 
     @property
     def DL(self):
-        return self.distances["DL"]
-
-    @property
-    def Dc(self):
-        return self.distances["Dc"]
-
-    @property
-    def Vc(self):
-        return self.distances["Vc"]
+        return self.Dc * (1 + self.z)
 
     def extend(self, max_DL=-jnp.inf, max_Dc=-jnp.inf, max_z=-jnp.inf, max_Vc=-jnp.inf, dz=DEFAULT_DZ):
         """
         integrate to solve for distance measures.
         """
         # note, this could be slow due to trapazoidal approximation with small step size
-
         # extract current state
-        _ = self.distances
+        z = self.z[-1]
+        Dc = self.Dc[-1]
+        Vc = self.Vc[-1]
+        DL = Dc * (1 + z)
 
-        z_list = list(self.z)
-        Dc_list = list(self.Dc)
-        Vc_list = list(self.Vc)
-
-        current_z = z_list[-1]
-        current_Dc = Dc_list[-1]
-        current_DL = current_Dc * (1 + current_z)
-        current_Vc = Vc_list[-1]
-
-        # initialize integration
-        current_dDcdz = self.dDcdz(current_z)
-        current_dVcdz = self.dVcdz(current_z, current_Dc)
-
-        # iterate until we are far enough
-        while (current_Dc < max_Dc) or (current_DL < max_DL) or (current_z < max_z) or (current_Vc < max_Vc):
-            current_z += dz  # increment
-
-            dDcdz = self.dDcdz(current_z)  # evaluated at the next step
-            current_Dc += 0.5 * (current_dDcdz + dDcdz) * dz  # trapazoidal approximation
-            current_dDcdz = dDcdz  # update
-
-            dVcdz = self.dVcdz(current_z, current_Dc)  # evaluated at the next step
-            current_Vc += 0.5 * (current_dVcdz + dVcdz) * dz  # trapazoidal approximation
-            current_dVcdz = dVcdz  # update
-
-            current_DL = (1 + current_z) * current_Dc  # update
-
-            Dc_list.append(current_Dc)  # append
-            Vc_list.append(current_Vc)
-            z_list.append(current_z)
-
-        # record
-        self._distances["z"] = jnp.array(z_list, dtype=float)
-        self._distances["Dc"] = jnp.array(Dc_list, dtype=float)
-        self._distances["Vc"] = jnp.array(Vc_list, dtype=float)
-        self._distances["DL"] = (1.0 + self.z) * self.Dc  # only holds in a flat universe
+        while jnp.less(Dc, max_Dc) | jnp.less(DL, max_DL) | jnp.less(z, max_z) | jnp.less(Vc, max_Vc):
+            dDcdz = self.dDcdz(z)
+            dVcdz = self.dVcdz(z, Dc)
+            new_z = z + dz
+            new_dDcdz = self.dDcdz(new_z)
+            new_Dc = Dc + 0.5 * (dDcdz + new_dDcdz) * dz
+            new_dVcdz = self.dVcdz(new_z, new_Dc)
+            new_Vc = Vc + 0.5 * (dVcdz + new_dVcdz) * dz
+            new_DL = (1 + new_z) * new_Dc
+            # update state
+            z, DL, Dc, Vc = new_z, new_DL, new_Dc, new_Vc
+            # append to arrays
+            self.z = np.append(self.z, z)
+            self.Dc = np.append(self.Dc, Dc)
+            self.Vc = np.append(self.Vc, Vc)
 
     def z2E(self, z):
         """
@@ -153,7 +94,7 @@ class Cosmology(object):
         """
         dDc = self.c_over_Ho / self.z2E(z)
         if mpc:
-            dDc /= MPC_CGS
+            return dDc / MPC_CGS
         return dDc
 
     def dVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
