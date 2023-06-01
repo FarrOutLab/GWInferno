@@ -22,9 +22,10 @@ jobs:
     - name: Setup conda
       uses: s-weigand/setup-conda@v1
       with:
+        activate-conda: true
+        update-conda: true
         python-version: ${{ matrix.python-version }}
         conda-channels: conda-forge
-        activate-conda: true
     - name: Install dependencies
       run: |
         conda install flake8 pytest-cov codespell
