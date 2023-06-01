@@ -1,3 +1,7 @@
+"""
+a module that stores functions for collecting input data (GW Posteriors and Injections)
+"""
+
 import json
 
 import deepdish as dd

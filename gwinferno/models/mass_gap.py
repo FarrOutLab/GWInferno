@@ -1,3 +1,7 @@
+"""
+a module that stores mass-gap related population models
+"""
+
 import jax.numpy as jnp
 
 from ..distributions import powerlaw_pdf
