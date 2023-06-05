@@ -43,7 +43,6 @@ class ConfigReader(object):
         self.priors = {}
         self.sampling_params = []
         self.label = None
-        self.outdir = None
         self.data_args = None
         self.sampler_args = None
 
@@ -51,7 +50,6 @@ class ConfigReader(object):
         with open(yml_file, "r") as f:
             yml = yaml.safe_load(f)
         self.label = yml.pop("label")
-        self.outdir = yml.pop("outdir")
         self.data_args = yml.pop("data_args")
         self.sampler_args = yml.pop("sampler_args")
         self.construct_model_and_prior_dicts(yml)

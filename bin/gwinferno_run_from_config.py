@@ -42,7 +42,7 @@ def run_inference(config_yml, PRNG_seed=0):
     config_reader.parse(config_yml)
     model_dict, prior_dict = config_reader.models, config_reader.priors
     data_conf, sampler_conf = config_reader.data_args, config_reader.sampler_args
-    sampling_params, label, outdir = config_reader.sampling_params, config_reader.label, config_reader.outdir
+    sampling_params, label = config_reader.sampling_params, config_reader.label
     model = construct_hierarchical_model(model_dict, prior_dict)
 
     pe_dict, inj_dict, Ninj, Nobs, Tobs = setup(data_conf, [k for k in model_dict.keys()])
@@ -54,7 +54,7 @@ def run_inference(config_yml, PRNG_seed=0):
     rng_key, rng_key_ = random.split(rng_key)
     mcmc.run(rng_key_, pe_dict, inj_dict, Ninj=Ninj, Nobs=Nobs, Tobs=Tobs)
     mcmc.print_summary()
-    return mcmc, sampling_params, label, outdir
+    return mcmc, sampling_params, label
 
 
 def plot_trace_dump_samples(mcmc, var_names, label):
@@ -67,8 +67,8 @@ def plot_trace_dump_samples(mcmc, var_names, label):
 
 
 if __name__ == "__main__":
-    mcmc, var_names, lab, outdir = run_inference(sys.argv[1])
-    label = f"{outdir}/{lab}"
+    mcmc, var_names, label = run_inference(sys.argv[1])
+
     var_names.append("rate")
     var_names.append("log_nEffs")
     var_names.append("log_nEff_inj")

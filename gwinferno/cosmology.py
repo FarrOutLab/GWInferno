@@ -7,7 +7,6 @@ a module for basic cosmology calculations using jax
 
 import jax.numpy as jnp
 import numpy as np
-from jax import lax
 
 # define units in SI
 C_SI = 299792458.0
@@ -38,7 +37,7 @@ class Cosmology(object):
     **NOTE**, we work in CGS units throughout, so Ho must be specified in s**-1 and distances are specified in cm
     """
 
-    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, distance_unit="mpc", initial_z_integ=2.3):
+    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, distance_unit="mpc"):
         self.Ho = Ho
         self.c_over_Ho = C_CGS / self.Ho
         self.unit_mod = MPC_CGS if distance_unit == "mpc" else 1.0
@@ -50,7 +49,6 @@ class Cosmology(object):
         self.z = np.array([0.0])
         self.Dc = np.array([0.0])
         self.Vc = np.array([0.0])
-        self.extend(max_z=initial_z_integ, dz=DEFAULT_DZ)
 
     @property
     def DL(self):
@@ -121,9 +119,9 @@ class Cosmology(object):
         """
         return Dc for each z specified
         """
-        #max_z = jnp.max(z)
-        #if jnp.greater(max_z, jnp.max(self.z)):
-        #    self.extend(max_z=max_z,dz=dz)
+        max_z = jnp.max(z)
+        if max_z > jnp.max(self.z):
+            self.extend(max_z=max_z, dz=dz)
         return jnp.interp(z, self.z, self.Dc)
 
     def DL2z(self, DL, dz=DEFAULT_DZ):
