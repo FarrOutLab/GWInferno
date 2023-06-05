@@ -276,18 +276,17 @@ class BSplineDistribution(Distribution):
 
 class PSplineCoeficientPrior(Distribution):
     arg_constraints = {
-        "N": constraints.integer_greater_than(2),
-        "diff_order": constraints.integer_interval(1, 3),
         "inv_var": constraints.positive
     }
-    reparametrized_params = ["N", "diff_order", "inv_var"]
+    reparametrized_params = ["inv_var"]
 
     def __init__(self, N, inv_var, diff_order=2, validate_args=None):
-        self.N, self.inv_var, self.diff_order = promote_shapes(N, inv_var, diff_order)
+        self.inv_var,  = promote_shapes(inv_var)
         self._support = constraints.real_vector
-        batch_shape = lax.broadcast_shapes(jnp.shape(N), jnp.shape(inv_var), jnp.shape(diff_order))
-        super(PSplineCoeficientPrior, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
-        self.event_shape = (N,)
+        batch_shape = lax.broadcast_shapes(jnp.shape(inv_var))
+        super(PSplineCoeficientPrior, self).__init__(batch_shape=batch_shape, validate_args=validate_args, event_shape=(N,))
+        self.diff_order = diff_order
+        self.N = N
 
     @constraints.dependent_property(is_discrete=False, event_dim=0)
     def support(self):
@@ -300,4 +299,5 @@ class PSplineCoeficientPrior(Distribution):
 
     @validate_sample
     def log_prob(self, value):
+        assert value.shape == (self.N,)
         return apply_difference_prior(value, self.inv_var, self.diff_order)
