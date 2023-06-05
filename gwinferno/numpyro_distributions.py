@@ -14,7 +14,7 @@ from numpyro.distributions.util import validate_sample
 
 from .cosmology import PLANCK_2018_Cosmology as cosmo
 from .interpolation import NaturalCubicUnivariateSpline
-
+from .models.bsplines.smoothing import apply_difference_prior
 
 def cumtrapz(y, x):
     difs = jnp.diff(x)
@@ -272,3 +272,32 @@ class BSplineDistribution(Distribution):
 
     def icdf(self, q):
         return jnp.interp(q, self.cdfgrid, self.grid)
+
+
+class PSplineCoeficientPrior(Distribution):
+    arg_constraints = {
+        "N": constraints.integer_greater_than(2),
+        "diff_order": constraints.integer_interval(1, 3),
+        "inv_var": constraints.positive
+    }
+    reparametrized_params = ["N", "diff_order", "inv_var"]
+
+    def __init__(self, N, inv_var, diff_order=2, validate_args=None):
+        self.N, self.inv_var, self.diff_order = promote_shapes(N, inv_var, diff_order)
+        self._support = constraints.real_vector
+        batch_shape = lax.broadcast_shapes(jnp.shape(N), jnp.shape(inv_var), jnp.shape(diff_order))
+        super(PSplineCoeficientPrior, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
+        self.event_shape = (N,)
+
+    @constraints.dependent_property(is_discrete=False, event_dim=0)
+    def support(self):
+        return self._support
+    
+
+    def sample(self, key, sample_shape=()):
+        assert is_prng_key(key)
+        return jnp.ones(shape=sample_shape + self.batch_shape)
+
+    @validate_sample
+    def log_prob(self, value):
+        return apply_difference_prior(value, self.inv_var, self.diff_order)
