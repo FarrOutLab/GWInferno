@@ -118,7 +118,7 @@ class Cosmology(object):
             Dc = self.z2Dc(z, dz=dz)
         return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z)) - 3.0 * jnp.log(self.unit_mod)
 
-    def z2Dc(self, z):
+    def z2Dc(self, z, dz=DEFAULT_DZ):
         """
         return Dc for each z specified
         """
