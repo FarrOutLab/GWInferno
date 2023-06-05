@@ -16,6 +16,7 @@ from .cosmology import PLANCK_2018_Cosmology as cosmo
 from .interpolation import NaturalCubicUnivariateSpline
 from .models.bsplines.smoothing import apply_difference_prior
 
+
 def cumtrapz(y, x):
     difs = jnp.diff(x)
     idxs = jnp.array([i for i in range(1, len(y))])
@@ -275,13 +276,11 @@ class BSplineDistribution(Distribution):
 
 
 class PSplineCoeficientPrior(Distribution):
-    arg_constraints = {
-        "inv_var": constraints.positive
-    }
+    arg_constraints = {"inv_var": constraints.positive}
     reparametrized_params = ["inv_var"]
 
     def __init__(self, N, inv_var, diff_order=2, validate_args=None):
-        self.inv_var,  = promote_shapes(inv_var)
+        (self.inv_var,) = promote_shapes(inv_var)
         self._support = constraints.real_vector
         batch_shape = lax.broadcast_shapes(jnp.shape(inv_var))
         super(PSplineCoeficientPrior, self).__init__(batch_shape=batch_shape, validate_args=validate_args, event_shape=(N,))
@@ -291,7 +290,6 @@ class PSplineCoeficientPrior(Distribution):
     @constraints.dependent_property(is_discrete=False, event_dim=0)
     def support(self):
         return self._support
-    
 
     def sample(self, key, sample_shape=()):
         assert is_prng_key(key)

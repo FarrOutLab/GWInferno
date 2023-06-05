@@ -7,7 +7,6 @@ a module for basic cosmology calculations using jax
 
 import jax.numpy as jnp
 import numpy as np
-from jax import lax
 
 # define units in SI
 C_SI = 299792458.0
@@ -38,7 +37,7 @@ class Cosmology(object):
     **NOTE**, we work in CGS units throughout, so Ho must be specified in s**-1 and distances are specified in cm
     """
 
-    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, distance_unit="mpc", initial_z_integ=2.3):
+    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, distance_unit="mpc"):
         self.Ho = Ho
         self.c_over_Ho = C_CGS / self.Ho
         self.unit_mod = MPC_CGS if distance_unit == "mpc" else 1.0
@@ -50,7 +49,9 @@ class Cosmology(object):
         self.z = np.array([0.0])
         self.Dc = np.array([0.0])
         self.Vc = np.array([0.0])
-        self.extend(max_z=initial_z_integ, dz=DEFAULT_DZ)
+
+    def integrate_to_maxz(self, max_z, dz=DEFAULT_DZ):
+        self.extend(max_z=max_z, dz=dz)
 
     @property
     def DL(self):
@@ -117,13 +118,10 @@ class Cosmology(object):
             Dc = self.z2Dc(z, dz=dz)
         return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z)) - 3.0 * jnp.log(self.unit_mod)
 
-    def z2Dc(self, z, dz=DEFAULT_DZ):
+    def z2Dc(self, z):
         """
         return Dc for each z specified
         """
-        #max_z = jnp.max(z)
-        #if jnp.greater(max_z, jnp.max(self.z)):
-        #    self.extend(max_z=max_z,dz=dz)
         return jnp.interp(z, self.z, self.Dc)
 
     def DL2z(self, DL, dz=DEFAULT_DZ):
@@ -154,3 +152,6 @@ PLANCK_2018_Cosmology = Cosmology(
     PLANCK_2018_OmegaRadiation,
     PLANCK_2018_OmegaLambda,
 )
+
+DEFAULT_MAXZ = 2.3
+PLANCK_2018_Cosmology.integrate_to_maxz(max_z=DEFAULT_MAXZ)
