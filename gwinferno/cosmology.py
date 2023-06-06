@@ -97,18 +97,18 @@ class Cosmology(object):
         dDc = self.c_over_Ho / self.z2E(z)
         return jnp.where(mpc, dDc / MPC_CGS, dDc)
 
-    def dVcdz(self, z, Dc=None):
+    def dVcdz(self, z, Dc=0):
         """
         return dVc/dz
         """
-        Dc = jnp.where(Dc is None, self.z2Dc(z), Dc)
+        Dc = jnp.where(Dc, Dc, self.z2Dc(z))
         return 4 * jnp.pi * Dc**2 * self.dDcdz(z)
 
-    def logdVcdz(self, z, Dc=None):
+    def logdVcdz(self, z, Dc=0):
         """
         return ln(dVc/dz), useful when constructing probability distributions without overflow errors
         """
-        Dc = jnp.where(Dc is None, self.z2Dc(z), Dc)
+        Dc = jnp.where(Dc, Dc, self.z2Dc(z))
         return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z)) - 3.0 * jnp.log(self.unit_mod)
 
     def z2Dc(self, z):
