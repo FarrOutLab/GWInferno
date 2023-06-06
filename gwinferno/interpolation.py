@@ -4,6 +4,66 @@ a module for interpolation calculations using jax
 
 import jax.numpy as jnp
 import numpy as np
+from jax.tree_util import register_pytree_node_class
+
+
+@register_pytree_node_class
+class NaturalCubicUnivariateSpline(object):
+    """
+    Minimal port of Scipy's UnivariateSpline to JAX -- restricted to only cubic splines with the "natural"
+    boundary conditions (based from implementation in jax_cosmo.scipy.interpolate)
+    """
+
+    def __init__(self, x, y, coefficients=None):
+        k, x, y = 3, jnp.atleast_1d(x), jnp.atleast_1d(y)
+        assert len(x) == len(y), "Input arrays must be the same length."
+        assert x.ndim == 1 and y.ndim == 1, "Input arrays must be 1D."
+        n_data = len(x)
+        h = jnp.diff(x)
+        p = jnp.diff(y)
+        if coefficients is None:
+            assert n_data > 3, "Not enough input points for cubic spline."
+            zero = jnp.array([0.0])
+            one = jnp.array([1.0])
+            A00, A01, A02, ANN, AN1, AN2 = one, zero, zero, one, (-one), zero
+            A = jnp.diag(jnp.concatenate((A00, 2 * (h[:-1] + h[1:]), ANN)))
+            upper_diag1 = jnp.diag(jnp.concatenate((A01, h[1:])), k=1)
+            upper_diag2 = jnp.diag(jnp.concatenate((A02, jnp.zeros(n_data - 3))), k=2)
+            lower_diag1 = jnp.diag(jnp.concatenate((h[:-1], AN1)), k=-1)
+            lower_diag2 = jnp.diag(jnp.concatenate((jnp.zeros(n_data - 3), AN2)), k=-2)
+            A += upper_diag1 + upper_diag2 + lower_diag1 + lower_diag2
+            center = 3 * (p[1:] / h[1:] - p[:-1] / h[:-1])
+            s = jnp.concatenate((zero, center, zero))
+            coefficients = jnp.linalg.solve(A, s)
+        self.k, self._x, self._y = k, x, y
+        self._coefficients = coefficients
+
+    def tree_flatten(self):
+        children = (self._x, self._y, self._coefficients)
+        return children
+
+    @classmethod
+    def tree_unflatten(cls, children):
+        x, y, coefs = children
+        return cls(x, y, coefs)
+
+    def __call__(self, x):
+        t, a, b, c, d = self._compute_coeffs(x)
+        return a + b * t + c * t**2 + d * t**3
+
+    def _compute_coeffs(self, xs):
+        knots, y, coefficients = self._x, self._y, self._coefficients
+        ind = jnp.digitize(xs, knots) - 1
+        ind = jnp.clip(ind, 0, len(knots) - 2)
+        t = xs - knots[ind]
+        h = jnp.diff(knots)[ind]
+        c = coefficients[ind]
+        c1 = coefficients[ind + 1]
+        a = y[ind]
+        a1 = y[ind + 1]
+        b = (a1 - a) / h - (2 * c + c1) * h / 3.0
+        d = (c1 - c) / (3 * h)
+        return (t, a, b, c, d)
 
 
 class BasisSpline(object):

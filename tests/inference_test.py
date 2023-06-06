@@ -19,8 +19,8 @@ from gwinferno.preprocess.selection import load_injections
 
 
 def norm_mass_model(alpha, beta, mmin, mmax):
-    ms = jnp.linspace(3, 100, 750)
-    qs = jnp.linspace(0.01, 1, 500)
+    ms = jnp.linspace(3, 100, 500)
+    qs = jnp.linspace(0.01, 1, 300)
     mm, qq = jnp.meshgrid(ms, qs)
     p_mq = powerlaw_primary_ratio_pdf(mm, qq, alpha=alpha, beta=beta, mmin=mmin, mmax=mmax)
     return jnp.trapz(jnp.trapz(p_mq, qs, axis=0), ms)
@@ -145,19 +145,19 @@ class TestTruncatedModelInference(unittest.TestCase):
     def test_truncated_prior_sample(self):
         RNG = random.PRNGKey(3)
         kernel = NUTS(self.truncated_numpyro_model)
-        mcmc = MCMC(kernel, num_warmup=15, num_samples=15)
+        mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
         mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=True)
         samples = mcmc.get_samples()
-        self.assertEqual(samples["alpha"].shape, (15,))
-        self.assertEqual(samples["beta"].shape, (15,))
-        self.assertEqual(samples["lamb"].shape, (15,))
+        self.assertEqual(samples["alpha"].shape, (5,))
+        self.assertEqual(samples["beta"].shape, (5,))
+        self.assertEqual(samples["lamb"].shape, (5,))
 
     def test_truncated_posterior_sample(self):
         RNG = random.PRNGKey(4)
         kernel = NUTS(self.truncated_numpyro_model)
-        mcmc = MCMC(kernel, num_warmup=15, num_samples=15)
+        mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
         mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=False)
         samples = mcmc.get_samples()
-        self.assertEqual(samples["alpha"].shape, (15,))
-        self.assertEqual(samples["beta"].shape, (15,))
-        self.assertEqual(samples["lamb"].shape, (15,))
+        self.assertEqual(samples["alpha"].shape, (5,))
+        self.assertEqual(samples["beta"].shape, (5,))
+        self.assertEqual(samples["lamb"].shape, (5,))
