@@ -24,7 +24,7 @@ class BasisSpline(object):
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
             proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
-            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
+            normalize (bool, optional): flag whether or not to numerically normalize the spline. Default to True.
         """
         self.order = k
         self.N = n_df
