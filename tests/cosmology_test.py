@@ -11,6 +11,9 @@ from gwinferno.cosmology import PLANCK_2018_Cosmology as cosmology
 
 class TestDefaultCosmology(unittest.TestCase):
     def setUp(self) -> None:
+        max_z = 5.0
+        max_dL = 1e4
+        cosmology.extend(max_z=max_z, max_DL=max_dL)
         self.zs = np.linspace(1e-9, 5, 1000)
         self.dLs_mpc = np.linspace(1e-2, 1e4, 1000)
 

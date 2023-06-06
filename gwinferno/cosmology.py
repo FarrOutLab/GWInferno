@@ -50,9 +50,6 @@ class Cosmology(object):
         self.Dc = np.array([0.0])
         self.Vc = np.array([0.0])
 
-    def integrate_to_maxz(self, max_z, dz=DEFAULT_DZ):
-        self.extend(max_z=max_z, dz=dz)
-
     @property
     def DL(self):
         return self.Dc * (1 + self.z)
@@ -102,45 +99,37 @@ class Cosmology(object):
             return dDc / MPC_CGS
         return dDc
 
-    def dVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
+    def dVcdz(self, z):
         """
         return dVc/dz
         """
-        if Dc is None:
-            Dc = self.z2Dc(z, dz=dz)
+        Dc = self.z2Dc(z)
         return 4 * jnp.pi * Dc**2 * self.dDcdz(z)
 
-    def logdVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
+    def logdVcdz(self, z):
         """
         return ln(dVc/dz), useful when constructing probability distributions without overflow errors
         """
-        if Dc is None:
-            Dc = self.z2Dc(z, dz=dz)
+        Dc = self.z2Dc(z)
         return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z)) - 3.0 * jnp.log(self.unit_mod)
 
-    def z2Dc(self, z, dz=DEFAULT_DZ):
+    def z2Dc(self, z):
         """
         return Dc for each z specified
         """
         return jnp.interp(z, self.z, self.Dc)
 
-    def DL2z(self, DL, dz=DEFAULT_DZ):
+    def DL2z(self, DL):
         """
         returns redshifts for each DL specified.
         """
         DL_cgs = DL * self.unit_mod
-        max_DL = jnp.max(DL_cgs)
-        if max_DL > jnp.max(self.DL):  # need to extend the integration
-            self.extend(max_DL=max_DL, dz=dz)
         return jnp.interp(DL_cgs, self.DL, self.z)
 
-    def z2DL(self, z, dz=DEFAULT_DZ):
+    def z2DL(self, z):
         """
         returns luminosity distance at the specified redshifts
         """
-        max_z = jnp.max(z)
-        if max_z > jnp.max(self.z):
-            self.extend(max_z=max_z, dz=dz)
         return jnp.interp(z, self.z, self.DL) / self.unit_mod
 
 
@@ -153,5 +142,5 @@ PLANCK_2018_Cosmology = Cosmology(
     PLANCK_2018_OmegaLambda,
 )
 
-DEFAULT_MAXZ = 2.3
-PLANCK_2018_Cosmology.integrate_to_maxz(max_z=DEFAULT_MAXZ)
+DEFAULT_MAXZ = 2.5
+PLANCK_2018_Cosmology.extend(max_z=DEFAULT_MAXZ)
