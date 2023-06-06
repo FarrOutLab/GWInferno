@@ -32,10 +32,10 @@ class BasisSpline(object):
         self.xrange = xrange
         if knots is None:
             if interior_knots is None:
-                interior_knots = np.linspace(*(0, 1), n_df - k + 2)
+                interior_knots = np.linspace(xrange[0], xrange[1], n_df - k + 2)
             if proper:
                 dx = interior_knots[1] - interior_knots[0]
-                knots = (xrange[1] - xrange[0]) * jnp.linspace(-dx * (k - 1), 1 + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
+                knots = jnp.linspace(xrange[0] - dx * (k - 1), xrange[1] + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
 
             else:
                 knots = np.append(
