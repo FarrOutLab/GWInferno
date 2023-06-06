@@ -10,7 +10,6 @@ class BasisSpline(object):
         interior_knots=None,
         xrange=(0, 1),
         k=4,
-        proper=True,
         normalize=True,
     ):
         """
@@ -33,15 +32,8 @@ class BasisSpline(object):
         if knots is None:
             if interior_knots is None:
                 interior_knots = np.linspace(xrange[0], xrange[1], n_df - k + 2)
-            if proper:
-                dx = interior_knots[1] - interior_knots[0]
-                knots = jnp.linspace(xrange[0] - dx * (k - 1), xrange[1] + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
-
-            else:
-                knots = np.append(
-                    np.append(np.array([xrange[0]] * (k - 1)), interior_knots),
-                    np.array([xrange[1]] * (k - 1)),
-                )
+            dx = interior_knots[1] - interior_knots[0]
+            knots = jnp.linspace(xrange[0] - dx * (k - 1), xrange[1] + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
         self.knots = knots
         self.interior_knots = (xrange[1] - xrange[0]) * interior_knots
         assert len(self.knots) == self.N + self.order
@@ -180,7 +172,6 @@ class BSpline(BasisSpline):
         interior_knots=None,
         xrange=(0, 1),
         k=4,
-        proper=True,
         normalize=False,
     ):
         """
@@ -203,7 +194,6 @@ class BSpline(BasisSpline):
             interior_knots=interior_knots,
             xrange=xrange,
             k=k,
-            proper=proper,
             normalize=normalize,
         )
 
