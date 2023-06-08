@@ -43,13 +43,10 @@ jobs:
     - name: Run pre-commit checks
       run: |
         pre-commit run --all-files --verbose --show-diff-on-failure
-    - name: Download And Cache Test Data
-      uses: actions/cache@v3
-      with:
-        path: tests/data
-      run: source tests/download_test_data.sh
     - name: Test with pytest
-      run: pytest --cov gwinferno -ra --color yes --cov-report=xml --junitxml=pytest.xml
+      run: |
+        source tests/download_test_data.sh
+        pytest --cov gwinferno -ra --color yes --cov-report=xml --junitxml=pytest.xml
     - name: Publish coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
