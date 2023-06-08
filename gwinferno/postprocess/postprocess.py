@@ -24,13 +24,16 @@ class PopSummaryWriteOut(PopulationResult):
         Args:
             file_name (str): name of h5 file
             hyperparameter_names (_type_): list of hyperparameters as named in posterior datafile
-            new_hyperparameter_names (_type_, optional): list of new hyperparemter names, if you wish to rename them to something more clear. Defaults to None.
-            hyperparameter_descriptions (list, optional): list of hyperparameter descriptions. Defaults to [].
-            hyperparameter_latex_labels (list, optional): list of latex labels for hyperparameters. Defaults to [].
+            new_hyperparameter_names (_type_, optional): list of new hyperparemter names,
+                if you wish to rename them to something more clear. Defaults to None.
+                hyperparameter_descriptions (list, optional): list of hyperparameter descriptions. Defaults to [].
+            hyperparameter_latex_labels (list, optional): list of latex labels for
+                hyperparameters. Defaults to [].
             references (list, optional): list of references pointed to. Defaults to [].
             model_names (list, optional): list of population models used. Defaults to [].
             events (list, optional): list of events used. Defaults to [].
-            event_parameters (list, optional): list of event-level parameter names (e.g. m1, m2, chi_eff) in corresponding
+            event_parameters (list, optional): list of event-level parameter names (e.g. m1, m2,
+                chi_eff) in corresponding
             order to reweighted_event_samples or rewighted_injections. Defaults to [].
             event_sample_IDs (list, optional): event_sample_IDs. Defaults to [].
             event_waveforms (list, optional): event_waveforms. Defaults to [].
@@ -60,24 +63,26 @@ class PopSummaryWriteOut(PopulationResult):
         """saves hypersamples to results file
 
         Args:
-            path_to_file (str): path to file containing dictionary of all posterior samples (can include reweighed pe, injections, etc.), obtained from mcmc.get_samples() numpyro method
+            path_to_file (str): path to file containing dictionary of all posterior samples
+                (can include reweighed pe, injections, etc.), obtained from mcmc.get_samples()
+                numpyro method
             group (str): group to save samples to ('posterior' or 'prior')
             overwrite (bool): whether to overwrite existing dataset
         """
         posteriors = dd.io.load(path_to_file)
-        l = []
+        hyper_param_sample_list = []
         hyperparameter_samples = []
         for (i, hp) in enumerate(self.old_hyperparameter_names):
             x = posteriors[hp].transpose()
             if len(x.shape) > 1:
                 for j in range(len(x)):
-                    l.append(x[j])
+                    hyper_param_sample_list.append(x[j])
                     hyperparameter_samples.append(self.new_hyperparameter_names[i] + f"_{j+1}")
             else:
-                l.append(x)
+                hyper_param_sample_list.append(x)
                 hyperparameter_samples.append(self.new_hyperparameter_names[i])
 
-        hyperparameter_samples = np.array(l)
+        hyperparameter_samples = np.array(hyper_param_sample_list)
 
         self.set_hyperparameter_samples(hyperparameter_samples, overwrite=overwrite, group=group)
 
@@ -87,13 +92,18 @@ class PopSummaryWriteOut(PopulationResult):
         """saves rates reweighed event and injection samples to results file
 
         Args:
-            path_to_file (str): path to file containing dictionary of all posterior samples (can include reweighed pe, injections, etc.), obtained from numpyor's MCMC.get_samples method
+            path_to_file (str): path to file containing dictionary of all posterior samples
+                (can include reweighed pe, injections, etc.), obtained from numpyor's MCMC.
+                get_samples method
             event_names (list): list of events used
-            event_params (list): list of event-level parameter names (e.g. m1, m2, chi_eff) in corresponding order to reweighted_event_samples, rewighted_injections
-            overwrite (bool, optional): whether to overwrite existing dataset. Defaults to False.
-            group (str, optional): group to save draws to ('posterior' or 'prior'). Defaults to 'posterior'.
+            event_params (list): list of event-level parameter names (e.g. m1, m2, chi_eff)
+                in corresponding order to reweighted_event_samples, rewighted_injections
+                overwrite (bool, optional): whether to overwrite existing dataset. Defaults to False.
+            group (str, optional): group to save draws to ('posterior' or 'prior').
+                Defaults to 'posterior'.
             events (bool, optional): whether to save the reweighed event samples. Defaults to True.
-            injections (bool, optional): wether to save the reweighed injection samples. Defaults to True.
+                injections (bool, optional): wether to save the reweighed injection samples.
+                Defaults to True.
         """
         if self.get_metadata("events").size == 0:
             self.set_metadata("events", event_names, overwrite=True)
@@ -115,22 +125,28 @@ class PopSummaryWriteOut(PopulationResult):
 
     def save_rates_on_grids(self, path_to_file, grid_params, rate_names, overwrite=False, group="posterior"):
         """
-        save rates on grids to results file. This method assumes each element of `grid_params` ('mass_1', 'mass_ratio', etc.) corresponds to a single rate dataset in `rate_names`. Ex:
+        save rates on grids to results file. This method assumes each element of `grid_params`
+        ('mass_1', 'mass_ratio', etc.) corresponds to a single rate dataset in `rate_names`. Ex:
         grid_params = ['mass_1', 'mass_ratio', 'a_1']
         rate_names = ['primary_mass_rate', 'mass_ratio_rate', 'primary_spin_magntide_rate']
 
         for mixture models, like powerlaw+peak in primary mass, this would look like:
         grid_params = ['mass_1', 'mass_1', 'mass_ratio', ...]
-        rate_names = ['primary_mass_powerlaw_rate', 'primary_mass_peak_rate', 'mass_ratio_rate', ...]
+        rate_names = ['primary_mass_powerlaw_rate', 'primary_mass_peak_rate',
+        'mass_ratio_rate', ...]
 
-        the dictionary pointed to with `path_to_file` should contain both the positions the rates were calculated over (named in `grid_params`) and the rates themselves (named in `rate_names`)
+        the dictionary pointed to with `path_to_file` should contain both the positions the rates
+        were calculated over (named in `grid_params`) and the rates themselves
+        (named in `rate_names`)
 
         Args:
-            path_to_file (str): path to file that contains a dictionary of rates calulated on grids.
+            path_to_file (str): path to file that contains a dictionary of rates
+                calulated on grids.
             grid_params (list): list of parameter names for which rates are calculated on
             rate_names (list): name of each rate dataset (e.g. primary_mass_rate, a_1_rate', etc)
             overwrite (bool, optional): whether to overwrite existing dataset. Defaults to False.
-            group (str, optional): group to save draws to ('posterior' or 'prior'). Defaults to 'posterior'.
+            group (str, optional): group to save draws to ('posterior' or 'prior').
+                Defaults to 'posterior'.
         """
         rates = dd.io.load(path_to_file)
         if len(grid_params) != len(rate_names):
