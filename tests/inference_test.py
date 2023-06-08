@@ -4,9 +4,9 @@ import unittest
 
 import deepdish as dd
 import jax.numpy as jnp
+import numpy as np
 import numpyro
 import numpyro.distributions as dist
-import pytest
 from jax import random
 from numpyro.infer import MCMC
 from numpyro.infer import NUTS
@@ -19,8 +19,8 @@ from gwinferno.preprocess.selection import load_injections
 
 
 def norm_mass_model(alpha, beta, mmin, mmax):
-    ms = jnp.linspace(3, 100, 750)
-    qs = jnp.linspace(0.01, 1, 500)
+    ms = jnp.linspace(3, 100, 500)
+    qs = jnp.linspace(0.01, 1, 300)
     mm, qq = jnp.meshgrid(ms, qs)
     p_mq = powerlaw_primary_ratio_pdf(mm, qq, alpha=alpha, beta=beta, mmin=mmin, mmax=mmax)
     return jnp.trapz(jnp.trapz(p_mq, qs, axis=0), ms)
@@ -55,7 +55,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         del self.z_model
         del self.truncated_numpyro_model
 
-    def load_data(self):
+    def load_data(self, max_samps=100):
         pe_samples = dd.io.load(
             f"{self.data_dir}/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5"
         )  # load_posterior_samples(self.data_dir, spin=False, max_samples=250)
@@ -63,23 +63,22 @@ class TestTruncatedModelInference(unittest.TestCase):
         pedata = jnp.array([[pe_samples[e][p] for e in names] for p in self.param_names])
         Nobs = pedata.shape[1]
         Nsamples = pedata.shape[-1]
-        pedict = {k: pedata[self.param_map[k]] for k in self.param_names}
-        return pedict, Nobs, Nsamples
+        idxs = np.random.choice(Nsamples, size=max_samps, replace=False)
+        pedict = {k: pedata[self.param_map[k]][:, idxs] for k in self.param_names}
+        return pedict, Nobs, max_samps
 
-    @pytest.mark.order(0)
     def test_load_pe_samples(self):
         fns = glob.glob(f"{self.data_dir}/S*.h5")
         evs = [s.split("/")[-1].replace(".h5", "") for s in fns]
         run_map = {e: "C01:Mixed" for e in evs}
         pe_samples, names = load_posterior_samples(self.data_dir, run_map=run_map, spin=False)
-        pedata = jnp.array([[pe_samples[e][p] for e in names] for p in self.param_names])
+        pedata = jnp.array([[pe_samples[e][p].values for e in names] for p in self.param_names])
         Nobs = pedata.shape[1]
         Nsamples = pedata.shape[-1]
         pedict = {k: pedata[self.param_map[k]] for k in self.param_names}
         for param in pedict.keys():
             self.assertEqual(pedict[param].shape, (Nobs, Nsamples))
 
-    @pytest.mark.order(1)
     def test_pe_shape(self):
         for param in self.pedict.keys():
             self.assertEqual(self.pedict[param].shape, (self.Nobs, self.Nsamples))
@@ -92,7 +91,6 @@ class TestTruncatedModelInference(unittest.TestCase):
         injdict = {k: injdata[self.param_map[k]] for k in self.param_names}
         return injdict, float(total_inj), obs_time
 
-    @pytest.mark.order(2)
     def test_injection_shape(self):
         self.assertGreater(self.total_inj, len(self.injdict[self.param_names[0]]))
 
@@ -144,24 +142,22 @@ class TestTruncatedModelInference(unittest.TestCase):
 
         return model
 
-    @pytest.mark.order(3)
     def test_truncated_prior_sample(self):
         RNG = random.PRNGKey(3)
-        kernel = NUTS(self.truncated_numpyro_model, dense_mass=True)
-        mcmc = MCMC(kernel, num_warmup=25, num_samples=50)
+        kernel = NUTS(self.truncated_numpyro_model)
+        mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
         mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=True)
         samples = mcmc.get_samples()
-        self.assertEqual(samples["alpha"].shape, (50,))
-        self.assertEqual(samples["beta"].shape, (50,))
-        self.assertEqual(samples["lamb"].shape, (50,))
+        self.assertEqual(samples["alpha"].shape, (5,))
+        self.assertEqual(samples["beta"].shape, (5,))
+        self.assertEqual(samples["lamb"].shape, (5,))
 
-    @pytest.mark.order(4)
     def test_truncated_posterior_sample(self):
         RNG = random.PRNGKey(4)
-        kernel = NUTS(self.truncated_numpyro_model, dense_mass=True)
-        mcmc = MCMC(kernel, num_warmup=25, num_samples=50)
+        kernel = NUTS(self.truncated_numpyro_model)
+        mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
         mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=False)
         samples = mcmc.get_samples()
-        self.assertEqual(samples["alpha"].shape, (50,))
-        self.assertEqual(samples["beta"].shape, (50,))
-        self.assertEqual(samples["lamb"].shape, (50,))
+        self.assertEqual(samples["alpha"].shape, (5,))
+        self.assertEqual(samples["beta"].shape, (5,))
+        self.assertEqual(samples["lamb"].shape, (5,))

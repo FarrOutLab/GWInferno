@@ -1,3 +1,7 @@
+"""
+a module that stores 1D population models constructed from bsplines
+"""
+
 import jax.numpy as jnp
 import numpy as np
 from astropy.cosmology import Planck15

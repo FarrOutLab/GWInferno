@@ -1,3 +1,7 @@
+"""
+a module that stores helpful conversion functions between parameters
+"""
+
 import numpy as np
 
 

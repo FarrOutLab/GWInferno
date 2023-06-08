@@ -1,3 +1,11 @@
+"""
+a module that stores useful prior functions to evaulate spin priors in terms of effective spin paramters
+"""
+
+import numpy as np
+from scipy.special import spence as PL
+from scipy.stats import gaussian_kde
+
 from .conversions import chip_from_q_component_spins
 
 """
@@ -8,9 +16,6 @@ https://github.com/tcallister/effective-spin-priors/blob/main/priors.py
 
 **************************************************************************************************************
 """
-import numpy as np
-from scipy.special import spence as PL
-from scipy.stats import gaussian_kde
 
 
 def Di(z):

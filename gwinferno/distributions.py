@@ -1,3 +1,7 @@
+"""
+a module for basic distribution pdf calculations with jax
+"""
+
 import jax.numpy as jnp
 from jax.scipy.special import erf
 from jax.scipy.special import gammaln

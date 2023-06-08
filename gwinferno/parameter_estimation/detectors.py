@@ -1,3 +1,7 @@
+"""
+a module for calculating GW interferometer responses with jax
+"""
+
 import jax.numpy as jnp
 
 SPEED_OF_LIGHT = 299792458.0

@@ -1,3 +1,7 @@
+"""
+a module that stores functions for reading in and processing injection search results
+"""
+
 import h5py
 import jax.numpy as jnp
 import numpy as np
