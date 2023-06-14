@@ -27,7 +27,7 @@ PLANCK_2018_OmegaMatter = 0.3158
 PLANCK_2018_OmegaLambda = 1.0 - PLANCK_2018_OmegaMatter
 PLANCK_2018_OmegaRadiation = 0.0
 
-DEFAULT_DZ = 5e-3  # should be good enough for most numeric integrations we want to do
+DEFAULT_DZ = 1e-3  # should be good enough for most numeric integrations we want to do
 
 
 class Cosmology(object):
