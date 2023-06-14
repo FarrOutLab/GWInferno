@@ -414,6 +414,9 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
     hyper_params = {k: None for k in prior_dict.keys()}
     pop_models = {k: None for k in model_dict.keys()}
 
+    if "redshift" in pop_models.keys():
+        z_grid = jnp.linspace(1e-9, hyper_params["redshift_maximum"], 1000)
+
     def model(samps, injs, Ninj, Nobs, Tobs):
         for k, v in prior_dict.items():
             try:
@@ -430,6 +433,8 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
                 pop_models[k] = v.model(mixing_dist, components)
             elif isinstance(v, PopModel):
                 hps = {p: hyper_params[f"{k}_{p}"] for p in v.params}
+                if k == 'redshift':
+                    hps['grid'] = z_grid
                 pop_models[k] = v.model(**hps)
             elif isinstance(v, str):
                 iid_mapping[v] = k
