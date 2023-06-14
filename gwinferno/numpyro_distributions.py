@@ -103,9 +103,9 @@ class Powerlaw(Distribution):
     }
     reparametrized_params = ["minimum", "maximum", "alpha"]
 
-    def __init__(self, alpha, minimum=0.0, maximum=1.0, validate_args=None):
+    def __init__(self, alpha, minimum=0.0, maximum=1.0, low=0.0, high=0.0,validate_args=None):
         self.minimum, self.maximum, self.alpha = promote_shapes(minimum, maximum, alpha)
-        self._support = constraints.interval(minimum, maximum)
+        self._support = constraints.interval(low, high)
         batch_shape = lax.broadcast_shapes(
             jnp.shape(minimum),
             jnp.shape(maximum),
@@ -126,7 +126,7 @@ class Powerlaw(Distribution):
         logp = self.alpha * jnp.log(value)
         logp = logp + jnp.log((1.0 + self.alpha) / (self.maximum ** (1.0 + self.alpha) - self.minimum ** (1.0 + self.alpha)))
         logp_neg1 = -jnp.log(value) - jnp.log(self.maximum / self.minimum)
-        return jnp.where(jnp.equal(self.alpha, -1.0), logp_neg1, logp)
+        return jnp.where(jnp.less(value, self.minimum) | jnp.greater(value, self.maximum), jnp.nan_to_num(-jnp.inf), jnp.where(jnp.equal(self.alpha, -1.0), logp_neg1, logp))
 
     def cdf(self, value):
         cdf = jnp.atleast_1d(value ** (self.alpha + 1.0) - self.minimum ** (self.alpha + 1.0)) / (
@@ -155,13 +155,13 @@ class NumericallyNormalizedDistribition(Distribution):
 
     def __init__(self, minimum, maximum, Ngrid=1000, grid=None, validate_args=None):
         self.maximum, self.minimum = promote_shapes(maximum, minimum)
-        self._support = constraints.interval(minimum, maximum)
+        self._support = constraints.real
         batch_shape = lax.broadcast_shapes(
             jnp.shape(maximum),
             jnp.shape(minimum),
         )
         super(NumericallyNormalizedDistribition, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
-        self.grid = grid if grid is not None else jnp.linspace(self.minimum, self.maximum, Ngrid)
+        self.grid = grid if grid is not None else jnp.linspace(minimum, maximum, Ngrid)
         self.pdfs = jnp.exp(self._log_prob_nonorm(self.grid))
         self.norm = jnp.trapz(self.pdfs, self.grid)
         self.pdfs /= self.norm
@@ -181,7 +181,7 @@ class NumericallyNormalizedDistribition(Distribution):
 
     @validate_sample
     def log_prob(self, value):
-        return self._log_prob_nonorm(value) - jnp.log(self.norm)
+        return jnp.where(jnp.less(value, self.minimum) | jnp.greater(value, self.maximum), jnp.nan_to_num(-jnp.inf), self._log_prob_nonorm(value) - jnp.log(self.norm))
 
     def cdf(self, value):
         return jnp.interp(value, self.grid, self.cdfgrid)
@@ -197,9 +197,10 @@ class PowerlawRedshift(NumericallyNormalizedDistribition):
     def __init__(self, lamb, maximum, Ngrid=1000, grid=None, validate_args=None):
         self.lamb = lamb
         super().__init__(minimum=1e-11, maximum=maximum, Ngrid=Ngrid, grid=grid, validate_args=validate_args)
+        self._support = constraints.positive
 
     def _log_prob_nonorm(self, value):
-        return (self.lamb - 1) * jnp.log(1 + value) + jnp.log(cosmo.logdVcdz(value))
+        return (self.lamb - 1) * jnp.log(1 + value) + cosmo.logdVcdz(value)
 
 
 class LinearInterpolatedPowerlaw(NumericallyNormalizedDistribition):

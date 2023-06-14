@@ -7,7 +7,6 @@ a module for basic cosmology calculations using jax
 
 import jax.numpy as jnp
 import numpy as np
-from jax import lax
 
 # define units in SI
 C_SI = 299792458.0
@@ -29,7 +28,7 @@ PLANCK_2018_OmegaMatter = 0.3158
 PLANCK_2018_OmegaLambda = 1.0 - PLANCK_2018_OmegaMatter
 PLANCK_2018_OmegaRadiation = 0.0
 
-DEFAULT_DZ = 1e-3  # should be good enough for most numeric integrations we want to do
+DEFAULT_DZ = 5e-3  # should be good enough for most numeric integrations we want to do
 
 
 class Cosmology(object):
@@ -47,9 +46,9 @@ class Cosmology(object):
         self.OmegaLambda = omega_lambda
         self.OmegaKappa = 1.0 - (self.OmegaMatter + self.OmegaRadiation + self.OmegaLambda)
         assert self.OmegaKappa == 0, "we only implement flat cosmologies! OmegaKappa must be 0"
-        self.z = np.array([0.0])
-        self.Dc = np.array([0.0])
-        self.Vc = np.array([0.0])
+        self.z = jnp.array([0.0])
+        self.Dc = jnp.array([0.0])
+        self.Vc = jnp.array([0.0])
         self.extend(max_z=initial_z_integ, dz=DEFAULT_DZ)
 
     @property
@@ -62,9 +61,12 @@ class Cosmology(object):
         """
         # note, this could be slow due to trapazoidal approximation with small step size
         # extract current state
-        z = self.z[-1]
-        Dc = self.Dc[-1]
-        Vc = self.Vc[-1]
+        zs = list(self.z)
+        Dcs = list(self.Dc)
+        Vcs = list(self.Vc)
+        z = zs[-1]
+        Dc = Dcs[-1]
+        Vc = Vcs[-1]
         DL = Dc * (1 + z)
 
         while jnp.less(Dc, max_Dc) | jnp.less(DL, max_DL) | jnp.less(z, max_z) | jnp.less(Vc, max_Vc):
@@ -79,9 +81,13 @@ class Cosmology(object):
             # update state
             z, DL, Dc, Vc = new_z, new_DL, new_Dc, new_Vc
             # append to arrays
-            self.z = np.append(self.z, z)
-            self.Dc = np.append(self.Dc, Dc)
-            self.Vc = np.append(self.Vc, Vc)
+            zs.append(z)
+            Dcs.append(Dc)
+            Vcs.append(Vc)
+        self.z = jnp.array(zs)
+        self.Dc = jnp.array(Dcs)
+        self.Vc = jnp.array(Vcs)
+
 
     def z2E(self, z):
         """

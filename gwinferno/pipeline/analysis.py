@@ -409,7 +409,7 @@ def hierarchical_likelihood_in_log(
                     numpyro.deterministic(f"{p}_pred_event_{ev}", injdata[p][pred_idx])
 
 
-def construct_hierarchical_model(model_dict, prior_dict):
+def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marginalize_selection=False, posterior_predictive_check=True):
     source_param_names = [k for k in model_dict.keys()]
     hyper_params = {k: None for k in prior_dict.keys()}
     pop_models = {k: None for k in model_dict.keys()}
@@ -452,9 +452,9 @@ def construct_hierarchical_model(model_dict, prior_dict):
             Tobs=Tobs,
             surv_hypervolume_fct=shvf,
             vtfct_kwargs={},
-            marginalize_selection=False,
-            min_neff_cut=True,
-            posterior_predictive_check=True,
+            marginalize_selection=marginalize_selection,
+            min_neff_cut=min_neff_cut,
+            posterior_predictive_check=posterior_predictive_check,
             pedata=samps,
             injdata=injs,
             param_names=source_param_names,

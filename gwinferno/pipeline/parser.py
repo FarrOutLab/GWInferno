@@ -54,6 +54,7 @@ class ConfigReader(object):
         self.outdir = yml.pop("outdir")
         self.data_args = yml.pop("data_args")
         self.sampler_args = yml.pop("sampler_args")
+        self.likelihood_kwargs = yml.pop("likelihood_args")
         self.construct_model_and_prior_dicts(yml)
 
     def construct_model_and_prior_dicts(self, yml):
