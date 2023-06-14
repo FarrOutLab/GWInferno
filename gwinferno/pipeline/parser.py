@@ -55,14 +55,17 @@ class ConfigReader(object):
         self.data_args = yml.pop("data_args")
         self.sampler_args = yml.pop("sampler_args")
         self.likelihood_kwargs = yml.pop("likelihood_args")
-        self.construct_model_and_prior_dicts(yml)
+        self.construct_model_and_prior_dicts(yml["models"])
 
     def construct_model_and_prior_dicts(self, yml):
-        for param in yml:
-            if "Mixture" in yml[param]["model"]:
-                self.add_mixture_model(param, yml[param])
-            else:
-                self.add_model(param, yml[param])
+        if "python_file" in yml:
+            self.models["file_path"] = yml["python_file"]
+        else:
+            for param in yml:
+                if "Mixture" in yml[param]["model"]:
+                    self.add_mixture_model(param, yml[param])
+                else:
+                    self.add_model(param, yml[param])
 
     def add_prior(self, key, subd):
         if "prior" in subd and "prior_params" in subd:

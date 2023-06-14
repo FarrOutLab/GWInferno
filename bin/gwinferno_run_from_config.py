@@ -1,5 +1,7 @@
 #!/usr/bin/env python
+import sys
 from argparse import ArgumentParser
+from importlib import import_module
 
 import arviz as az
 import deepdish as dd
@@ -16,6 +18,13 @@ from gwinferno.preprocess.data_collection import load_catalog_from_metadata
 from gwinferno.preprocess.selection import load_injections
 
 az.style.use("arviz-darkgrid")
+
+
+def load_model_from_python_file(path):
+    fn = path.split("/")[-1]
+    direct = path.replace(f"/{fn}", "")
+    sys.path.append(direct)
+    return getattr(import_module(fn.replace(".py", "")), "model")
 
 
 def load_args():
@@ -53,7 +62,10 @@ def run_inference(config_yml, inspect=False, PRNG_seed=0):
     if inspect:
         print("MODEL DICT: \n", model_dict)
         print("PRIOR DICT: \n", prior_dict)
-    model = construct_hierarchical_model(model_dict, prior_dict, **likelihood_kwargs)
+    if "file_path" in model_dict:
+        model = load_model_from_python_file(model_dict["file_path"])
+    else:
+        model = construct_hierarchical_model(model_dict, prior_dict, **likelihood_kwargs)
 
     pe_dict, inj_dict, Ninj, Nobs, Tobs = setup(data_conf, [k for k in model_dict.keys()])
 
