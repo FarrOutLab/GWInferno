@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import sys
+from argparse import ArgumentParser
 
 import arviz as az
 import deepdish as dd
@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from jax import random
 from numpyro.infer import MCMC
-from argparse import ArgumentParser
 
 from gwinferno.pipeline.analysis import NP_KERNEL_MAP
 from gwinferno.pipeline.analysis import construct_hierarchical_model
@@ -18,10 +17,11 @@ from gwinferno.preprocess.selection import load_injections
 
 az.style.use("arviz-darkgrid")
 
+
 def load_args():
     parser = ArgumentParser()
-    parser.add_argument('config_file', type=str)
-    parser.add_argument('--inspect', action='store_true', default=False)
+    parser.add_argument("config_file", type=str)
+    parser.add_argument("--inspect", action="store_true", default=False)
     return parser.parse_args()
 
 

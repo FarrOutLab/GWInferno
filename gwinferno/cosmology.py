@@ -6,7 +6,6 @@ a module for basic cosmology calculations using jax
 # https://git.ligo.org/reed.essick/gw-distributions/-/blob/master/gwdistributions/utils/cosmology.py
 
 import jax.numpy as jnp
-import numpy as np
 
 # define units in SI
 C_SI = 299792458.0
@@ -88,7 +87,6 @@ class Cosmology(object):
         self.Dc = jnp.array(Dcs)
         self.Vc = jnp.array(Vcs)
 
-
     def z2E(self, z):
         """
         returns E(z) = sqrt(OmegaLambda + OmegaKappa*(1+z)**2 + OmegaMatter*(1+z)**3 + OmegaRadiation*(1+z)**4)
@@ -127,8 +125,8 @@ class Cosmology(object):
         """
         return Dc for each z specified
         """
-        #max_z = jnp.max(z)
-        #if jnp.greater(max_z, jnp.max(self.z)):
+        # max_z = jnp.max(z)
+        # if jnp.greater(max_z, jnp.max(self.z)):
         #    self.extend(max_z=max_z,dz=dz)
         return jnp.interp(z, self.z, self.Dc)
 

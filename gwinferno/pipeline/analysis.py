@@ -433,8 +433,8 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
                 pop_models[k] = v.model(mixing_dist, components)
             elif isinstance(v, PopModel):
                 hps = {p: hyper_params[f"{k}_{p}"] for p in v.params}
-                if k == 'redshift':
-                    hps['grid'] = z_grid
+                if k == "redshift":
+                    hps["grid"] = z_grid
                 pop_models[k] = v.model(**hps)
             elif isinstance(v, str):
                 iid_mapping[v] = k
