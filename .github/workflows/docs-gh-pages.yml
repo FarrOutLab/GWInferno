@@ -19,13 +19,13 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
-          python-version: 3.10
+          python-version: 3.9
 
       - uses: s-weigand/setup-conda@v1
         with:
           activate-conda: true
           update-conda: true
-          python-version: 3.10
+          python-version: 3.9
           conda-channels: conda-forge
 
       - name: Install dependencies 
