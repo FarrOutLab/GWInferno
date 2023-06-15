@@ -1,0 +1,37 @@
+﻿gwinferno.parameter\_estimation
+===============================
+
+.. currentmodule:: gwinferno.parameter_estimation
+
+.. automodule:: gwinferno.parameter_estimation
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   
+   detectors
+   
+   likelihood
+

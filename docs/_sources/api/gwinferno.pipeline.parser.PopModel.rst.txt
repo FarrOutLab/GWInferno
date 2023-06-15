@@ -1,0 +1,26 @@
+gwinferno.pipeline.parser.PopModel
+==================================
+
+.. currentmodule:: gwinferno.pipeline.parser
+
+.. autoclass:: PopModel
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PopModel.__init__
+   
+   
+
+   
+   
+   

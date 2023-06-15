@@ -1,0 +1,6 @@
+gwinferno.distributions.ln\_beta\_fct
+=====================================
+
+.. currentmodule:: gwinferno.distributions
+
+.. autofunction:: ln_beta_fct

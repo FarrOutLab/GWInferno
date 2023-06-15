@@ -1,0 +1,6 @@
+gwinferno.postprocess.plotting.plot\_iid\_spin\_dist
+====================================================
+
+.. currentmodule:: gwinferno.postprocess.plotting
+
+.. autofunction:: plot_iid_spin_dist

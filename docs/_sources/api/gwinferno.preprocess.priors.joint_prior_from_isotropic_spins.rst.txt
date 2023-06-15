@@ -1,0 +1,6 @@
+gwinferno.preprocess.priors.joint\_prior\_from\_isotropic\_spins
+================================================================
+
+.. currentmodule:: gwinferno.preprocess.priors
+
+.. autofunction:: joint_prior_from_isotropic_spins

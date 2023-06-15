@@ -1,0 +1,6 @@
+gwinferno.preprocess.priors.Di
+==============================
+
+.. currentmodule:: gwinferno.preprocess.priors
+
+.. autofunction:: Di

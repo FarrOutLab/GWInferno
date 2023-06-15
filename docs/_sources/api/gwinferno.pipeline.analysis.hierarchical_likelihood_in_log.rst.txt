@@ -1,0 +1,6 @@
+gwinferno.pipeline.analysis.hierarchical\_likelihood\_in\_log
+=============================================================
+
+.. currentmodule:: gwinferno.pipeline.analysis
+
+.. autofunction:: hierarchical_likelihood_in_log

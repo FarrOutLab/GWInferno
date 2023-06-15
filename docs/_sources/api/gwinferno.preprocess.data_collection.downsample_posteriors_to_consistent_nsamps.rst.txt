@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.downsample\_posteriors\_to\_consistent\_nsamps
+====================================================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: downsample_posteriors_to_consistent_nsamps

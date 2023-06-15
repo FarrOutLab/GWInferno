@@ -1,0 +1,30 @@
+gwinferno.models.bsplines.single.Base1DBSplineModel
+===================================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: Base1DBSplineModel
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Base1DBSplineModel.__init__
+      ~Base1DBSplineModel.eval_spline
+      ~Base1DBSplineModel.inj_pdf
+      ~Base1DBSplineModel.pe_pdf
+      ~Base1DBSplineModel.truncate_dmat
+   
+   
+
+   
+   
+   

@@ -1,0 +1,49 @@
+gwinferno.preprocess.data\_collection
+=====================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. automodule:: gwinferno.preprocess.data_collection
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      
+      apply_priors
+      
+      convert_component_spin_posteriors_to_chieff
+      
+      dl_2_prior_on_z
+      
+      downsample_posteriors_to_consistent_nsamps
+      
+      load_catalog_from_metadata
+      
+      load_posterior_samples
+      
+      p_m1src_q_z_lal_pe_prior
+      
+      preprocess_data
+      
+      setup_posterior_samples_and_injections
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,6 @@
+gwinferno.preprocess.selection.load\_injections
+===============================================
+
+.. currentmodule:: gwinferno.preprocess.selection
+
+.. autofunction:: load_injections

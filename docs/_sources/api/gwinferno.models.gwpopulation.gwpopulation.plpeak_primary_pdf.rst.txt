@@ -1,0 +1,6 @@
+gwinferno.models.gwpopulation.gwpopulation.plpeak\_primary\_pdf
+===============================================================
+
+.. currentmodule:: gwinferno.models.gwpopulation.gwpopulation
+
+.. autofunction:: plpeak_primary_pdf

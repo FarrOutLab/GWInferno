@@ -1,0 +1,6 @@
+gwinferno.models.bsplines.smoothing.mixture\_smoothing\_parameter
+=================================================================
+
+.. currentmodule:: gwinferno.models.bsplines.smoothing
+
+.. autofunction:: mixture_smoothing_parameter

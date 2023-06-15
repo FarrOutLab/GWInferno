@@ -1,0 +1,50 @@
+gwinferno.models.bsplines.single
+================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. automodule:: gwinferno.models.bsplines.single
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      
+      BSplineChiEffective
+      
+      BSplineChiPrecess
+      
+      BSplineMass
+      
+      BSplineRatio
+      
+      BSplineRedshift
+      
+      BSplineSpinMagnitude
+      
+      BSplineSpinTilt
+      
+      BSplineSymmetricChiEffective
+      
+      Base1DBSplineModel
+   
+   
+
+   
+   
+   
+
+
+

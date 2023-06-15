@@ -1,0 +1,6 @@
+gwinferno.numpyro\_distributions.cumtrapz
+=========================================
+
+.. currentmodule:: gwinferno.numpyro_distributions
+
+.. autofunction:: cumtrapz

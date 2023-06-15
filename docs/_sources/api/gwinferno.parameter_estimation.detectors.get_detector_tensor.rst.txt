@@ -1,0 +1,6 @@
+gwinferno.parameter\_estimation.detectors.get\_detector\_tensor
+===============================================================
+
+.. currentmodule:: gwinferno.parameter_estimation.detectors
+
+.. autofunction:: get_detector_tensor

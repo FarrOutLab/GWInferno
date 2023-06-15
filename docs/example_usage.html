@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Start &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Using Basis Splines in Models" href="Using%20Basis%20Splines.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quick Start</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/example_usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this heading"></a></h1>
+<p>Given a catalog of GW Posterior samples in standardized PESummary format, defined by catalog.json file to run population inference with GWInferno one must write a yaml file defining the desired model, hyperparameters, and other auxiliary configuration arguments.</p>
+<p>For example a simple config.yml file that defines a Truncated Powerlaw population model over primary masses (i.e. mass_1) we have:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run Label</span>
+<span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Truncated_Powerlaw_mass_1</span>
+
+<span class="c1"># Population Parameters, Models, HyperParameters, and Priors</span>
+<span class="nt">models</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">mass_1</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gwinferno.numpyro_distributions.Powerlaw</span>
+<span class="w">        </span><span class="nt">hyper_params</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">alpha</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">prior</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">numpyro.distributions.Normal</span>
+<span class="w">            </span><span class="nt">prior_params</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">loc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">                </span><span class="nt">scale</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3.0</span>
+<span class="w">            </span><span class="nt">minimum</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">prior</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">numpyro.distributions.Uniform</span>
+<span class="w">            </span><span class="nt">prior_params</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">low</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2.0</span>
+<span class="w">                </span><span class="nt">high</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.0</span>
+<span class="w">            </span><span class="nt">maximum</span><span class="p">:</span>
+<span class="w">            </span><span class="nt">prior</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">numpyro.distributions.Uniform</span>
+<span class="w">            </span><span class="nt">prior_params</span><span class="p">:</span>
+<span class="w">                </span><span class="nt">low</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50.0</span>
+<span class="w">                </span><span class="nt">high</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100.0</span>
+
+<span class="c1"># Sampler Configuration Args</span>
+<span class="nt">sampler_args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">kernel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NUTS</span>
+<span class="w">    </span><span class="nt">kernel_kwargs</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">dense_mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">mcmc_kwargs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">num_warmup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span>
+<span class="w">    </span><span class="nt">num_samples</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1500</span>
+<span class="w">    </span><span class="nt">num_chains</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="c1"># Data Configuration Args</span>
+<span class="nt">data_args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">catalog_summary_json</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/catalog/summary/file/catalog.json</span>
+</pre></div>
+</div>
+<p>With this file written and ready to go run to perform inference with a single command!</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gwinferno_run_from_config.py<span class="w"> </span>config.yml
+</pre></div>
+</div>
+<p>Now defining models in this way may not be able to handle complex model declarations, that have correlated population distributions or mixtures
+models over components of different parameters.</p>
+<p>Currently, All 1D model distributions either single or mixture models (in one parameter, i.e. Powerlaw+Peak) are supported along with defining two
+population parameters to share a model when assuming they are IID (i.e. spin magnitudes or tilts usually assumed to be IID between binary components).</p>
+<p>If you want to define a more complex model you can pass a path to a python file where this probabilistic numpyro model is defined and can be imported as <cite>model</cite>.</p>
+<p>For example one defines a python file declared model in the <cite>config.yml</cite> file as follows:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run Label</span>
+<span class="nt">label</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Truncated_Powerlaw_mass_1</span>
+
+<span class="c1"># Population Parameters, Models, HyperParameters, and Priors</span>
+<span class="nt">models</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">python_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gwinferno/pipeline/config_files/example_python_model.py</span>
+</pre></div>
+</div>
+<p>The requirements for this model definition within the python file include:
+- Must at least take in PEsamples, Found injections, Number of Observations, Total number of injections, and total observing time (in yrs) as the initial 5 positional arguments of the model.
+- Define hyper-parameters and priors along with population distributions then interface with GWInferno’s likleihood calculation with <cite>gwinferno.pipeline.analysis.hierarchical_likelihood_in_log</cite>
+- Main input to this likelihood function is the weights calcaulated at all of the PE samples and Found injections
+- Input weights need to have shapes of (Nobs, N_PEsamples) for PE samples weights where Nobs is the number of events in catalog and N_PEsamples is the nubmber of posteror samples each event contains
+- Input weights for found injections need to be of shape (N_found,) where N_found is the total number of found injections remaining.</p>
+<p>For example here is how one would define a numpyro probabilistic model in a python file to be passed to GWInferno’s infrastructure</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">import</span> <span class="nn">numpyro</span>
+<span class="kn">import</span> <span class="nn">numpyro.distributions</span> <span class="k">as</span> <span class="nn">dist</span>
+
+<span class="kn">from</span> <span class="nn">gwinferno.numpyro_distributions</span> <span class="kn">import</span> <span class="n">Powerlaw</span>
+<span class="kn">from</span> <span class="nn">gwinferno.numpyro_distributions</span> <span class="kn">import</span> <span class="n">PowerlawRedshift</span>
+<span class="kn">from</span> <span class="nn">gwinferno.pipeline.analysis</span> <span class="kn">import</span> <span class="n">hierarchical_likelihood_in_log</span>
+
+
+<span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">samps</span><span class="p">,</span> <span class="n">injs</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">,</span> <span class="n">Nobs</span><span class="p">,</span> <span class="n">Tobs</span><span class="p">):</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">beta</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">mmin</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mmin&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">mmax</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mmax&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">))</span>
+    <span class="n">lamb</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;lamb&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+
+    <span class="n">m1dist</span> <span class="o">=</span> <span class="n">Powerlaw</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="n">mmax</span><span class="p">)</span>
+    <span class="n">qdist</span> <span class="o">=</span> <span class="n">Powerlaw</span><span class="p">(</span><span class="n">beta</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mf">0.02</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">zdist</span> <span class="o">=</span> <span class="n">PowerlawRedshift</span><span class="p">(</span><span class="n">lamb</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="mf">2.3</span><span class="p">)</span>
+
+    <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">m1dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">qdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">zdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">])</span>
+    <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">m1dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">qdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">zdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">shvf</span><span class="p">():</span>
+        <span class="k">return</span> <span class="n">zdist</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">norm</span>
+
+    <span class="n">hierarchical_likelihood_in_log</span><span class="p">(</span>
+        <span class="n">pe_weights</span><span class="p">,</span>
+        <span class="n">inj_weights</span><span class="p">,</span>
+        <span class="n">total_inj</span><span class="o">=</span><span class="n">Ninj</span><span class="p">,</span>
+        <span class="n">Nobs</span><span class="o">=</span><span class="n">Nobs</span><span class="p">,</span>
+        <span class="n">Tobs</span><span class="o">=</span><span class="n">Tobs</span><span class="p">,</span>
+        <span class="n">surv_hypervolume_fct</span><span class="o">=</span><span class="n">shvf</span><span class="p">,</span>
+        <span class="n">vtfct_kwargs</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">marginalize_selection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">min_neff_cut</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">posterior_predictive_check</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">pedata</span><span class="o">=</span><span class="n">samps</span><span class="p">,</span>
+        <span class="n">injdata</span><span class="o">=</span><span class="n">injs</span><span class="p">,</span>
+        <span class="n">param_names</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;mass_1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;mass_ratio&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;redshift&quot;</span><span class="p">,</span>
+        <span class="p">],</span>
+        <span class="n">m1min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
+        <span class="n">m2min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
+        <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Using%20Basis%20Splines.html" class="btn btn-neutral float-right" title="Using Basis Splines in Models" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

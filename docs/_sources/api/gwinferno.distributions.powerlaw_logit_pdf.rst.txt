@@ -1,0 +1,6 @@
+gwinferno.distributions.powerlaw\_logit\_pdf
+============================================
+
+.. currentmodule:: gwinferno.distributions
+
+.. autofunction:: powerlaw_logit_pdf

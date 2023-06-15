@@ -1,0 +1,6 @@
+gwinferno.models.mass\_gap.plpeak\_gap\_primary\_ratio\_pdf
+===========================================================
+
+.. currentmodule:: gwinferno.models.mass_gap
+
+.. autofunction:: plpeak_gap_primary_ratio_pdf

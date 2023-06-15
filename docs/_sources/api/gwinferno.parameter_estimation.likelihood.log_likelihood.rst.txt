@@ -1,0 +1,6 @@
+gwinferno.parameter\_estimation.likelihood.log\_likelihood
+==========================================================
+
+.. currentmodule:: gwinferno.parameter_estimation.likelihood
+
+.. autofunction:: log_likelihood

@@ -1,0 +1,6 @@
+gwinferno.preprocess.conversions.chieff\_from\_q\_component\_spins
+==================================================================
+
+.. currentmodule:: gwinferno.preprocess.conversions
+
+.. autofunction:: chieff_from_q_component_spins

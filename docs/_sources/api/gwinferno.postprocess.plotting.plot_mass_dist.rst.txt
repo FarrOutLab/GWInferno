@@ -1,0 +1,6 @@
+gwinferno.postprocess.plotting.plot\_mass\_dist
+===============================================
+
+.. currentmodule:: gwinferno.postprocess.plotting
+
+.. autofunction:: plot_mass_dist

@@ -1,0 +1,6 @@
+gwinferno.parameter\_estimation.detectors.construct\_arm
+========================================================
+
+.. currentmodule:: gwinferno.parameter_estimation.detectors
+
+.. autofunction:: construct_arm

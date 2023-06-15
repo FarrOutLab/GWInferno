@@ -1,0 +1,6 @@
+gwinferno.postprocess.plotting.plot\_rofz
+=========================================
+
+.. currentmodule:: gwinferno.postprocess.plotting
+
+.. autofunction:: plot_rofz

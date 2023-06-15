@@ -1,0 +1,6 @@
+gwinferno.pipeline.analysis.mu\_neff\_injections
+================================================
+
+.. currentmodule:: gwinferno.pipeline.analysis
+
+.. autofunction:: mu_neff_injections

@@ -1,0 +1,6 @@
+gwinferno.postprocess.plotting.plot\_chieff\_dist
+=================================================
+
+.. currentmodule:: gwinferno.postprocess.plotting
+
+.. autofunction:: plot_chieff_dist

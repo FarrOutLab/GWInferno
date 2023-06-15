@@ -1,0 +1,38 @@
+gwinferno.parameter\_estimation.detectors.L1
+============================================
+
+.. currentmodule:: gwinferno.parameter_estimation.detectors
+
+.. autoclass:: L1
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~L1.__init__
+      ~L1.antenna_response_cross
+      ~L1.antenna_response_plus
+      ~L1.delay_time_from_geocenter
+      ~L1.detector_response
+      ~L1.noise_log_likelihood
+      ~L1.setup_geometry
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~L1.name
+   
+   

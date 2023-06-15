@@ -1,0 +1,41 @@
+gwinferno.models.bsplines
+=========================
+
+.. currentmodule:: gwinferno.models.bsplines
+
+.. automodule:: gwinferno.models.bsplines
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   
+   joint
+   
+   separable
+   
+   single
+   
+   smoothing
+

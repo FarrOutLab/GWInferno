@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculate\_ppds.calculate\_powerbspline\_rate\_of\_z\_ppds
+================================================================================
+
+.. currentmodule:: gwinferno.postprocess.calculate_ppds
+
+.. autofunction:: calculate_powerbspline_rate_of_z_ppds

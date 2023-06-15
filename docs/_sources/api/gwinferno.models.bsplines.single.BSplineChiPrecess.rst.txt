@@ -1,0 +1,30 @@
+gwinferno.models.bsplines.single.BSplineChiPrecess
+==================================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: BSplineChiPrecess
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BSplineChiPrecess.__init__
+      ~BSplineChiPrecess.eval_spline
+      ~BSplineChiPrecess.inj_pdf
+      ~BSplineChiPrecess.pe_pdf
+      ~BSplineChiPrecess.truncate_dmat
+   
+   
+
+   
+   
+   

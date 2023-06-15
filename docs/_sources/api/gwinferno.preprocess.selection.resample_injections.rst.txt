@@ -1,0 +1,6 @@
+gwinferno.preprocess.selection.resample\_injections
+===================================================
+
+.. currentmodule:: gwinferno.preprocess.selection
+
+.. autofunction:: resample_injections

@@ -1,0 +1,6 @@
+gwinferno.parameter\_estimation.likelihood.noise\_log\_likelihood\_det
+======================================================================
+
+.. currentmodule:: gwinferno.parameter_estimation.likelihood
+
+.. autofunction:: noise_log_likelihood_det

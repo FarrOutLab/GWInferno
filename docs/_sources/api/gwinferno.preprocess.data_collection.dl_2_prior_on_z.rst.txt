@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.dl\_2\_prior\_on\_z
+=========================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: dl_2_prior_on_z

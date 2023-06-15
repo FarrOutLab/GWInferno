@@ -1,0 +1,53 @@
+gwinferno.postprocess.calculate\_ppds
+=====================================
+
+.. currentmodule:: gwinferno.postprocess.calculate_ppds
+
+.. automodule:: gwinferno.postprocess.calculate_ppds
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      
+      calculate_chieff_bspline_ppds
+      
+      calculate_iid_spin_bspline_ppds
+      
+      calculate_iid_spin_bspline_weights
+      
+      calculate_ind_spin_bspline_ppds
+      
+      calculate_m1_bspline_q_powerlaw_ppds
+      
+      calculate_m1m2_bspline_ppds
+      
+      calculate_m1q_bspline_ppds
+      
+      calculate_m1q_bspline_weights
+      
+      calculate_m1q_ppds_plbspline_model
+      
+      calculate_powerbspline_rate_of_z_ppds
+      
+      calculate_powerlaw_rate_of_z_ppds
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

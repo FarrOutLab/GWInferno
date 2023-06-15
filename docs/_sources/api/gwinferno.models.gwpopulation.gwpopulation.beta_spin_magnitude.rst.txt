@@ -1,0 +1,6 @@
+gwinferno.models.gwpopulation.gwpopulation.beta\_spin\_magnitude
+================================================================
+
+.. currentmodule:: gwinferno.models.gwpopulation.gwpopulation
+
+.. autofunction:: beta_spin_magnitude

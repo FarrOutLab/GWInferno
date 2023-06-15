@@ -1,0 +1,6 @@
+gwinferno.pipeline.analysis.logmu\_logneff\_injections\_log
+===========================================================
+
+.. currentmodule:: gwinferno.pipeline.analysis
+
+.. autofunction:: logmu_logneff_injections_log

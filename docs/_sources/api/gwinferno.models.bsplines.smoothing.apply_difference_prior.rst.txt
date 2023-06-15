@@ -1,0 +1,6 @@
+gwinferno.models.bsplines.smoothing.apply\_difference\_prior
+============================================================
+
+.. currentmodule:: gwinferno.models.bsplines.smoothing
+
+.. autofunction:: apply_difference_prior

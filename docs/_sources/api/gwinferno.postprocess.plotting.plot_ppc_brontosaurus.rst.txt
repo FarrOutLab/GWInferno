@@ -1,0 +1,6 @@
+gwinferno.postprocess.plotting.plot\_ppc\_brontosaurus
+======================================================
+
+.. currentmodule:: gwinferno.postprocess.plotting
+
+.. autofunction:: plot_ppc_brontosaurus

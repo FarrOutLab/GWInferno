@@ -1,0 +1,41 @@
+﻿gwinferno.models
+================
+
+.. currentmodule:: gwinferno.models
+
+.. automodule:: gwinferno.models
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   
+   bsplines
+   
+   gwpopulation
+   
+   mass_gap
+   
+   spline_perturbation
+

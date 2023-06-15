@@ -1,0 +1,40 @@
+gwinferno.cosmology.Cosmology
+=============================
+
+.. currentmodule:: gwinferno.cosmology
+
+.. autoclass:: Cosmology
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Cosmology.DL2z
+      ~Cosmology.__init__
+      ~Cosmology.dDcdz
+      ~Cosmology.dVcdz
+      ~Cosmology.extend
+      ~Cosmology.logdVcdz
+      ~Cosmology.z2DL
+      ~Cosmology.z2Dc
+      ~Cosmology.z2E
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Cosmology.DL
+   
+   

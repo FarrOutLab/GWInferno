@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculate\_ppds.calculate\_m1q\_ppds\_plbspline\_model
+============================================================================
+
+.. currentmodule:: gwinferno.postprocess.calculate_ppds
+
+.. autofunction:: calculate_m1q_ppds_plbspline_model

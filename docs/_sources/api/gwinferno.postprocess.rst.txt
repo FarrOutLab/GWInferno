@@ -1,0 +1,37 @@
+﻿gwinferno.postprocess
+=====================
+
+.. currentmodule:: gwinferno.postprocess
+
+.. automodule:: gwinferno.postprocess
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   
+   calculate_ppds
+   
+   plotting
+

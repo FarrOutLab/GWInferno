@@ -1,0 +1,43 @@
+gwinferno.preprocess.priors
+===========================
+
+.. currentmodule:: gwinferno.preprocess.priors
+
+.. automodule:: gwinferno.preprocess.priors
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Di
+      
+      chi_effective_prior_from_aligned_spins
+      
+      chi_effective_prior_from_isotropic_spins
+      
+      chi_p_prior_from_isotropic_spins
+      
+      chi_p_prior_given_chi_eff_q
+      
+      joint_prior_from_isotropic_spins
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

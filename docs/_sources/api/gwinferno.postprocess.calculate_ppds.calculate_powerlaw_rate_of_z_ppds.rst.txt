@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculate\_ppds.calculate\_powerlaw\_rate\_of\_z\_ppds
+============================================================================
+
+.. currentmodule:: gwinferno.postprocess.calculate_ppds
+
+.. autofunction:: calculate_powerlaw_rate_of_z_ppds

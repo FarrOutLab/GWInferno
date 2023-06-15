@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculate\_ppds.calculate\_m1m2\_bspline\_ppds
+====================================================================
+
+.. currentmodule:: gwinferno.postprocess.calculate_ppds
+
+.. autofunction:: calculate_m1m2_bspline_ppds

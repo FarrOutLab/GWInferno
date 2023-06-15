@@ -1,0 +1,6 @@
+gwinferno.models.bsplines.smoothing.get\_adaptive\_Lambda
+=========================================================
+
+.. currentmodule:: gwinferno.models.bsplines.smoothing
+
+.. autofunction:: get_adaptive_Lambda

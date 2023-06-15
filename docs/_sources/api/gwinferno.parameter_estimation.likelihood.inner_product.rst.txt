@@ -1,0 +1,6 @@
+gwinferno.parameter\_estimation.likelihood.inner\_product
+=========================================================
+
+.. currentmodule:: gwinferno.parameter_estimation.likelihood
+
+.. autofunction:: inner_product

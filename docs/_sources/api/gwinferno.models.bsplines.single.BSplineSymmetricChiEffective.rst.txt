@@ -1,0 +1,30 @@
+gwinferno.models.bsplines.single.BSplineSymmetricChiEffective
+=============================================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: BSplineSymmetricChiEffective
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BSplineSymmetricChiEffective.__init__
+      ~BSplineSymmetricChiEffective.eval_spline
+      ~BSplineSymmetricChiEffective.inj_pdf
+      ~BSplineSymmetricChiEffective.pe_pdf
+      ~BSplineSymmetricChiEffective.truncate_dmat
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+gwinferno.models.mass\_gap.logistic\_unit
+=========================================
+
+.. currentmodule:: gwinferno.models.mass_gap
+
+.. autofunction:: logistic_unit

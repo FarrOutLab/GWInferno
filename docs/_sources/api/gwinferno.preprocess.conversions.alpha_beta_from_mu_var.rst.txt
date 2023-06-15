@@ -1,0 +1,6 @@
+gwinferno.preprocess.conversions.alpha\_beta\_from\_mu\_var
+===========================================================
+
+.. currentmodule:: gwinferno.preprocess.conversions
+
+.. autofunction:: alpha_beta_from_mu_var

@@ -1,0 +1,6 @@
+gwinferno.distributions.truncnorm\_pdf
+======================================
+
+.. currentmodule:: gwinferno.distributions
+
+.. autofunction:: truncnorm_pdf

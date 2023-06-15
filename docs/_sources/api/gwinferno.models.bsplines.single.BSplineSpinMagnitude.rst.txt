@@ -1,0 +1,30 @@
+gwinferno.models.bsplines.single.BSplineSpinMagnitude
+=====================================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: BSplineSpinMagnitude
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BSplineSpinMagnitude.__init__
+      ~BSplineSpinMagnitude.eval_spline
+      ~BSplineSpinMagnitude.inj_pdf
+      ~BSplineSpinMagnitude.pe_pdf
+      ~BSplineSpinMagnitude.truncate_dmat
+   
+   
+
+   
+   
+   

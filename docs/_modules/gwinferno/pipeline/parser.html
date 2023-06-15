@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.pipeline.parser &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../_static/tabs.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwinferno.pipeline.parser</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwinferno.pipeline.parser</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">a module that stores tools for parsing CLI arguments and config files for analysis pipelines</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+<span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
+
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
+
+
+<div class="viewcode-block" id="PopModel"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopModel.html#gwinferno.pipeline.parser.PopModel">[docs]</a><span class="k">class</span> <span class="nc">PopModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PopModel.__init__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopModel.html#gwinferno.pipeline.parser.PopModel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span></div></div>
+
+
+<div class="viewcode-block" id="PopPrior"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopPrior.html#gwinferno.pipeline.parser.PopPrior">[docs]</a><span class="k">class</span> <span class="nc">PopPrior</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PopPrior.__init__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopPrior.html#gwinferno.pipeline.parser.PopPrior.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span></div></div>
+
+
+<div class="viewcode-block" id="PopMixtureModel"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopMixtureModel.html#gwinferno.pipeline.parser.PopMixtureModel">[docs]</a><span class="k">class</span> <span class="nc">PopMixtureModel</span><span class="p">(</span><span class="n">PopModel</span><span class="p">):</span>
+<div class="viewcode-block" id="PopMixtureModel.__init__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopMixtureModel.html#gwinferno.pipeline.parser.PopMixtureModel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">mix_dist</span><span class="p">,</span> <span class="n">mix_params</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">component_params</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mixing_dist</span> <span class="o">=</span> <span class="n">mix_dist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mixing_params</span> <span class="o">=</span> <span class="n">mix_params</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_params</span> <span class="o">=</span> <span class="n">component_params</span></div></div>
+
+
+<div class="viewcode-block" id="load_dist_from_string"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_dist_from_string.html#gwinferno.pipeline.parser.load_dist_from_string">[docs]</a><span class="k">def</span> <span class="nf">load_dist_from_string</span><span class="p">(</span><span class="n">dist</span><span class="p">):</span>
+    <span class="n">split_d</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
+    <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">split_d</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">function</span> <span class="o">=</span> <span class="n">split_d</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">import_module</span><span class="p">(</span><span class="n">module</span><span class="p">),</span> <span class="n">function</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ConfigReader"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.ConfigReader.html#gwinferno.pipeline.parser.ConfigReader">[docs]</a><span class="k">class</span> <span class="nc">ConfigReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfigReader.__init__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.ConfigReader.html#gwinferno.pipeline.parser.ConfigReader.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">priors</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampling_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_args</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler_args</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yml_file</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yml_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">yml</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;outdir&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_args</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;data_args&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler_args</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sampler_args&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">likelihood_kwargs</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;likelihood_args&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">construct_model_and_prior_dicts</span><span class="p">(</span><span class="n">yml</span><span class="p">[</span><span class="s2">&quot;models&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">construct_model_and_prior_dicts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yml</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;python_file&quot;</span> <span class="ow">in</span> <span class="n">yml</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s2">&quot;file_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">yml</span><span class="p">[</span><span class="s2">&quot;python_file&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">yml</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;Mixture&quot;</span> <span class="ow">in</span> <span class="n">yml</span><span class="p">[</span><span class="n">param</span><span class="p">][</span><span class="s2">&quot;model&quot;</span><span class="p">]:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_mixture_model</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">yml</span><span class="p">[</span><span class="n">param</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">yml</span><span class="p">[</span><span class="n">param</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">add_prior</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">subd</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s2">&quot;prior&quot;</span> <span class="ow">in</span> <span class="n">subd</span> <span class="ow">and</span> <span class="s2">&quot;prior_params&quot;</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;prior_params&quot;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="s2">&quot;prior_params&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">])</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+                    <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;prior_params&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="s2">&quot;prior_params&quot;</span><span class="p">][</span><span class="n">k</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">priors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">PopPrior</span><span class="p">(</span><span class="n">load_dist_from_string</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]),</span> <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;prior_params&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sampling_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="s2">&quot;value&quot;</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">priors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">priors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;value&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">add_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">subd</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">PopModel</span><span class="p">(</span><span class="n">load_dist_from_string</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]),</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;hyper_params&quot;</span><span class="p">]])</span>
+        <span class="k">for</span> <span class="n">hp</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;hyper_params&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_prior</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">hp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;hyper_params&quot;</span><span class="p">][</span><span class="n">hp</span><span class="p">])</span>
+        <span class="k">if</span> <span class="s2">&quot;iid&quot;</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_iid_model</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;iid&quot;</span><span class="p">][</span><span class="s2">&quot;shared_parameter&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">add_iid_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">shared_param</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">shared_param</span><span class="p">]</span> <span class="o">=</span> <span class="n">param</span>
+
+    <span class="k">def</span> <span class="nf">add_mixture_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">,</span> <span class="n">subd</span><span class="p">):</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">load_dist_from_string</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">])</span>
+        <span class="n">mix_dist</span> <span class="o">=</span> <span class="n">load_dist_from_string</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="s2">&quot;mixture_dist&quot;</span><span class="p">][</span><span class="s2">&quot;model&quot;</span><span class="p">])</span>
+        <span class="n">mix_params</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;mixture_dist&quot;</span><span class="p">][</span><span class="s2">&quot;hyper_params&quot;</span><span class="p">]]</span>
+        <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="s2">&quot;mixture_dist&quot;</span><span class="p">][</span><span class="s2">&quot;hyper_params&quot;</span><span class="p">][</span><span class="n">mix_params</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="s2">&quot;prior_params&quot;</span><span class="p">][</span><span class="s2">&quot;concentration&quot;</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">hp</span> <span class="ow">in</span> <span class="n">mix_params</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_prior</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">_mixture_dist_</span><span class="si">{</span><span class="n">hp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">subd</span><span class="p">[</span><span class="s2">&quot;mixture_dist&quot;</span><span class="p">][</span><span class="s2">&quot;hyper_params&quot;</span><span class="p">][</span><span class="n">hp</span><span class="p">])</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">component_params</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;component_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">components</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">load_dist_from_string</span><span class="p">(</span><span class="n">subd</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;model&quot;</span><span class="p">]))</span>
+            <span class="n">component_params</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;hyper_params&quot;</span><span class="p">]])</span>
+            <span class="k">for</span> <span class="n">hp</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;hyper_params&quot;</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_prior</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">param</span><span class="si">}</span><span class="s2">_component_</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">hp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">subd</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;hyper_params&quot;</span><span class="p">][</span><span class="n">hp</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">=</span> <span class="n">PopMixtureModel</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">mix_dist</span><span class="p">,</span> <span class="n">mix_params</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">component_params</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;iid&quot;</span> <span class="ow">in</span> <span class="n">subd</span><span class="p">[</span><span class="n">name</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_iid_model</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">subd</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;iid&quot;</span><span class="p">][</span><span class="s2">&quot;shared_parameter&quot;</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="load_base_parser"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_base_parser.html#gwinferno.pipeline.parser.load_base_parser">[docs]</a><span class="k">def</span> <span class="nf">load_base_parser</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--data-dir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/home/bruce.edelman/projects/GWTC3_allevents/&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--inj-file&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/home/bruce.edelman/projects/GWTC3_allevents/o1o2o3_mixture_injections.hdf5&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--outdir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;results&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--mmin&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--mmax&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--chains&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--samples&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1500</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--thinning&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--warmup&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--skip-inference&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

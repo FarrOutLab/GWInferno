@@ -1,0 +1,6 @@
+gwinferno.distributions.betadist
+================================
+
+.. currentmodule:: gwinferno.distributions
+
+.. autofunction:: betadist

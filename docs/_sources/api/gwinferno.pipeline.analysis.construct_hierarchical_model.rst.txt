@@ -1,0 +1,6 @@
+gwinferno.pipeline.analysis.construct\_hierarchical\_model
+==========================================================
+
+.. currentmodule:: gwinferno.pipeline.analysis
+
+.. autofunction:: construct_hierarchical_model

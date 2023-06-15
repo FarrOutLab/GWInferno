@@ -1,0 +1,6 @@
+gwinferno.models.gwpopulation.gwpopulation.independent\_spin\_tilt
+==================================================================
+
+.. currentmodule:: gwinferno.models.gwpopulation.gwpopulation
+
+.. autofunction:: independent_spin_tilt

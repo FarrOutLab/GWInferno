@@ -1,0 +1,58 @@
+gwinferno.numpyro\_distributions.Cosine
+=======================================
+
+.. currentmodule:: gwinferno.numpyro_distributions
+
+.. autoclass:: Cosine
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Cosine.__init__
+      ~Cosine.cdf
+      ~Cosine.enumerate_support
+      ~Cosine.expand
+      ~Cosine.expand_by
+      ~Cosine.icdf
+      ~Cosine.infer_shapes
+      ~Cosine.log_prob
+      ~Cosine.mask
+      ~Cosine.rsample
+      ~Cosine.sample
+      ~Cosine.sample_with_intermediates
+      ~Cosine.set_default_validate_args
+      ~Cosine.shape
+      ~Cosine.to_event
+      ~Cosine.tree_flatten
+      ~Cosine.tree_unflatten
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Cosine.arg_constraints
+      ~Cosine.batch_shape
+      ~Cosine.event_dim
+      ~Cosine.event_shape
+      ~Cosine.has_enumerate_support
+      ~Cosine.has_rsample
+      ~Cosine.is_discrete
+      ~Cosine.mean
+      ~Cosine.reparametrized_params
+      ~Cosine.support
+      ~Cosine.variance
+   
+   

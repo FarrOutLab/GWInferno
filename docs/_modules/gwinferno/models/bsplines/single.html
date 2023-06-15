@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.models.bsplines.single &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+        <script src="../../../../_static/sphinx_highlight.js"></script>
+        <script src="../../../../_static/tabs.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../api/gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwinferno.models.bsplines.single</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwinferno.models.bsplines.single</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">a module that stores 1D population models constructed from bsplines</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">astropy.cosmology</span> <span class="kn">import</span> <span class="n">Planck15</span>
+
+<span class="kn">from</span> <span class="nn">...interpolation</span> <span class="kn">import</span> <span class="n">BSpline</span>
+
+
+<div class="viewcode-block" id="Base1DBSplineModel"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel">[docs]</a><span class="k">class</span> <span class="nc">Base1DBSplineModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct basis spline for population inference</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
+<span class="sd">        xx (array_like): posterior samples to evaluate design matrix at</span>
+<span class="sd">        xx_inj (array_like): injection samples to evaluate design matrix at</span>
+<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">        xrange (tuple, optional): domain of spline. Defaults to (0, 1).</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to Bspline.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Base1DBSplineModel.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_splines</span><span class="p">,</span>
+        <span class="n">xx</span><span class="p">,</span>
+        <span class="n">xx_inj</span><span class="p">,</span>
+        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">basis</span><span class="o">=</span><span class="n">BSpline</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_splines</span> <span class="o">=</span> <span class="n">n_splines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span> <span class="o">=</span> <span class="n">xrange</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">degree</span> <span class="o">=</span> <span class="n">degree</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">basis</span><span class="p">(</span>
+            <span class="n">n_splines</span><span class="p">,</span>
+            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
+            <span class="n">xrange</span><span class="o">=</span><span class="n">xrange</span><span class="p">,</span>
+            <span class="n">k</span><span class="o">=</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pe_design_matrix</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">truncate_dmat</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">xx</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inj_design_matrix</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">truncate_dmat</span><span class="p">(</span><span class="n">xx_inj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">xx_inj</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">inj_pdf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pe_pdf</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Base1DBSplineModel.truncate_dmat"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel.truncate_dmat">[docs]</a>    <span class="k">def</span> <span class="nf">truncate_dmat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">dmat</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;ensures the design matrix is truncated outside of the basis interval [xmin, xmax].</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (array_like): domain values</span>
+<span class="sd">            dmat (array_like): design matrix</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: truncated design matrix</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dmat</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Base1DBSplineModel.eval_spline"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel.eval_spline">[docs]</a>    <span class="k">def</span> <span class="nf">eval_spline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;given design matrix and coefficients, project coefficients onto the basis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bases (array_like): design matrix of of spline</span>
+<span class="sd">            coefs (array_like): basis spline coefficients</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: The linear combination of the basis components given the coefficients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Base1DBSplineModel.pe_pdf"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel.pe_pdf">[docs]</a>    <span class="k">def</span> <span class="nf">pe_pdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;projects the coefficients onto the design matrix evaluated at the posterior samples</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coefs (array_like): basis spline coefficients</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: The linear combination of the basis components evaluated at the posterior samples given the coefficients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_spline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pe_design_matrix</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Base1DBSplineModel.inj_pdf"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel.inj_pdf">[docs]</a>    <span class="k">def</span> <span class="nf">inj_pdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;projects the coefficients onto the design matrix evaluated at the injection samples</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coefs (array_like): basis spline coefficients</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: The linear combination of the basis components evaluated at the injection samples given the coefficients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_spline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inj_design_matrix</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Base1DBSplineModel.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the projection of the coefficients along the design matrix evaluated at either posterior samples or injection samples.</span>
+<span class="sd">            Use flag pe_samples to specify which type of samples are being evaluated (pe or injection).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coefs (array_like): basis spline coefficients</span>
+<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
+<span class="sd">                                        along injection samples. Defaults to True.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: The linear combination of the basis components evaluated at the posterior or injection samples given the coefficients.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">coefs</span><span class="p">)</span> <span class="k">if</span> <span class="n">pe_samples</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">coefs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BSplineSpinMagnitude"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineSpinMagnitude.html#gwinferno.models.bsplines.single.BSplineSpinMagnitude">[docs]</a><span class="k">class</span> <span class="nc">BSplineSpinMagnitude</span><span class="p">(</span><span class="n">Base1DBSplineModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a spin magnitude B-Spline model for a single binary component</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
+<span class="sd">        a (array_like): spin magntiude pe samples to evaluate the basis spline at</span>
+<span class="sd">        a_inj (array_like): spin magnitude injection samples to evalute the basis spline at</span>
+<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BSplineSpinMagnitude.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineSpinMagnitude.html#gwinferno.models.bsplines.single.BSplineSpinMagnitude.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_splines</span><span class="p">,</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">a_inj</span><span class="p">,</span>
+        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_splines</span><span class="p">,</span>
+            <span class="n">a</span><span class="p">,</span>
+            <span class="n">a_inj</span><span class="p">,</span>
+            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
+            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BSplineSpinTilt"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineSpinTilt.html#gwinferno.models.bsplines.single.BSplineSpinTilt">[docs]</a><span class="k">class</span> <span class="nc">BSplineSpinTilt</span><span class="p">(</span><span class="n">Base1DBSplineModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a cosine tilt (cos(theta)) B-Spline model for a single binary component</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
+<span class="sd">        ct (array_like): cosine tilt pe samples to evaluate the basis spline at</span>
+<span class="sd">        ct_inj (array_like): cosine tilt injection samples to evalute the basis spline at</span>
+<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BSplineSpinTilt.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineSpinTilt.html#gwinferno.models.bsplines.single.BSplineSpinTilt.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_splines</span><span class="p">,</span>
+        <span class="n">ct</span><span class="p">,</span>
+        <span class="n">ct_inj</span><span class="p">,</span>
+        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_splines</span><span class="p">,</span>
+            <span class="n">ct</span><span class="p">,</span>
+            <span class="n">ct_inj</span><span class="p">,</span>
+            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
+            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
+            <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BSplineChiEffective"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineChiEffective.html#gwinferno.models.bsplines.single.BSplineChiEffective">[docs]</a><span class="k">class</span> <span class="nc">BSplineChiEffective</span><span class="p">(</span><span class="n">Base1DBSplineModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a chi effective B-Spline model for a single binary component</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
+<span class="sd">        chieff (array_like): chi effective pe samples to evaluate the basis spline at</span>
+<span class="sd">        chieff_inj (array_like): chi effective injection samples to evalute the basis spline at</span>
+<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BSplineChiEffective.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineChiEffective.html#gwinferno.models.bsplines.single.BSplineChiEffective.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_splines</span><span class="p">,</span>
+        <span class="n">chieff</span><span class="p">,</span>
+        <span class="n">chieff_inj</span><span class="p">,</span>
+        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_splines</span><span class="p">,</span>
+            <span class="n">chieff</span><span class="p">,</span>
+            <span class="n">chieff_inj</span><span class="p">,</span>
+            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
+            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
+            <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BSplineSymmetricChiEffective"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineSymmetricChiEffective.html#gwinferno.models.bsplines.single.BSplineSymmetricChiEffective">[docs]</a><span class="k">class</span> <span class="nc">BSplineSymmetricChiEffective</span><span class="p">(</span><span class="n">Base1DBSplineModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a chi effective B-Spline model symmetric about chi effective = zero  for a single binary component</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
+<span class="sd">        chieff (array_like): chi effective pe samples to evaluate the basis spline at</span>
+<span class="sd">        chieff_inj (array_like): chi effective injection samples to evalute the basis spline at</span>
+<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BSplineSymmetricChiEffective.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineSymmetricChiEffective.html#gwinferno.models.bsplines.single.BSplineSymmetricChiEffective.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_splines</span><span class="p">,</span>
+        <span class="n">chieff</span><span class="p">,</span>
+        <span class="n">chieff_inj</span><span class="p">,</span>
+        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_splines</span><span class="p">,</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">chieff</span><span class="p">),</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">chieff_inj</span><span class="p">),</span>
+            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
+            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
+            <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="BSplineSymmetricChiEffective.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineSymmetricChiEffective.html#gwinferno.models.bsplines.single.BSplineSymmetricChiEffective.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the projection of the coefficients along the design matrix evaluated at either posterior samples or injection samples.</span>
+<span class="sd">            Use flag pe_samples to specify which type of samples are being evaluated (pe or injection).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coefs (array_like): basis spline coefficients</span>
+<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
+<span class="sd">                                        along injection samples. Defaults to True.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: The linear combination of the basis components evaluated at the posterior or injection samples given the coefficients.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">coefs</span><span class="p">)</span> <span class="k">if</span> <span class="n">pe_samples</span> <span class="k">else</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">coefs</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BSplineChiPrecess"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineChiPrecess.html#gwinferno.models.bsplines.single.BSplineChiPrecess">[docs]</a><span class="k">class</span> <span class="nc">BSplineChiPrecess</span><span class="p">(</span><span class="n">Base1DBSplineModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct an effective precession (chi_p) B-Spline model for a single binary component</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
+<span class="sd">        chip (array_like): chi_p pe samples to evaluate the basis spline at</span>
+<span class="sd">        chip_inj (array_like): chi_p injection samples to evalute the basis spline at</span>
+<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BSplineChiPrecess.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineChiPrecess.html#gwinferno.models.bsplines.single.BSplineChiPrecess.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_splines</span><span class="p">,</span>
+        <span class="n">chip</span><span class="p">,</span>
+        <span class="n">chip_inj</span><span class="p">,</span>
+        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_splines</span><span class="p">,</span>
+            <span class="n">chip</span><span class="p">,</span>
+            <span class="n">chip_inj</span><span class="p">,</span>
+            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
+            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BSplineRatio"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineRatio.html#gwinferno.models.bsplines.single.BSplineRatio">[docs]</a><span class="k">class</span> <span class="nc">BSplineRatio</span><span class="p">(</span><span class="n">Base1DBSplineModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a mass ratio (q) B-Spline model for a single binary component</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
+<span class="sd">        q (array_like): mass ratio pe samples to evaluate the basis spline at</span>
+<span class="sd">        q_inj (array_like): mass ratio injection samples to evalute the basis spline at</span>
+<span class="sd">        qmin (float, optional): minimum mass ratio value. Spline is truncated below this minimum mass ratio.</span>
+<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
+<span class="sd">                Defaults to None.</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BSplineRatio.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineRatio.html#gwinferno.models.bsplines.single.BSplineRatio.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_splines</span><span class="p">,</span>
+        <span class="n">q</span><span class="p">,</span>
+        <span class="n">q_inj</span><span class="p">,</span>
+        <span class="n">qmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_splines</span><span class="p">,</span>
+            <span class="n">q</span><span class="p">,</span>
+            <span class="n">q_inj</span><span class="p">,</span>
+            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
+            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
+            <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="n">qmin</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BSplineMass"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineMass.html#gwinferno.models.bsplines.single.BSplineMass">[docs]</a><span class="k">class</span> <span class="nc">BSplineMass</span><span class="p">(</span><span class="n">Base1DBSplineModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a mass B-Spline model for a single binary component</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
+<span class="sd">        m (array_like): mass pe samples to evaluate the basis spline at</span>
+<span class="sd">        m_inj (array_like): mass injection samples to evalute the basis spline at</span>
+<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred. Defaults to None.</span>
+<span class="sd">        mmin (float, optional): minimum mass value. Spline is truncated below this minimum mass. Defaults to 2.</span>
+<span class="sd">        mmax (float, optional): maximum mass value. Spline is truncated above this maximum mass. Defaults to 100.</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BSplineMass.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineMass.html#gwinferno.models.bsplines.single.BSplineMass.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_splines</span><span class="p">,</span>
+        <span class="n">m</span><span class="p">,</span>
+        <span class="n">m_inj</span><span class="p">,</span>
+        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mmin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">mmax</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_splines</span><span class="p">,</span>
+            <span class="n">m</span><span class="p">,</span>
+            <span class="n">m_inj</span><span class="p">,</span>
+            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
+            <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">),</span>
+            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BSplineRedshift"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineRedshift.html#gwinferno.models.bsplines.single.BSplineRedshift">[docs]</a><span class="k">class</span> <span class="nc">BSplineRedshift</span><span class="p">(</span><span class="n">Base1DBSplineModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a redshift B-Spline model</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
+<span class="sd">        z (array_like): redshift pe samples to evaluate the basis spline at</span>
+<span class="sd">        z_inj (array_like): redshift injection samples to evalute the basis spline at</span>
+<span class="sd">        dVdc (array_like): differential co-moving volume pe samples to evaluate the basis spline at.</span>
+<span class="sd">        dVdc (array_like): differential co-moving volume injection samples to evaluate the basis spline at.</span>
+<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred. Defaults to None.</span>
+<span class="sd">        zmax (float, optional): maximum redshift value. basis spline will be truncated above this value. Defaults to 2.3.</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to Bspline.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BSplineRedshift.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineRedshift.html#gwinferno.models.bsplines.single.BSplineRedshift.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">n_splines</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">,</span>
+        <span class="n">z_inj</span><span class="p">,</span>
+        <span class="n">dVdc</span><span class="p">,</span>
+        <span class="n">dVdc_inj</span><span class="p">,</span>
+        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">zmax</span><span class="o">=</span><span class="mf">2.3</span><span class="p">,</span>
+        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">basis</span><span class="o">=</span><span class="n">BSpline</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">n_splines</span><span class="p">,</span>
+            <span class="n">z</span><span class="p">,</span>
+            <span class="n">z_inj</span><span class="p">,</span>
+            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
+            <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">zmax</span><span class="p">),</span>
+            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
+            <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zmax</span> <span class="o">=</span> <span class="n">zmax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dVcdzgrid</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Planck15</span><span class="o">.</span><span class="n">differential_comoving_volume</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">zmax</span><span class="p">,</span> <span class="mi">2500</span><span class="p">))</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">differential_comov_vols</span> <span class="o">=</span> <span class="p">[</span><span class="n">dVdc_inj</span><span class="p">,</span> <span class="n">dVdc</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">z_inj</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="BSplineRedshift.eval_spline"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineRedshift.html#gwinferno.models.bsplines.single.BSplineRedshift.eval_spline">[docs]</a>    <span class="k">def</span> <span class="nf">eval_spline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;given design matrix and coefficients, project coefficients onto the basis.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bases (array_like): design matrix of of spline</span>
+<span class="sd">            coefs (array_like): basis spline coefficients</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: The linear combination of the basis components given the coefficients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BSplineRedshift.norm"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineRedshift.html#gwinferno.models.bsplines.single.BSplineRedshift.norm">[docs]</a>    <span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;compute the normalization coefficient for the redshift basis-spline.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coefs (array_like): basis spline coefficients</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: the redshift normalization coefficient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dVcdzgrid</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i...,i-&gt;...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="BSplineRedshift.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.single.BSplineRedshift.html#gwinferno.models.bsplines.single.BSplineRedshift.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the projection of the coefficients along the design matrix evaluated at either posterior samples or injection samples.</span>
+<span class="sd">            Use flag pe_samples to specify which type of samples are being evaluated (pe or injection).</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coefs (array_like): basis spline coefficients</span>
+<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
+<span class="sd">                                        along injection samples. Defaults to True.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: The linear combination of the basis components evaluated at the posterior or injection samples given the coefficients.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">[</span><span class="mi">1</span><span class="p">](</span><span class="n">coefs</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">differential_comov_vols</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">pe_samples</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span><span class="p">[</span><span class="mi">0</span><span class="p">](</span><span class="n">coefs</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">differential_comov_vols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

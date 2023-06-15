@@ -1,0 +1,6 @@
+gwinferno.pipeline.parser.load\_base\_parser
+============================================
+
+.. currentmodule:: gwinferno.pipeline.parser
+
+.. autofunction:: load_base_parser

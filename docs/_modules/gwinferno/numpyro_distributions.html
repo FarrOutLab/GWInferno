@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.numpyro_distributions &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+        <script src="../../_static/tabs.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwinferno.numpyro_distributions</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwinferno.numpyro_distributions</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">a module defining additional numpyro distributions</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">lax</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">vmap</span>
+<span class="kn">from</span> <span class="nn">numpyro.distributions</span> <span class="kn">import</span> <span class="n">Distribution</span>
+<span class="kn">from</span> <span class="nn">numpyro.distributions</span> <span class="kn">import</span> <span class="n">constraints</span>
+<span class="kn">from</span> <span class="nn">numpyro.distributions.util</span> <span class="kn">import</span> <span class="n">is_prng_key</span>
+<span class="kn">from</span> <span class="nn">numpyro.distributions.util</span> <span class="kn">import</span> <span class="n">promote_shapes</span>
+<span class="kn">from</span> <span class="nn">numpyro.distributions.util</span> <span class="kn">import</span> <span class="n">validate_sample</span>
+
+<span class="kn">from</span> <span class="nn">.cosmology</span> <span class="kn">import</span> <span class="n">PLANCK_2018_Cosmology</span> <span class="k">as</span> <span class="n">cosmo</span>
+<span class="kn">from</span> <span class="nn">.interpolation</span> <span class="kn">import</span> <span class="n">NaturalCubicUnivariateSpline</span>
+<span class="kn">from</span> <span class="nn">.models.bsplines.smoothing</span> <span class="kn">import</span> <span class="n">apply_difference_prior</span>
+
+
+<div class="viewcode-block" id="cumtrapz"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.cumtrapz.html#gwinferno.numpyro_distributions.cumtrapz">[docs]</a><span class="k">def</span> <span class="nf">cumtrapz</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">difs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">idxs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">))])</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">vmap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="p">:</span> <span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)(</span><span class="n">idxs</span><span class="p">,</span> <span class="n">difs</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span> <span class="n">res</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Sine"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Sine.html#gwinferno.numpyro_distributions.Sine">[docs]</a><span class="k">class</span> <span class="nc">Sine</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+    <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;maximum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">reparametrized_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Sine.__init__"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Sine.html#gwinferno.numpyro_distributions.Sine.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">=</span> <span class="n">promote_shapes</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">interval</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">)</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">minimum</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">maximum</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Sine</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">batch_shape</span><span class="o">=</span><span class="n">batch_shape</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span></div>
+
+    <span class="nd">@constraints</span><span class="o">.</span><span class="n">dependent_property</span><span class="p">(</span><span class="n">is_discrete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">event_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_support</span>
+
+<div class="viewcode-block" id="Sine.sample"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Sine.html#gwinferno.numpyro_distributions.Sine.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">()):</span>
+        <span class="k">assert</span> <span class="n">is_prng_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">icdf</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">sample_shape</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">))</span></div>
+
+    <span class="nd">@validate_sample</span>
+    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+<div class="viewcode-block" id="Sine.cdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Sine.html#gwinferno.numpyro_distributions.Sine.cdf">[docs]</a>    <span class="k">def</span> <span class="nf">cdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">((</span><span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)))</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">cdf</span><span class="p">)</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">cdf</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cdf</span></div>
+
+<div class="viewcode-block" id="Sine.icdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Sine.html#gwinferno.numpyro_distributions.Sine.icdf">[docs]</a>    <span class="k">def</span> <span class="nf">icdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">norm</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Cosine"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Cosine.html#gwinferno.numpyro_distributions.Cosine">[docs]</a><span class="k">class</span> <span class="nc">Cosine</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+    <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;maximum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">reparametrized_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Cosine.__init__"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Cosine.html#gwinferno.numpyro_distributions.Cosine.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=-</span><span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">=</span> <span class="n">promote_shapes</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">interval</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">)</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">minimum</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">maximum</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Cosine</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">batch_shape</span><span class="o">=</span><span class="n">batch_shape</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span></div>
+
+    <span class="nd">@constraints</span><span class="o">.</span><span class="n">dependent_property</span><span class="p">(</span><span class="n">is_discrete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">event_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_support</span>
+
+<div class="viewcode-block" id="Cosine.sample"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Cosine.html#gwinferno.numpyro_distributions.Cosine.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">()):</span>
+        <span class="k">assert</span> <span class="n">is_prng_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">icdf</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">sample_shape</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">))</span></div>
+
+    <span class="nd">@validate_sample</span>
+    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="mf">2.0</span>
+
+<div class="viewcode-block" id="Cosine.cdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Cosine.html#gwinferno.numpyro_distributions.Cosine.cdf">[docs]</a>    <span class="k">def</span> <span class="nf">cdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">((</span><span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)))</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">cdf</span><span class="p">)</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">cdf</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cdf</span></div>
+
+<div class="viewcode-block" id="Cosine.icdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Cosine.html#gwinferno.numpyro_distributions.Cosine.icdf">[docs]</a>    <span class="k">def</span> <span class="nf">icdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">norm</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span> <span class="o">-</span> <span class="n">q</span> <span class="o">*</span> <span class="n">norm</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Powerlaw"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Powerlaw.html#gwinferno.numpyro_distributions.Powerlaw">[docs]</a><span class="k">class</span> <span class="nc">Powerlaw</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+    <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;maximum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">reparametrized_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="Powerlaw.__init__"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Powerlaw.html#gwinferno.numpyro_distributions.Powerlaw.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">minimum</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">promote_shapes</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">interval</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">minimum</span><span class="p">),</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">maximum</span><span class="p">),</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">alpha</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Powerlaw</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">batch_shape</span><span class="o">=</span><span class="n">batch_shape</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span></div>
+
+    <span class="nd">@constraints</span><span class="o">.</span><span class="n">dependent_property</span><span class="p">(</span><span class="n">is_discrete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">event_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_support</span>
+
+<div class="viewcode-block" id="Powerlaw.sample"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Powerlaw.html#gwinferno.numpyro_distributions.Powerlaw.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">()):</span>
+        <span class="k">assert</span> <span class="n">is_prng_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">icdf</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">sample_shape</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">))</span></div>
+
+    <span class="nd">@validate_sample</span>
+    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">logp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">logp</span> <span class="o">=</span> <span class="n">logp</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)))</span>
+        <span class="n">logp_neg1</span> <span class="o">=</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">),</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">logp_neg1</span><span class="p">,</span> <span class="n">logp</span><span class="p">),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Powerlaw.cdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Powerlaw.html#gwinferno.numpyro_distributions.Powerlaw.cdf">[docs]</a>    <span class="k">def</span> <span class="nf">cdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">value</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">**</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">cdf_neg1</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">value</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">cdf_neg1</span><span class="p">,</span> <span class="n">cdf</span><span class="p">)</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">cdf</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">cdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">cdf</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cdf</span></div>
+
+<div class="viewcode-block" id="Powerlaw.icdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.Powerlaw.html#gwinferno.numpyro_distributions.Powerlaw.icdf">[docs]</a>    <span class="k">def</span> <span class="nf">icdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="n">icdf</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">q</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">**</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)))</span> <span class="o">**</span> <span class="p">(</span>
+            <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">icdf_neg1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">q</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">maximum</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">),</span> <span class="n">icdf_neg1</span><span class="p">,</span> <span class="n">icdf</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NumericallyNormalizedDistribition"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.NumericallyNormalizedDistribition.html#gwinferno.numpyro_distributions.NumericallyNormalizedDistribition">[docs]</a><span class="k">class</span> <span class="nc">NumericallyNormalizedDistribition</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+    <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;maximum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">reparametrized_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;maximum&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="NumericallyNormalizedDistribition.__init__"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.NumericallyNormalizedDistribition.html#gwinferno.numpyro_distributions.NumericallyNormalizedDistribition.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">Ngrid</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span> <span class="o">=</span> <span class="n">promote_shapes</span><span class="p">(</span><span class="n">maximum</span><span class="p">,</span> <span class="n">minimum</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">maximum</span><span class="p">),</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">minimum</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NumericallyNormalizedDistribition</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">batch_shape</span><span class="o">=</span><span class="n">batch_shape</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span> <span class="k">if</span> <span class="n">grid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">Ngrid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdfs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_log_prob_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdfs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdfs</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span> <span class="o">=</span> <span class="n">cumtrapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdfs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+    <span class="nd">@constraints</span><span class="o">.</span><span class="n">dependent_property</span><span class="p">(</span><span class="n">is_discrete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">event_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_support</span>
+
+<div class="viewcode-block" id="NumericallyNormalizedDistribition.sample"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.NumericallyNormalizedDistribition.html#gwinferno.numpyro_distributions.NumericallyNormalizedDistribition.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">()):</span>
+        <span class="k">assert</span> <span class="n">is_prng_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">icdf</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">sample_shape</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">_log_prob_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="nd">@validate_sample</span>
+    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">),</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_prob_nonorm</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="NumericallyNormalizedDistribition.cdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.NumericallyNormalizedDistribition.html#gwinferno.numpyro_distributions.NumericallyNormalizedDistribition.cdf">[docs]</a>    <span class="k">def</span> <span class="nf">cdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NumericallyNormalizedDistribition.icdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.NumericallyNormalizedDistribition.html#gwinferno.numpyro_distributions.NumericallyNormalizedDistribition.icdf">[docs]</a>    <span class="k">def</span> <span class="nf">icdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PowerlawRedshift"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.PowerlawRedshift.html#gwinferno.numpyro_distributions.PowerlawRedshift">[docs]</a><span class="k">class</span> <span class="nc">PowerlawRedshift</span><span class="p">(</span><span class="n">NumericallyNormalizedDistribition</span><span class="p">):</span>
+    <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;maximum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span><span class="p">,</span> <span class="s2">&quot;lamb&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">}</span>
+    <span class="n">reparametrized_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;maximum&quot;</span><span class="p">,</span> <span class="s2">&quot;lamb&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="PowerlawRedshift.__init__"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.PowerlawRedshift.html#gwinferno.numpyro_distributions.PowerlawRedshift.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lamb</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">Ngrid</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lamb</span> <span class="o">=</span> <span class="n">lamb</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">minimum</span><span class="o">=</span><span class="mf">1e-11</span><span class="p">,</span> <span class="n">maximum</span><span class="o">=</span><span class="n">maximum</span><span class="p">,</span> <span class="n">Ngrid</span><span class="o">=</span><span class="n">Ngrid</span><span class="p">,</span> <span class="n">grid</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span></div>
+
+    <span class="k">def</span> <span class="nf">_log_prob_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lamb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">logdVcdz</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LinearInterpolatedPowerlaw"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.LinearInterpolatedPowerlaw.html#gwinferno.numpyro_distributions.LinearInterpolatedPowerlaw">[docs]</a><span class="k">class</span> <span class="nc">LinearInterpolatedPowerlaw</span><span class="p">(</span><span class="n">NumericallyNormalizedDistribition</span><span class="p">):</span>
+    <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;yinterps&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real_vector</span><span class="p">,</span>
+        <span class="s2">&quot;xinterps&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">ordered_vector</span><span class="p">,</span>
+        <span class="s2">&quot;maximum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">reparametrized_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;yinterps&quot;</span><span class="p">,</span> <span class="s2">&quot;xinterps&quot;</span><span class="p">,</span> <span class="s2">&quot;maximum&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="LinearInterpolatedPowerlaw.__init__"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.LinearInterpolatedPowerlaw.html#gwinferno.numpyro_distributions.LinearInterpolatedPowerlaw.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xinterps</span><span class="p">,</span> <span class="n">yinterps</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">Ngrid</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xinterps</span> <span class="o">=</span> <span class="n">xinterps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yinterps</span> <span class="o">=</span> <span class="n">yinterps</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LinearInterpolatedPowerlaw</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">Ngrid</span><span class="o">=</span><span class="n">Ngrid</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_log_prob_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xinterps</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yinterps</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="CubicInterpolatedPowerlaw"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.CubicInterpolatedPowerlaw.html#gwinferno.numpyro_distributions.CubicInterpolatedPowerlaw">[docs]</a><span class="k">class</span> <span class="nc">CubicInterpolatedPowerlaw</span><span class="p">(</span><span class="n">LinearInterpolatedPowerlaw</span><span class="p">):</span>
+<div class="viewcode-block" id="CubicInterpolatedPowerlaw.__init__"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.CubicInterpolatedPowerlaw.html#gwinferno.numpyro_distributions.CubicInterpolatedPowerlaw.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xinterps</span><span class="p">,</span> <span class="n">yinterps</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">Ngrid</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="n">NaturalCubicUnivariateSpline</span><span class="p">(</span><span class="n">xinterps</span><span class="p">,</span> <span class="n">yinterps</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CubicInterpolatedPowerlaw</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">xinterps</span><span class="p">,</span> <span class="n">yinterps</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">Ngrid</span><span class="o">=</span><span class="n">Ngrid</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_log_prob_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BSplineDistribution"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.BSplineDistribution.html#gwinferno.numpyro_distributions.BSplineDistribution">[docs]</a><span class="k">class</span> <span class="nc">BSplineDistribution</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+    <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;maximum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;minimum&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real</span><span class="p">,</span>
+        <span class="s2">&quot;cs&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real_vector</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">reparametrized_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;maximum&quot;</span><span class="p">,</span> <span class="s2">&quot;minimum&quot;</span><span class="p">,</span> <span class="s2">&quot;cs&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="BSplineDistribution.__init__"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.BSplineDistribution.html#gwinferno.numpyro_distributions.BSplineDistribution.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">,</span> <span class="n">cs</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">grid_dmat</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maximum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">minimum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cs</span> <span class="o">=</span> <span class="n">promote_shapes</span><span class="p">(</span><span class="n">maximum</span><span class="p">,</span> <span class="n">minimum</span><span class="p">,</span> <span class="n">cs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">interval</span><span class="p">(</span><span class="n">minimum</span><span class="p">,</span> <span class="n">maximum</span><span class="p">)</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">maximum</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">minimum</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">cs</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BSplineDistribution</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">batch_shape</span><span class="o">=</span><span class="n">batch_shape</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lpdfs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i,i...-&gt;...&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cs</span><span class="p">,</span> <span class="n">grid_dmat</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdfs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lpdfs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdfs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pdfs</span> <span class="o">/=</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span> <span class="o">=</span> <span class="n">cumtrapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pdfs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+    <span class="nd">@constraints</span><span class="o">.</span><span class="n">dependent_property</span><span class="p">(</span><span class="n">is_discrete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">event_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_support</span>
+
+<div class="viewcode-block" id="BSplineDistribution.sample"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.BSplineDistribution.html#gwinferno.numpyro_distributions.BSplineDistribution.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">()):</span>
+        <span class="k">assert</span> <span class="n">is_prng_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">icdf</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">sample_shape</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">))</span></div>
+
+    <span class="k">def</span> <span class="nf">_log_prob_nonorm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">lpdfs</span><span class="p">)</span>
+
+    <span class="nd">@validate_sample</span>
+    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_log_prob_nonorm</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BSplineDistribution.cdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.BSplineDistribution.html#gwinferno.numpyro_distributions.BSplineDistribution.cdf">[docs]</a>    <span class="k">def</span> <span class="nf">cdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BSplineDistribution.icdf"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.BSplineDistribution.html#gwinferno.numpyro_distributions.BSplineDistribution.icdf">[docs]</a>    <span class="k">def</span> <span class="nf">icdf</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdfgrid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="PSplineCoeficientPrior"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.PSplineCoeficientPrior.html#gwinferno.numpyro_distributions.PSplineCoeficientPrior">[docs]</a><span class="k">class</span> <span class="nc">PSplineCoeficientPrior</span><span class="p">(</span><span class="n">Distribution</span><span class="p">):</span>
+    <span class="n">arg_constraints</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;inv_var&quot;</span><span class="p">:</span> <span class="n">constraints</span><span class="o">.</span><span class="n">positive</span><span class="p">}</span>
+    <span class="n">reparametrized_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;inv_var&quot;</span><span class="p">]</span>
+
+<div class="viewcode-block" id="PSplineCoeficientPrior.__init__"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.PSplineCoeficientPrior.html#gwinferno.numpyro_distributions.PSplineCoeficientPrior.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">inv_var</span><span class="p">,</span> <span class="n">diff_order</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inv_var</span><span class="p">,)</span> <span class="o">=</span> <span class="n">promote_shapes</span><span class="p">(</span><span class="n">inv_var</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_support</span> <span class="o">=</span> <span class="n">constraints</span><span class="o">.</span><span class="n">real_vector</span>
+        <span class="n">batch_shape</span> <span class="o">=</span> <span class="n">lax</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">inv_var</span><span class="p">))</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PSplineCoeficientPrior</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">batch_shape</span><span class="o">=</span><span class="n">batch_shape</span><span class="p">,</span> <span class="n">validate_args</span><span class="o">=</span><span class="n">validate_args</span><span class="p">,</span> <span class="n">event_shape</span><span class="o">=</span><span class="p">(</span><span class="n">N</span><span class="p">,))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">diff_order</span> <span class="o">=</span> <span class="n">diff_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">N</span> <span class="o">=</span> <span class="n">N</span></div>
+
+    <span class="nd">@constraints</span><span class="o">.</span><span class="n">dependent_property</span><span class="p">(</span><span class="n">is_discrete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">event_dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">support</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_support</span>
+
+<div class="viewcode-block" id="PSplineCoeficientPrior.sample"><a class="viewcode-back" href="../../api/gwinferno.numpyro_distributions.PSplineCoeficientPrior.html#gwinferno.numpyro_distributions.PSplineCoeficientPrior.sample">[docs]</a>    <span class="k">def</span> <span class="nf">sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">()):</span>
+        <span class="k">assert</span> <span class="n">is_prng_key</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">sample_shape</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_shape</span><span class="p">)</span></div>
+
+    <span class="nd">@validate_sample</span>
+    <span class="k">def</span> <span class="nf">log_prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,)</span>
+        <span class="k">return</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">inv_var</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">diff_order</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

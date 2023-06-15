@@ -1,0 +1,6 @@
+gwinferno.models.gwpopulation.gwpopulation.iid\_spin\_magnitude
+===============================================================
+
+.. currentmodule:: gwinferno.models.gwpopulation.gwpopulation
+
+.. autofunction:: iid_spin_magnitude

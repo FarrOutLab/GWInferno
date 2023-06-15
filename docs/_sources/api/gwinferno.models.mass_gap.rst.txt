@@ -1,0 +1,43 @@
+gwinferno.models.mass\_gap
+==========================
+
+.. currentmodule:: gwinferno.models.mass_gap
+
+.. automodule:: gwinferno.models.mass_gap
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      
+      logistic_unit
+      
+      plpeak_gap_primary_ratio_pdf
+      
+      powerlaw_gap_cutoff_primary_ratio_pdf
+      
+      powerlaw_gap_logit_ben_primary_pdf
+      
+      powerlaw_gap_logit_primary_pdf
+      
+      powerlaw_gap_primary_ratio_pdf
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,6 @@
+gwinferno.parameter\_estimation.likelihood.noise\_weighted\_inner\_product
+==========================================================================
+
+.. currentmodule:: gwinferno.parameter_estimation.likelihood
+
+.. autofunction:: noise_weighted_inner_product

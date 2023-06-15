@@ -1,0 +1,6 @@
+gwinferno.models.mass\_gap.powerlaw\_gap\_logit\_ben\_primary\_pdf
+==================================================================
+
+.. currentmodule:: gwinferno.models.mass_gap
+
+.. autofunction:: powerlaw_gap_logit_ben_primary_pdf

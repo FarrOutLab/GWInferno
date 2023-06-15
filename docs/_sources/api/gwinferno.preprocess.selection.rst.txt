@@ -1,0 +1,41 @@
+gwinferno.preprocess.selection
+==============================
+
+.. currentmodule:: gwinferno.preprocess.selection
+
+.. automodule:: gwinferno.preprocess.selection
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      
+      convert_component_spin_injections_to_chieff
+      
+      get_injection_dict
+      
+      get_semianlytic_injection_dict
+      
+      load_injections
+      
+      resample_injections
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

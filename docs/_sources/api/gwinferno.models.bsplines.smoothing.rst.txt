@@ -1,0 +1,39 @@
+gwinferno.models.bsplines.smoothing
+===================================
+
+.. currentmodule:: gwinferno.models.bsplines.smoothing
+
+.. automodule:: gwinferno.models.bsplines.smoothing
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      
+      apply_difference_prior
+      
+      apply_twod_difference_prior
+      
+      get_adaptive_Lambda
+      
+      mixture_smoothing_parameter
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

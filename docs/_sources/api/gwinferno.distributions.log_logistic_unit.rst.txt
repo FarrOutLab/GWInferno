@@ -1,0 +1,6 @@
+gwinferno.distributions.log\_logistic\_unit
+===========================================
+
+.. currentmodule:: gwinferno.distributions
+
+.. autofunction:: log_logistic_unit

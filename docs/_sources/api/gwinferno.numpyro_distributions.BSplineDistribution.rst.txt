@@ -1,0 +1,58 @@
+gwinferno.numpyro\_distributions.BSplineDistribution
+====================================================
+
+.. currentmodule:: gwinferno.numpyro_distributions
+
+.. autoclass:: BSplineDistribution
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BSplineDistribution.__init__
+      ~BSplineDistribution.cdf
+      ~BSplineDistribution.enumerate_support
+      ~BSplineDistribution.expand
+      ~BSplineDistribution.expand_by
+      ~BSplineDistribution.icdf
+      ~BSplineDistribution.infer_shapes
+      ~BSplineDistribution.log_prob
+      ~BSplineDistribution.mask
+      ~BSplineDistribution.rsample
+      ~BSplineDistribution.sample
+      ~BSplineDistribution.sample_with_intermediates
+      ~BSplineDistribution.set_default_validate_args
+      ~BSplineDistribution.shape
+      ~BSplineDistribution.to_event
+      ~BSplineDistribution.tree_flatten
+      ~BSplineDistribution.tree_unflatten
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BSplineDistribution.arg_constraints
+      ~BSplineDistribution.batch_shape
+      ~BSplineDistribution.event_dim
+      ~BSplineDistribution.event_shape
+      ~BSplineDistribution.has_enumerate_support
+      ~BSplineDistribution.has_rsample
+      ~BSplineDistribution.is_discrete
+      ~BSplineDistribution.mean
+      ~BSplineDistribution.reparametrized_params
+      ~BSplineDistribution.support
+      ~BSplineDistribution.variance
+   
+   

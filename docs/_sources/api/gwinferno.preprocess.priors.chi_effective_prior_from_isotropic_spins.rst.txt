@@ -1,0 +1,6 @@
+gwinferno.preprocess.priors.chi\_effective\_prior\_from\_isotropic\_spins
+=========================================================================
+
+.. currentmodule:: gwinferno.preprocess.priors
+
+.. autofunction:: chi_effective_prior_from_isotropic_spins

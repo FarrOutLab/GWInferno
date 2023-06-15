@@ -1,0 +1,29 @@
+gwinferno.models.gwpopulation.gwpopulation.PowerlawRedshiftModel
+================================================================
+
+.. currentmodule:: gwinferno.models.gwpopulation.gwpopulation
+
+.. autoclass:: PowerlawRedshiftModel
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PowerlawRedshiftModel.__init__
+      ~PowerlawRedshiftModel.log_prob
+      ~PowerlawRedshiftModel.normalization
+      ~PowerlawRedshiftModel.prob
+   
+   
+
+   
+   
+   

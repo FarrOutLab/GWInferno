@@ -1,0 +1,6 @@
+gwinferno.distributions.powerlaw\_pdf
+=====================================
+
+.. currentmodule:: gwinferno.distributions
+
+.. autofunction:: powerlaw_pdf

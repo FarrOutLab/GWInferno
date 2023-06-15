@@ -1,0 +1,30 @@
+gwinferno.models.bsplines.single.BSplineRatio
+=============================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: BSplineRatio
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BSplineRatio.__init__
+      ~BSplineRatio.eval_spline
+      ~BSplineRatio.inj_pdf
+      ~BSplineRatio.pe_pdf
+      ~BSplineRatio.truncate_dmat
+   
+   
+
+   
+   
+   

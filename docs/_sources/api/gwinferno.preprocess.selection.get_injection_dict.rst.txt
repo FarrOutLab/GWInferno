@@ -1,0 +1,6 @@
+gwinferno.preprocess.selection.get\_injection\_dict
+===================================================
+
+.. currentmodule:: gwinferno.preprocess.selection
+
+.. autofunction:: get_injection_dict

@@ -1,0 +1,34 @@
+﻿gwinferno.cosmology
+===================
+
+.. currentmodule:: gwinferno.cosmology
+
+.. automodule:: gwinferno.cosmology
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      
+      Cosmology
+   
+   
+
+   
+   
+   
+
+
+

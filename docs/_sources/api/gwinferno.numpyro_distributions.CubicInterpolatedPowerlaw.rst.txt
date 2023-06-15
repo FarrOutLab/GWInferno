@@ -1,0 +1,58 @@
+gwinferno.numpyro\_distributions.CubicInterpolatedPowerlaw
+==========================================================
+
+.. currentmodule:: gwinferno.numpyro_distributions
+
+.. autoclass:: CubicInterpolatedPowerlaw
+   :members:
+   :show-inheritance:
+   :inherited-members:
+
+   
+   .. automethod:: __init__
+   .. automethod:: __call__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~CubicInterpolatedPowerlaw.__init__
+      ~CubicInterpolatedPowerlaw.cdf
+      ~CubicInterpolatedPowerlaw.enumerate_support
+      ~CubicInterpolatedPowerlaw.expand
+      ~CubicInterpolatedPowerlaw.expand_by
+      ~CubicInterpolatedPowerlaw.icdf
+      ~CubicInterpolatedPowerlaw.infer_shapes
+      ~CubicInterpolatedPowerlaw.log_prob
+      ~CubicInterpolatedPowerlaw.mask
+      ~CubicInterpolatedPowerlaw.rsample
+      ~CubicInterpolatedPowerlaw.sample
+      ~CubicInterpolatedPowerlaw.sample_with_intermediates
+      ~CubicInterpolatedPowerlaw.set_default_validate_args
+      ~CubicInterpolatedPowerlaw.shape
+      ~CubicInterpolatedPowerlaw.to_event
+      ~CubicInterpolatedPowerlaw.tree_flatten
+      ~CubicInterpolatedPowerlaw.tree_unflatten
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~CubicInterpolatedPowerlaw.arg_constraints
+      ~CubicInterpolatedPowerlaw.batch_shape
+      ~CubicInterpolatedPowerlaw.event_dim
+      ~CubicInterpolatedPowerlaw.event_shape
+      ~CubicInterpolatedPowerlaw.has_enumerate_support
+      ~CubicInterpolatedPowerlaw.has_rsample
+      ~CubicInterpolatedPowerlaw.is_discrete
+      ~CubicInterpolatedPowerlaw.mean
+      ~CubicInterpolatedPowerlaw.reparametrized_params
+      ~CubicInterpolatedPowerlaw.support
+      ~CubicInterpolatedPowerlaw.variance
+   
+   

@@ -1,0 +1,6 @@
+gwinferno.pipeline.analysis.find\_map
+=====================================
+
+.. currentmodule:: gwinferno.pipeline.analysis
+
+.. autofunction:: find_map

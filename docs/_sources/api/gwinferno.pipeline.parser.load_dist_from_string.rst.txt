@@ -1,0 +1,6 @@
+gwinferno.pipeline.parser.load\_dist\_from\_string
+==================================================
+
+.. currentmodule:: gwinferno.pipeline.parser
+
+.. autofunction:: load_dist_from_string

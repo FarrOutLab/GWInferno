@@ -1,0 +1,54 @@
+gwinferno.parameter\_estimation.detectors
+=========================================
+
+.. currentmodule:: gwinferno.parameter_estimation.detectors
+
+.. automodule:: gwinferno.parameter_estimation.detectors
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      
+      construct_arm
+      
+      get_detector_tensor
+      
+      get_geocentric_vertex
+      
+      make_get_polarization_tensor
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      
+      Detector
+      
+      H1
+      
+      L1
+      
+      V1
+   
+   
+
+   
+   
+   
+
+
+
