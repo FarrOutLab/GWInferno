@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.preprocess.selection &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff" href="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff.html" />
+    <link rel="prev" title="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins" href="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.conversions.html">gwinferno.preprocess.conversions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.priors.html">gwinferno.preprocess.priors</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">gwinferno.preprocess.selection</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff.html">gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.get_injection_dict.html">gwinferno.preprocess.selection.get_injection_dict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.get_semianlytic_injection_dict.html">gwinferno.preprocess.selection.get_semianlytic_injection_dict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.load_injections.html">gwinferno.preprocess.selection.load_injections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.resample_injections.html">gwinferno.preprocess.selection.resample_injections</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+      <li class="breadcrumb-item active">gwinferno.preprocess.selection</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/gwinferno.preprocess.selection.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gwinferno.preprocess.selection">
+<span id="gwinferno-preprocess-selection"></span><h1>gwinferno.preprocess.selection<a class="headerlink" href="#module-gwinferno.preprocess.selection" title="Permalink to this heading"></a></h1>
+<p>a module that stores functions for reading in and processing injection search results</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff.html#gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff" title="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_component_spin_injections_to_chieff</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.get_injection_dict.html#gwinferno.preprocess.selection.get_injection_dict" title="gwinferno.preprocess.selection.get_injection_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_injection_dict</span></code></a>(fi[, ifar, snr, spin, ...])</p></td>
+<td><p>Based from the function load_injection_data() at: <a class="reference external" href="https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66">https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.get_semianlytic_injection_dict.html#gwinferno.preprocess.selection.get_semianlytic_injection_dict" title="gwinferno.preprocess.selection.get_semianlytic_injection_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_semianlytic_injection_dict</span></code></a>(fi[, snr, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.load_injections.html#gwinferno.preprocess.selection.load_injections" title="gwinferno.preprocess.selection.load_injections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_injections</span></code></a>(injfile[, ifar_threshold, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.resample_injections.html#gwinferno.preprocess.selection.resample_injections" title="gwinferno.preprocess.selection.resample_injections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample_injections</span></code></a>(rng_key, model_prob, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

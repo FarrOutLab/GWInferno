@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.models.bsplines.single &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gwinferno.models.bsplines.single.BSplineChiEffective" href="gwinferno.models.bsplines.single.BSplineChiEffective.html" />
+    <link rel="prev" title="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio" href="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="gwinferno.models.bsplines.html">gwinferno.models.bsplines</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.joint.html">gwinferno.models.bsplines.joint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.separable.html">gwinferno.models.bsplines.separable</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.models.bsplines.single</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineChiEffective.html">gwinferno.models.bsplines.single.BSplineChiEffective</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineChiPrecess.html">gwinferno.models.bsplines.single.BSplineChiPrecess</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineMass.html">gwinferno.models.bsplines.single.BSplineMass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineRatio.html">gwinferno.models.bsplines.single.BSplineRatio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineRedshift.html">gwinferno.models.bsplines.single.BSplineRedshift</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSpinMagnitude.html">gwinferno.models.bsplines.single.BSplineSpinMagnitude</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSpinTilt.html">gwinferno.models.bsplines.single.BSplineSpinTilt</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSymmetricChiEffective.html">gwinferno.models.bsplines.single.BSplineSymmetricChiEffective</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.single.Base1DBSplineModel.html">gwinferno.models.bsplines.single.Base1DBSplineModel</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.html">gwinferno.models.bsplines.smoothing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.gwpopulation.html">gwinferno.models.gwpopulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.mass_gap.html">gwinferno.models.mass_gap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.spline_perturbation.html">gwinferno.models.spline_perturbation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.models.html">gwinferno.models</a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.models.bsplines.html">gwinferno.models.bsplines</a></li>
+      <li class="breadcrumb-item active">gwinferno.models.bsplines.single</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/gwinferno.models.bsplines.single.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gwinferno.models.bsplines.single">
+<span id="gwinferno-models-bsplines-single"></span><h1>gwinferno.models.bsplines.single<a class="headerlink" href="#module-gwinferno.models.bsplines.single" title="Permalink to this heading"></a></h1>
+<p>a module that stores 1D population models constructed from bsplines</p>
+<p class="rubric">Classes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineChiEffective.html#gwinferno.models.bsplines.single.BSplineChiEffective" title="gwinferno.models.bsplines.single.BSplineChiEffective"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineChiEffective</span></code></a>(n_splines, chieff, ...)</p></td>
+<td><p>Class to construct a chi effective B-Spline model for a single binary component</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineChiPrecess.html#gwinferno.models.bsplines.single.BSplineChiPrecess" title="gwinferno.models.bsplines.single.BSplineChiPrecess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineChiPrecess</span></code></a>(n_splines, chip, chip_inj)</p></td>
+<td><p>Class to construct an effective precession (chi_p) B-Spline model for a single binary component</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineMass.html#gwinferno.models.bsplines.single.BSplineMass" title="gwinferno.models.bsplines.single.BSplineMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineMass</span></code></a>(n_splines, m, m_inj[, knots, ...])</p></td>
+<td><p>Class to construct a mass B-Spline model for a single binary component</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineRatio.html#gwinferno.models.bsplines.single.BSplineRatio" title="gwinferno.models.bsplines.single.BSplineRatio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineRatio</span></code></a>(n_splines, q, q_inj[, qmin, ...])</p></td>
+<td><p>Class to construct a mass ratio (q) B-Spline model for a single binary component</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineRedshift.html#gwinferno.models.bsplines.single.BSplineRedshift" title="gwinferno.models.bsplines.single.BSplineRedshift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineRedshift</span></code></a>(n_splines, z, z_inj, dVdc, ...)</p></td>
+<td><p>Class to construct a redshift B-Spline model</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSpinMagnitude.html#gwinferno.models.bsplines.single.BSplineSpinMagnitude" title="gwinferno.models.bsplines.single.BSplineSpinMagnitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineSpinMagnitude</span></code></a>(n_splines, a, a_inj[, ...])</p></td>
+<td><p>Class to construct a spin magnitude B-Spline model for a single binary component</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSpinTilt.html#gwinferno.models.bsplines.single.BSplineSpinTilt" title="gwinferno.models.bsplines.single.BSplineSpinTilt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineSpinTilt</span></code></a>(n_splines, ct, ct_inj[, ...])</p></td>
+<td><p>Class to construct a cosine tilt (cos(theta)) B-Spline model for a single binary component</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSymmetricChiEffective.html#gwinferno.models.bsplines.single.BSplineSymmetricChiEffective" title="gwinferno.models.bsplines.single.BSplineSymmetricChiEffective"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineSymmetricChiEffective</span></code></a>(n_splines, ...)</p></td>
+<td><p>Class to construct a chi effective B-Spline model symmetric about chi effective = zero  for a single binary component</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel" title="gwinferno.models.bsplines.single.Base1DBSplineModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Base1DBSplineModel</span></code></a>(n_splines, xx, xx_inj[, ...])</p></td>
+<td><p>Class to construct basis spline for population inference</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html" class="btn btn-neutral float-left" title="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.models.bsplines.single.BSplineChiEffective.html" class="btn btn-neutral float-right" title="gwinferno.models.bsplines.single.BSplineChiEffective" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.interpolation.BSpline &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gwinferno.interpolation.BasisSpline" href="gwinferno.interpolation.BasisSpline.html" />
+    <link rel="prev" title="gwinferno.interpolation" href="gwinferno.interpolation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gwinferno.interpolation.html">gwinferno.interpolation</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">gwinferno.interpolation.BSpline</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwinferno.interpolation.BSpline"><code class="docutils literal notranslate"><span class="pre">BSpline</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.interpolation.BSpline.__init__"><code class="docutils literal notranslate"><span class="pre">BSpline.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.interpolation.BSpline.__call__"><code class="docutils literal notranslate"><span class="pre">BSpline.__call__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.interpolation.BSpline.bases"><code class="docutils literal notranslate"><span class="pre">BSpline.bases()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.interpolation.BSpline.eval"><code class="docutils literal notranslate"><span class="pre">BSpline.eval()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.interpolation.BSpline.get_coefficients"><code class="docutils literal notranslate"><span class="pre">BSpline.get_coefficients()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.interpolation.BSpline.norm"><code class="docutils literal notranslate"><span class="pre">BSpline.norm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.interpolation.BSpline.project"><code class="docutils literal notranslate"><span class="pre">BSpline.project()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.interpolation.BasisSpline.html">gwinferno.interpolation.BasisSpline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.interpolation.LogXBSpline.html">gwinferno.interpolation.LogXBSpline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.interpolation.LogXLogYBSpline.html">gwinferno.interpolation.LogXLogYBSpline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.interpolation.LogYBSpline.html">gwinferno.interpolation.LogYBSpline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.interpolation.NaturalCubicUnivariateSpline.html">gwinferno.interpolation.NaturalCubicUnivariateSpline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.interpolation.RectBivariateBasisSpline.html">gwinferno.interpolation.RectBivariateBasisSpline</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+      <li class="breadcrumb-item active">gwinferno.interpolation.BSpline</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/gwinferno.interpolation.BSpline.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwinferno-interpolation-bspline">
+<h1>gwinferno.interpolation.BSpline<a class="headerlink" href="#gwinferno-interpolation-bspline" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gwinferno.interpolation.BSpline">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.interpolation.</span></span><span class="sig-name descname"><span class="pre">BSpline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interior_knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xrange</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/interpolation.html#BSpline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.interpolation.BSpline" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline" title="gwinferno.interpolation.BasisSpline"><code class="xref py py-class docutils literal notranslate"><span class="pre">BasisSpline</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interior_knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xrange</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proper</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/interpolation.html#BSpline.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.interpolation.BSpline.__init__" title="Permalink to this definition"></a></dt>
+<dd><p>Class to construct a basis spline (B-Spline)</p>
+<dl>
+<dt>Args:</dt><dd><p>n_df (int): number of degrees of freedom for the spline
+knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</p>
+<blockquote>
+<div><p>Defaults to None.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>interior_knots (array_like, optional): array of interior knots,</dt><dd><p>if non-uniform knot placing is preferred. Defaults to None.</p>
+</dd>
+</dl>
+<p>xrange (tuple, optional): domain of spline. Defaults to (0, 1).
+k (int, optional): order of the spline +1, i.e. cubcic splines-&gt;k=4. Defaults to 4 (cubic spline).
+proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
+normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to False.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.__call__" title="Permalink to this definition"></a></dt>
+<dd><p>__call__ Evalulate basis spline at xs given coefficients</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>xs (array_like): input values to evaluate the basis spline at
+coefs (array_like): coefficients for the basis components</p>
+</dd>
+<dt>Returns:</dt><dd><p>array_like: The linear combination of the basis components evaluated at xs given the coefficients</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.__init__" title="gwinferno.interpolation.BSpline.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n_df[, knots, interior_knots, ...])</p></td>
+<td><p>Class to construct a basis spline (B-Spline)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.bases" title="gwinferno.interpolation.BSpline.bases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bases</span></code></a>(xs)</p></td>
+<td><p>bases form the basis spline design matrix evaluated at xs</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.eval" title="gwinferno.interpolation.BSpline.eval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval</span></code></a>(xs, coefs)</p></td>
+<td><p>eval Evalulate basis spline at xs given coefficients</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.get_coefficients" title="gwinferno.interpolation.BSpline.get_coefficients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coefficients</span></code></a>(xs, ys)</p></td>
+<td><p>computes the coefficients of the basis components given data 1-D data (xs, ys)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.norm" title="gwinferno.interpolation.BSpline.norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">norm</span></code></a>(coefs)</p></td>
+<td><p>norm numerically normalizes the spline</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.project" title="gwinferno.interpolation.BSpline.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(bases, coefs)</p></td>
+<td><p>project given a design matrix (or bases) and coefficients, project the coefficients onto the spline</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.bases">
+<span class="sig-name descname"><span class="pre">bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.bases" title="Permalink to this definition"></a></dt>
+<dd><p>bases form the basis spline design matrix evaluated at xs</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>xs (array_like): input values to evaluate the basis spline at</p>
+</dd>
+<dt>Returns:</dt><dd><p>array_like: the design matrix evaluated at xs. shape (N, <a href="#id1"><span class="problematic" id="id2">*</span></a>xs.shape)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.eval">
+<span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.eval" title="Permalink to this definition"></a></dt>
+<dd><p>eval Evalulate basis spline at xs given coefficients</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>xs (array_like): input values to evaluate the basis spline at
+coefs (array_like): coefficients for the basis components</p>
+</dd>
+<dt>Returns:</dt><dd><p>array_like: The linear combination of the basis components evaluated at xs given the coefficients</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.get_coefficients">
+<span class="sig-name descname"><span class="pre">get_coefficients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.get_coefficients" title="Permalink to this definition"></a></dt>
+<dd><p>computes the coefficients of the basis components given data 1-D data (xs, ys)</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>xs (array_like): The x values of data
+ys (array_like): The y values of data</p>
+</dd>
+<dt>Returns:</dt><dd><p>the coefficients (array_like), interpolated y-values evaluated at xs (array_like),
+the design matrix evaluated at xs with shape (N, <a href="#id3"><span class="problematic" id="id4">*</span></a>xs.shape)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.norm">
+<span class="sig-name descname"><span class="pre">norm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.norm" title="Permalink to this definition"></a></dt>
+<dd><p>norm numerically normalizes the spline</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>coefs (array_like): coefficients for the basis components</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: the normalization factor given the coefficients</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.project">
+<span class="sig-name descname"><span class="pre">project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/interpolation.html#BSpline.project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.interpolation.BSpline.project" title="Permalink to this definition"></a></dt>
+<dd><p>project given a design matrix (or bases) and coefficients, project the coefficients onto the spline</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>bases (array_like): The set of basis components or design matrix to project onto
+coefs (array_like): coefficients for the basis components</p>
+</dd>
+<dt>Returns:</dt><dd><p>array_like: The linear combination of the basis components given the coefficients</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwinferno.interpolation.html" class="btn btn-neutral float-left" title="gwinferno.interpolation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.interpolation.BasisSpline.html" class="btn btn-neutral float-right" title="gwinferno.interpolation.BasisSpline" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

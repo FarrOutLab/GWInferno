@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio" href="gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html" />
+    <link rel="prev" title="gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes" href="gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="gwinferno.models.bsplines.html">gwinferno.models.bsplines</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.joint.html">gwinferno.models.bsplines.joint</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="gwinferno.models.bsplines.separable.html">gwinferno.models.bsplines.separable</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html">gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html">gwinferno.models.bsplines.separable.BSplineIIDComponentMasses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.html">gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html">gwinferno.models.bsplines.separable.BSplineIIDSpinTilts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html">gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html">gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html">gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html">gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html">gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.single.html">gwinferno.models.bsplines.single</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.html">gwinferno.models.bsplines.smoothing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.gwpopulation.html">gwinferno.models.gwpopulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.mass_gap.html">gwinferno.models.mass_gap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.spline_perturbation.html">gwinferno.models.spline_perturbation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.models.html">gwinferno.models</a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.models.bsplines.html">gwinferno.models.bsplines</a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.models.bsplines.separable.html">gwinferno.models.bsplines.separable</a></li>
+      <li class="breadcrumb-item active">gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwinferno-models-bsplines-separable-bsplineindependentspintilts">
+<h1>gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts<a class="headerlink" href="#gwinferno-models-bsplines-separable-bsplineindependentspintilts" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">BSplineIndependentSpinTilts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splines2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct1_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct2_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIndependentSpinTilts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are indipendently distributed.</p>
+<dl>
+<dt>Args:</dt><dd><p>n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component
+n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component
+ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at
+ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at
+ct1_inj (array_like): primary component cosine tilt injection samples to evalute the basis spline at
+ct2_inj (array_like): secondary component cosine tilt injection samples to evalute the basis spline at
+knots1 (array_like, optional): array of knots for the primary binary component, if non-uniform knot placing is preferred.</p>
+<blockquote>
+<div><p>Defaults to None.</p>
+</div></blockquote>
+<p>degree1 (int, optional): degree of the spline for the primary binary component, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+knots2 (array_like, optional): array of knots for the secondary binary component, if non-uniform knot placing is preferred.</p>
+<blockquote>
+<div><p>Defaults to None.</p>
+</div></blockquote>
+<p>degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splines2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct1_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct2_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIndependentSpinTilts.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__init__" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIndependentSpinTilts.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__call__" title="Permalink to this definition"></a></dt>
+<dd><p>will evalute the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
+Use flag <cite>pe_samples</cite> to specify which type of samples are being evaluated (pe or injection).</p>
+<dl>
+<dt>Args:</dt><dd><p>pcoefs (array_like): primary component cosine tilt basis spline coefficients
+scoefs (array_like): secondary component cosine tilt basis spline coefficients
+pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</p>
+<blockquote>
+<div><p>along injection samples. Defaults to True.</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>array_like: the joint probability density distribution for the primary and secondary cosine tilt, p(ct1, ct2)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__init__" title="gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n_splines1, n_splines2, ct1, ct2, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html" class="btn btn-neutral float-left" title="gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html" class="btn btn-neutral float-right" title="gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

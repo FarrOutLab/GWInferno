@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.preprocess.conversions &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gwinferno.preprocess.conversions.alpha_beta_from_mu_var" href="gwinferno.preprocess.conversions.alpha_beta_from_mu_var.html" />
+    <link rel="prev" title="gwinferno.preprocess" href="gwinferno.preprocess.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">gwinferno.preprocess.conversions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.conversions.alpha_beta_from_mu_var.html">gwinferno.preprocess.conversions.alpha_beta_from_mu_var</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.conversions.chieff_from_q_component_spins.html">gwinferno.preprocess.conversions.chieff_from_q_component_spins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.conversions.chip_from_q_component_spins.html">gwinferno.preprocess.conversions.chip_from_q_component_spins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.conversions.mu_var_from_alpha_beta.html">gwinferno.preprocess.conversions.mu_var_from_alpha_beta</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.priors.html">gwinferno.preprocess.priors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.selection.html">gwinferno.preprocess.selection</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+      <li class="breadcrumb-item active">gwinferno.preprocess.conversions</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/gwinferno.preprocess.conversions.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gwinferno.preprocess.conversions">
+<span id="gwinferno-preprocess-conversions"></span><h1>gwinferno.preprocess.conversions<a class="headerlink" href="#module-gwinferno.preprocess.conversions" title="Permalink to this heading"></a></h1>
+<p>a module that stores helpful conversion functions between parameters</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.conversions.alpha_beta_from_mu_var.html#gwinferno.preprocess.conversions.alpha_beta_from_mu_var" title="gwinferno.preprocess.conversions.alpha_beta_from_mu_var"><code class="xref py py-obj docutils literal notranslate"><span class="pre">alpha_beta_from_mu_var</span></code></a>(mu, var[, amax])</p></td>
+<td><p>alpha_beta_from_mu_var converts the mean/variance (mu/var) parameters of the Beta</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.conversions.chieff_from_q_component_spins.html#gwinferno.preprocess.conversions.chieff_from_q_component_spins" title="gwinferno.preprocess.conversions.chieff_from_q_component_spins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chieff_from_q_component_spins</span></code></a>(q, a1, a2, ...)</p></td>
+<td><p>chieff_from_q_component_spins calculates the effective spin paramer given the</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.conversions.chip_from_q_component_spins.html#gwinferno.preprocess.conversions.chip_from_q_component_spins" title="gwinferno.preprocess.conversions.chip_from_q_component_spins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chip_from_q_component_spins</span></code></a>(q, a1, a2, ct1, ct2)</p></td>
+<td><p>chip_from_q_component_spins calculates the effective spin precession paramer given</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.conversions.mu_var_from_alpha_beta.html#gwinferno.preprocess.conversions.mu_var_from_alpha_beta" title="gwinferno.preprocess.conversions.mu_var_from_alpha_beta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mu_var_from_alpha_beta</span></code></a>(alpha, beta[, amax])</p></td>
+<td><p>mu_var_from_alpha_beta converts the alpha/beta shape parameters of the Beta</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwinferno.preprocess.html" class="btn btn-neutral float-left" title="gwinferno.preprocess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.preprocess.conversions.alpha_beta_from_mu_var.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.conversions.alpha_beta_from_mu_var" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

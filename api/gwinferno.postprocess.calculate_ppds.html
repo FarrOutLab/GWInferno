@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.postprocess.calculate_ppds &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gwinferno.postprocess.calculate_ppds.calculate_chieff_bspline_ppds" href="gwinferno.postprocess.calculate_ppds.calculate_chieff_bspline_ppds.html" />
+    <link rel="prev" title="gwinferno.postprocess" href="gwinferno.postprocess.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">gwinferno.postprocess.calculate_ppds</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_chieff_bspline_ppds.html">gwinferno.postprocess.calculate_ppds.calculate_chieff_bspline_ppds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_ppds.html">gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_ppds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_weights.html">gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_ind_spin_bspline_ppds.html">gwinferno.postprocess.calculate_ppds.calculate_ind_spin_bspline_ppds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1_bspline_q_powerlaw_ppds.html">gwinferno.postprocess.calculate_ppds.calculate_m1_bspline_q_powerlaw_ppds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1m2_bspline_ppds.html">gwinferno.postprocess.calculate_ppds.calculate_m1m2_bspline_ppds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_ppds.html">gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_ppds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_weights.html">gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_weights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1q_ppds_plbspline_model.html">gwinferno.postprocess.calculate_ppds.calculate_m1q_ppds_plbspline_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_powerbspline_rate_of_z_ppds.html">gwinferno.postprocess.calculate_ppds.calculate_powerbspline_rate_of_z_ppds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_powerlaw_rate_of_z_ppds.html">gwinferno.postprocess.calculate_ppds.calculate_powerlaw_rate_of_z_ppds</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.postprocess.plotting.html">gwinferno.postprocess.plotting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+      <li class="breadcrumb-item active">gwinferno.postprocess.calculate_ppds</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/gwinferno.postprocess.calculate_ppds.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-gwinferno.postprocess.calculate_ppds">
+<span id="gwinferno-postprocess-calculate-ppds"></span><h1>gwinferno.postprocess.calculate_ppds<a class="headerlink" href="#module-gwinferno.postprocess.calculate_ppds" title="Permalink to this heading"></a></h1>
+<p>a module with utilities for calculating population posterior distributions (i.e. Rates on Grids)</p>
+<p class="rubric">Functions</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_chieff_bspline_ppds.html#gwinferno.postprocess.calculate_ppds.calculate_chieff_bspline_ppds" title="gwinferno.postprocess.calculate_ppds.calculate_chieff_bspline_ppds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_chieff_bspline_ppds</span></code></a>(coefs, model, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_ppds.html#gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_ppds" title="gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_ppds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_iid_spin_bspline_ppds</span></code></a>(coefs, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_weights.html#gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_weights" title="gwinferno.postprocess.calculate_ppds.calculate_iid_spin_bspline_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_iid_spin_bspline_weights</span></code></a>(xs, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_ind_spin_bspline_ppds.html#gwinferno.postprocess.calculate_ppds.calculate_ind_spin_bspline_ppds" title="gwinferno.postprocess.calculate_ppds.calculate_ind_spin_bspline_ppds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_ind_spin_bspline_ppds</span></code></a>(coefs, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1_bspline_q_powerlaw_ppds.html#gwinferno.postprocess.calculate_ppds.calculate_m1_bspline_q_powerlaw_ppds" title="gwinferno.postprocess.calculate_ppds.calculate_m1_bspline_q_powerlaw_ppds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_m1_bspline_q_powerlaw_ppds</span></code></a>(mcoefs, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1m2_bspline_ppds.html#gwinferno.postprocess.calculate_ppds.calculate_m1m2_bspline_ppds" title="gwinferno.postprocess.calculate_ppds.calculate_m1m2_bspline_ppds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_m1m2_bspline_ppds</span></code></a>(mcoefs, ...[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_ppds.html#gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_ppds" title="gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_ppds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_m1q_bspline_ppds</span></code></a>(mcoefs, qcoefs, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_weights.html#gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_weights" title="gwinferno.postprocess.calculate_ppds.calculate_m1q_bspline_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_m1q_bspline_weights</span></code></a>(m, q, mcoefs, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_m1q_ppds_plbspline_model.html#gwinferno.postprocess.calculate_ppds.calculate_m1q_ppds_plbspline_model" title="gwinferno.postprocess.calculate_ppds.calculate_m1q_ppds_plbspline_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_m1q_ppds_plbspline_model</span></code></a>(...[, ...])</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_powerbspline_rate_of_z_ppds.html#gwinferno.postprocess.calculate_ppds.calculate_powerbspline_rate_of_z_ppds" title="gwinferno.postprocess.calculate_ppds.calculate_powerbspline_rate_of_z_ppds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_powerbspline_rate_of_z_ppds</span></code></a>(lamb, ...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.postprocess.calculate_ppds.calculate_powerlaw_rate_of_z_ppds.html#gwinferno.postprocess.calculate_ppds.calculate_powerlaw_rate_of_z_ppds" title="gwinferno.postprocess.calculate_ppds.calculate_powerlaw_rate_of_z_ppds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_powerlaw_rate_of_z_ppds</span></code></a>(lamb, ...)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwinferno.postprocess.html" class="btn btn-neutral float-left" title="gwinferno.postprocess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.postprocess.calculate_ppds.calculate_chieff_bspline_ppds.html" class="btn btn-neutral float-right" title="gwinferno.postprocess.calculate_ppds.calculate_chieff_bspline_ppds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

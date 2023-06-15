@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.pipeline.analysis.hierarchical_likelihood_in_log &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="gwinferno.pipeline.analysis.logmu_logneff_injections_log" href="gwinferno.pipeline.analysis.logmu_logneff_injections_log.html" />
+    <link rel="prev" title="gwinferno.pipeline.analysis.hierarchical_likelihood" href="gwinferno.pipeline.analysis.hierarchical_likelihood.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="gwinferno.pipeline.html">gwinferno.pipeline</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="gwinferno.pipeline.analysis.html">gwinferno.pipeline.analysis</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.construct_hierarchical_model.html">gwinferno.pipeline.analysis.construct_hierarchical_model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.find_map.html">gwinferno.pipeline.analysis.find_map</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.hierarchical_likelihood.html">gwinferno.pipeline.analysis.hierarchical_likelihood</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.pipeline.analysis.hierarchical_likelihood_in_log</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.pipeline.analysis.hierarchical_likelihood_in_log"><code class="docutils literal notranslate"><span class="pre">hierarchical_likelihood_in_log()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.logmu_logneff_injections_log.html">gwinferno.pipeline.analysis.logmu_logneff_injections_log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.mu_neff_injections.html">gwinferno.pipeline.analysis.mu_neff_injections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs.html">gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs_log.html">gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs_log</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.TotalVTCalculator.html">gwinferno.pipeline.analysis.TotalVTCalculator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.pipeline.parser.html">gwinferno.pipeline.parser</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.pipeline.analysis.html">gwinferno.pipeline.analysis</a></li>
+      <li class="breadcrumb-item active">gwinferno.pipeline.analysis.hierarchical_likelihood_in_log</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/gwinferno.pipeline.analysis.hierarchical_likelihood_in_log.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gwinferno-pipeline-analysis-hierarchical-likelihood-in-log">
+<h1>gwinferno.pipeline.analysis.hierarchical_likelihood_in_log<a class="headerlink" href="#gwinferno-pipeline-analysis-hierarchical-likelihood-in-log" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="gwinferno.pipeline.analysis.hierarchical_likelihood_in_log">
+<span class="sig-prename descclassname"><span class="pre">gwinferno.pipeline.analysis.</span></span><span class="sig-name descname"><span class="pre">hierarchical_likelihood_in_log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logpe_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loginj_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surv_hypervolume_fct=&lt;gwinferno.pipeline.analysis.TotalVTCalculator</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtfct_kwargs={'lamb':</span> <span class="pre">0}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marginalize_selection=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruct_rate=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_neff_cut=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posterior_predictive_check=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pedata=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injdata=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2min=3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1min=6.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax=100.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/analysis.html#hierarchical_likelihood_in_log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.analysis.hierarchical_likelihood_in_log" title="Permalink to this definition"></a></dt>
+<dd><dl>
+<dt>hierarchical_likelihood_log performs the hierarchical likeihood calculation in log probability</dt><dd><p>by resampling over injections and pe samples from each event’s indiviudally done analayses.
+for reference see:</p>
+</dd>
+<dt>Args:</dt><dd><dl class="simple">
+<dt>logpe_weights (jax.DeviceArray): JAX array of log weights evaluated at pe samples to integrate over.</dt><dd><p>Expected size of (N_events,N_samples)</p>
+</dd>
+<dt>loginj_weights (jax.DeviceArray): JAX array of log weights evaluated at found injections to</dt><dd><p>integrate over. Expected size of (N_found_injections,)</p>
+</dd>
+</dl>
+<p>total_inj (int): total number of generated injections before cutting on found.
+Nobs (int): Total number of observed events analyzing
+Tobs (float): Time spent observing to produce catalog (in yrs)
+surv_hypervolume_fct (callable, optional): callable function to calculate total</p>
+<blockquote>
+<div><p>VT (normalization of the redshift model). Defaults to TotalVTCalculator().</p>
+</div></blockquote>
+<dl class="simple">
+<dt>vtfct_kwargs (dict, optional): diction of args needed to call</dt><dd><p>surv_hypervolume_fct(). Defaults to {“lamb”: 0}.</p>
+</dd>
+<dt>marginalize_selection (bool, optional): Flag to marginalize over uncertainty in</dt><dd><p>selection monte carlo integral. Defaults to True.</p>
+</dd>
+<dt>reconstruct_rate (bool, optional): Flag to reconstruct marginalize</dt><dd><p>merger rate. Defaults to True.</p>
+</dd>
+<dt>min_neff_cut (bool, optional): flag to use the min_neff cut on the likelihood</dt><dd><p>ensuring monte carlo integrals converge. Defaults to True.</p>
+</dd>
+<dt>posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data</dt><dd><p>to perform posterior predictive check. Defaults to False.</p>
+</dd>
+</dl>
+<p>param_names (iterable, optional): parameters to sample for PPCs. Defaults to None.
+pedata (dict, optional): diction of PE data needed to perform PPCs. Defaults to None.
+injdata (dict, optional): diction of found injection data needed to perform PPCs. Defaults to None.
+m2min (float, optional): mininmum mass for secondary components (solar masses). Defaults to 3.0.
+m1min (float, optional): mininmum mass for primary components (solar masses). Defaults to 6.5.
+mmax (float, optional): maximum mass for primary components (solar masses). Defaults to 100.0.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="gwinferno.pipeline.analysis.hierarchical_likelihood.html" class="btn btn-neutral float-left" title="gwinferno.pipeline.analysis.hierarchical_likelihood" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.pipeline.analysis.logmu_logneff_injections_log.html" class="btn btn-neutral float-right" title="gwinferno.pipeline.analysis.logmu_logneff_injections_log" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
