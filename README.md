@@ -1,5 +1,6 @@
 [![CI-Tests](https://github.com/FarrOutLab/GWInferno/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/FarrOutLab/GWInferno/actions/workflows/ci-tests.yml)
-[![GitHub Doc Pages](https://github.com/FarrOutLab/GWInferno/actions/workflows/docs-gh-pages.yml/badge.svg)](https://github.com/FarrOutLab/GWInferno/actions/workflows/docs-gh-pages.yml)[![codecov](https://codecov.io/gh/FarrOutLab/GWInferno/branch/main/graph/badge.svg?token=PLXM4211S3)](https://codecov.io/gh/FarrOutLab/GWInferno)
+[![GitHub Doc Pages](https://github.com/FarrOutLab/GWInferno/actions/workflows/docs-gh-pages.yml/badge.svg)](https://github.com/FarrOutLab/GWInferno/actions/workflows/docs-gh-pages.yml)
+[![codecov](https://codecov.io/gh/FarrOutLab/GWInferno/branch/main/graph/badge.svg?token=PLXM4211S3)](https://codecov.io/gh/FarrOutLab/GWInferno)
 
 # GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
 
