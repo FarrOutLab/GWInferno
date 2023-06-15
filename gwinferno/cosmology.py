@@ -6,7 +6,7 @@ a module for basic cosmology calculations using jax
 # https://git.ligo.org/reed.essick/gw-distributions/-/blob/master/gwdistributions/utils/cosmology.py
 
 import jax.numpy as jnp
-import numpy as np
+
 
 # define units in SI
 C_SI = 299792458.0
@@ -46,9 +46,11 @@ class Cosmology(object):
         self.OmegaLambda = omega_lambda
         self.OmegaKappa = 1.0 - (self.OmegaMatter + self.OmegaRadiation + self.OmegaLambda)
         assert self.OmegaKappa == 0, "we only implement flat cosmologies! OmegaKappa must be 0"
-        self.z = np.array([0.0])
-        self.Dc = np.array([0.0])
-        self.Vc = np.array([0.0])
+        self.z = jnp.array([0.0])
+        self.Dc = jnp.array([0.0])
+        self.Vc = jnp.array([0.0])
+        self.extend(max_z=2.3, dz=DEFAULT_DZ)
+
 
     @property
     def DL(self):
@@ -60,9 +62,12 @@ class Cosmology(object):
         """
         # note, this could be slow due to trapazoidal approximation with small step size
         # extract current state
-        z = self.z[-1]
-        Dc = self.Dc[-1]
-        Vc = self.Vc[-1]
+        zs = list(self.z)
+        Dcs = list(self.Dc)
+        Vcs = list(self.Vc)
+        z = zs[-1]
+        Dc = Dcs[-1]
+        Vc = Vcs[-1]
         DL = Dc * (1 + z)
 
         while jnp.less(Dc, max_Dc) | jnp.less(DL, max_DL) | jnp.less(z, max_z) | jnp.less(Vc, max_Vc):
@@ -77,9 +82,12 @@ class Cosmology(object):
             # update state
             z, DL, Dc, Vc = new_z, new_DL, new_Dc, new_Vc
             # append to arrays
-            self.z = np.append(self.z, z)
-            self.Dc = np.append(self.Dc, Dc)
-            self.Vc = np.append(self.Vc, Vc)
+            zs.append(z)
+            Dcs.append(Dc)
+            Vcs.append(Vc)
+        self.z = jnp.array(zs)
+        self.Dc = jnp.array(Dcs)
+        self.Vc = jnp.array(Vcs)
 
     def z2E(self, z):
         """
