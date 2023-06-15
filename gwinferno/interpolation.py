@@ -74,7 +74,6 @@ class BasisSpline(object):
         interior_knots=None,
         xrange=(0, 1),
         k=4,
-        proper=True,
         normalize=True,
     ):
         """
@@ -89,23 +88,16 @@ class BasisSpline(object):
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
             proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
-            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
+            normalize (bool, optional): flag whether or not to numerically normalize the spline. Default to True.
         """
         self.order = k
         self.N = n_df
         self.xrange = xrange
         if knots is None:
             if interior_knots is None:
-                interior_knots = np.linspace(*(0, 1), n_df - k + 2)
-            if proper:
-                dx = interior_knots[1] - interior_knots[0]
-                knots = (xrange[1] - xrange[0]) * jnp.linspace(-dx * (k - 1), 1 + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
-
-            else:
-                knots = np.append(
-                    np.append(np.array([xrange[0]] * (k - 1)), interior_knots),
-                    np.array([xrange[1]] * (k - 1)),
-                )
+                interior_knots = np.linspace(xrange[0], xrange[1], n_df - k + 2)
+            dx = interior_knots[1] - interior_knots[0]
+            knots = jnp.linspace(xrange[0] - dx * (k - 1), xrange[1] + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
         self.knots = knots
         self.interior_knots = (xrange[1] - xrange[0]) * interior_knots
         assert len(self.knots) == self.N + self.order
@@ -244,7 +236,6 @@ class BSpline(BasisSpline):
         interior_knots=None,
         xrange=(0, 1),
         k=4,
-        proper=True,
         normalize=False,
     ):
         """
@@ -267,7 +258,6 @@ class BSpline(BasisSpline):
             interior_knots=interior_knots,
             xrange=xrange,
             k=k,
-            proper=proper,
             normalize=normalize,
         )
 
