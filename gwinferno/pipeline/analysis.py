@@ -415,7 +415,7 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
     pop_models = {k: None for k in model_dict.keys()}
 
     if "redshift" in pop_models.keys():
-        z_grid = jnp.linspace(1e-9, prior_dict["redshift_maximum"], 1000)
+        z_grid = jnp.linspace(1e-9, hyper_params["redshift_maximum"], 1000)
 
     def model(samps, injs, Ninj, Nobs, Tobs):
         for k, v in prior_dict.items():
