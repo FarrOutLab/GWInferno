@@ -7,7 +7,6 @@ a module for basic cosmology calculations using jax
 
 import jax.numpy as jnp
 
-
 # define units in SI
 C_SI = 299792458.0
 PC_SI = 3.085677581491367e16
@@ -37,7 +36,7 @@ class Cosmology(object):
     **NOTE**, we work in CGS units throughout, so Ho must be specified in s**-1 and distances are specified in cm
     """
 
-    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, distance_unit="mpc"):
+    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, distance_unit="mpc", initial_z_integ=2.3):
         self.Ho = Ho
         self.c_over_Ho = C_CGS / self.Ho
         self.unit_mod = MPC_CGS if distance_unit == "mpc" else 1.0
@@ -50,7 +49,6 @@ class Cosmology(object):
         self.Dc = jnp.array([0.0])
         self.Vc = jnp.array([0.0])
         self.extend(max_z=2.3, dz=DEFAULT_DZ)
-
 
     @property
     def DL(self):
@@ -103,39 +101,52 @@ class Cosmology(object):
         returns (c/Ho)/E(z)
         """
         dDc = self.c_over_Ho / self.z2E(z)
-        return jnp.where(mpc, dDc / MPC_CGS, dDc)
+        if mpc:
+            return dDc / MPC_CGS
+        return dDc
 
-    def dVcdz(self, z, Dc=0):
+    def dVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
         """
         return dVc/dz
         """
-        Dc = jnp.where(Dc, Dc, self.z2Dc(z))
+        if Dc is None:
+            Dc = self.z2Dc(z, dz=dz)
         return 4 * jnp.pi * Dc**2 * self.dDcdz(z)
 
-    def logdVcdz(self, z, Dc=0):
+    def logdVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
         """
         return ln(dVc/dz), useful when constructing probability distributions without overflow errors
         """
-        Dc = jnp.where(Dc, Dc, self.z2Dc(z))
+        if Dc is None:
+            Dc = self.z2Dc(z, dz=dz)
         return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z)) - 3.0 * jnp.log(self.unit_mod)
 
-    def z2Dc(self, z):
+    def z2Dc(self, z, dz=DEFAULT_DZ):
         """
         return Dc for each z specified
         """
+        # max_z = jnp.max(z)
+        # if jnp.greater(max_z, jnp.max(self.z)):
+        #    self.extend(max_z=max_z,dz=dz)
         return jnp.interp(z, self.z, self.Dc)
 
-    def DL2z(self, DL):
+    def DL2z(self, DL, dz=DEFAULT_DZ):
         """
         returns redshifts for each DL specified.
         """
         DL_cgs = DL * self.unit_mod
+        max_DL = jnp.max(DL_cgs)
+        if max_DL > jnp.max(self.DL):  # need to extend the integration
+            self.extend(max_DL=max_DL, dz=dz)
         return jnp.interp(DL_cgs, self.DL, self.z)
 
-    def z2DL(self, z):
+    def z2DL(self, z, dz=DEFAULT_DZ):
         """
         returns luminosity distance at the specified redshifts
         """
+        max_z = jnp.max(z)
+        if max_z > jnp.max(self.z):
+            self.extend(max_z=max_z, dz=dz)
         return jnp.interp(z, self.z, self.DL) / self.unit_mod
 
 
@@ -147,6 +158,3 @@ PLANCK_2018_Cosmology = Cosmology(
     PLANCK_2018_OmegaRadiation,
     PLANCK_2018_OmegaLambda,
 )
-
-DEFAULT_MAXZ = 2.5
-PLANCK_2018_Cosmology.extend(max_z=DEFAULT_MAXZ)
