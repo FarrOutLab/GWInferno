@@ -26,22 +26,21 @@ jobs:
           activate-conda: true
           update-conda: true
           python-version: 3.9
-          conda-channels: anaconda, conda-forge
+          conda-channels: conda-forge
 
       - name: Install dependencies 
         run: | # MUST INSTALL NUMPYRO/JAX/JAXLIB WITH PIP: CI FAILS IF INSTALLED WITH CONDA (idfk why)
-            conda install flake8 pytest-cov codespell
             conda install pip setuptools
             pip install --upgrade pip
             pip install numpyro 
             pip install -r pip_requirements.txt
             pip install -r docs/requirements.txt
+            pip install .
 
       - name: Build documentation
         run: |
           cd docs
           mv Makefile.gh_pages Makefile
-          cp ../examples/*.ipynb ./
           make clean
           make html
           cd ../
