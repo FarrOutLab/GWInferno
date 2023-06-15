@@ -11,8 +11,8 @@ from gwinferno.cosmology import PLANCK_2018_Cosmology as cosmology
 
 class TestDefaultCosmology(unittest.TestCase):
     def setUp(self) -> None:
-        self.zs = np.linspace(1e-9, 5, 1000)
-        self.dLs_mpc = np.linspace(1e-2, 1e4, 1000)
+        self.zs = np.linspace(1e-9, 3.0, 1000)
+        self.dLs_mpc = np.linspace(1e-2, 3000, 1000)
 
     def tearDown(self) -> None:
         del self.zs

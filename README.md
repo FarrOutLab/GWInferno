@@ -1,5 +1,6 @@
 [![CI-Tests](https://github.com/FarrOutLab/GWInferno/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/FarrOutLab/GWInferno/actions/workflows/ci-tests.yml)
 [![Docs](https://readthedocs.org/projects/gwinferno/badge/?version=latest)](https://gwinferno.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gh/FarrOutLab/GWInferno/branch/main/graph/badge.svg?token=PLXM4211S3)](https://codecov.io/gh/FarrOutLab/GWInferno)
 
 # GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
 
@@ -49,24 +50,25 @@ For example a simple config.yml file that defines a Truncated Powerlaw populatio
 label: Truncated_Powerlaw_mass_1
 
 # Population Parameters, Models, HyperParameters, and Priors
-mass_1:
-  model: gwinferno.numpyro_distributions.Powerlaw
-  hyper_params:
-    alpha:
-      prior: numpyro.distributions.Normal
-      prior_params:
-        loc: 0.0
-        scale: 3.0
-    minimum:
-      prior: numpyro.distributions.Uniform
-      prior_params:
-        low: 2.0
-        high: 10.0
-    maximum:
-      prior: numpyro.distributions.Uniform
-      prior_params:
-        low: 50.0
-        high: 100.0
+models:
+  mass_1:
+    model: gwinferno.numpyro_distributions.Powerlaw
+    hyper_params:
+      alpha:
+        prior: numpyro.distributions.Normal
+        prior_params:
+          loc: 0.0
+          scale: 3.0
+      minimum:
+        prior: numpyro.distributions.Uniform
+        prior_params:
+          low: 2.0
+          high: 10.0
+      maximum:
+        prior: numpyro.distributions.Uniform
+        prior_params:
+          low: 50.0
+          high: 100.0
 
 # Sampler Configuration Args
 sampler_args:

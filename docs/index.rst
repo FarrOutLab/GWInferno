@@ -34,6 +34,7 @@ API:
     distributions
     interpolation
     models
+    numpyro_distributions
     parameter_estimation
     pipeline
     postprocess
