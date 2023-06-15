@@ -3,7 +3,7 @@
 
 # GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
 
-- [Documentation](https://farroutlab.github.io/gwinferno)
+- [Documentation](https://farroutlab.github.io/GWInferno/)
 
 ## Installation
 
