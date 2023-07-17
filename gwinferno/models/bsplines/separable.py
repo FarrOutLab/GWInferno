@@ -439,7 +439,7 @@ class BSplinePrimaryBSplineRatio(object):
             **kwargs,
         )
         self.ratio_model = BSplineRatio(
-            n_splines_m,
+            n_splines_q,
             q,
             q_inj,
             qmin=m2min / mmax,
