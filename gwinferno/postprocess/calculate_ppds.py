@@ -99,7 +99,7 @@ def calculate_iid_spin_bspline_ppds(coefs, model, nknots, rate=None, xmin=0, xma
         rate = jnp.ones(coefs.shape[0])
 
     def calc_pdf(cs, r):
-        return pdf.primary_model(cs) #* r
+        return pdf.primary_model(cs)  # * r
 
     calc_pdf = jit(calc_pdf)
     _ = calc_pdf(coefs[0], rate[0])
