@@ -1,16 +1,13 @@
+import re
+from typing import Any
+from typing import Iterator
+from typing import List
+from typing import Mapping
+from typing import Optional
+from typing import Tuple
+from typing import Union
+
 import xarray as xr
-
-
-from typing import (
-    Any,
-    List,
-    Iterator,
-    Mapping,
-    Tuple,
-    Union,
-    Optional,
-    overload,
-)
 
 
 def _compressible_dtype(dtype):
@@ -22,12 +19,13 @@ def _compressible_dtype(dtype):
 
 class DataSet(Mapping[str, xr.Dataset]):
     """Adapted from Arviz InferenceData object https://python.arviz.org/en/stable/_modules/arviz/data/inference_data.html#InferenceData"""
+
     def __init__(
         self,
         attrs: Union[None, Mapping[Any, Any]] = None,
         **kwargs: Union[xr.Dataset, List[xr.Dataset], Tuple[xr.Dataset, xr.Dataset]],
     ) -> None:
-        
+
         self._groups: List[str] = []
         self._attrs: Union[None, dict] = dict(attrs) if attrs is not None else None
         key_list = [key for key in kwargs]
@@ -39,7 +37,7 @@ class DataSet(Mapping[str, xr.Dataset]):
     def __len__(self) -> int:
         """Return the number of groups in this InferenceData object."""
         return len(self._groups)
-    
+
     def __iter__(self) -> Iterator[str]:
         """Iterate over groups in InferenceData object."""
         for group in self._groups:
@@ -50,7 +48,7 @@ class DataSet(Mapping[str, xr.Dataset]):
         if key not in self._groups:
             raise KeyError(key)
         return getattr(self, key)
-        
+
     def to_netcdf(
         self,
         filename: str,
@@ -93,9 +91,7 @@ class DataSet(Mapping[str, xr.Dataset]):
                 kwargs = {"engine": engine}
                 if compress:
                     kwargs["encoding"] = {
-                        var_name: {"zlib": True}
-                        for var_name, values in data.variables.items()
-                        if _compressible_dtype(values.dtype)
+                        var_name: {"zlib": True} for var_name, values in data.variables.items() if _compressible_dtype(values.dtype)
                     }
                 data.to_netcdf(filename, mode=mode, group=group, **kwargs)
                 data.close()
@@ -111,11 +107,9 @@ class DataSet(Mapping[str, xr.Dataset]):
                 empty_netcdf_file = nc.Dataset(filename, mode="w", format="NETCDF4")
             empty_netcdf_file.close()
         return filename
-    
+
     @staticmethod
-    def from_netcdf(
-        filename, *, engine="h5netcdf", group_kwargs=None, regex=False
-    ) -> "InferenceData":
+    def from_netcdf(filename, *, engine="h5netcdf", group_kwargs=None, regex=False) -> "DataSet":
         """Initialize object from a netcdf file.
 
         Expects that the file will have groups, each of which can be loaded by xarray.
@@ -140,7 +134,7 @@ class DataSet(Mapping[str, xr.Dataset]):
 
         Returns
         -------
-        InferenceData
+        DataSet
         """
         groups = {}
         attrs = {}
@@ -150,14 +144,10 @@ class DataSet(Mapping[str, xr.Dataset]):
         elif engine == "netcdf4":
             import netCDF4 as nc
         else:
-            raise ValueError(
-                f"Invalid value for engine: {engine}. Valid options are: h5netcdf or netcdf4"
-            )
+            raise ValueError(f"Invalid value for engine: {engine}. Valid options are: h5netcdf or netcdf4")
 
         try:
-            with h5netcdf.File(filename, mode="r") if engine == "h5netcdf" else nc.Dataset(
-                filename, mode="r"
-            ) as data:
+            with h5netcdf.File(filename, mode="r") if engine == "h5netcdf" else nc.Dataset(filename, mode="r") as data:
                 data_groups = list(data.groups)
 
             for group in data_groups:
