@@ -509,13 +509,14 @@ class RectBivariateBasisSpline(object):
 
         Args:
             xs (array_like): input values to evaluate the X basis spline at
-            xs (array_like): input values to evaluate the Y basis spline at
+            ys (array_like): input values to evaluate the Y basis spline at
 
         Returns:
             array_like: the design matrix evaluated at xs. shape (xdf, ydf, *xs.shape)
         """
         self.x_bases = self.x_interpolator.bases(xs)
         self.y_bases = self.y_interpolator.bases(ys)
+        #Check that out is a proper tensor product
         out = jnp.array([[self.x_bases[i] * self.y_bases[j] for i in range(self.xdf)] for j in range(self.ydf)]).reshape(
             self.xdf, self.ydf, *xs.shape
         )

@@ -189,6 +189,7 @@ def model(
             p_ct1ct2 = tilt_model(len(z.shape), tilt_cs)
             p_z = z_model(z, lamb, z_cs)
             wts = p_m1q * p_a1a2 * p_ct1ct2 * p_z / prior
+            
             return jnp.where(jnp.isnan(wts) | jnp.isinf(wts), 0, wts)
 
         peweights = get_weights(pedict["redshift"], pedict["prior"])
