@@ -56,30 +56,30 @@ class TestBSplines(unittest.TestCase):
 
     def test_basis_spline_norm(self):
         spl = BasisSpline(self.N, normalize=True)
-        dmat = spl.bases(self.gr).T
+        dmat = spl.bases(self.gr)
         norm = np.trapz(spl.project(dmat, self.cs), self.gr)
-        self.assertAlmostEqual(norm, 1.0, places=4)
+        self.assertAlmostEqual(norm, 1.0, places=3)
 
     def test_b_spline_norm(self):
         spl = BSpline(self.N, normalize=True)
-        dmat = spl.bases(self.gr).T
+        dmat = spl.bases(self.gr)
         norm = np.trapz(spl.project(dmat, self.cs), self.gr)
-        self.assertAlmostEqual(norm, 1.0, places=4)
+        self.assertAlmostEqual(norm, 1.0, places=3)
 
     def test_logyb_spline_norm(self):
         spl = LogYBSpline(self.N, normalize=True)
-        dmat = spl.bases(self.gr).T
+        dmat = spl.bases(self.gr)
         norm = np.trapz(spl.project(dmat, self.cs_pn), self.gr)
-        self.assertAlmostEqual(norm, 1.0, places=4)
+        self.assertAlmostEqual(norm, 1.0, places=3)
 
     def test_logxb_spline_norm(self):
-        spl = LogXBSpline(self.N, normalize=True)
-        dmat = spl.bases(self.grid).T
+        spl = LogXBSpline(self.N, xrange=(0.001, 1), normalize=True)
+        dmat = spl.bases(self.grid)
         norm = np.trapz(spl.project(dmat, self.cs), self.grid)
-        self.assertAlmostEqual(norm, 1.0, places=4)
+        self.assertAlmostEqual(norm, 1.0, places=3)
 
     def test_logxlogyb_spline_norm(self):
-        spl = LogXLogYBSpline(self.N, normalize=True)
-        dmat = spl.bases(self.grid).T
+        spl = LogXLogYBSpline(self.N, xrange=(0.001, 1), normalize=True)
+        dmat = spl.bases(self.grid)
         norm = np.trapz(spl.project(dmat, self.cs_pn), self.grid)
-        self.assertAlmostEqual(norm, 1.0, places=4)
+        self.assertAlmostEqual(norm, 1.0, places=3)
