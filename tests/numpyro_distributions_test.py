@@ -11,11 +11,13 @@ from gwinferno.interpolation import LogXBSpline
 from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
 from gwinferno.numpyro_distributions import BSplineDistribution
+from gwinferno.numpyro_distributions import Cosine
 from gwinferno.numpyro_distributions import CubicInterpolatedPowerlaw
 from gwinferno.numpyro_distributions import LinearInterpolatedPowerlaw
 from gwinferno.numpyro_distributions import Powerlaw
 from gwinferno.numpyro_distributions import PowerlawRedshift
 from gwinferno.numpyro_distributions import PSplineCoeficientPrior
+from gwinferno.numpyro_distributions import Sine
 from gwinferno.numpyro_distributions import cumtrapz
 
 
@@ -50,6 +52,22 @@ class TestNPDistributions(unittest.TestCase):
         del self.y_interps
         del self.gr
         del self.cs
+
+    def test_cosine(self):
+        d = Cosine(minimum=-np.pi / 2.0, maximum=np.pi / 2.0)
+        grid = np.linspace(-np.pi / 2.0, np.pi / 2.0, 1000)
+        lpdfs = d.log_prob(grid)
+        self.assertAlmostEqual(jnp.trapz(jnp.exp(lpdfs), grid), 1.0, places=4)
+        samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
+        self.assertTrue(jnp.all((samps >= -np.pi / 2.0) & (samps <= np.pi / 2.0)))
+
+    def test_sine(self):
+        d = Sine(minimum=0.0, maximum=np.pi)
+        grid = np.linspace(0, np.pi, 1000)
+        lpdfs = d.log_prob(grid)
+        self.assertAlmostEqual(jnp.trapz(jnp.exp(lpdfs), grid), 1.0, places=4)
+        samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
+        self.assertTrue(jnp.all((samps >= 0.0) & (samps <= np.pi)))
 
     def test_powerlaw(self):
         d = Powerlaw(alpha=1.0, minimum=0.001, maximum=1.0)
