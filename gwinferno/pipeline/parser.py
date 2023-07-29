@@ -2,6 +2,7 @@
 a module that stores tools for parsing CLI arguments and config files for analysis pipelines
 """
 
+import sys
 from argparse import ArgumentParser
 from importlib import import_module
 
@@ -30,6 +31,13 @@ class PopMixtureModel(PopModel):
         self.component_params = component_params
 
 
+def load_model_from_python_file(path):
+    fn = path.split("/")[-1]
+    direct = path.replace(f"/{fn}", "")
+    sys.path.append(direct)
+    return getattr(import_module(fn.replace(".py", "")), "model")
+
+
 def load_dist_from_string(dist):
     split_d = dist.split(".")
     module = ".".join(split_d[:-1])
@@ -50,11 +58,11 @@ class ConfigReader(object):
     def parse(self, yml_file):
         with open(yml_file, "r") as f:
             yml = yaml.safe_load(f)
-        self.label = yml.pop("label")
-        self.outdir = yml.pop("outdir")
-        self.data_args = yml.pop("data_args")
-        self.sampler_args = yml.pop("sampler_args")
-        self.likelihood_kwargs = yml.pop("likelihood_args")
+        self.label = yml.pop("label", "label")
+        self.outdir = yml.pop("outdir", "./")
+        self.data_args = yml.pop("data_args", {})
+        self.sampler_args = yml.pop("sampler_args", {})
+        self.likelihood_args = yml.pop("likelihood_args", {})
         self.construct_model_and_prior_dicts(yml["models"])
 
     def construct_model_and_prior_dicts(self, yml):

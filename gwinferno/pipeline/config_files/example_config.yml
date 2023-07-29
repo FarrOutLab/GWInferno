@@ -1,5 +1,6 @@
 # Run Label
 label: Truncated_PowerlawRedshift_MDC_smoothed_power_law_0
+outdir: outdir
 
 # Population Parameters, Models, HyperParameters, and Priors
 models:

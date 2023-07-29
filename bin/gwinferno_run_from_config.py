@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-import sys
 from argparse import ArgumentParser
-from importlib import import_module
 
 import arviz as az
 import deepdish as dd
@@ -14,17 +12,11 @@ from numpyro.infer import MCMC
 from gwinferno.pipeline.analysis import NP_KERNEL_MAP
 from gwinferno.pipeline.analysis import construct_hierarchical_model
 from gwinferno.pipeline.parser import ConfigReader
+from gwinferno.pipeline.parser import load_model_from_python_file
 from gwinferno.preprocess.data_collection import load_catalog_from_metadata
 from gwinferno.preprocess.selection import load_injections
 
 az.style.use("arviz-darkgrid")
-
-
-def load_model_from_python_file(path):
-    fn = path.split("/")[-1]
-    direct = path.replace(f"/{fn}", "")
-    sys.path.append(direct)
-    return getattr(import_module(fn.replace(".py", "")), "model")
 
 
 def load_args():
@@ -57,7 +49,7 @@ def run_inference(config_yml, inspect=False, PRNG_seed=0):
     config_reader = ConfigReader()
     config_reader.parse(config_yml)
     model_dict, prior_dict = config_reader.models, config_reader.priors
-    data_conf, sampler_conf, likelihood_kwargs = config_reader.data_args, config_reader.sampler_args, config_reader.likelihood_kwargs
+    data_conf, sampler_conf, likelihood_args = config_reader.data_args, config_reader.sampler_args, config_reader.likelihood_args
     sampling_params, label, outdir = config_reader.sampling_params, config_reader.label, config_reader.outdir
     if inspect:
         print("MODEL DICT: \n", model_dict)
@@ -65,7 +57,7 @@ def run_inference(config_yml, inspect=False, PRNG_seed=0):
     if "file_path" in model_dict:
         model = load_model_from_python_file(model_dict["file_path"])
     else:
-        model = construct_hierarchical_model(model_dict, prior_dict, **likelihood_kwargs)
+        model = construct_hierarchical_model(model_dict, prior_dict, **likelihood_args)
 
     pe_dict, inj_dict, Ninj, Nobs, Tobs = setup(data_conf, [k for k in model_dict.keys()])
 
