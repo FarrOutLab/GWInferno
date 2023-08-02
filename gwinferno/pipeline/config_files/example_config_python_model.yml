@@ -7,7 +7,7 @@ models:
   python_file: gwinferno/pipeline/config_files/example_python_model.py
 
 # Sampler Configuration Args
-sampler_args:
+sampler:
   kernel: NUTS
   kernel_kwargs:
     dense_mass: true
@@ -17,6 +17,6 @@ sampler_args:
     num_chains: 1
 
 # Data Configuration Args
-data_args:
+data:
   catalog_summary_json: /home/bruce.edelman/projects/O4_prep/o4_gwinferno_mdcs/data/smoothed_powerlaw/realization_0/catalog.json
   seminanalytic_injs: true

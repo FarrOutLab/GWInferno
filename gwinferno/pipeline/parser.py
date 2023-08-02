@@ -60,9 +60,9 @@ class ConfigReader(object):
             yml = yaml.safe_load(f)
         self.label = yml.pop("label", "label")
         self.outdir = yml.pop("outdir", "./")
-        self.data_args = yml.pop("data_args", {})
-        self.sampler_args = yml.pop("sampler_args", {})
-        self.likelihood_args = yml.pop("likelihood_args", {})
+        self.data_conf = yml.pop("data", {})
+        self.sampler_conf = yml.pop("sampler", {})
+        self.likelihood_kwargs = yml.pop("likelihood", {})
         self.construct_model_and_prior_dicts(yml["models"])
 
     def construct_model_and_prior_dicts(self, yml):

@@ -71,7 +71,7 @@ models:
           high: 100.0
 
 # Sampler Configuration Args
-sampler_args:
+sampler:
   kernel: NUTS
   kernel_kwargs:
     dense_mass: true
@@ -81,7 +81,7 @@ sampler_args:
     num_chains: 1
 
 # Data Configuration Args
-data_args:
+data:
   catalog_summary_json: /path/to/catalog/summary/file/catalog.json
 ```
 
