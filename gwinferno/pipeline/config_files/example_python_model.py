@@ -21,16 +21,13 @@ def model(samps, injs, Ninj, Nobs, Tobs):
     inj_weights = m1dist.log_prob(injs["mass_1"]) + qdist.log_prob(injs["mass_ratio"]) + zdist.log_prob(injs["redshift"]) - jnp.log(injs["prior"])
     pe_weights = m1dist.log_prob(samps["mass_1"]) + qdist.log_prob(samps["mass_ratio"]) + zdist.log_prob(samps["redshift"]) - jnp.log(samps["prior"])
 
-    def shvf():
-        return zdist["redshift"].norm
-
     hierarchical_likelihood(
         pe_weights,
         inj_weights,
         total_inj=Ninj,
         Nobs=Nobs,
         Tobs=Tobs,
-        surv_hypervolume_fct=shvf,
+        surv_hypervolume_fct=lambda *_: zdist["redshift"].norm,
         vtfct_kwargs={},
         marginalize_selection=False,
         min_neff_cut=True,

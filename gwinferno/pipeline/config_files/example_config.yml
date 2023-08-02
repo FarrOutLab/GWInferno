@@ -1,5 +1,6 @@
 # Run Label
 label: Truncated_PowerlawRedshift_MDC_smoothed_power_law_0
+outdir: outdir
 
 # Population Parameters, Models, HyperParameters, and Priors
 models:
@@ -45,7 +46,7 @@ models:
         value: 2.3
 
 # Sampler Configuration Args
-sampler_args:
+sampler:
   kernel: NUTS
   kernel_kwargs:
     dense_mass: true
@@ -55,6 +56,6 @@ sampler_args:
     num_chains: 1
 
 # Data Configuration Args
-data_args:
+data:
   catalog_summary_json: /home/bruce.edelman/projects/O4_prep/o4_gwinferno_mdcs/data/smoothed_powerlaw/realization_0/catalog.json
   seminanalytic_injs: true
