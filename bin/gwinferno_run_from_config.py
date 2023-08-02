@@ -49,7 +49,7 @@ def run_inference(config_yml, inspect=False, PRNG_seed=0):
     config_reader = ConfigReader()
     config_reader.parse(config_yml)
     model_dict, prior_dict = config_reader.models, config_reader.priors
-    data_conf, sampler_conf, likelihood_args = config_reader.data_args, config_reader.sampler_args, config_reader.likelihood_args
+    data_conf, sampler_conf, likelihood_kwargs = config_reader.data_conf, config_reader.sampler_conf, config_reader.likelihood_kwargs
     sampling_params, label, outdir = config_reader.sampling_params, config_reader.label, config_reader.outdir
     if inspect:
         print("MODEL DICT: \n", model_dict)
@@ -57,7 +57,7 @@ def run_inference(config_yml, inspect=False, PRNG_seed=0):
     if "file_path" in model_dict:
         model = load_model_from_python_file(model_dict["file_path"])
     else:
-        model = construct_hierarchical_model(model_dict, prior_dict, **likelihood_args)
+        model = construct_hierarchical_model(model_dict, prior_dict, **likelihood_kwargs)
 
     pe_dict, inj_dict, Ninj, Nobs, Tobs = setup(data_conf, [k for k in model_dict.keys()])
 
