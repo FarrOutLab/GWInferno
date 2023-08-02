@@ -175,7 +175,7 @@ coefs (array_like): coefficients for the basis components</p>
 <td><p>norm numerically normalizes the spline</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.interpolation.LogXBSpline.project" title="gwinferno.interpolation.LogXBSpline.project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">project</span></code></a>(bases, coefs)</p></td>
-<td><p>project given a design matrix (or bases) and coefficients, project the coefficients onto the spline</p></td>
+<td><p>project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization</p></td>
 </tr>
 </tbody>
 </table>
@@ -233,7 +233,7 @@ the design matrix evaluated at xs with shape (N, <a href="#id3"><span class="pro
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.interpolation.LogXBSpline.project">
 <span class="sig-name descname"><span class="pre">project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.LogXBSpline.project" title="Permalink to this definition"></a></dt>
-<dd><p>project given a design matrix (or bases) and coefficients, project the coefficients onto the spline</p>
+<dd><p>project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>bases (array_like): The set of basis components or design matrix to project onto
 coefs (array_like): coefficients for the basis components</p>

@@ -1,0 +1,6 @@
+gwinferno.pipeline.parser.load\_model\_from\_python\_file
+=========================================================
+
+.. currentmodule:: gwinferno.pipeline.parser
+
+.. autofunction:: load_model_from_python_file

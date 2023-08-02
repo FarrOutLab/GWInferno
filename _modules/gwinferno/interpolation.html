@@ -201,9 +201,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span> <span class="o">=</span> <span class="n">normalize</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basis_vols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
-            <span class="n">grid</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">*</span><span class="n">xrange</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
-            <span class="n">grid_bases</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">grid</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">basis_vols</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">grid_bases</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="n">grid</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)])</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">*</span><span class="n">xrange</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grid_bases</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basis_vols</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_bases</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:],</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)])</span></div>
 
 <div class="viewcode-block" id="BasisSpline.norm"><a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.norm">[docs]</a>    <span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -371,9 +371,22 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">knots</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">knots</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)]</span>
 
-<div class="viewcode-block" id="BSpline.project"><a class="viewcode-back" href="../../api/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline.project">[docs]</a>    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
+<div class="viewcode-block" id="BSpline.norm"><a class="viewcode-back" href="../../api/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline.norm">[docs]</a>    <span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline</span>
+<span class="sd">        norm numerically normalizes the spline</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            coefs (array_like): coefficients for the basis components</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            float: the normalization factor given the coefficients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span> <span class="k">else</span> <span class="mf">1.0</span>
+        <span class="k">return</span> <span class="n">n</span></div>
+
+    <span class="k">def</span> <span class="nf">_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            bases (array_like): The set of basis components or design matrix to project onto</span>
@@ -382,7 +395,20 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            array_like: The linear combination of the basis components given the coefficients</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i...,i-&gt;...&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coefs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i...,i-&gt;...&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BSpline.project"><a class="viewcode-back" href="../../api/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline.project">[docs]</a>    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            bases (array_like): The set of basis components or design matrix to project onto</span>
+<span class="sd">            coefs (array_like): coefficients for the basis components</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: The linear combination of the basis components given the coefficients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coefs</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="LogXBSpline"><a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXBSpline.html#gwinferno.interpolation.LogXBSpline">[docs]</a><span class="k">class</span> <span class="nc">LogXBSpline</span><span class="p">(</span><span class="n">BSpline</span><span class="p">):</span>
@@ -458,33 +484,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            array_like: The linear combination of the basis components given the coefficients</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i...,i-&gt;...&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">))</span>
-
-<div class="viewcode-block" id="LogYBSpline.project"><a class="viewcode-back" href="../../api/gwinferno.interpolation.LogYBSpline.html#gwinferno.interpolation.LogYBSpline.project">[docs]</a>    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            bases (array_like): The set of basis components or design matrix to project onto</span>
-<span class="sd">            coefs (array_like): coefficients for the basis components</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: The linear combination of the basis components given the coefficients</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coefs</span><span class="p">)</span></div>
-
-<div class="viewcode-block" id="LogYBSpline.norm"><a class="viewcode-back" href="../../api/gwinferno.interpolation.LogYBSpline.html#gwinferno.interpolation.LogYBSpline.norm">[docs]</a>    <span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        norm numerically normalizes the spline</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            coefs (array_like): coefficients for the basis components</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            float: the normalization factor given the coefficients</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normalize</span> <span class="k">else</span> <span class="mf">1.0</span>
-        <span class="k">return</span> <span class="n">n</span></div></div>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i...,i-&gt;...&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="LogXLogYBSpline"><a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXLogYBSpline.html#gwinferno.interpolation.LogXLogYBSpline">[docs]</a><span class="k">class</span> <span class="nc">LogXLogYBSpline</span><span class="p">(</span><span class="n">LogYBSpline</span><span class="p">):</span>
@@ -524,20 +524,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            array_like: the design matrix evaluated at xs. shape (N, *xs.shape)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="LogXLogYBSpline.project"><a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXLogYBSpline.html#gwinferno.interpolation.LogXLogYBSpline.project">[docs]</a>    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            bases (array_like): The set of basis components or design matrix to project onto</span>
-<span class="sd">            coefs (array_like): coefficients for the basis components</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: The linear combination of the basis components given the coefficients</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project</span><span class="p">(</span><span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coefs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span></div></div>
 
 
 <div class="viewcode-block" id="RectBivariateBasisSpline"><a class="viewcode-back" href="../../api/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline">[docs]</a><span class="k">class</span> <span class="nc">RectBivariateBasisSpline</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>

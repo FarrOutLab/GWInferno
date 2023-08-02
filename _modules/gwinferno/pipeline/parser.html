@@ -96,6 +96,7 @@
 <span class="sd">a module that stores tools for parsing CLI arguments and config files for analysis pipelines</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
 <span class="kn">from</span> <span class="nn">importlib</span> <span class="kn">import</span> <span class="n">import_module</span>
 
@@ -124,6 +125,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">component_params</span> <span class="o">=</span> <span class="n">component_params</span></div></div>
 
 
+<div class="viewcode-block" id="load_model_from_python_file"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_model_from_python_file.html#gwinferno.pipeline.parser.load_model_from_python_file">[docs]</a><span class="k">def</span> <span class="nf">load_model_from_python_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="n">fn</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">direct</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">direct</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">import_module</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)),</span> <span class="s2">&quot;model&quot;</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="load_dist_from_string"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_dist_from_string.html#gwinferno.pipeline.parser.load_dist_from_string">[docs]</a><span class="k">def</span> <span class="nf">load_dist_from_string</span><span class="p">(</span><span class="n">dist</span><span class="p">):</span>
     <span class="n">split_d</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
     <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">split_d</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
@@ -144,11 +152,11 @@
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yml_file</span><span class="p">):</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yml_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">yml</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;outdir&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data_args</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;data_args&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sampler_args</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sampler_args&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">likelihood_kwargs</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;likelihood_args&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="s2">&quot;label&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;outdir&quot;</span><span class="p">,</span> <span class="s2">&quot;./&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_conf</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sampler_conf</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;sampler&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">likelihood_kwargs</span> <span class="o">=</span> <span class="n">yml</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;likelihood&quot;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">construct_model_and_prior_dicts</span><span class="p">(</span><span class="n">yml</span><span class="p">[</span><span class="s2">&quot;models&quot;</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="nf">construct_model_and_prior_dicts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yml</span><span class="p">):</span>

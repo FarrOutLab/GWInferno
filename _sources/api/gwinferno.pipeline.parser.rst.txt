@@ -20,6 +20,8 @@ gwinferno.pipeline.parser
       load_base_parser
       
       load_dist_from_string
+      
+      load_model_from_python_file
    
    
 

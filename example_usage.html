@@ -122,7 +122,7 @@
 <span class="w">                </span><span class="nt">high</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100.0</span>
 
 <span class="c1"># Sampler Configuration Args</span>
-<span class="nt">sampler_args</span><span class="p">:</span>
+<span class="nt">sampler</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">kernel</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NUTS</span>
 <span class="w">    </span><span class="nt">kernel_kwargs</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">dense_mass</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
@@ -132,7 +132,7 @@
 <span class="w">    </span><span class="nt">num_chains</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
 
 <span class="c1"># Data Configuration Args</span>
-<span class="nt">data_args</span><span class="p">:</span>
+<span class="nt">data</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">catalog_summary_json</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">/path/to/catalog/summary/file/catalog.json</span>
 </pre></div>
 </div>
@@ -184,16 +184,13 @@ population parameters to share a model when assuming they are IID (i.e. spin mag
     <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">m1dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">qdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">zdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">])</span>
     <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">m1dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">qdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">zdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">])</span>
 
-    <span class="k">def</span> <span class="nf">shvf</span><span class="p">():</span>
-        <span class="k">return</span> <span class="n">zdist</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">norm</span>
-
     <span class="n">hierarchical_likelihood_in_log</span><span class="p">(</span>
         <span class="n">pe_weights</span><span class="p">,</span>
         <span class="n">inj_weights</span><span class="p">,</span>
         <span class="n">total_inj</span><span class="o">=</span><span class="n">Ninj</span><span class="p">,</span>
         <span class="n">Nobs</span><span class="o">=</span><span class="n">Nobs</span><span class="p">,</span>
         <span class="n">Tobs</span><span class="o">=</span><span class="n">Tobs</span><span class="p">,</span>
-        <span class="n">surv_hypervolume_fct</span><span class="o">=</span><span class="n">shvf</span><span class="p">,</span>
+        <span class="n">surv_hypervolume_fct</span><span class="o">=</span><span class="k">lambda</span> <span class="o">*</span><span class="n">_</span><span class="p">:</span> <span class="n">zdist</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">norm</span><span class="p">,</span>
         <span class="n">vtfct_kwargs</span><span class="o">=</span><span class="p">{},</span>
         <span class="n">marginalize_selection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">min_neff_cut</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>

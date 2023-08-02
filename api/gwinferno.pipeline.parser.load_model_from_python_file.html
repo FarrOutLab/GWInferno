@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwinferno.pipeline.parser.PopMixtureModel &mdash; gwinferno 0.0 documentation</title>
+  <title>gwinferno.pipeline.parser.load_model_from_python_file &mdash; gwinferno 0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
@@ -21,8 +21,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.pipeline.parser.PopModel" href="gwinferno.pipeline.parser.PopModel.html" />
-    <link rel="prev" title="gwinferno.pipeline.parser.ConfigReader" href="gwinferno.pipeline.parser.ConfigReader.html" /> 
+    <link rel="next" title="gwinferno.pipeline.parser.ConfigReader" href="gwinferno.pipeline.parser.ConfigReader.html" />
+    <link rel="prev" title="gwinferno.pipeline.parser.load_dist_from_string" href="gwinferno.pipeline.parser.load_dist_from_string.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -69,12 +69,12 @@
 <li class="toctree-l2 current"><a class="reference internal" href="gwinferno.pipeline.parser.html">gwinferno.pipeline.parser</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.parser.load_base_parser.html">gwinferno.pipeline.parser.load_base_parser</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.parser.load_dist_from_string.html">gwinferno.pipeline.parser.load_dist_from_string</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.parser.load_model_from_python_file.html">gwinferno.pipeline.parser.load_model_from_python_file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.parser.ConfigReader.html">gwinferno.pipeline.parser.ConfigReader</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.pipeline.parser.PopMixtureModel</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwinferno.pipeline.parser.PopMixtureModel"><code class="docutils literal notranslate"><span class="pre">PopMixtureModel</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.pipeline.parser.load_model_from_python_file</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.pipeline.parser.load_model_from_python_file"><code class="docutils literal notranslate"><span class="pre">load_model_from_python_file()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.parser.ConfigReader.html">gwinferno.pipeline.parser.ConfigReader</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.parser.PopMixtureModel.html">gwinferno.pipeline.parser.PopMixtureModel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.parser.PopModel.html">gwinferno.pipeline.parser.PopModel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.parser.PopPrior.html">gwinferno.pipeline.parser.PopPrior</a></li>
 </ul>
@@ -101,9 +101,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="gwinferno.pipeline.html">gwinferno.pipeline</a></li>
           <li class="breadcrumb-item"><a href="gwinferno.pipeline.parser.html">gwinferno.pipeline.parser</a></li>
-      <li class="breadcrumb-item active">gwinferno.pipeline.parser.PopMixtureModel</li>
+      <li class="breadcrumb-item active">gwinferno.pipeline.parser.load_model_from_python_file</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api/gwinferno.pipeline.parser.PopMixtureModel.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/gwinferno.pipeline.parser.load_model_from_python_file.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -111,32 +111,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwinferno-pipeline-parser-popmixturemodel">
-<h1>gwinferno.pipeline.parser.PopMixtureModel<a class="headerlink" href="#gwinferno-pipeline-parser-popmixturemodel" title="Permalink to this heading"></a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="gwinferno.pipeline.parser.PopMixtureModel">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.pipeline.parser.</span></span><span class="sig-name descname"><span class="pre">PopMixtureModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mix_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mix_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/parser.html#PopMixtureModel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.parser.PopMixtureModel" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="gwinferno.pipeline.parser.PopModel.html#gwinferno.pipeline.parser.PopModel" title="gwinferno.pipeline.parser.PopModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">PopModel</span></code></a></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="gwinferno.pipeline.parser.PopMixtureModel.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mix_dist</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mix_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">components</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/parser.html#PopMixtureModel.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.parser.PopMixtureModel.__init__" title="Permalink to this definition"></a></dt>
+  <section id="gwinferno-pipeline-parser-load-model-from-python-file">
+<h1>gwinferno.pipeline.parser.load_model_from_python_file<a class="headerlink" href="#gwinferno-pipeline-parser-load-model-from-python-file" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="gwinferno.pipeline.parser.load_model_from_python_file">
+<span class="sig-prename descclassname"><span class="pre">gwinferno.pipeline.parser.</span></span><span class="sig-name descname"><span class="pre">load_model_from_python_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/parser.html#load_model_from_python_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.parser.load_model_from_python_file" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="gwinferno.pipeline.parser.PopMixtureModel.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.pipeline.parser.PopMixtureModel.__call__" title="Permalink to this definition"></a></dt>
-<dd><p>Call self as a function.</p>
-</dd></dl>
-
-<p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.pipeline.parser.PopMixtureModel.__init__" title="gwinferno.pipeline.parser.PopMixtureModel.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(model, mix_dist, mix_params, ...)</p></td>
-<td><p></p></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
 
 </section>
 
@@ -144,8 +124,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gwinferno.pipeline.parser.ConfigReader.html" class="btn btn-neutral float-left" title="gwinferno.pipeline.parser.ConfigReader" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwinferno.pipeline.parser.PopModel.html" class="btn btn-neutral float-right" title="gwinferno.pipeline.parser.PopModel" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwinferno.pipeline.parser.load_dist_from_string.html" class="btn btn-neutral float-left" title="gwinferno.pipeline.parser.load_dist_from_string" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.pipeline.parser.ConfigReader.html" class="btn btn-neutral float-right" title="gwinferno.pipeline.parser.ConfigReader" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
