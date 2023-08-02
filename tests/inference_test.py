@@ -169,18 +169,18 @@ class TestTruncatedModelInference(unittest.TestCase):
         config_reader = ConfigReader()
         config_reader.parse("gwinferno/pipeline/config_files/example_config.yml")
         model_dict, prior_dict = config_reader.models, config_reader.priors
-        data_conf, sampler_conf, likelihood_args = config_reader.data_args, config_reader.sampler_args, config_reader.likelihood_args
+        data_conf, sampler_conf, likelihood_kwargs = config_reader.data_conf, config_reader.sampler_conf, config_reader.likelihood_kwargs
         sampling_params, label, outdir = config_reader.sampling_params, config_reader.label, config_reader.outdir
-        model = construct_hierarchical_model(model_dict, prior_dict, **likelihood_args)
-        del data_conf, sampler_conf, sampling_params, label, outdir, model
+        model = construct_hierarchical_model(model_dict, prior_dict, **likelihood_kwargs)
+        del data_conf, sampler_conf, sampling_params, label, outdir, model, likelihood_kwargs, prior_dict
 
     def test_config_py_reader(self):
         config_reader = ConfigReader()
         config_reader.parse("gwinferno/pipeline/config_files/example_config_python_model.yml")
         model_dict, prior_dict = config_reader.models, config_reader.priors
-        data_conf, sampler_conf, likelihood_args = config_reader.data_args, config_reader.sampler_args, config_reader.likelihood_args
+        data_conf, sampler_conf, likelihood_kwargs = config_reader.data_conf, config_reader.sampler_conf, config_reader.likelihood_kwargs
         sampling_params, label, outdir = config_reader.sampling_params, config_reader.label, config_reader.outdir
         model = load_model_from_python_file(model_dict.pop("file_path"))
         self.assertFalse(prior_dict)
         self.assertFalse(model_dict)
-        del data_conf, sampler_conf, sampling_params, label, outdir, model, likelihood_args, prior_dict
+        del data_conf, sampler_conf, sampling_params, label, outdir, model, likelihood_kwargs, prior_dict
