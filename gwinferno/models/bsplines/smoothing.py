@@ -18,15 +18,16 @@ def apply_difference_prior(coefs, inv_var, degree=1):
     Returns:
         float: log of the difference prior
     """
-    D = jnp.diff(jnp.identity(len(coefs)), n=degree)
-    delta_c = jnp.dot(coefs, D)
+    delta_c = jnp.diff(coefs, n=degree)
     return -0.5 * inv_var * jnp.dot(delta_c, delta_c.T)
 
 
-def apply_twod_difference_prior(coefs, inv_var, degree=1):
-    D = jnp.diff(jnp.eye(len(coefs)), n=degree)
-    delta_c = jnp.dot(coefs, D)
-    return -0.5 * inv_var * jnp.sum(jnp.dot(delta_c, delta_c.T).flatten())
+def apply_twod_difference_prior(coefs, inv_var_c, inv_var_r, degree_c=1, degree_r=1):
+    delta_c = jnp.diff(coefs, n=degree_c, axis=1)
+    delta_r = jnp.diff(coefs, n=degree_r, axis=0)
+    pen_c = -0.5 * inv_var_c * jnp.sum(jnp.square(delta_c))
+    pen_r = -0.5 * inv_var_r * jnp.sum(jnp.square(delta_r))
+    return pen_c + pen_r
 
 
 def get_adaptive_Lambda(label, nknots, degree, omega=0.5):
