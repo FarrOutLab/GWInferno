@@ -70,20 +70,20 @@ class PopSummaryWriteOut(PopulationResult):
             overwrite (bool): whether to overwrite existing dataset
         """
         posteriors = dd.io.load(path_to_file)
-        hyper_param_sample_list = []
         hyperparameter_samples = []
+        names = []
         for (i, hp) in enumerate(self.old_hyperparameter_names):
             x = posteriors[hp].transpose()
             if len(x.shape) > 1:
                 for j in range(len(x)):
-                    hyper_param_sample_list.append(x[j])
-                    hyperparameter_samples.append(self.new_hyperparameter_names[i] + f"_{j+1}")
+                    names.append(self.new_hyperparameter_names[i] + f"_{j+1}")
+                    hyperparameter_samples.append(x[j])
             else:
-                hyper_param_sample_list.append(x)
-                hyperparameter_samples.append(self.new_hyperparameter_names[i])
+                names.append(self.new_hyperparameter_names[i])
+                hyperparameter_samples.append(x)
 
-        hyperparameter_samples = np.array(hyper_param_sample_list)
-
+        self.set_metadata('hyperparameters', names, overwrite = True)
+        hyperparameter_samples = np.array(hyperparameter_samples).transpose()
         self.set_hyperparameter_samples(hyperparameter_samples, overwrite=overwrite, group=group)
 
     def save_reweighed_event_and_injection_samples(
