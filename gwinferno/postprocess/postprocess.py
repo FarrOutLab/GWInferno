@@ -123,12 +123,12 @@ class PopSummaryWriteOut(PopulationResult):
         if injections:
             self.set_reweighted_injections(reweighed_injections, overwrite=overwrite, group=group)
 
-    def save_rates_on_grids(self, path_to_file, grid_params, rate_names, overwrite=False, group="posterior"):
+    def save_rates_on_grids(self, path_to_file, grid_params, rate_names, type = 'median', overwrite=False, group="posterior"):
         """
         save rates on grids to results file. This method assumes each element of `grid_params`
         ('mass_1', 'mass_ratio', etc.) corresponds to a single rate dataset in `rate_names`. Ex:
         grid_params = ['mass_1', 'mass_ratio', 'a_1']
-        rate_names = ['primary_mass_rate', 'mass_ratio_rate', 'primary_spin_magntide_rate']
+        rate_names = ['primary_mass_rate', 'mass_ratio_rate', 'primary_spin_magnitide_rate']
 
         for mixture models, like powerlaw+peak in primary mass, this would look like:
         grid_params = ['mass_1', 'mass_1', 'mass_ratio', ...]
@@ -152,4 +152,10 @@ class PopSummaryWriteOut(PopulationResult):
         if len(grid_params) != len(rate_names):
             raise AssertionError("`grid_params` must be same length as `rate_names`")
         for (gp, rs) in zip(grid_params, rate_names):
-            self.set_rates_on_grids(rs, gp, rates[gp], rates[rs], overwrite=overwrite, group=group)
+            if type == 'median':
+                m_rates = np.median(rates[rs], axis = 0)
+            elif type == 'mean':
+                m_rates = np.mean(rates[rs], axis = 0)
+            else:
+                raise AssertionError('type must be `mean` or `median`')
+            self.set_rates_on_grids(rs, gp, rates[gp].reshape(1,len(rates[gp])), m_rates, overwrite=overwrite, group=group)
