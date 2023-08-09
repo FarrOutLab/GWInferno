@@ -84,12 +84,12 @@ class PopSummaryWriteOut(PopulationResult):
                 names.append(self.new_hyperparameter_names[i])
                 hyperparameter_samples.append(x)
 
-        self.set_metadata('hyperparameters', names, overwrite = True)
+        self.set_metadata("hyperparameters", names, overwrite=True)
         hyperparameter_samples = np.array(hyperparameter_samples).transpose()
         self.set_hyperparameter_samples(hyperparameter_samples, overwrite=overwrite, group=group)
 
     def save_reweighed_event_and_injection_samples(
-        self, path_to_file, event_names = None, params = None, overwrite=False, group="posterior", event_samples = True, injection_samples=True
+        self, path_to_file, event_names=None, params=None, overwrite=False, group="posterior", event_samples=True, injection_samples=True
     ):
         """saves rates reweighed event and injection samples to results file
 
@@ -106,30 +106,29 @@ class PopSummaryWriteOut(PopulationResult):
             injection_samples (bool, optional): wether to save the reweighed injection samples. Defaults to True.
         """
         if event_samples:
-            if not event_names and self.get_metadata('events').size == 0:
+            if not event_names and self.get_metadata("events").size == 0:
                 raise AssertionError("Please include a list of the reweighed events used with the `event_names` kwarg.")
-            elif not event_names and self.get_metadata('events').size != 0:
-                event_names = self.get_metadata('events')
-            elif event_names and self.get_metadata('events').size == 0:
+            elif not event_names and self.get_metadata("events").size != 0:
+                event_names = self.get_metadata("events")
+            elif event_names and self.get_metadata("events").size == 0:
                 self.set_metadata("events", event_names, overwrite=True)
-            elif event_names and self.get_metadata('events').size != 0:
+            elif event_names and self.get_metadata("events").size != 0:
                 try:
-                    event_names == self.get_metadata('events') 
+                    event_names == self.get_metadata("events")
                 except ValueError:
                     print("ValueError: `event_names` kwarg does not match events in file metadata")
 
-        if not params and self.get_metadata('event_parameters').size == 0:
+        if not params and self.get_metadata("event_parameters").size == 0:
             raise AssertionError("Please include a list of the event parameters that have been reweighed in the `params` kwarg.")
-        elif not params and self.get_metadata('events').size != 0:
-            params = self.get_metadata('event_parameters')
-        elif params and self.get_metadata('event_parameters').size == 0:
+        elif not params and self.get_metadata("events").size != 0:
+            params = self.get_metadata("event_parameters")
+        elif params and self.get_metadata("event_parameters").size == 0:
             self.set_metadata("event_parameters", event_names, overwrite=True)
-        elif params and self.get_metadata('event_parameters').size != 0:
+        elif params and self.get_metadata("event_parameters").size != 0:
             try:
-                params == self.get_metadata('event_parameters')
+                params == self.get_metadata("event_parameters")
             except ValueError:
                 print("`event_names` kwarg does not match events in metadata")
-
 
         posteriors = dd.io.load(path_to_file)
         reweighed_posteriors = np.zeros((len(event_names), 1, posteriors[f"{params[0]}_obs_event_0"].shape[0], len(params)))
@@ -144,7 +143,7 @@ class PopSummaryWriteOut(PopulationResult):
         if injection_samples:
             self.set_reweighted_injections(reweighed_injections, overwrite=overwrite, group=group)
 
-    def save_rates_on_grids(self, path_to_file, grid_params, rate_names, type = 'median', overwrite=False, group="posterior"):
+    def save_rates_on_grids(self, path_to_file, grid_params, rate_names, type="median", overwrite=False, group="posterior"):
         """
         save rates on grids to results file. This method assumes each element of `grid_params`
         ('mass_1', 'mass_ratio', etc.) corresponds to a single rate dataset in `rate_names`. Ex:
@@ -165,7 +164,7 @@ class PopSummaryWriteOut(PopulationResult):
                 calulated on grids.
             grid_params (list): list of parameter names for which rates are calculated on
             rate_names (list): name of each rate dataset (e.g. primary_mass_rate, a_1_rate', etc)
-            type (str): whether to save 'median' or 'mean' of rates. 
+            type (str): whether to save 'median' or 'mean' of rates.
             overwrite (bool, optional): whether to overwrite existing dataset. Defaults to False.
             group (str, optional): group to save draws to ('posterior' or 'prior').
                 Defaults to 'posterior'.
@@ -174,10 +173,10 @@ class PopSummaryWriteOut(PopulationResult):
         if len(grid_params) != len(rate_names):
             raise AssertionError("`grid_params` must be same length as `rate_names`")
         for (gp, rs) in zip(grid_params, rate_names):
-            if type == 'median':
-                m_rates = np.median(rates[rs], axis = 0)
-            elif type == 'mean':
-                m_rates = np.mean(rates[rs], axis = 0)
+            if type == "median":
+                m_rates = np.median(rates[rs], axis=0)
+            elif type == "mean":
+                m_rates = np.mean(rates[rs], axis=0)
             else:
-                raise AssertionError('type must be `mean` or `median`')
-            self.set_rates_on_grids(rs, gp, rates[gp].reshape(1,len(rates[gp])), m_rates, overwrite=overwrite, group=group)
+                raise AssertionError("type must be `mean` or `median`")
+            self.set_rates_on_grids(rs, gp, rates[gp].reshape(1, len(rates[gp])), m_rates, overwrite=overwrite, group=group)
