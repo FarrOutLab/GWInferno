@@ -1,10 +1,11 @@
-=====================================================================
+==============================================================================================================
 Saving Data in `Popsummary <https://git.ligo.org/zoheyr-doctor/popsummary/-/tree/main/>`_ Standard Output
-=====================================================================
+==============================================================================================================
 
 After using GWInferno, you may wish to save your results in a form easy for others to read and access. This can be done quickly with `gwifnerno.postprocess.postprocess.PopSummaryWriteOut`. Before saving your results in this manner, make sure your posterior samples are located in a dictionary. This can easily be done by using `get_samples()` after sampling, as in the code snippet below:
 
 .. code-block:: python
+        
         kernel = NUTS(model)
         mcmc = MCMC(kernel)
         rng_key = random.PRNGKey(5)
@@ -13,9 +14,10 @@ After using GWInferno, you may wish to save your results in a form easy for othe
 
 Rates :math:`\frac{dN}{d\theta}` (or population PDFs :math:`p(\theta|\Lambda)`) should also be located in a dictionary, along with whatever grids they were calculated over. 
 
-In the below example, the posteriors and rates were already saved in h5 files using the `deepdish` package and are loaded in. 
+In the below example, the posteriors and rates were already saved as dictionaries in h5 files using the `deepdish` package and are loaded in. 
 
 .. code-block:: python
+
         from gwinferno.postprocess.postprocess import PopSummaryWriteOut
 
         path_to_rate_file = 'path-to-rate-file.h5'
@@ -48,6 +50,7 @@ In the below example, the posteriors and rates were already saved in h5 files us
             model_names = model_names
         )
 
-        #save hyperparameter samples. `overwrite=True` flag will overwrite if there are already hypersamples saved in the file but `overwrite=False` will cause it to fail if there are already hypersamples saved in the file. 
+        #['primary_mass_rate', 'mass_ratio_rate', 'primary_spin_magnitide_rate']`overwrite=True` flag will overwrite if there are already hypersamples saved in the file but `overwrite=False` will cause it to fail if there are already hypersamples saved in the file. 
         popsum.save_hypersamples(path_to_posterior_file, overwrite = True)
-        popsum.save_
+        popsum.save_reweighed_event_and_injection_samples(path_to_posterior_file, overwrite = True)
+        popsum.save_rates_on_grids(path_to_rate_file, ['mass_1', 'mass_ratio'], ['primary_mass_rate', 'mass_ratio_rate'])
