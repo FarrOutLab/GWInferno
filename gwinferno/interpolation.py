@@ -98,6 +98,7 @@ class BasisSpline(object):
                 interior_knots = np.linspace(xrange[0], xrange[1], n_df - k + 2)
             dx = interior_knots[1] - interior_knots[0]
             knots = jnp.linspace(xrange[0] - dx * (k - 1), xrange[1] + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
+
         self.knots = knots
         self.interior_knots = interior_knots
         assert len(self.knots) == self.N + self.order
