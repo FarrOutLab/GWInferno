@@ -40,6 +40,8 @@ class PopSummaryWriteOut(PopulationResult):
         """
         self.old_hyperparameter_names = hyperparameter_names
         self.new_hyperparameter_names = new_hyperparameter_names if new_hyperparameter_names is not None else hyperparameter_names
+        self.events = events
+        self.event_parameters = event_parameters
 
         super().__init__(
             fname=file_name,
@@ -87,40 +89,59 @@ class PopSummaryWriteOut(PopulationResult):
         self.set_hyperparameter_samples(hyperparameter_samples, overwrite=overwrite, group=group)
 
     def save_reweighed_event_and_injection_samples(
-        self, path_to_file, event_names, event_params, overwrite=False, group="posterior", events=True, injections=True
+        self, path_to_file, event_names = None, params = None, overwrite=False, group="posterior", event_samples = True, injection_samples=True
     ):
         """saves rates reweighed event and injection samples to results file
 
         Args:
             path_to_file (str): path to file containing dictionary of all posterior samples
-                (can include reweighed pe, injections, etc.), obtained from numpyor's MCMC.
-                get_samples method
-            event_names (list): list of events used
+                (can include reweighed pe, injections, etc.). Obtained from numpyro's get_samples method
+            event_names (list): list of events used. Defaults to None. Will return an error if events
+                                in file metadata is not already specified.
             event_params (list): list of event-level parameter names (e.g. m1, m2, chi_eff)
-                in corresponding order to reweighted_event_samples, rewighted_injections
-                overwrite (bool, optional): whether to overwrite existing dataset. Defaults to False.
-            group (str, optional): group to save draws to ('posterior' or 'prior').
-                Defaults to 'posterior'.
-            events (bool, optional): whether to save the reweighed event samples. Defaults to True.
-                injections (bool, optional): wether to save the reweighed injection samples.
-                Defaults to True.
+                                in corresponding order to reweighted_event_samples, rewighted_injections
+            overwrite (bool, optional): whether to overwrite existing dataset. Defaults to False.
+            group (str, optional): group to save draws to ('posterior' or 'prior'). Defaults to 'posterior'.
+            event_samples (bool, optional): whether to save the reweighed event samples. Defaults to True.
+            injection_samples (bool, optional): wether to save the reweighed injection samples. Defaults to True.
         """
-        if self.get_metadata("events").size == 0:
-            self.set_metadata("events", event_names, overwrite=True)
-        if self.get_metadata("event_parameters").size == 0:
-            self.set_metadata("event_parameters", event_params, overwrite=True)
+        if event_samples:
+            if not event_names and self.get_metadata('events').size == 0:
+                raise AssertionError("Please include a list of the reweighed events used with the `event_names` kwarg.")
+            elif not event_names and self.get_metadata('events').size != 0:
+                event_names = self.get_metadata('events')
+            elif event_names and self.get_metadata('events').size == 0:
+                self.set_metadata("events", event_names, overwrite=True)
+            elif event_names and self.get_metadata('events').size != 0:
+                try:
+                    event_names == self.get_metadata('events') 
+                except ValueError:
+                    print("ValueError: `event_names` kwarg does not match events in file metadata")
+
+        if not params and self.get_metadata('event_parameters').size == 0:
+            raise AssertionError("Please include a list of the event parameters that have been reweighed in the `params` kwarg.")
+        elif not params and self.get_metadata('events').size != 0:
+            params = self.get_metadata('event_parameters')
+        elif params and self.get_metadata('event_parameters').size == 0:
+            self.set_metadata("event_parameters", event_names, overwrite=True)
+        elif params and self.get_metadata('event_parameters').size != 0:
+            try:
+                params == self.get_metadata('event_parameters')
+            except ValueError:
+                print("`event_names` kwarg does not match events in metadata")
+
 
         posteriors = dd.io.load(path_to_file)
-        reweighed_posteriors = np.zeros((len(event_names), 1, posteriors[f"{event_params[0]}_obs_event_0"].shape[0], len(event_params)))
+        reweighed_posteriors = np.zeros((len(event_names), 1, posteriors[f"{params[0]}_obs_event_0"].shape[0], len(params)))
         reweighed_injections = np.zeros_like(reweighed_posteriors)
-        for (i, param) in enumerate(event_params):
+        for (i, param) in enumerate(params):
             for event in range(len(event_names)):
                 reweighed_posteriors[event, 0, :, i] = posteriors[f"{param}_obs_event_{event}"]
                 reweighed_injections[event, 0, :, i] = posteriors[f"{param}_pred_event_{event}"]
 
-        if events:
+        if event_samples:
             self.set_reweighted_event_samples(reweighed_posteriors, overwrite=overwrite, group=group)
-        if injections:
+        if injection_samples:
             self.set_reweighted_injections(reweighed_injections, overwrite=overwrite, group=group)
 
     def save_rates_on_grids(self, path_to_file, grid_params, rate_names, type = 'median', overwrite=False, group="posterior"):
@@ -144,6 +165,7 @@ class PopSummaryWriteOut(PopulationResult):
                 calulated on grids.
             grid_params (list): list of parameter names for which rates are calculated on
             rate_names (list): name of each rate dataset (e.g. primary_mass_rate, a_1_rate', etc)
+            type (str): whether to save 'median' or 'mean' of rates. 
             overwrite (bool, optional): whether to overwrite existing dataset. Defaults to False.
             group (str, optional): group to save draws to ('posterior' or 'prior').
                 Defaults to 'posterior'.
