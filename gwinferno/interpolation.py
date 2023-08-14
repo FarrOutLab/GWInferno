@@ -517,7 +517,8 @@ class RectBivariateBasisSpline(object):
         self.x_bases = self.x_interpolator.bases(xs) 
         self.y_bases = self.y_interpolator.bases(ys)
         out = jnp.array([[self.x_bases[i] * self.y_bases[j] for i in range(self.xdf)] for j in range(self.ydf)]).reshape(
-             self.xdf, self.ydf, *xs.shape)
+             self.xdf, self.ydf, *xs.shape
+        )
         self._reset_bases()
 
         return out
