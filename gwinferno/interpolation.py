@@ -514,13 +514,12 @@ class RectBivariateBasisSpline(object):
         Returns:
             array_like: the design matrix evaluated at xs. shape (xdf, ydf, *xs.shape)
         """
-        self.x_bases = self.x_interpolator.bases(xs)
+        self.x_bases = self.x_interpolator.bases(xs) 
         self.y_bases = self.y_interpolator.bases(ys)
-        #Check that out is a proper tensor product
         out = jnp.array([[self.x_bases[i] * self.y_bases[j] for i in range(self.xdf)] for j in range(self.ydf)]).reshape(
-            self.xdf, self.ydf, *xs.shape
-        )
-        self.reset_bases()
+             self.xdf, self.ydf, *xs.shape)
+        self._reset_bases()
+
         return out
 
     def _project(self, bases, coefs):
@@ -534,6 +533,7 @@ class RectBivariateBasisSpline(object):
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
+        #NOTE this would be for the logz2dbasis class
         return jnp.exp(jnp.einsum("ij...,ij->...", bases, coefs))
 
     def project(self, bases, coefs):
@@ -547,4 +547,4 @@ class RectBivariateBasisSpline(object):
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
-        return self._project(bases, coefs) * self.norm_2d(coefs)
+        return self._project(bases, coefs)* self.norm_2d(coefs)
