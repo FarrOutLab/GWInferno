@@ -43,8 +43,8 @@ class Base2DBSplineModel(object):
     def inj_pdf(self, coefs):
         return self.eval_spline(self.inj_design_matrix, coefs)
 
-    def __call__(self, ndim, coefs):
-        return self.funcs[ndim - 1](coefs)
+    def __call__(self, coefs, pe_samples = True):
+        return self.funcs[1](coefs) if pe_samples else self.funcs[0](coefs)
 
 
 class BSplineJointMassRatioChiEffective(Base2DBSplineModel):
