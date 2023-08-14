@@ -23,7 +23,7 @@ def apply_difference_prior(coefs, inv_var, degree=1):
     return -0.5 * inv_var * jnp.dot(delta_c, delta_c.T)
 
 
-def apply_twod_difference_prior(coefs, inv_var, degree=1):
+def apply_2d_difference_prior(coefs, inv_var, degree=1):
     D = jnp.diff(jnp.eye(len(coefs)), n=degree)
     delta_c = jnp.dot(coefs, D)
     return -0.5 * inv_var * jnp.sum(jnp.dot(delta_c, delta_c.T).flatten())
