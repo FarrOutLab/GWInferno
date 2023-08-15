@@ -9,13 +9,13 @@
 
 <div align="center">
 
-[![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](/docs/ "Go to project documentation")
+[![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](https://farroutlab.github.io/GWInferno/)
 
 </div>
 
 ## Installation
 
-Clone the repository
+Clone the reposi)tory
 
 ```bash
 git clone https://github.com/FarrOutLab/GWInferno.git
