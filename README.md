@@ -100,7 +100,7 @@ gwinferno_run_from_config.py config.yml
 
 ## License 
 
-Released under [MIT](/LICENSE) by [@FarrOutLab](https://github.com/FarrOutLab).
+Released under [MIT](/LICENSE.md) by [@FarrOutLab](https://github.com/FarrOutLab).
 
 ## Citation
 
