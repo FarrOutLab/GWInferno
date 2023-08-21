@@ -22,6 +22,8 @@ gwinferno.numpyro\_distributions.NumericallyNormalizedDistribition
       ~NumericallyNormalizedDistribition.enumerate_support
       ~NumericallyNormalizedDistribition.expand
       ~NumericallyNormalizedDistribition.expand_by
+      ~NumericallyNormalizedDistribition.gather_pytree_aux_fields
+      ~NumericallyNormalizedDistribition.gather_pytree_data_fields
       ~NumericallyNormalizedDistribition.icdf
       ~NumericallyNormalizedDistribition.infer_shapes
       ~NumericallyNormalizedDistribition.log_prob
@@ -51,6 +53,8 @@ gwinferno.numpyro\_distributions.NumericallyNormalizedDistribition
       ~NumericallyNormalizedDistribition.has_rsample
       ~NumericallyNormalizedDistribition.is_discrete
       ~NumericallyNormalizedDistribition.mean
+      ~NumericallyNormalizedDistribition.pytree_aux_fields
+      ~NumericallyNormalizedDistribition.pytree_data_fields
       ~NumericallyNormalizedDistribition.reparametrized_params
       ~NumericallyNormalizedDistribition.support
       ~NumericallyNormalizedDistribition.variance

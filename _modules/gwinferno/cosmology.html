@@ -11,12 +11,12 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/tabs.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -124,13 +124,17 @@
 <span class="n">DEFAULT_DZ</span> <span class="o">=</span> <span class="mf">1e-3</span>  <span class="c1"># should be good enough for most numeric integrations we want to do</span>
 
 
-<div class="viewcode-block" id="Cosmology"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology">[docs]</a><span class="k">class</span> <span class="nc">Cosmology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Cosmology">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology">[docs]</a>
+<span class="k">class</span> <span class="nc">Cosmology</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    a class that implements specific cosmological computations.</span>
 <span class="sd">    **NOTE**, we work in CGS units throughout, so Ho must be specified in s**-1 and distances are specified in cm</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Cosmology.__init__"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Ho</span><span class="p">,</span> <span class="n">omega_matter</span><span class="p">,</span> <span class="n">omega_radiation</span><span class="p">,</span> <span class="n">omega_lambda</span><span class="p">,</span> <span class="n">distance_unit</span><span class="o">=</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="n">initial_z_integ</span><span class="o">=</span><span class="mf">2.3</span><span class="p">):</span>
+<div class="viewcode-block" id="Cosmology.__init__">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Ho</span><span class="p">,</span> <span class="n">omega_matter</span><span class="p">,</span> <span class="n">omega_radiation</span><span class="p">,</span> <span class="n">omega_lambda</span><span class="p">,</span> <span class="n">distance_unit</span><span class="o">=</span><span class="s2">&quot;mpc&quot;</span><span class="p">,</span> <span class="n">initial_z_integ</span><span class="o">=</span><span class="mf">2.3</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Ho</span> <span class="o">=</span> <span class="n">Ho</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">c_over_Ho</span> <span class="o">=</span> <span class="n">C_CGS</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ho</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unit_mod</span> <span class="o">=</span> <span class="n">MPC_CGS</span> <span class="k">if</span> <span class="n">distance_unit</span> <span class="o">==</span> <span class="s2">&quot;mpc&quot;</span> <span class="k">else</span> <span class="mf">1.0</span>
@@ -144,11 +148,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">Vc</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">max_z</span><span class="o">=</span><span class="mf">2.3</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">)</span></div>
 
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">DL</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Dc</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Cosmology.extend"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.extend">[docs]</a>    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_DL</span><span class="o">=-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">max_Dc</span><span class="o">=-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">max_z</span><span class="o">=-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">max_Vc</span><span class="o">=-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
+<div class="viewcode-block" id="Cosmology.extend">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.extend">[docs]</a>
+    <span class="k">def</span> <span class="nf">extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_DL</span><span class="o">=-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">max_Dc</span><span class="o">=-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">max_z</span><span class="o">=-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">max_Vc</span><span class="o">=-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        integrate to solve for distance measures.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -181,7 +188,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">Dc</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Dcs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Vc</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Vcs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Cosmology.z2E"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.z2E">[docs]</a>    <span class="k">def</span> <span class="nf">z2E</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cosmology.z2E">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.z2E">[docs]</a>
+    <span class="k">def</span> <span class="nf">z2E</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns E(z) = sqrt(OmegaLambda + OmegaKappa*(1+z)**2 + OmegaMatter*(1+z)**3 + OmegaRadiation*(1+z)**4)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -190,7 +200,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">OmegaLambda</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">OmegaKappa</span> <span class="o">*</span> <span class="n">one_plus_z</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">OmegaMatter</span> <span class="o">*</span> <span class="n">one_plus_z</span><span class="o">**</span><span class="mi">3</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">OmegaRadiation</span> <span class="o">*</span> <span class="n">one_plus_z</span><span class="o">**</span><span class="mi">4</span>
         <span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span></div>
 
-<div class="viewcode-block" id="Cosmology.dDcdz"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.dDcdz">[docs]</a>    <span class="k">def</span> <span class="nf">dDcdz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mpc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cosmology.dDcdz">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.dDcdz">[docs]</a>
+    <span class="k">def</span> <span class="nf">dDcdz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">mpc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns (c/Ho)/E(z)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -199,7 +212,10 @@
             <span class="k">return</span> <span class="n">dDc</span> <span class="o">/</span> <span class="n">MPC_CGS</span>
         <span class="k">return</span> <span class="n">dDc</span></div>
 
-<div class="viewcode-block" id="Cosmology.dVcdz"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.dVcdz">[docs]</a>    <span class="k">def</span> <span class="nf">dVcdz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">Dc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cosmology.dVcdz">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.dVcdz">[docs]</a>
+    <span class="k">def</span> <span class="nf">dVcdz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">Dc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return dVc/dz</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -207,7 +223,10 @@
             <span class="n">Dc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z2Dc</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">dz</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">Dc</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dDcdz</span><span class="p">(</span><span class="n">z</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Cosmology.logdVcdz"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.logdVcdz">[docs]</a>    <span class="k">def</span> <span class="nf">logdVcdz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">Dc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cosmology.logdVcdz">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.logdVcdz">[docs]</a>
+    <span class="k">def</span> <span class="nf">logdVcdz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">Dc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return ln(dVc/dz), useful when constructing probability distributions without overflow errors</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -215,7 +234,10 @@
             <span class="n">Dc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">z2Dc</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">dz</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Dc</span><span class="p">)</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dDcdz</span><span class="p">(</span><span class="n">z</span><span class="p">))</span> <span class="o">-</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unit_mod</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Cosmology.z2Dc"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.z2Dc">[docs]</a>    <span class="k">def</span> <span class="nf">z2Dc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cosmology.z2Dc">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.z2Dc">[docs]</a>
+    <span class="k">def</span> <span class="nf">z2Dc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        return Dc for each z specified</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -224,7 +246,10 @@
         <span class="c1">#    self.extend(max_z=max_z,dz=dz)</span>
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Dc</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Cosmology.DL2z"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.DL2z">[docs]</a>    <span class="k">def</span> <span class="nf">DL2z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DL</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cosmology.DL2z">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.DL2z">[docs]</a>
+    <span class="k">def</span> <span class="nf">DL2z</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">DL</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns redshifts for each DL specified.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -234,14 +259,19 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">max_DL</span><span class="o">=</span><span class="n">max_DL</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">dz</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">DL_cgs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DL</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Cosmology.z2DL"><a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.z2DL">[docs]</a>    <span class="k">def</span> <span class="nf">z2DL</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Cosmology.z2DL">
+<a class="viewcode-back" href="../../api/gwinferno.cosmology.Cosmology.html#gwinferno.cosmology.Cosmology.z2DL">[docs]</a>
+    <span class="k">def</span> <span class="nf">z2DL</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">DEFAULT_DZ</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        returns luminosity distance at the specified redshifts</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">max_z</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">max_z</span> <span class="o">&gt;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">max_z</span><span class="o">=</span><span class="n">max_z</span><span class="p">,</span> <span class="n">dz</span><span class="o">=</span><span class="n">dz</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DL</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_mod</span></div></div>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">DL</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">unit_mod</span></div>
+</div>
+
 
 
 <span class="c1"># define default cosmology</span>

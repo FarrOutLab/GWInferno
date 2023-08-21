@@ -22,6 +22,8 @@ gwinferno.numpyro\_distributions.PSplineCoeficientPrior
       ~PSplineCoeficientPrior.enumerate_support
       ~PSplineCoeficientPrior.expand
       ~PSplineCoeficientPrior.expand_by
+      ~PSplineCoeficientPrior.gather_pytree_aux_fields
+      ~PSplineCoeficientPrior.gather_pytree_data_fields
       ~PSplineCoeficientPrior.icdf
       ~PSplineCoeficientPrior.infer_shapes
       ~PSplineCoeficientPrior.log_prob
@@ -51,6 +53,8 @@ gwinferno.numpyro\_distributions.PSplineCoeficientPrior
       ~PSplineCoeficientPrior.has_rsample
       ~PSplineCoeficientPrior.is_discrete
       ~PSplineCoeficientPrior.mean
+      ~PSplineCoeficientPrior.pytree_aux_fields
+      ~PSplineCoeficientPrior.pytree_data_fields
       ~PSplineCoeficientPrior.reparametrized_params
       ~PSplineCoeficientPrior.support
       ~PSplineCoeficientPrior.variance

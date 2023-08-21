@@ -11,12 +11,12 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/tabs.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -137,12 +137,17 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="dl_2_prior_on_z"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.dl_2_prior_on_z.html#gwinferno.preprocess.data_collection.dl_2_prior_on_z">[docs]</a><span class="k">def</span> <span class="nf">dl_2_prior_on_z</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
+<div class="viewcode-block" id="dl_2_prior_on_z">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.dl_2_prior_on_z.html#gwinferno.preprocess.data_collection.dl_2_prior_on_z">[docs]</a>
+<span class="k">def</span> <span class="nf">dl_2_prior_on_z</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
     <span class="n">dl</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">z2DL</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e3</span>
     <span class="k">return</span> <span class="n">dl</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dl</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">dDcdz</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">mpc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e3</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="p_m1src_q_z_lal_pe_prior"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior.html#gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior">[docs]</a><span class="k">def</span> <span class="nf">p_m1src_q_z_lal_pe_prior</span><span class="p">(</span><span class="n">posts</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="p_m1src_q_z_lal_pe_prior">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior.html#gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior">[docs]</a>
+<span class="k">def</span> <span class="nf">p_m1src_q_z_lal_pe_prior</span><span class="p">(</span><span class="n">posts</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">z_max</span> <span class="o">=</span> <span class="mf">1.9</span>
     <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">posts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">posts</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">z_max</span><span class="p">:</span>
@@ -155,6 +160,7 @@
         <span class="k">if</span> <span class="n">spin</span><span class="p">:</span>
             <span class="n">posts</span><span class="p">[</span><span class="n">event</span><span class="p">][</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">4</span>
     <span class="k">return</span> <span class="n">posts</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_standardize_new_post</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">param_mapping</span><span class="p">):</span>
@@ -201,7 +207,9 @@
     <span class="k">return</span> <span class="n">post</span>
 
 
-<div class="viewcode-block" id="downsample_posteriors_to_consistent_nsamps"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps.html#gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps">[docs]</a><span class="k">def</span> <span class="nf">downsample_posteriors_to_consistent_nsamps</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+<div class="viewcode-block" id="downsample_posteriors_to_consistent_nsamps">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps.html#gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps">[docs]</a>
+<span class="k">def</span> <span class="nf">downsample_posteriors_to_consistent_nsamps</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
     <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">ev</span><span class="p">,</span> <span class="n">posterior</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -213,7 +221,10 @@
     <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">names</span></div>
 
 
-<div class="viewcode-block" id="preprocess_data"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.preprocess_data.html#gwinferno.preprocess.data_collection.preprocess_data">[docs]</a><span class="k">def</span> <span class="nf">preprocess_data</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">run_map</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[],</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">no_downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="preprocess_data">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.preprocess_data.html#gwinferno.preprocess.data_collection.preprocess_data">[docs]</a>
+<span class="k">def</span> <span class="nf">preprocess_data</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">run_map</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[],</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">no_downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">posteriors</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">wf</span> <span class="ow">in</span> <span class="n">run_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">ignore</span><span class="p">:</span>
@@ -242,7 +253,10 @@
     <span class="k">return</span> <span class="n">posteriors</span><span class="p">,</span> <span class="n">names</span></div>
 
 
-<div class="viewcode-block" id="apply_priors"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.apply_priors.html#gwinferno.preprocess.data_collection.apply_priors">[docs]</a><span class="k">def</span> <span class="nf">apply_priors</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
+
+<div class="viewcode-block" id="apply_priors">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.apply_priors.html#gwinferno.preprocess.data_collection.apply_priors">[docs]</a>
+<span class="k">def</span> <span class="nf">apply_priors</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
     <span class="n">posteriors</span> <span class="o">=</span> <span class="n">p_m1src_q_z_lal_pe_prior</span><span class="p">(</span>
         <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_standardize_posterior_fmt</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
         <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
@@ -251,6 +265,7 @@
     <span class="k">if</span> <span class="n">downsample</span><span class="p">:</span>
         <span class="n">posteriors</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">downsample_posteriors_to_consistent_nsamps</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="n">max_samples</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">posteriors</span><span class="p">,</span> <span class="p">[</span><span class="n">ev</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_load_single_posterior</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">wf</span><span class="p">):</span>
@@ -266,7 +281,9 @@
     <span class="k">return</span> <span class="n">post</span>
 
 
-<div class="viewcode-block" id="load_catalog_from_metadata"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.load_catalog_from_metadata.html#gwinferno.preprocess.data_collection.load_catalog_from_metadata">[docs]</a><span class="k">def</span> <span class="nf">load_catalog_from_metadata</span><span class="p">(</span><span class="n">catalog_summary_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="load_catalog_from_metadata">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.load_catalog_from_metadata.html#gwinferno.preprocess.data_collection.load_catalog_from_metadata">[docs]</a>
+<span class="k">def</span> <span class="nf">load_catalog_from_metadata</span><span class="p">(</span><span class="n">catalog_summary_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">catalog_summary_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">catsum</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
     <span class="n">posteriors</span> <span class="o">=</span> <span class="p">{}</span>
@@ -277,7 +294,10 @@
     <span class="k">return</span> <span class="n">apply_priors</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">catsum</span><span class="p">[</span><span class="s2">&quot;Injections&quot;</span><span class="p">],</span> <span class="n">catsum</span><span class="p">[</span><span class="s2">&quot;FAR_threshold&quot;</span><span class="p">],</span> <span class="n">catsum</span><span class="p">[</span><span class="s2">&quot;metadata_directory&quot;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="load_posterior_samples"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.load_posterior_samples.html#gwinferno.preprocess.data_collection.load_posterior_samples">[docs]</a><span class="k">def</span> <span class="nf">load_posterior_samples</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">run_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keyfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bbh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">no_downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="load_posterior_samples">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.load_posterior_samples.html#gwinferno.preprocess.data_collection.load_posterior_samples">[docs]</a>
+<span class="k">def</span> <span class="nf">load_posterior_samples</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">run_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keyfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bbh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">no_downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">run_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">keyfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">keyfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s2">/keys_to_read.json&quot;</span>
@@ -289,7 +309,10 @@
     <span class="k">return</span> <span class="n">posteriors</span><span class="p">,</span> <span class="n">names</span></div>
 
 
-<div class="viewcode-block" id="setup_posterior_samples_and_injections"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections.html#gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections">[docs]</a><span class="k">def</span> <span class="nf">setup_posterior_samples_and_injections</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">inj_file</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chi_eff</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_p</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">jax_device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+<div class="viewcode-block" id="setup_posterior_samples_and_injections">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections.html#gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_posterior_samples_and_injections</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">inj_file</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chi_eff</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_p</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">jax_device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Sets up posterior sample and injections to be used during inference or saves them to a file</span>
 
@@ -367,7 +390,10 @@
     <span class="k">return</span> <span class="n">pedata</span><span class="p">,</span> <span class="n">injdata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">inj_attributes</span><span class="p">,</span> <span class="n">names</span></div>
 
 
-<div class="viewcode-block" id="convert_component_spin_posteriors_to_chieff"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff.html#gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff">[docs]</a><span class="k">def</span> <span class="nf">convert_component_spin_posteriors_to_chieff</span><span class="p">(</span><span class="n">pedata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">chip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="convert_component_spin_posteriors_to_chieff">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff.html#gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_component_spin_posteriors_to_chieff</span><span class="p">(</span><span class="n">pedata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">chip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="n">new_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">,</span> <span class="s2">&quot;mass_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;redshift&quot;</span><span class="p">,</span> <span class="s2">&quot;chi_eff&quot;</span><span class="p">,</span> <span class="s2">&quot;prior&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
         <span class="n">new_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;chi_p&quot;</span><span class="p">)</span>
@@ -424,6 +450,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_pe_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chi_p</span>
     <span class="k">return</span> <span class="n">new_pe_data</span><span class="p">,</span> <span class="n">new_pmap</span></div>
+
 </pre></div>
 
            </div>

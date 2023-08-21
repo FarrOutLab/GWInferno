@@ -11,12 +11,12 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/tabs.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -115,7 +115,9 @@
 <span class="n">NP_KERNEL_MAP</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;NUTS&quot;</span><span class="p">:</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">NUTS</span><span class="p">,</span> <span class="s2">&quot;HMC&quot;</span><span class="p">:</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">infer</span><span class="o">.</span><span class="n">HMC</span><span class="p">}</span>
 
 
-<div class="viewcode-block" id="find_map"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.find_map.html#gwinferno.pipeline.analysis.find_map">[docs]</a><span class="k">def</span> <span class="nf">find_map</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="n">numpyro_model</span><span class="p">,</span> <span class="o">*</span><span class="n">model_args</span><span class="p">,</span> <span class="n">Niter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+<div class="viewcode-block" id="find_map">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.find_map.html#gwinferno.pipeline.analysis.find_map">[docs]</a>
+<span class="k">def</span> <span class="nf">find_map</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="n">numpyro_model</span><span class="p">,</span> <span class="o">*</span><span class="n">model_args</span><span class="p">,</span> <span class="n">Niter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    find_map Find the MAP estimate for a given NumPyro model using SVI with Adam optimizing the ELBO</span>
 
@@ -135,7 +137,10 @@
     <span class="k">return</span> <span class="n">svi_results</span><span class="o">.</span><span class="n">params</span></div>
 
 
-<div class="viewcode-block" id="per_event_log_bayes_factor_log_neffs"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs.html#gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs">[docs]</a><span class="nd">@jit</span>
+
+<div class="viewcode-block" id="per_event_log_bayes_factor_log_neffs">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs.html#gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs">[docs]</a>
+<span class="nd">@jit</span>
 <span class="k">def</span> <span class="nf">per_event_log_bayes_factor_log_neffs</span><span class="p">(</span><span class="n">weights</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    per_event_log_bayes_factor_log_neffs calculate per event log BFs via montecarlo integrating.</span>
@@ -153,7 +158,10 @@
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">BFs</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_effs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mu_neff_injections"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.mu_neff_injections.html#gwinferno.pipeline.analysis.mu_neff_injections">[docs]</a><span class="nd">@jit</span>
+
+<div class="viewcode-block" id="mu_neff_injections">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.mu_neff_injections.html#gwinferno.pipeline.analysis.mu_neff_injections">[docs]</a>
+<span class="nd">@jit</span>
 <span class="k">def</span> <span class="nf">mu_neff_injections</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    mu_neff_injections calculates detection efficeny (mu) with monte carlo integration over found</span>
@@ -172,7 +180,10 @@
     <span class="k">return</span> <span class="n">mu</span><span class="p">,</span> <span class="n">n_eff</span></div>
 
 
-<div class="viewcode-block" id="per_event_log_bayes_factor_log_neffs_log"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs_log.html#gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs_log">[docs]</a><span class="nd">@jit</span>
+
+<div class="viewcode-block" id="per_event_log_bayes_factor_log_neffs_log">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs_log.html#gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs_log">[docs]</a>
+<span class="nd">@jit</span>
 <span class="k">def</span> <span class="nf">per_event_log_bayes_factor_log_neffs_log</span><span class="p">(</span><span class="n">logweights</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    per_event_log_bayes_factor_log_neffs_log calculate per event log BFs via montecarlo integrating.</span>
@@ -190,7 +201,10 @@
     <span class="k">return</span> <span class="n">logBFs</span><span class="p">,</span> <span class="n">logn_effs</span></div>
 
 
-<div class="viewcode-block" id="logmu_logneff_injections_log"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.logmu_logneff_injections_log.html#gwinferno.pipeline.analysis.logmu_logneff_injections_log">[docs]</a><span class="nd">@jit</span>
+
+<div class="viewcode-block" id="logmu_logneff_injections_log">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.logmu_logneff_injections_log.html#gwinferno.pipeline.analysis.logmu_logneff_injections_log">[docs]</a>
+<span class="nd">@jit</span>
 <span class="k">def</span> <span class="nf">logmu_logneff_injections_log</span><span class="p">(</span><span class="n">logweights</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    logmu_logneff_injections_log calculates log detection efficeny (log_mu) with monte carlo</span>
@@ -210,12 +224,17 @@
     <span class="k">return</span> <span class="n">logmu</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">var</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TotalVTCalculator"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.TotalVTCalculator.html#gwinferno.pipeline.analysis.TotalVTCalculator">[docs]</a><span class="k">class</span> <span class="nc">TotalVTCalculator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TotalVTCalculator">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.TotalVTCalculator.html#gwinferno.pipeline.analysis.TotalVTCalculator">[docs]</a>
+<span class="k">class</span> <span class="nc">TotalVTCalculator</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    TotalVTCalculator Object to calculate surveyed hyper-volume out to a maximum redshift</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="TotalVTCalculator.__init__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.TotalVTCalculator.html#gwinferno.pipeline.analysis.TotalVTCalculator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxz</span><span class="o">=</span><span class="mf">1.9</span><span class="p">):</span>
+<div class="viewcode-block" id="TotalVTCalculator.__init__">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.TotalVTCalculator.html#gwinferno.pipeline.analysis.TotalVTCalculator.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maxz</span><span class="o">=</span><span class="mf">1.9</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Args:</span>
 <span class="sd">            maxz (float, optional): maximum redshift to integrate out to. Defaults to 1.9.</span>
@@ -224,7 +243,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">zs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">maxz</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dVdcs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Planck15</span><span class="o">.</span><span class="n">differential_comoving_volume</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">))</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="TotalVTCalculator.__call__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.TotalVTCalculator.html#gwinferno.pipeline.analysis.TotalVTCalculator.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lamb</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TotalVTCalculator.__call__">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.TotalVTCalculator.html#gwinferno.pipeline.analysis.TotalVTCalculator.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lamb</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        __call__ perfrom trapezoidal integration to get total hypervolume</span>
 
@@ -235,10 +257,14 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            (float): total hypervolume out to z=zmax. In units of Gpc^3*yr</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dVdcs</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">,</span> <span class="n">lamb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dVdcs</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">,</span> <span class="n">lamb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="hierarchical_likelihood"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.hierarchical_likelihood.html#gwinferno.pipeline.analysis.hierarchical_likelihood">[docs]</a><span class="k">def</span> <span class="nf">hierarchical_likelihood</span><span class="p">(</span>
+
+<div class="viewcode-block" id="hierarchical_likelihood">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.hierarchical_likelihood.html#gwinferno.pipeline.analysis.hierarchical_likelihood">[docs]</a>
+<span class="k">def</span> <span class="nf">hierarchical_likelihood</span><span class="p">(</span>
     <span class="n">pe_weights</span><span class="p">,</span>
     <span class="n">inj_weights</span><span class="p">,</span>
     <span class="n">total_inj</span><span class="p">,</span>
@@ -385,7 +411,10 @@
     <span class="k">return</span> <span class="n">rate</span></div>
 
 
-<div class="viewcode-block" id="hierarchical_likelihood_in_log"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.hierarchical_likelihood_in_log.html#gwinferno.pipeline.analysis.hierarchical_likelihood_in_log">[docs]</a><span class="k">def</span> <span class="nf">hierarchical_likelihood_in_log</span><span class="p">(</span>
+
+<div class="viewcode-block" id="hierarchical_likelihood_in_log">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.hierarchical_likelihood_in_log.html#gwinferno.pipeline.analysis.hierarchical_likelihood_in_log">[docs]</a>
+<span class="k">def</span> <span class="nf">hierarchical_likelihood_in_log</span><span class="p">(</span>
     <span class="n">logpe_weights</span><span class="p">,</span>
     <span class="n">loginj_weights</span><span class="p">,</span>
     <span class="n">total_inj</span><span class="p">,</span>
@@ -503,7 +532,10 @@
                     <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">_pred_event_</span><span class="si">{</span><span class="n">ev</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">injdata</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">pred_idx</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="construct_hierarchical_model"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.construct_hierarchical_model.html#gwinferno.pipeline.analysis.construct_hierarchical_model">[docs]</a><span class="k">def</span> <span class="nf">construct_hierarchical_model</span><span class="p">(</span><span class="n">model_dict</span><span class="p">,</span> <span class="n">prior_dict</span><span class="p">,</span> <span class="n">min_neff_cut</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">marginalize_selection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">posterior_predictive_check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="construct_hierarchical_model">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.construct_hierarchical_model.html#gwinferno.pipeline.analysis.construct_hierarchical_model">[docs]</a>
+<span class="k">def</span> <span class="nf">construct_hierarchical_model</span><span class="p">(</span><span class="n">model_dict</span><span class="p">,</span> <span class="n">prior_dict</span><span class="p">,</span> <span class="n">min_neff_cut</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">marginalize_selection</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">posterior_predictive_check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="n">source_param_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">model_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
     <span class="n">hyper_params</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">prior_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
     <span class="n">pop_models</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">model_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">()}</span>
@@ -560,6 +592,7 @@
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">model</span></div>
+
 </pre></div>
 
            </div>

@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -114,10 +114,10 @@
            <div itemprop="articleBody">
              
   <section id="gwinferno-pipeline-analysis-find-map">
-<h1>gwinferno.pipeline.analysis.find_map<a class="headerlink" href="#gwinferno-pipeline-analysis-find-map" title="Permalink to this heading"></a></h1>
+<h1>gwinferno.pipeline.analysis.find_map<a class="headerlink" href="#gwinferno-pipeline-analysis-find-map" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="gwinferno.pipeline.analysis.find_map">
-<span class="sig-prename descclassname"><span class="pre">gwinferno.pipeline.analysis.</span></span><span class="sig-name descname"><span class="pre">find_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpyro_model</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">model_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Niter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/analysis.html#find_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.analysis.find_map" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gwinferno.pipeline.analysis.</span></span><span class="sig-name descname"><span class="pre">find_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rng_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numpyro_model</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">model_args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Niter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/analysis.html#find_map"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.analysis.find_map" title="Link to this definition"></a></dt>
 <dd><p>find_map Find the MAP estimate for a given NumPyro model using SVI with Adam optimizing the ELBO</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>rng_key (jax.random.PRNGKey): RNG Key to be passed to SVI.run().

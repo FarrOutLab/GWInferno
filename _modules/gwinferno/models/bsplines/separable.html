@@ -11,12 +11,12 @@
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../../_static/jquery.js"></script>
-        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
-        <script src="../../../../_static/doctools.js"></script>
-        <script src="../../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../../_static/tabs.js"></script>
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
@@ -109,7 +109,9 @@
 <span class="kn">from</span> <span class="nn">.single</span> <span class="kn">import</span> <span class="n">BSplineSpinTilt</span>
 
 
-<div class="viewcode-block" id="BSplineIIDSpinMagnitudes"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes">[docs]</a><span class="k">class</span> <span class="nc">BSplineIIDSpinMagnitudes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="BSplineIIDSpinMagnitudes">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes">[docs]</a>
+<span class="k">class</span> <span class="nc">BSplineIIDSpinMagnitudes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a spin magnitude B-Spline model for both binary components, assuming they are indipendently and identically distributed (IID).</span>
 
 <span class="sd">    Args:</span>
@@ -123,7 +125,9 @@
 <span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BSplineIIDSpinMagnitudes.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BSplineIIDSpinMagnitudes.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines</span><span class="p">,</span>
         <span class="n">a1</span><span class="p">,</span>
@@ -151,7 +155,10 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BSplineIIDSpinMagnitudes.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIIDSpinMagnitudes.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary spin magnitude along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -165,10 +172,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_a1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_a2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">p_a1</span> <span class="o">*</span> <span class="n">p_a2</span></div></div>
+        <span class="k">return</span> <span class="n">p_a1</span> <span class="o">*</span> <span class="n">p_a2</span></div>
+</div>
 
 
-<div class="viewcode-block" id="BSplineIndependentSpinMagnitudes"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes">[docs]</a><span class="k">class</span> <span class="nc">BSplineIndependentSpinMagnitudes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIndependentSpinMagnitudes">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes">[docs]</a>
+<span class="k">class</span> <span class="nc">BSplineIndependentSpinMagnitudes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a spin magnitude B-Spline model for both binary components, assuming they are indipendently distributed.</span>
 
 <span class="sd">    Args:</span>
@@ -186,7 +197,9 @@
 <span class="sd">        degree2 (int, optional): degree of secondary component spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BSplineIndependentSpinMagnitudes.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BSplineIndependentSpinMagnitudes.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines1</span><span class="p">,</span>
         <span class="n">n_splines2</span><span class="p">,</span>
@@ -217,7 +230,10 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BSplineIndependentSpinMagnitudes.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIndependentSpinMagnitudes.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary spin magnitude along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -232,10 +248,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_a1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_a2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">p_a1</span> <span class="o">*</span> <span class="n">p_a2</span></div></div>
+        <span class="k">return</span> <span class="n">p_a1</span> <span class="o">*</span> <span class="n">p_a2</span></div>
+</div>
 
 
-<div class="viewcode-block" id="BSplineIIDSpinTilts"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts">[docs]</a><span class="k">class</span> <span class="nc">BSplineIIDSpinTilts</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIIDSpinTilts">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts">[docs]</a>
+<span class="k">class</span> <span class="nc">BSplineIIDSpinTilts</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components,</span>
 <span class="sd">    assuming they are indipendently and identically distributed (IID).</span>
@@ -251,7 +271,9 @@
 <span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BSplineIIDSpinTilts.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BSplineIIDSpinTilts.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines</span><span class="p">,</span>
         <span class="n">ct1</span><span class="p">,</span>
@@ -279,7 +301,10 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BSplineIIDSpinTilts.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIIDSpinTilts.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -293,10 +318,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_ct1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_ct2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">p_ct1</span> <span class="o">*</span> <span class="n">p_ct2</span></div></div>
+        <span class="k">return</span> <span class="n">p_ct1</span> <span class="o">*</span> <span class="n">p_ct2</span></div>
+</div>
 
 
-<div class="viewcode-block" id="BSplineIndependentSpinTilts"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts">[docs]</a><span class="k">class</span> <span class="nc">BSplineIndependentSpinTilts</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIndependentSpinTilts">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts">[docs]</a>
+<span class="k">class</span> <span class="nc">BSplineIndependentSpinTilts</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are indipendently distributed.</span>
 
 <span class="sd">    Args:</span>
@@ -314,7 +343,9 @@
 <span class="sd">        degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BSplineIndependentSpinTilts.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BSplineIndependentSpinTilts.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines1</span><span class="p">,</span>
         <span class="n">n_splines2</span><span class="p">,</span>
@@ -345,7 +376,10 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BSplineIndependentSpinTilts.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIndependentSpinTilts.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -360,10 +394,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_ct1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_ct2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">p_ct1</span> <span class="o">*</span> <span class="n">p_ct2</span></div></div>
+        <span class="k">return</span> <span class="n">p_ct1</span> <span class="o">*</span> <span class="n">p_ct2</span></div>
+</div>
 
 
-<div class="viewcode-block" id="BSplinePrimaryPowerlawRatio"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio">[docs]</a><span class="k">class</span> <span class="nc">BSplinePrimaryPowerlawRatio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplinePrimaryPowerlawRatio">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio">[docs]</a>
+<span class="k">class</span> <span class="nc">BSplinePrimaryPowerlawRatio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in primary mass and a powerlaw model in mass ratio</span>
 
 <span class="sd">    Args:</span>
@@ -378,7 +416,9 @@
 <span class="sd">        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to Bspline.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BSplinePrimaryPowerlawRatio.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BSplinePrimaryPowerlawRatio.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines</span><span class="p">,</span>
         <span class="n">m1</span><span class="p">,</span>
@@ -402,7 +442,10 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BSplinePrimaryPowerlawRatio.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplinePrimaryPowerlawRatio.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -422,10 +465,14 @@
         <span class="c1"># p_m1 = p_m1 / norm_factor</span>
         <span class="n">p_m1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_q</span> <span class="o">=</span> <span class="n">powerlaw_pdf</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span> <span class="o">/</span> <span class="n">m1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_q</span></div></div>
+        <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_q</span></div>
+</div>
 
 
-<div class="viewcode-block" id="PLPeakPrimaryBSplineRatio"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio">[docs]</a><span class="k">class</span> <span class="nc">PLPeakPrimaryBSplineRatio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PLPeakPrimaryBSplineRatio">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio">[docs]</a>
+<span class="k">class</span> <span class="nc">PLPeakPrimaryBSplineRatio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a powerlaw + gaussian peak primary mass model and B-Spline mass ratio model.</span>
 
 <span class="sd">    Args:</span>
@@ -439,7 +486,9 @@
 <span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="PLPeakPrimaryBSplineRatio.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="PLPeakPrimaryBSplineRatio.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines</span><span class="p">,</span>
         <span class="n">q</span><span class="p">,</span>
@@ -459,7 +508,10 @@
             <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="PLPeakPrimaryBSplineRatio.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PLPeakPrimaryBSplineRatio.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -476,10 +528,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_m1</span> <span class="o">=</span> <span class="n">plpeak_primary_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_q</span></div></div>
+        <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_q</span></div>
+</div>
 
 
-<div class="viewcode-block" id="BSplinePrimaryBSplineRatio"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio">[docs]</a><span class="k">class</span> <span class="nc">BSplinePrimaryBSplineRatio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplinePrimaryBSplineRatio">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio">[docs]</a>
+<span class="k">class</span> <span class="nc">BSplinePrimaryBSplineRatio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in primary mass and a B-Spline model in mass ratio</span>
 
 <span class="sd">    Args:</span>
@@ -502,7 +558,9 @@
 <span class="sd">        basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to Bspline.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BSplinePrimaryBSplineRatio.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BSplinePrimaryBSplineRatio.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines_m</span><span class="p">,</span>
         <span class="n">n_splines_q</span><span class="p">,</span>
@@ -543,7 +601,10 @@
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BSplinePrimaryBSplineRatio.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcoefs</span><span class="p">,</span> <span class="n">qcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplinePrimaryBSplineRatio.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcoefs</span><span class="p">,</span> <span class="n">qcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -556,10 +617,14 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            array_like: the joint probability density distribution for the primary mass and mass ratio, p(m1, q)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_model</span><span class="p">(</span><span class="n">qcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">mcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_model</span><span class="p">(</span><span class="n">qcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">mcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="BSplineIIDComponentMasses"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses">[docs]</a><span class="k">class</span> <span class="nc">BSplineIIDComponentMasses</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIIDComponentMasses">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses">[docs]</a>
+<span class="k">class</span> <span class="nc">BSplineIIDComponentMasses</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to construct a B-Spline model in primary mass and secondary mass,</span>
 <span class="sd">    assuming the two binary mass components are independently and identically distributed (IID).</span>
@@ -575,7 +640,9 @@
 <span class="sd">        mmax (float, optional): maximum mass value. Splines are truncated above this maximum mass. Defaults to 100.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BSplineIIDComponentMasses.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BSplineIIDComponentMasses.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines</span><span class="p">,</span>
         <span class="n">m1</span><span class="p">,</span>
@@ -607,7 +674,10 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">qs</span> <span class="o">=</span> <span class="p">[</span><span class="n">m2_inj</span> <span class="o">/</span> <span class="n">m1_inj</span><span class="p">,</span> <span class="n">m2</span> <span class="o">/</span> <span class="n">m1</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="BSplineIIDComponentMasses.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIIDComponentMasses.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -627,10 +697,14 @@
             <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qs</span><span class="p">[</span><span class="n">dim</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qs</span><span class="p">[</span><span class="n">dim</span><span class="p">],</span> <span class="mi">1</span><span class="p">),</span>
             <span class="mi">0</span><span class="p">,</span>
             <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_m2</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qs</span><span class="p">[</span><span class="n">dim</span><span class="p">],</span> <span class="n">beta</span><span class="p">)</span></div></div>
+        <span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qs</span><span class="p">[</span><span class="n">dim</span><span class="p">],</span> <span class="n">beta</span><span class="p">)</span></div>
+</div>
 
 
-<div class="viewcode-block" id="BSplineIndependentComponentMasses"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses">[docs]</a><span class="k">class</span> <span class="nc">BSplineIndependentComponentMasses</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIndependentComponentMasses">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses">[docs]</a>
+<span class="k">class</span> <span class="nc">BSplineIndependentComponentMasses</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in primary mass and secondary mass, assuming the two binary mass components are idependently distributed.</span>
 
 <span class="sd">    Args:</span>
@@ -650,7 +724,9 @@
 <span class="sd">        degree2 (int, optional): degree of the spline for the secondary mass, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BSplineIndependentComponentMasses.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BSplineIndependentComponentMasses.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines1</span><span class="p">,</span>
         <span class="n">n_splines2</span><span class="p">,</span>
@@ -686,7 +762,10 @@
             <span class="n">degree</span><span class="o">=</span><span class="n">degree2</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BSplineIndependentComponentMasses.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineIndependentComponentMasses.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -704,10 +783,14 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_m1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_m2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_m2</span> <span class="o">*</span> <span class="p">(</span><span class="n">m1</span> <span class="o">/</span> <span class="n">m2</span><span class="p">)</span> <span class="o">**</span> <span class="n">beta</span></div></div>
+        <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_m2</span> <span class="o">*</span> <span class="p">(</span><span class="n">m1</span> <span class="o">/</span> <span class="n">m2</span><span class="p">)</span> <span class="o">**</span> <span class="n">beta</span></div>
+</div>
 
 
-<div class="viewcode-block" id="BSplineEffectiveSpinDims"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims">[docs]</a><span class="k">class</span> <span class="nc">BSplineEffectiveSpinDims</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineEffectiveSpinDims">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims">[docs]</a>
+<span class="k">class</span> <span class="nc">BSplineEffectiveSpinDims</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in the chi effective and effective precession (chi_p) parameters</span>
 
 <span class="sd">    Args:</span>
@@ -723,7 +806,9 @@
 <span class="sd">        degree_p (int, optional): degree of the spline for chi_p, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="BSplineEffectiveSpinDims.__init__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="BSplineEffectiveSpinDims.__init__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_splines_e</span><span class="p">,</span>
         <span class="n">n_splines_p</span><span class="p">,</span>
@@ -752,7 +837,10 @@
             <span class="n">degree</span><span class="o">=</span><span class="n">degree_p</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="BSplineEffectiveSpinDims.__call__"><a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__call__">[docs]</a>    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ecoefs</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+<div class="viewcode-block" id="BSplineEffectiveSpinDims.__call__">
+<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__call__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ecoefs</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -769,7 +857,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_chieff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chi_eff_model</span><span class="p">(</span><span class="n">ecoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_chip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chi_p_model</span><span class="p">(</span><span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">p_chieff</span> <span class="o">*</span> <span class="n">p_chip</span></div></div>
+        <span class="k">return</span> <span class="n">p_chieff</span> <span class="o">*</span> <span class="n">p_chip</span></div>
+</div>
+
 </pre></div>
 
            </div>

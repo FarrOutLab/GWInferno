@@ -22,6 +22,8 @@ gwinferno.numpyro\_distributions.Powerlaw
       ~Powerlaw.enumerate_support
       ~Powerlaw.expand
       ~Powerlaw.expand_by
+      ~Powerlaw.gather_pytree_aux_fields
+      ~Powerlaw.gather_pytree_data_fields
       ~Powerlaw.icdf
       ~Powerlaw.infer_shapes
       ~Powerlaw.log_prob
@@ -51,6 +53,8 @@ gwinferno.numpyro\_distributions.Powerlaw
       ~Powerlaw.has_rsample
       ~Powerlaw.is_discrete
       ~Powerlaw.mean
+      ~Powerlaw.pytree_aux_fields
+      ~Powerlaw.pytree_data_fields
       ~Powerlaw.reparametrized_params
       ~Powerlaw.support
       ~Powerlaw.variance

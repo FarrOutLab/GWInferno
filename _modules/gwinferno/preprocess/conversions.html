@@ -11,12 +11,12 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/tabs.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -99,7 +99,9 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="chieff_from_q_component_spins"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.conversions.chieff_from_q_component_spins.html#gwinferno.preprocess.conversions.chieff_from_q_component_spins">[docs]</a><span class="k">def</span> <span class="nf">chieff_from_q_component_spins</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">):</span>
+<div class="viewcode-block" id="chieff_from_q_component_spins">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.conversions.chieff_from_q_component_spins.html#gwinferno.preprocess.conversions.chieff_from_q_component_spins">[docs]</a>
+<span class="k">def</span> <span class="nf">chieff_from_q_component_spins</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    chieff_from_q_component_spins calculates the effective spin paramer given the</span>
 <span class="sd">        mass ratio and spin mag/tilts.</span>
@@ -117,7 +119,10 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">a1</span> <span class="o">*</span> <span class="n">ct1</span> <span class="o">+</span> <span class="n">q</span> <span class="o">*</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">ct2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">q</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="chip_from_q_component_spins"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.conversions.chip_from_q_component_spins.html#gwinferno.preprocess.conversions.chip_from_q_component_spins">[docs]</a><span class="k">def</span> <span class="nf">chip_from_q_component_spins</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">,</span> <span class="n">bk</span><span class="o">=</span><span class="n">np</span><span class="p">):</span>
+
+<div class="viewcode-block" id="chip_from_q_component_spins">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.conversions.chip_from_q_component_spins.html#gwinferno.preprocess.conversions.chip_from_q_component_spins">[docs]</a>
+<span class="k">def</span> <span class="nf">chip_from_q_component_spins</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">,</span> <span class="n">bk</span><span class="o">=</span><span class="n">np</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    chip_from_q_component_spins calculates the effective spin precession paramer given</span>
 <span class="sd">        the mass ratio and spin mag/tilts.</span>
@@ -137,7 +142,10 @@
     <span class="k">return</span> <span class="n">bk</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">a1</span> <span class="o">*</span> <span class="n">sint1</span><span class="p">,</span> <span class="p">((</span><span class="mf">3.0</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">q</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">+</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">q</span><span class="p">))</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">sint2</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="mu_var_from_alpha_beta"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.conversions.mu_var_from_alpha_beta.html#gwinferno.preprocess.conversions.mu_var_from_alpha_beta">[docs]</a><span class="k">def</span> <span class="nf">mu_var_from_alpha_beta</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">amax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="mu_var_from_alpha_beta">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.conversions.mu_var_from_alpha_beta.html#gwinferno.preprocess.conversions.mu_var_from_alpha_beta">[docs]</a>
+<span class="k">def</span> <span class="nf">mu_var_from_alpha_beta</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">amax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    mu_var_from_alpha_beta converts the alpha/beta shape parameters of the Beta</span>
 <span class="sd">        Distribution to the mean and variance (mu/var)</span>
@@ -156,7 +164,10 @@
     <span class="k">return</span> <span class="n">mu</span><span class="p">,</span> <span class="n">var</span></div>
 
 
-<div class="viewcode-block" id="alpha_beta_from_mu_var"><a class="viewcode-back" href="../../../api/gwinferno.preprocess.conversions.alpha_beta_from_mu_var.html#gwinferno.preprocess.conversions.alpha_beta_from_mu_var">[docs]</a><span class="k">def</span> <span class="nf">alpha_beta_from_mu_var</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">amax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+<div class="viewcode-block" id="alpha_beta_from_mu_var">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.conversions.alpha_beta_from_mu_var.html#gwinferno.preprocess.conversions.alpha_beta_from_mu_var">[docs]</a>
+<span class="k">def</span> <span class="nf">alpha_beta_from_mu_var</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">amax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    alpha_beta_from_mu_var converts the mean/variance (mu/var) parameters of the Beta</span>
 <span class="sd">        Distribution to the shape parameters (alpha/beta)</span>
@@ -175,6 +186,7 @@
     <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">var</span><span class="p">)</span> <span class="o">/</span> <span class="n">var</span>
     <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">*</span> <span class="n">var</span><span class="p">)</span> <span class="o">/</span> <span class="n">var</span>
     <span class="k">return</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span></div>
+
 </pre></div>
 
            </div>

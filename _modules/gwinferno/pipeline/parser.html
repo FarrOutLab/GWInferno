@@ -11,12 +11,12 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/tabs.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -104,43 +104,71 @@
 <span class="kn">import</span> <span class="nn">yaml</span>
 
 
-<div class="viewcode-block" id="PopModel"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopModel.html#gwinferno.pipeline.parser.PopModel">[docs]</a><span class="k">class</span> <span class="nc">PopModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<div class="viewcode-block" id="PopModel.__init__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopModel.html#gwinferno.pipeline.parser.PopModel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+<div class="viewcode-block" id="PopModel">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopModel.html#gwinferno.pipeline.parser.PopModel">[docs]</a>
+<span class="k">class</span> <span class="nc">PopModel</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PopModel.__init__">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopModel.html#gwinferno.pipeline.parser.PopModel.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span></div>
+</div>
 
 
-<div class="viewcode-block" id="PopPrior"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopPrior.html#gwinferno.pipeline.parser.PopPrior">[docs]</a><span class="k">class</span> <span class="nc">PopPrior</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<div class="viewcode-block" id="PopPrior.__init__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopPrior.html#gwinferno.pipeline.parser.PopPrior.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PopPrior">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopPrior.html#gwinferno.pipeline.parser.PopPrior">[docs]</a>
+<span class="k">class</span> <span class="nc">PopPrior</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PopPrior.__init__">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopPrior.html#gwinferno.pipeline.parser.PopPrior.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span></div>
+</div>
 
 
-<div class="viewcode-block" id="PopMixtureModel"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopMixtureModel.html#gwinferno.pipeline.parser.PopMixtureModel">[docs]</a><span class="k">class</span> <span class="nc">PopMixtureModel</span><span class="p">(</span><span class="n">PopModel</span><span class="p">):</span>
-<div class="viewcode-block" id="PopMixtureModel.__init__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopMixtureModel.html#gwinferno.pipeline.parser.PopMixtureModel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">mix_dist</span><span class="p">,</span> <span class="n">mix_params</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">component_params</span><span class="p">):</span>
+
+<div class="viewcode-block" id="PopMixtureModel">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopMixtureModel.html#gwinferno.pipeline.parser.PopMixtureModel">[docs]</a>
+<span class="k">class</span> <span class="nc">PopMixtureModel</span><span class="p">(</span><span class="n">PopModel</span><span class="p">):</span>
+<div class="viewcode-block" id="PopMixtureModel.__init__">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.PopMixtureModel.html#gwinferno.pipeline.parser.PopMixtureModel.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">mix_dist</span><span class="p">,</span> <span class="n">mix_params</span><span class="p">,</span> <span class="n">components</span><span class="p">,</span> <span class="n">component_params</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">components</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mixing_dist</span> <span class="o">=</span> <span class="n">mix_dist</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mixing_params</span> <span class="o">=</span> <span class="n">mix_params</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">component_params</span> <span class="o">=</span> <span class="n">component_params</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">component_params</span> <span class="o">=</span> <span class="n">component_params</span></div>
+</div>
 
 
-<div class="viewcode-block" id="load_model_from_python_file"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_model_from_python_file.html#gwinferno.pipeline.parser.load_model_from_python_file">[docs]</a><span class="k">def</span> <span class="nf">load_model_from_python_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+
+<div class="viewcode-block" id="load_model_from_python_file">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_model_from_python_file.html#gwinferno.pipeline.parser.load_model_from_python_file">[docs]</a>
+<span class="k">def</span> <span class="nf">load_model_from_python_file</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
     <span class="n">fn</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">direct</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;/</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
     <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">direct</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">import_module</span><span class="p">(</span><span class="n">fn</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)),</span> <span class="s2">&quot;model&quot;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_dist_from_string"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_dist_from_string.html#gwinferno.pipeline.parser.load_dist_from_string">[docs]</a><span class="k">def</span> <span class="nf">load_dist_from_string</span><span class="p">(</span><span class="n">dist</span><span class="p">):</span>
+
+<div class="viewcode-block" id="load_dist_from_string">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_dist_from_string.html#gwinferno.pipeline.parser.load_dist_from_string">[docs]</a>
+<span class="k">def</span> <span class="nf">load_dist_from_string</span><span class="p">(</span><span class="n">dist</span><span class="p">):</span>
     <span class="n">split_d</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)</span>
     <span class="n">module</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">split_d</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">function</span> <span class="o">=</span> <span class="n">split_d</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">import_module</span><span class="p">(</span><span class="n">module</span><span class="p">),</span> <span class="n">function</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ConfigReader"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.ConfigReader.html#gwinferno.pipeline.parser.ConfigReader">[docs]</a><span class="k">class</span> <span class="nc">ConfigReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<div class="viewcode-block" id="ConfigReader.__init__"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.ConfigReader.html#gwinferno.pipeline.parser.ConfigReader.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ConfigReader">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.ConfigReader.html#gwinferno.pipeline.parser.ConfigReader">[docs]</a>
+<span class="k">class</span> <span class="nc">ConfigReader</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="ConfigReader.__init__">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.ConfigReader.html#gwinferno.pipeline.parser.ConfigReader.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">models</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">priors</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sampling_params</span> <span class="o">=</span> <span class="p">[]</span>
@@ -148,6 +176,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">outdir</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_args</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sampler_args</span> <span class="o">=</span> <span class="kc">None</span></div>
+
 
     <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yml_file</span><span class="p">):</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">yml_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -212,7 +241,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">add_iid_model</span><span class="p">(</span><span class="n">param</span><span class="p">,</span> <span class="n">subd</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;iid&quot;</span><span class="p">][</span><span class="s2">&quot;shared_parameter&quot;</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="load_base_parser"><a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_base_parser.html#gwinferno.pipeline.parser.load_base_parser">[docs]</a><span class="k">def</span> <span class="nf">load_base_parser</span><span class="p">():</span>
+
+<div class="viewcode-block" id="load_base_parser">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.parser.load_base_parser.html#gwinferno.pipeline.parser.load_base_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">load_base_parser</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--data-dir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/home/bruce.edelman/projects/GWTC3_allevents/&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -229,6 +261,7 @@
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--warmup&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--skip-inference&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">parser</span></div>
+
 </pre></div>
 
            </div>

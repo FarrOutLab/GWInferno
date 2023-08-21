@@ -22,6 +22,8 @@ gwinferno.numpyro\_distributions.PowerlawRedshift
       ~PowerlawRedshift.enumerate_support
       ~PowerlawRedshift.expand
       ~PowerlawRedshift.expand_by
+      ~PowerlawRedshift.gather_pytree_aux_fields
+      ~PowerlawRedshift.gather_pytree_data_fields
       ~PowerlawRedshift.icdf
       ~PowerlawRedshift.infer_shapes
       ~PowerlawRedshift.log_prob
@@ -51,6 +53,8 @@ gwinferno.numpyro\_distributions.PowerlawRedshift
       ~PowerlawRedshift.has_rsample
       ~PowerlawRedshift.is_discrete
       ~PowerlawRedshift.mean
+      ~PowerlawRedshift.pytree_aux_fields
+      ~PowerlawRedshift.pytree_data_fields
       ~PowerlawRedshift.reparametrized_params
       ~PowerlawRedshift.support
       ~PowerlawRedshift.variance

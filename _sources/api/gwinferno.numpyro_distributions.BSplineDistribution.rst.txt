@@ -22,6 +22,8 @@ gwinferno.numpyro\_distributions.BSplineDistribution
       ~BSplineDistribution.enumerate_support
       ~BSplineDistribution.expand
       ~BSplineDistribution.expand_by
+      ~BSplineDistribution.gather_pytree_aux_fields
+      ~BSplineDistribution.gather_pytree_data_fields
       ~BSplineDistribution.icdf
       ~BSplineDistribution.infer_shapes
       ~BSplineDistribution.log_prob
@@ -51,6 +53,8 @@ gwinferno.numpyro\_distributions.BSplineDistribution
       ~BSplineDistribution.has_rsample
       ~BSplineDistribution.is_discrete
       ~BSplineDistribution.mean
+      ~BSplineDistribution.pytree_aux_fields
+      ~BSplineDistribution.pytree_data_fields
       ~BSplineDistribution.reparametrized_params
       ~BSplineDistribution.support
       ~BSplineDistribution.variance

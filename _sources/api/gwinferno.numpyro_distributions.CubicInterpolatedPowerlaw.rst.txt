@@ -22,6 +22,8 @@ gwinferno.numpyro\_distributions.CubicInterpolatedPowerlaw
       ~CubicInterpolatedPowerlaw.enumerate_support
       ~CubicInterpolatedPowerlaw.expand
       ~CubicInterpolatedPowerlaw.expand_by
+      ~CubicInterpolatedPowerlaw.gather_pytree_aux_fields
+      ~CubicInterpolatedPowerlaw.gather_pytree_data_fields
       ~CubicInterpolatedPowerlaw.icdf
       ~CubicInterpolatedPowerlaw.infer_shapes
       ~CubicInterpolatedPowerlaw.log_prob
@@ -51,6 +53,8 @@ gwinferno.numpyro\_distributions.CubicInterpolatedPowerlaw
       ~CubicInterpolatedPowerlaw.has_rsample
       ~CubicInterpolatedPowerlaw.is_discrete
       ~CubicInterpolatedPowerlaw.mean
+      ~CubicInterpolatedPowerlaw.pytree_aux_fields
+      ~CubicInterpolatedPowerlaw.pytree_data_fields
       ~CubicInterpolatedPowerlaw.reparametrized_params
       ~CubicInterpolatedPowerlaw.support
       ~CubicInterpolatedPowerlaw.variance

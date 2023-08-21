@@ -22,6 +22,8 @@ gwinferno.numpyro\_distributions.LinearInterpolatedPowerlaw
       ~LinearInterpolatedPowerlaw.enumerate_support
       ~LinearInterpolatedPowerlaw.expand
       ~LinearInterpolatedPowerlaw.expand_by
+      ~LinearInterpolatedPowerlaw.gather_pytree_aux_fields
+      ~LinearInterpolatedPowerlaw.gather_pytree_data_fields
       ~LinearInterpolatedPowerlaw.icdf
       ~LinearInterpolatedPowerlaw.infer_shapes
       ~LinearInterpolatedPowerlaw.log_prob
@@ -51,6 +53,8 @@ gwinferno.numpyro\_distributions.LinearInterpolatedPowerlaw
       ~LinearInterpolatedPowerlaw.has_rsample
       ~LinearInterpolatedPowerlaw.is_discrete
       ~LinearInterpolatedPowerlaw.mean
+      ~LinearInterpolatedPowerlaw.pytree_aux_fields
+      ~LinearInterpolatedPowerlaw.pytree_data_fields
       ~LinearInterpolatedPowerlaw.reparametrized_params
       ~LinearInterpolatedPowerlaw.support
       ~LinearInterpolatedPowerlaw.variance

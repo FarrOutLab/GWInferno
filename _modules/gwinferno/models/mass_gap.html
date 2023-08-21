@@ -11,12 +11,12 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/tabs.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -103,11 +103,16 @@
 
 
 <span class="c1"># &quot;&quot;&quot;log of logistic function (see https://git.ligo.org/will-farr/pisnmassfunctions.jl/-/blob/master/src/model.jl#L10 )&quot;&quot;&quot;</span>
-<div class="viewcode-block" id="logistic_unit"><a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.logistic_unit.html#gwinferno.models.mass_gap.logistic_unit">[docs]</a><span class="k">def</span> <span class="nf">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="logistic_unit">
+<a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.logistic_unit.html#gwinferno.models.mass_gap.logistic_unit">[docs]</a>
+<span class="k">def</span> <span class="nf">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="powerlaw_gap_primary_ratio_pdf"><a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.powerlaw_gap_primary_ratio_pdf.html#gwinferno.models.mass_gap.powerlaw_gap_primary_ratio_pdf">[docs]</a><span class="k">def</span> <span class="nf">powerlaw_gap_primary_ratio_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">):</span>
+
+<div class="viewcode-block" id="powerlaw_gap_primary_ratio_pdf">
+<a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.powerlaw_gap_primary_ratio_pdf.html#gwinferno.models.mass_gap.powerlaw_gap_primary_ratio_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">powerlaw_gap_primary_ratio_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">):</span>
 
     <span class="n">gapmax</span> <span class="o">=</span> <span class="n">gapmin</span> <span class="o">+</span> <span class="mi">50</span>
     <span class="n">p_q</span> <span class="o">=</span> <span class="n">powerlaw_pdf</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span> <span class="o">/</span> <span class="n">m1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -117,7 +122,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="powerlaw_gap_logit_primary_pdf"><a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.powerlaw_gap_logit_primary_pdf.html#gwinferno.models.mass_gap.powerlaw_gap_logit_primary_pdf">[docs]</a><span class="k">def</span> <span class="nf">powerlaw_gap_logit_primary_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">,</span> <span class="n">fall_off</span><span class="p">,</span> <span class="n">gapwidth</span><span class="p">):</span>
+
+<div class="viewcode-block" id="powerlaw_gap_logit_primary_pdf">
+<a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.powerlaw_gap_logit_primary_pdf.html#gwinferno.models.mass_gap.powerlaw_gap_logit_primary_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">powerlaw_gap_logit_primary_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">,</span> <span class="n">fall_off</span><span class="p">,</span> <span class="n">gapwidth</span><span class="p">):</span>
     <span class="n">gapmax</span> <span class="o">=</span> <span class="n">gapmin</span> <span class="o">+</span> <span class="n">gapwidth</span>
     <span class="n">floor_p</span> <span class="o">=</span> <span class="o">-</span><span class="mf">10.0</span>  <span class="c1"># jnp.where(jnp.less(alpha, 0), alpha*2 - 1, -8)</span>
 
@@ -131,7 +139,10 @@
     <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_q</span></div>
 
 
-<div class="viewcode-block" id="powerlaw_gap_logit_ben_primary_pdf"><a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf.html#gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf">[docs]</a><span class="k">def</span> <span class="nf">powerlaw_gap_logit_ben_primary_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">):</span>
+
+<div class="viewcode-block" id="powerlaw_gap_logit_ben_primary_pdf">
+<a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf.html#gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">powerlaw_gap_logit_ben_primary_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">):</span>
     <span class="n">m_gap_high</span> <span class="o">=</span> <span class="mf">50.0</span> <span class="o">+</span> <span class="n">gapmin</span>
     <span class="n">k</span> <span class="o">=</span> <span class="mi">100</span>
     <span class="n">x_gl</span> <span class="o">=</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">m1</span> <span class="o">-</span> <span class="n">gapmin</span><span class="p">)</span> <span class="o">/</span> <span class="n">gapmin</span>
@@ -150,7 +161,10 @@
     <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_q</span></div>
 
 
-<div class="viewcode-block" id="powerlaw_gap_cutoff_primary_ratio_pdf"><a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf.html#gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf">[docs]</a><span class="k">def</span> <span class="nf">powerlaw_gap_cutoff_primary_ratio_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">):</span>
+
+<div class="viewcode-block" id="powerlaw_gap_cutoff_primary_ratio_pdf">
+<a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf.html#gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">powerlaw_gap_cutoff_primary_ratio_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">):</span>
     <span class="n">gapmax</span> <span class="o">=</span> <span class="n">gapmin</span> <span class="o">+</span> <span class="mi">50</span>
 
     <span class="n">p_q</span> <span class="o">=</span> <span class="n">powerlaw_pdf</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span> <span class="o">/</span> <span class="n">m1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -169,12 +183,16 @@
     <span class="k">return</span> <span class="n">p_q</span> <span class="o">*</span> <span class="n">p_m1</span></div>
 
 
-<div class="viewcode-block" id="plpeak_gap_primary_ratio_pdf"><a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf.html#gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf">[docs]</a><span class="k">def</span> <span class="nf">plpeak_gap_primary_ratio_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">mpp</span><span class="p">,</span> <span class="n">sigpp</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">,</span> <span class="n">gapmax</span><span class="p">):</span>
+
+<div class="viewcode-block" id="plpeak_gap_primary_ratio_pdf">
+<a class="viewcode-back" href="../../../api/gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf.html#gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">plpeak_gap_primary_ratio_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">mpp</span><span class="p">,</span> <span class="n">sigpp</span><span class="p">,</span> <span class="n">lam</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">,</span> <span class="n">gapmax</span><span class="p">):</span>
     <span class="n">p_q</span> <span class="o">=</span> <span class="n">powerlaw_pdf</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span> <span class="o">/</span> <span class="n">m1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">p_m1</span> <span class="o">=</span> <span class="n">plpeak_primary_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">mpp</span><span class="p">,</span> <span class="n">sigpp</span><span class="p">,</span> <span class="n">lam</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">gapmax</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p_m1</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
         <span class="n">jnp</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">m1</span> <span class="o">*</span> <span class="n">q</span><span class="p">,</span> <span class="n">gapmax</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">m1</span> <span class="o">*</span> <span class="n">q</span><span class="p">,</span> <span class="n">gapmin</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p_q</span>
     <span class="p">)</span></div>
+
 </pre></div>
 
            </div>

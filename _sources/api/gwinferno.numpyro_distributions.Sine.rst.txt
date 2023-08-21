@@ -22,6 +22,8 @@ gwinferno.numpyro\_distributions.Sine
       ~Sine.enumerate_support
       ~Sine.expand
       ~Sine.expand_by
+      ~Sine.gather_pytree_aux_fields
+      ~Sine.gather_pytree_data_fields
       ~Sine.icdf
       ~Sine.infer_shapes
       ~Sine.log_prob
@@ -51,6 +53,8 @@ gwinferno.numpyro\_distributions.Sine
       ~Sine.has_rsample
       ~Sine.is_discrete
       ~Sine.mean
+      ~Sine.pytree_aux_fields
+      ~Sine.pytree_data_fields
       ~Sine.reparametrized_params
       ~Sine.support
       ~Sine.variance

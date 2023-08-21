@@ -11,12 +11,12 @@
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../../_static/jquery.js"></script>
-        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
-        <script src="../../../_static/doctools.js"></script>
-        <script src="../../../_static/sphinx_highlight.js"></script>
-        <script src="../../../_static/tabs.js"></script>
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -102,7 +102,9 @@
 <span class="n">DEG_TO_RAD</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span>
 
 
-<div class="viewcode-block" id="make_get_polarization_tensor"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.make_get_polarization_tensor.html#gwinferno.parameter_estimation.detectors.make_get_polarization_tensor">[docs]</a><span class="k">def</span> <span class="nf">make_get_polarization_tensor</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
+<div class="viewcode-block" id="make_get_polarization_tensor">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.make_get_polarization_tensor.html#gwinferno.parameter_estimation.detectors.make_get_polarization_tensor">[docs]</a>
+<span class="k">def</span> <span class="nf">make_get_polarization_tensor</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;plus&quot;</span><span class="p">:</span>
 
         <span class="k">def</span> <span class="nf">kernel</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
@@ -129,7 +131,10 @@
     <span class="k">return</span> <span class="n">get_polarization_tensor</span></div>
 
 
-<div class="viewcode-block" id="get_geocentric_vertex"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.get_geocentric_vertex.html#gwinferno.parameter_estimation.detectors.get_geocentric_vertex">[docs]</a><span class="k">def</span> <span class="nf">get_geocentric_vertex</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">elev</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_geocentric_vertex">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.get_geocentric_vertex.html#gwinferno.parameter_estimation.detectors.get_geocentric_vertex">[docs]</a>
+<span class="k">def</span> <span class="nf">get_geocentric_vertex</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">elev</span><span class="p">):</span>
     <span class="n">semi_maj</span> <span class="o">=</span> <span class="mf">6378137.0</span>  <span class="c1"># for ellipsoid model of Earth, in m</span>
     <span class="n">semi_min</span> <span class="o">=</span> <span class="mf">6356752.314</span>  <span class="c1"># in m</span>
     <span class="n">radius</span> <span class="o">=</span> <span class="n">semi_maj</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">semi_maj</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">semi_min</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span>
@@ -139,21 +144,32 @@
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_comp</span><span class="p">,</span> <span class="n">y_comp</span><span class="p">,</span> <span class="n">z_comp</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="construct_arm"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.construct_arm.html#gwinferno.parameter_estimation.detectors.construct_arm">[docs]</a><span class="k">def</span> <span class="nf">construct_arm</span><span class="p">(</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">arm_tilt</span><span class="p">,</span> <span class="n">arm_azimuth</span><span class="p">):</span>
+
+<div class="viewcode-block" id="construct_arm">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.construct_arm.html#gwinferno.parameter_estimation.detectors.construct_arm">[docs]</a>
+<span class="k">def</span> <span class="nf">construct_arm</span><span class="p">(</span><span class="n">latitude</span><span class="p">,</span> <span class="n">longitude</span><span class="p">,</span> <span class="n">arm_tilt</span><span class="p">,</span> <span class="n">arm_azimuth</span><span class="p">):</span>
     <span class="n">e_long</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">longitude</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">longitude</span><span class="p">),</span> <span class="mi">0</span><span class="p">])</span>
     <span class="n">e_lat</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">latitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">longitude</span><span class="p">),</span> <span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">latitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">longitude</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">latitude</span><span class="p">)])</span>
     <span class="n">e_h</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">latitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">longitude</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">latitude</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">longitude</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">latitude</span><span class="p">)])</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">arm_tilt</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">arm_azimuth</span><span class="p">)</span> <span class="o">*</span> <span class="n">e_long</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">arm_tilt</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">arm_azimuth</span><span class="p">)</span> <span class="o">*</span> <span class="n">e_lat</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">arm_tilt</span><span class="p">)</span> <span class="o">*</span> <span class="n">e_h</span></div>
 
 
-<div class="viewcode-block" id="get_detector_tensor"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.get_detector_tensor.html#gwinferno.parameter_estimation.detectors.get_detector_tensor">[docs]</a><span class="k">def</span> <span class="nf">get_detector_tensor</span><span class="p">(</span><span class="n">arm1</span><span class="p">,</span> <span class="n">arm2</span><span class="p">):</span>
+
+<div class="viewcode-block" id="get_detector_tensor">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.get_detector_tensor.html#gwinferno.parameter_estimation.detectors.get_detector_tensor">[docs]</a>
+<span class="k">def</span> <span class="nf">get_detector_tensor</span><span class="p">(</span><span class="n">arm1</span><span class="p">,</span> <span class="n">arm2</span><span class="p">):</span>
     <span class="k">return</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i,j-&gt;ij&quot;</span><span class="p">,</span> <span class="n">arm1</span><span class="p">,</span> <span class="n">arm1</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i,j-&gt;ij&quot;</span><span class="p">,</span> <span class="n">arm2</span><span class="p">,</span> <span class="n">arm2</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="Detector"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.Detector.html#gwinferno.parameter_estimation.detectors.Detector">[docs]</a><span class="k">class</span> <span class="nc">Detector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="Detector">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.Detector.html#gwinferno.parameter_estimation.detectors.Detector">[docs]</a>
+<span class="k">class</span> <span class="nc">Detector</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;BaseDetector&quot;</span>
 
-<div class="viewcode-block" id="Detector.__init__"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.Detector.html#gwinferno.parameter_estimation.detectors.Detector.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="Detector.__init__">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.Detector.html#gwinferno.parameter_estimation.detectors.Detector.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">strain</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freq_domain_strain</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frequencies</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">freq_array</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">psd</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">psd_array</span><span class="p">)</span>
@@ -171,6 +187,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tensor</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_pol_tensor</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;plus&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;cross&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">noise_logL</span> <span class="o">=</span> <span class="kc">None</span></div>
+
 
     <span class="k">def</span> <span class="nf">noise_log_likelihood</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">noise_logL</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -213,10 +230,15 @@
         <span class="k">return</span> <span class="n">output</span></div>
 
 
-<div class="viewcode-block" id="H1"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.H1.html#gwinferno.parameter_estimation.detectors.H1">[docs]</a><span class="k">class</span> <span class="nc">H1</span><span class="p">(</span><span class="n">Detector</span><span class="p">):</span>
+
+<div class="viewcode-block" id="H1">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.H1.html#gwinferno.parameter_estimation.detectors.H1">[docs]</a>
+<span class="k">class</span> <span class="nc">H1</span><span class="p">(</span><span class="n">Detector</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;H1&quot;</span>
 
-<div class="viewcode-block" id="H1.__init__"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.H1.html#gwinferno.parameter_estimation.detectors.H1.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="H1.__init__">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.H1.html#gwinferno.parameter_estimation.detectors.H1.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lat</span> <span class="o">=</span> <span class="p">(</span><span class="mi">46</span> <span class="o">+</span> <span class="mf">27.0</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="mf">18.528</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">*</span> <span class="n">DEG_TO_RAD</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">long</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">119</span> <span class="o">+</span> <span class="mf">24.0</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="mf">27.5657</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">*</span> <span class="n">DEG_TO_RAD</span>
@@ -225,13 +247,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">xarm_tilt</span> <span class="o">=</span> <span class="o">-</span><span class="mf">6.195e-4</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">yarm_tilt</span> <span class="o">=</span> <span class="mf">1.25e-5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elevation</span> <span class="o">=</span> <span class="mf">142.554</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setup_geometry</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_geometry</span><span class="p">()</span></div>
+</div>
 
 
-<div class="viewcode-block" id="L1"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.L1.html#gwinferno.parameter_estimation.detectors.L1">[docs]</a><span class="k">class</span> <span class="nc">L1</span><span class="p">(</span><span class="n">Detector</span><span class="p">):</span>
+
+<div class="viewcode-block" id="L1">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.L1.html#gwinferno.parameter_estimation.detectors.L1">[docs]</a>
+<span class="k">class</span> <span class="nc">L1</span><span class="p">(</span><span class="n">Detector</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;L1&quot;</span>
 
-<div class="viewcode-block" id="L1.__init__"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.L1.html#gwinferno.parameter_estimation.detectors.L1.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="L1.__init__">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.L1.html#gwinferno.parameter_estimation.detectors.L1.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lat</span> <span class="o">=</span> <span class="p">(</span><span class="mi">30</span> <span class="o">+</span> <span class="mf">33.0</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="mf">46.4196</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">*</span> <span class="n">DEG_TO_RAD</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">long</span> <span class="o">=</span> <span class="o">-</span><span class="p">(</span><span class="mi">90</span> <span class="o">+</span> <span class="mf">46.0</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="mf">27.2654</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">*</span> <span class="n">DEG_TO_RAD</span>
@@ -240,13 +268,19 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">xarm_tilt</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">yarm_tilt</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elevation</span> <span class="o">=</span> <span class="o">-</span><span class="mf">6.574</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setup_geometry</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_geometry</span><span class="p">()</span></div>
+</div>
 
 
-<div class="viewcode-block" id="V1"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.V1.html#gwinferno.parameter_estimation.detectors.V1">[docs]</a><span class="k">class</span> <span class="nc">V1</span><span class="p">(</span><span class="n">Detector</span><span class="p">):</span>
+
+<div class="viewcode-block" id="V1">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.V1.html#gwinferno.parameter_estimation.detectors.V1">[docs]</a>
+<span class="k">class</span> <span class="nc">V1</span><span class="p">(</span><span class="n">Detector</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;V1&quot;</span>
 
-<div class="viewcode-block" id="V1.__init__"><a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.V1.html#gwinferno.parameter_estimation.detectors.V1.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="V1.__init__">
+<a class="viewcode-back" href="../../../api/gwinferno.parameter_estimation.detectors.V1.html#gwinferno.parameter_estimation.detectors.V1.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">freq_domain_strain</span><span class="p">,</span> <span class="n">freq_array</span><span class="p">,</span> <span class="n">psd_array</span><span class="p">,</span> <span class="n">start_time</span><span class="p">,</span> <span class="n">duration</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lat</span> <span class="o">=</span> <span class="p">(</span><span class="mi">43</span> <span class="o">+</span> <span class="mf">37.0</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="mf">53.0921</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">*</span> <span class="n">DEG_TO_RAD</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">long</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span> <span class="o">+</span> <span class="mf">30.0</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">+</span> <span class="mf">16.1878</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">)</span> <span class="o">*</span> <span class="n">DEG_TO_RAD</span>
@@ -255,7 +289,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">xarm_tilt</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">yarm_tilt</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">elevation</span> <span class="o">=</span> <span class="mf">51.884</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">setup_geometry</span><span class="p">()</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_geometry</span><span class="p">()</span></div>
+</div>
+
 
 
 <span class="n">DETECTORS_IMPLETEMENTED</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;H1&quot;</span><span class="p">:</span> <span class="n">H1</span><span class="p">,</span> <span class="s2">&quot;L1&quot;</span><span class="p">:</span> <span class="n">L1</span><span class="p">,</span> <span class="s2">&quot;V1&quot;</span><span class="p">:</span> <span class="n">V1</span><span class="p">}</span>

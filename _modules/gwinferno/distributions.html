@@ -11,12 +11,12 @@
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../../_static/jquery.js"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-        <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/sphinx_highlight.js"></script>
-        <script src="../../_static/tabs.js"></script>
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -107,7 +107,9 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<div class="viewcode-block" id="log_logistic_unit"><a class="viewcode-back" href="../../api/gwinferno.distributions.log_logistic_unit.html#gwinferno.distributions.log_logistic_unit">[docs]</a><span class="k">def</span> <span class="nf">log_logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
+<div class="viewcode-block" id="log_logistic_unit">
+<a class="viewcode-back" href="../../api/gwinferno.distributions.log_logistic_unit.html#gwinferno.distributions.log_logistic_unit">[docs]</a>
+<span class="k">def</span> <span class="nf">log_logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    log_logistic_unit soft truncate a distribution with the log logistic unit</span>
 
@@ -126,7 +128,10 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="logistic_unit"><a class="viewcode-back" href="../../api/gwinferno.distributions.logistic_unit.html#gwinferno.distributions.logistic_unit">[docs]</a><span class="k">def</span> <span class="nf">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+
+<div class="viewcode-block" id="logistic_unit">
+<a class="viewcode-back" href="../../api/gwinferno.distributions.logistic_unit.html#gwinferno.distributions.logistic_unit">[docs]</a>
+<span class="k">def</span> <span class="nf">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    logistic_unit soft truncate a distribution with the logistic unit</span>
 
@@ -142,7 +147,10 @@
     <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">sgn</span> <span class="o">*</span> <span class="n">sc</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)))</span></div>
 
 
-<div class="viewcode-block" id="powerlaw_logit_pdf"><a class="viewcode-back" href="../../api/gwinferno.distributions.powerlaw_logit_pdf.html#gwinferno.distributions.powerlaw_logit_pdf">[docs]</a><span class="k">def</span> <span class="nf">powerlaw_logit_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">fall_off</span><span class="p">):</span>
+
+<div class="viewcode-block" id="powerlaw_logit_pdf">
+<a class="viewcode-back" href="../../api/gwinferno.distributions.powerlaw_logit_pdf.html#gwinferno.distributions.powerlaw_logit_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">powerlaw_logit_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">fall_off</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    powerlaw_logit_pdf pdf of high mass soft truncation powerlaw:</span>
 <span class="sd">        $$ p(x) \propto x^{\alpha}\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$</span>
@@ -160,7 +168,10 @@
     <span class="k">return</span> <span class="n">prob</span></div>
 
 
-<div class="viewcode-block" id="powerlaw_pdf"><a class="viewcode-back" href="../../api/gwinferno.distributions.powerlaw_pdf.html#gwinferno.distributions.powerlaw_pdf">[docs]</a><span class="k">def</span> <span class="nf">powerlaw_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">floor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="powerlaw_pdf">
+<a class="viewcode-back" href="../../api/gwinferno.distributions.powerlaw_pdf.html#gwinferno.distributions.powerlaw_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">powerlaw_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">floor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    powerlaw_pdf pdf of sharp truncated powerlaw:</span>
 
@@ -175,7 +186,10 @@
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">low</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">high</span><span class="p">),</span> <span class="n">floor</span><span class="p">,</span> <span class="n">prob</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="truncnorm_pdf"><a class="viewcode-back" href="../../api/gwinferno.distributions.truncnorm_pdf.html#gwinferno.distributions.truncnorm_pdf">[docs]</a><span class="k">def</span> <span class="nf">truncnorm_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<div class="viewcode-block" id="truncnorm_pdf">
+<a class="viewcode-back" href="../../api/gwinferno.distributions.truncnorm_pdf.html#gwinferno.distributions.truncnorm_pdf">[docs]</a>
+<span class="k">def</span> <span class="nf">truncnorm_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    $$ p(x) \propto \mathcal{N}(x | \mu, \sigma)\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -197,7 +211,10 @@
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">low</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">prob</span> <span class="o">*</span> <span class="n">norm</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ln_beta_fct"><a class="viewcode-back" href="../../api/gwinferno.distributions.ln_beta_fct.html#gwinferno.distributions.ln_beta_fct">[docs]</a><span class="k">def</span> <span class="nf">ln_beta_fct</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
+
+<div class="viewcode-block" id="ln_beta_fct">
+<a class="viewcode-back" href="../../api/gwinferno.distributions.ln_beta_fct.html#gwinferno.distributions.ln_beta_fct">[docs]</a>
+<span class="k">def</span> <span class="nf">ln_beta_fct</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    ln_beta_fct evaluate log beta fct (see: )</span>
 
@@ -211,7 +228,10 @@
     <span class="k">return</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">beta</span><span class="p">)</span> <span class="o">-</span> <span class="n">gammaln</span><span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="betadist"><a class="viewcode-back" href="../../api/gwinferno.distributions.betadist.html#gwinferno.distributions.betadist">[docs]</a><span class="k">def</span> <span class="nf">betadist</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">floor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+
+<div class="viewcode-block" id="betadist">
+<a class="viewcode-back" href="../../api/gwinferno.distributions.betadist.html#gwinferno.distributions.betadist">[docs]</a>
+<span class="k">def</span> <span class="nf">betadist</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">floor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    betadist pdf of Beta distribution evaluated at xx with optional max vale of scale:</span>
 
@@ -228,6 +248,7 @@
     <span class="n">ln_beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">beta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">scale</span> <span class="o">-</span> <span class="n">xx</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span>
     <span class="n">ln_beta</span> <span class="o">=</span> <span class="n">ln_beta</span> <span class="o">-</span> <span class="n">ln_beta_fct</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">scale</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ln_beta</span><span class="p">),</span> <span class="n">floor</span><span class="p">)</span></div>
+
 </pre></div>
 
            </div>

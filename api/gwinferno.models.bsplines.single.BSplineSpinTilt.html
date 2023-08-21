@@ -12,11 +12,11 @@
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
-        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/doctools.js"></script>
-        <script src="../_static/sphinx_highlight.js"></script>
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -120,10 +120,10 @@
            <div itemprop="articleBody">
              
   <section id="gwinferno-models-bsplines-single-bsplinespintilt">
-<h1>gwinferno.models.bsplines.single.BSplineSpinTilt<a class="headerlink" href="#gwinferno-models-bsplines-single-bsplinespintilt" title="Permalink to this heading"></a></h1>
+<h1>gwinferno.models.bsplines.single.BSplineSpinTilt<a class="headerlink" href="#gwinferno-models-bsplines-single-bsplinespintilt" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineSpinTilt">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.single.</span></span><span class="sig-name descname"><span class="pre">BSplineSpinTilt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/single.html#BSplineSpinTilt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.single.</span></span><span class="sig-name descname"><span class="pre">BSplineSpinTilt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/single.html#BSplineSpinTilt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel" title="gwinferno.models.bsplines.single.Base1DBSplineModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Base1DBSplineModel</span></code></a></p>
 <p>Class to construct a cosine tilt (cos(theta)) B-Spline model for a single binary component</p>
 <dl>
@@ -139,12 +139,12 @@ knots (array_like, optional): array of knots, if non-uniform knot placing is pre
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineSpinTilt.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/single.html#BSplineSpinTilt.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.__init__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/single.html#BSplineSpinTilt.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineSpinTilt.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.__call__" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.__call__" title="Link to this definition"></a></dt>
 <dd><dl>
 <dt>will evalute the projection of the coefficients along the design matrix evaluated at either posterior samples or injection samples.</dt><dd><p>Use flag pe_samples to specify which type of samples are being evaluated (pe or injection).</p>
 </dd>
@@ -181,7 +181,7 @@ pe_samples (bool, optional): If True, design matrix is evaluated along posterior
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineSpinTilt.eval_spline">
-<span class="sig-name descname"><span class="pre">eval_spline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.eval_spline" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">eval_spline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.eval_spline" title="Link to this definition"></a></dt>
 <dd><p>given design matrix and coefficients, project coefficients onto the basis.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>bases (array_like): design matrix of of spline
@@ -194,7 +194,7 @@ coefs (array_like): basis spline coefficients</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineSpinTilt.inj_pdf">
-<span class="sig-name descname"><span class="pre">inj_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.inj_pdf" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">inj_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.inj_pdf" title="Link to this definition"></a></dt>
 <dd><p>projects the coefficients onto the design matrix evaluated at the injection samples</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>coefs (array_like): basis spline coefficients</p>
@@ -206,7 +206,7 @@ coefs (array_like): basis spline coefficients</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineSpinTilt.pe_pdf">
-<span class="sig-name descname"><span class="pre">pe_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.pe_pdf" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pe_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.pe_pdf" title="Link to this definition"></a></dt>
 <dd><p>projects the coefficients onto the design matrix evaluated at the posterior samples</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>coefs (array_like): basis spline coefficients</p>
@@ -218,7 +218,7 @@ coefs (array_like): basis spline coefficients</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineSpinTilt.truncate_dmat">
-<span class="sig-name descname"><span class="pre">truncate_dmat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.truncate_dmat" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">truncate_dmat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmat</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineSpinTilt.truncate_dmat" title="Link to this definition"></a></dt>
 <dd><p>ensures the design matrix is truncated outside of the basis interval [xmin, xmax].</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>x (array_like): domain values
