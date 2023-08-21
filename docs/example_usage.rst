@@ -34,7 +34,7 @@ For example a simple config.yml file that defines a Truncated Powerlaw populatio
                         high: 100.0
 
         # Sampler Configuration Args
-        sampler_args:
+        sampler:
             kernel: NUTS
             kernel_kwargs:
                 dense_mass: true
@@ -44,7 +44,7 @@ For example a simple config.yml file that defines a Truncated Powerlaw populatio
             num_chains: 1
 
         # Data Configuration Args
-        data_args:
+        data:
             catalog_summary_json: /path/to/catalog/summary/file/catalog.json
 
 With this file written and ready to go run to perform inference with a single command!
@@ -107,16 +107,13 @@ For example here is how one would define a numpyro probabilistic model in a pyth
             inj_weights = m1dist.log_prob(injs["mass_1"]) + qdist.log_prob(injs["mass_ratio"]) + zdist.log_prob(injs["redshift"]) - jnp.log(injs["prior"])
             pe_weights = m1dist.log_prob(samps["mass_1"]) + qdist.log_prob(samps["mass_ratio"]) + zdist.log_prob(samps["redshift"]) - jnp.log(samps["prior"])
 
-            def shvf():
-                return zdist["redshift"].norm
-
             hierarchical_likelihood_in_log(
                 pe_weights,
                 inj_weights,
                 total_inj=Ninj,
                 Nobs=Nobs,
                 Tobs=Tobs,
-                surv_hypervolume_fct=shvf,
+                surv_hypervolume_fct=lambda *_: zdist["redshift"].norm,
                 vtfct_kwargs={},
                 marginalize_selection=False,
                 min_neff_cut=True,

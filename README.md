@@ -1,14 +1,21 @@
 [![CI-Tests](https://github.com/FarrOutLab/GWInferno/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/FarrOutLab/GWInferno/actions/workflows/ci-tests.yml)
 [![GitHub Doc Pages](https://github.com/FarrOutLab/GWInferno/actions/workflows/docs-gh-pages.yml/badge.svg)](https://github.com/FarrOutLab/GWInferno/actions/workflows/docs-gh-pages.yml)
 [![codecov](https://codecov.io/gh/FarrOutLab/GWInferno/branch/main/graph/badge.svg?token=PLXM4211S3)](https://codecov.io/gh/FarrOutLab/GWInferno)
+[![License](https://img.shields.io/badge/License-MIT-blue)](#license)
 
 # GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
 
-- [Documentation](https://farroutlab.github.io/GWInferno/)
+## Documentation
+
+<div align="center">
+
+[![view - Documentation](https://img.shields.io/badge/view-Documentation-blue?style=for-the-badge)](https://farroutlab.github.io/GWInferno/)
+
+</div>
 
 ## Installation
 
-Clone the repository
+Clone the reposi)tory
 
 ```bash
 git clone https://github.com/FarrOutLab/GWInferno.git
@@ -71,7 +78,7 @@ models:
           high: 100.0
 
 # Sampler Configuration Args
-sampler_args:
+sampler:
   kernel: NUTS
   kernel_kwargs:
     dense_mass: true
@@ -81,7 +88,7 @@ sampler_args:
     num_chains: 1
 
 # Data Configuration Args
-data_args:
+data:
   catalog_summary_json: /path/to/catalog/summary/file/catalog.json
 ```
 
@@ -90,6 +97,10 @@ with this file written and ready to go run to perform inference!
 ```bash
 gwinferno_run_from_config.py config.yml
 ```
+
+## License 
+
+Released under [MIT](/LICENSE.md) by [@FarrOutLab](https://github.com/FarrOutLab).
 
 ## Citation
 
