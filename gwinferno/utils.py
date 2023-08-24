@@ -1,4 +1,56 @@
 import xarray as xr
+from html import escape
+import uuid
+from arviz.utils import HtmlTemplate
+import importlib
+import importlib.resources
+from functools import lru_cache
+from arviz.data.base import _extend_xr_method
+
+"""
+This script is adapted from arviz.inference_data https://python.arviz.org/en/stable/_modules/arviz/data/inference_data.html and is a more generalized form of arviz's InferenceData object that can accept any type of of group. It is a data structure for using netcdf groups with xarray.
+"""
+
+STATIC_FILES = ("static/html/icons-svg-inline.html", "static/css/style.css")
+
+@lru_cache(None)
+def _load_static_files():
+    """Lazily load the resource files into memory the first time they are needed.
+
+    Clone from xarray.core.formatted_html_template.
+    """
+    return [
+        importlib.resources.files("arviz").joinpath(fname).read_text() for fname in STATIC_FILES
+    ]
+
+class HtmlTemplate:
+    """Contain html templates for DataSet repr."""
+
+    html_template = """
+            <div>
+              <div class='xr-header'>
+                <div class="xr-obj-type">gwinferno.DataSet</div>
+              </div>
+              <ul class="xr-sections group-sections">
+              {}
+              </ul>
+            </div>
+            """
+    element_template = """
+            <li class = "xr-section-item">
+                  <input id="idata_{group_id}" class="xr-section-summary-in" type="checkbox">
+                  <label for="idata_{group_id}" class = "xr-section-summary">{group}</label>
+                  <div class="xr-section-inline-details"></div>
+                  <div class="xr-section-details">
+                      <ul id="xr-dataset-coord-list" class="xr-var-list">
+                          <div style="padding-left:2rem;">{xr_data}<br></div>
+                      </ul>
+                  </div>
+            </li>
+            """
+    _, css_style = _load_static_files()  # pylint: disable=protected-access
+    specific_style = ".xr-wrap{width:700px!important;}"
+    css_template = f"<style> {css_style}{specific_style} </style>"
 
 
 from typing import (
@@ -36,12 +88,16 @@ class DataSet(Mapping[str, xr.Dataset]):
             setattr(self, key, dataset)
             self._groups.append(key)
 
+    @property
+    def _groups_all(self) -> List[str]:
+        return self._groups
+
     def __len__(self) -> int:
-        """Return the number of groups in this InferenceData object."""
+        """Return the number of groups in this DataSet object."""
         return len(self._groups)
     
     def __iter__(self) -> Iterator[str]:
-        """Iterate over groups in InferenceData object."""
+        """Iterate over groups in DataSet object."""
         for group in self._groups:
             yield group
 
@@ -50,7 +106,48 @@ class DataSet(Mapping[str, xr.Dataset]):
         if key not in self._groups:
             raise KeyError(key)
         return getattr(self, key)
-        
+    
+    def groups(self) -> List[str]:
+            """Return all groups present in DataSet object."""
+            return self._groups_all
+    
+    def __repr__(self) -> str:
+        """Make string representation of DataSet object."""
+        msg = "Inference data with groups:\n\t> {options}".format(
+            options="\n\t> ".join(self._groups)
+        )
+        return msg
+
+    def _repr_html_(self) -> str:
+        """Make html representation of DataSet object."""
+        try:
+            from xarray.core.options import OPTIONS
+
+            display_style = OPTIONS["display_style"]
+            if display_style == "text":
+                html_repr = f"<pre>{escape(repr(self))}</pre>"
+            else:
+                elements = "".join(
+                    [
+                        HtmlTemplate.element_template.format(
+                            group_id=group + str(uuid.uuid4()),
+                            group=group,
+                            xr_data=getattr(  # pylint: disable=protected-access
+                                self, group
+                            )._repr_html_(),
+                        )
+                        for group in self._groups_all
+                    ]
+                )
+                formatted_html_template = (  # pylint: disable=possibly-unused-variable
+                    HtmlTemplate.html_template.format(elements)
+                )
+                css_template = HtmlTemplate.css_template  # pylint: disable=possibly-unused-variable
+                html_repr = f"{locals()['formatted_html_template']}{locals()['css_template']}"
+        except:  # pylint: disable=bare-except
+            html_repr = f"<pre>{escape(repr(self))}</pre>"
+        return html_repr
+
     def to_netcdf(
         self,
         filename: str,
@@ -58,7 +155,7 @@ class DataSet(Mapping[str, xr.Dataset]):
         groups: Optional[List[str]] = None,
         engine: str = "h5netcdf",
     ) -> str:
-        """Write InferenceData to netcdf4 file.
+        """Write DataSet to netcdf4 file.
 
         Parameters
         ----------
@@ -100,7 +197,7 @@ class DataSet(Mapping[str, xr.Dataset]):
                 data.to_netcdf(filename, mode=mode, group=group, **kwargs)
                 data.close()
                 mode = "a"
-        elif not self._attrs:  # creates a netcdf file for an empty InferenceData object.
+        elif not self._attrs:  # creates a netcdf file for an empty DataSet object.
             if engine == "h5netcdf":
                 import h5netcdf
 
@@ -115,11 +212,11 @@ class DataSet(Mapping[str, xr.Dataset]):
     @staticmethod
     def from_netcdf(
         filename, *, engine="h5netcdf", group_kwargs=None, regex=False
-    ) -> "InferenceData":
+    ) -> "DataSet":
         """Initialize object from a netcdf file.
 
         Expects that the file will have groups, each of which can be loaded by xarray.
-        By default, the datasets of the InferenceData object will be lazily loaded instead
+        By default, the datasets of the DataSet object will be lazily loaded instead
         of being loaded into memory. This
         behaviour is regulated by the value of ``az.rcParams["data.load"]``.
 
@@ -140,7 +237,7 @@ class DataSet(Mapping[str, xr.Dataset]):
 
         Returns
         -------
-        InferenceData
+        DataSet
         """
         groups = {}
         attrs = {}
@@ -191,3 +288,87 @@ class DataSet(Mapping[str, xr.Dataset]):
                     )
                 ) from err
             raise err
+        
+
+    def extend(self, other, join="left"):
+        """Extend InferenceData with groups from another InferenceData.
+
+        Parameters
+        ----------
+        other : InferenceData
+            InferenceData to be added
+        join : {'left', 'right'}, default 'left'
+            Defines how the two decide which group to keep when the same group is
+            present in both objects. 'left' will discard the group in ``other`` whereas 'right'
+            will keep the group in ``other`` and discard the one in ``self``.
+
+        Examples
+        --------
+        Take two InferenceData objects, and extend the first with the groups it doesn't have
+        but are present in the 2nd InferenceData object.
+
+        First InferenceData:
+
+        .. jupyter-execute::
+
+            import arviz as az
+            idata = az.load_arviz_data("rugby")
+
+        Second InferenceData:
+
+        .. jupyter-execute::
+
+            other_idata = az.load_arviz_data("radon")
+
+        Call the ``extend`` method:
+
+        .. jupyter-execute::
+
+            idata.extend(other_idata)
+            idata
+
+        See how now the first InferenceData has more groups, with the data from the
+        second one, but the groups it originally had have not been modified,
+        even if also present in the second InferenceData.
+
+        See Also
+        --------
+        add_groups : Add new groups to InferenceData object.
+        concat : Concatenate InferenceData objects.
+
+        """
+        if not isinstance(other, DataSet):
+            raise ValueError("Extending is possible between two InferenceData objects only.")
+        if join not in ("left", "right"):
+            raise ValueError(f"join must be either 'left' or 'right', found {join}")
+        for group in other._groups_all:  # pylint: disable=protected-access
+            if hasattr(self, group) and join == "left":
+                continue
+            dataset = getattr(other, group)
+            setattr(self, group, dataset)
+            self._groups.append(group)
+
+
+    set_index = _extend_xr_method(xr.Dataset.set_index, see_also="reset_index")
+    get_index = _extend_xr_method(xr.Dataset.get_index)
+    reset_index = _extend_xr_method(xr.Dataset.reset_index, see_also="set_index")
+    set_coords = _extend_xr_method(xr.Dataset.set_coords, see_also="reset_coords")
+    reset_coords = _extend_xr_method(xr.Dataset.reset_coords, see_also="set_coords")
+    assign = _extend_xr_method(xr.Dataset.assign)
+    assign_coords = _extend_xr_method(xr.Dataset.assign_coords)
+    sortby = _extend_xr_method(xr.Dataset.sortby)
+    chunk = _extend_xr_method(xr.Dataset.chunk)
+    unify_chunks = _extend_xr_method(xr.Dataset.unify_chunks)
+    load = _extend_xr_method(xr.Dataset.load)
+    compute = _extend_xr_method(xr.Dataset.compute)
+    persist = _extend_xr_method(xr.Dataset.persist)
+    quantile = _extend_xr_method(xr.Dataset.quantile)
+
+    # The following lines use methods on xr.Dataset that are dynamically defined and attached.
+    # As a result mypy cannot see them, so we have to suppress the resulting mypy errors.
+    mean = _extend_xr_method(xr.Dataset.mean, see_also="median")  # type: ignore[attr-defined]
+    median = _extend_xr_method(xr.Dataset.median, see_also="mean")  # type: ignore[attr-defined]
+    min = _extend_xr_method(xr.Dataset.min, see_also=["max", "sum"])  # type: ignore[attr-defined]
+    max = _extend_xr_method(xr.Dataset.max, see_also=["min", "sum"])  # type: ignore[attr-defined]
+    cumsum = _extend_xr_method(xr.Dataset.cumsum, see_also="sum")  # type: ignore[attr-defined]
+    sum = _extend_xr_method(xr.Dataset.sum, see_also="cumsum")  # type: ignore[attr-defined]
