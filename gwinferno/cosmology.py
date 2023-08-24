@@ -48,7 +48,7 @@ class Cosmology(object):
         self.z = jnp.array([0.0])
         self.Dc = jnp.array([0.0])
         self.Vc = jnp.array([0.0])
-        self.extend(max_z=2.3, dz=DEFAULT_DZ)
+        # self.extend(max_z=2.3, dz=DEFAULT_DZ)
 
     @property
     def DL(self):
