@@ -22,12 +22,34 @@ def apply_difference_prior(coefs, inv_var, degree=1):
     return -0.5 * inv_var * jnp.dot(delta_c, delta_c.T)
 
 
-def apply_twod_difference_prior(coefs, inv_var_c, inv_var_r, degree_c=1, degree_r=1):
-    delta_c = jnp.diff(coefs, n=degree_c, axis=1)
-    delta_r = jnp.diff(coefs, n=degree_r, axis=0)
-    pen_c = -0.5 * inv_var_c * jnp.sum(jnp.square(delta_c))
-    pen_r = -0.5 * inv_var_r * jnp.sum(jnp.square(delta_r))
-    return pen_c + pen_r
+def apply_twod_difference_prior(coefs, inv_var_row, inv_var_col, degree_row=1, degree_col=1):
+    """
+    Computes the difference penalty for a 2d B-spline.
+    Uses equation 4.19 from Practical Smoothing by Eilers and Marx.
+
+    Parameters
+    ----------
+    coefs: array_like
+        2d array of B-spline coefficients
+    inv_var_row: float or int
+        inverse variance along axis 0 (row)
+    inv_var_col: float or int
+        inverse variance along axis 1 (column)
+    degree_row: int, optional
+        difference order along axis 0 (row)
+    degree_col: int, optional
+        difference order along axis 1 (column)
+    
+    Returns
+    -------
+    float
+        log of the difference prior
+    """
+    delta_row = jnp.diff(coefs, n=degree_row, axis=0)
+    delta_col = jnp.diff(coefs, n=degree_col, axis=1)
+    pen_row = -0.5 * inv_var_row * jnp.sum(jnp.square(delta_row))
+    pen_col = -0.5 * inv_var_col * jnp.sum(jnp.square(delta_col))
+    return pen_row + pen_col
 
 
 def get_adaptive_Lambda(label, nknots, degree, omega=0.5):
