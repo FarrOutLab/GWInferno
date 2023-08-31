@@ -521,8 +521,8 @@ class RectBivariateBasisSpline(object):
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
-        #NOTE this would be for the logz2dbasis class
-        return jnp.exp(jnp.einsum("ij...,ij->...", bases, coefs))
+        #NOTE jnp.exp(jnp.einsum("ij...,ij->...", bases, coefs))this would be for the logz2dbasis class
+        return jnp.einsum("ij...,ij->...", bases, coefs)
 
     def project(self, bases, coefs):
         """
@@ -536,3 +536,54 @@ class RectBivariateBasisSpline(object):
             array_like: The linear combination of the basis components given the coefficients
         """
         return self._project(bases, coefs)* self.norm_2d(coefs)
+
+class LogZRectBivariateBasisSpline(RectBivariateBasisSpline):
+    def __init__(
+            self,
+            xdf,
+            ydf,
+            xrange=(0, 1),
+            yrange=(0, 1),
+            kx=4,
+            ky=4,
+            xbasis=BSpline,
+            ybasis=BSpline,
+            normalize=True,
+        ):
+            """
+            Class to construct a 2D (bivariate) rectangular basis spline
+
+            Args:
+                xdf (int): number of degrees of freedom for the spline in the X direction
+                ydf (int): number of degrees of freedom for the spline in the Y direction
+                xrange (tuple, optional): domain of X spline. Defaults to (0, 1).
+                yrange (tuple, optional): domain of Y spline. Defaults to (0, 1).
+                kx (int, optional): order of the X spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+                ky (int, optional): order of the Y spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+                xbasis (object, optional): Choice of basis to use for the X spline. Defaults to BSpline.
+                ybasis (object, optional): Choice of basis to use for the Y spline. Defaults to BSpline.
+                normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
+            """
+            super().__init__(
+                    xdf,
+                    ydf,
+                    xrange=xrange,
+                    yrange=yrange,
+                    kx=kx,
+                    ky=ky,
+                    xbasis=xbasis,
+                    ybasis=ybasis,
+                    normalize=normalize,
+                )
+    def _project(self, bases, coefs):
+        """
+        _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline
+
+        Args:
+            bases (array_like): The set of basis components or design matrix to project onto
+            coefs (array_like): coefficients for the basis components
+
+        Returns:
+            array_like: The linear combination of the basis components given the coefficients
+        """
+        return jnp.exp(jnp.einsum("ij...,ij->...", bases, coefs))
