@@ -4,7 +4,7 @@ a module that stores 2D joint population models constructed from bsplines
 
 import jax.numpy as jnp
 
-from ...interpolation import RectBivariateBasisSpline, BSpline
+from ...interpolation import RectBivariateBasisSpline, BSpline, LogZRectBivariateBasisSpline
 
 
 class Base2DBSplineModel(object):
@@ -56,6 +56,8 @@ class BSplineJointMassRatioChiEffective(Base2DBSplineModel):
         q,
         chieff_inj,
         q_inj,
+        chieff_range=(-1,1),
+        q_range=(0,1),
         **kwargs,
     ):
         super().__init__(
@@ -65,8 +67,8 @@ class BSplineJointMassRatioChiEffective(Base2DBSplineModel):
             yy=q,
             xx_inj=chieff_inj,
             yy_inj=q_inj,
-            xrange=(-1, 1),
-            yrange=(0, 1),
+            xrange=chieff_range,
+            yrange=q_range,
             **kwargs,
         )
 class BSplineJointMassRedshift(Base2DBSplineModel):
