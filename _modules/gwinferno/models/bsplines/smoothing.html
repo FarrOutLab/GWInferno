@@ -121,12 +121,34 @@
 
 <div class="viewcode-block" id="apply_twod_difference_prior">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.smoothing.apply_twod_difference_prior.html#gwinferno.models.bsplines.smoothing.apply_twod_difference_prior">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_twod_difference_prior</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">inv_var_c</span><span class="p">,</span> <span class="n">inv_var_r</span><span class="p">,</span> <span class="n">degree_c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree_r</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="n">delta_c</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">degree_c</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">delta_r</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">degree_r</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">pen_c</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">inv_var_c</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">delta_c</span><span class="p">))</span>
-    <span class="n">pen_r</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">inv_var_r</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">delta_r</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">pen_c</span> <span class="o">+</span> <span class="n">pen_r</span></div>
+<span class="k">def</span> <span class="nf">apply_twod_difference_prior</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">inv_var_row</span><span class="p">,</span> <span class="n">inv_var_col</span><span class="p">,</span> <span class="n">degree_row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree_col</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the difference penalty for a 2d B-spline.</span>
+<span class="sd">    Uses equation 4.19 from Practical Smoothing by Eilers and Marx.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    coefs: array_like</span>
+<span class="sd">        2d array of B-spline coefficients</span>
+<span class="sd">    inv_var_row: float or int</span>
+<span class="sd">        inverse variance along axis 0 (row)</span>
+<span class="sd">    inv_var_col: float or int</span>
+<span class="sd">        inverse variance along axis 1 (column)</span>
+<span class="sd">    degree_row: int, optional</span>
+<span class="sd">        difference order along axis 0 (row)</span>
+<span class="sd">    degree_col: int, optional</span>
+<span class="sd">        difference order along axis 1 (column)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        log of the difference prior</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">delta_row</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">degree_row</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">delta_col</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">degree_col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">pen_row</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">inv_var_row</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">delta_row</span><span class="p">))</span>
+    <span class="n">pen_col</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">inv_var_col</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">delta_col</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pen_row</span> <span class="o">+</span> <span class="n">pen_col</span></div>
 
 
 

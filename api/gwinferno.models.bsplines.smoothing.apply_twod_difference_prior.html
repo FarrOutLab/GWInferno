@@ -118,8 +118,32 @@
 <h1>gwinferno.models.bsplines.smoothing.apply_twod_difference_prior<a class="headerlink" href="#gwinferno-models-bsplines-smoothing-apply-twod-difference-prior" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.smoothing.apply_twod_difference_prior">
-<span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.smoothing.</span></span><span class="sig-name descname"><span class="pre">apply_twod_difference_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_var_c</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_var_r</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree_c</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree_r</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/smoothing.html#apply_twod_difference_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.smoothing.apply_twod_difference_prior" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.smoothing.</span></span><span class="sig-name descname"><span class="pre">apply_twod_difference_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_var_row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_var_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree_row</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/smoothing.html#apply_twod_difference_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.smoothing.apply_twod_difference_prior" title="Link to this definition"></a></dt>
+<dd><p>Computes the difference penalty for a 2d B-spline.
+Uses equation 4.19 from Practical Smoothing by Eilers and Marx.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coefs: array_like</strong></dt><dd><p>2d array of B-spline coefficients</p>
+</dd>
+<dt><strong>inv_var_row: float or int</strong></dt><dd><p>inverse variance along axis 0 (row)</p>
+</dd>
+<dt><strong>inv_var_col: float or int</strong></dt><dd><p>inverse variance along axis 1 (column)</p>
+</dd>
+<dt><strong>degree_row: int, optional</strong></dt><dd><p>difference order along axis 0 (row)</p>
+</dd>
+<dt><strong>degree_col: int, optional</strong></dt><dd><p>difference order along axis 1 (column)</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>float</dt><dd><p>log of the difference prior</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
