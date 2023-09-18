@@ -17,6 +17,7 @@ GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
     :caption: Tutorials:
 
     Using Basis Splines
+    Saving Data with PopSummary
 
 ---------------------------------------------------------------------
 API:

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saving Data in Popsummary Standard Output &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/tabs.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=837179f8"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="gwinferno.cosmology" href="api/gwinferno.cosmology.html" />
+    <link rel="prev" title="Using Basis Splines in Models" href="Using%20Basis%20Splines.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Saving Data in Popsummary Standard Output</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.parameter_estimation.html">gwinferno.parameter_estimation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Saving Data in Popsummary Standard Output</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Saving Data with PopSummary.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="saving-data-in-popsummary-standard-output">
+<h1>Saving Data in <a class="reference external" href="https://git.ligo.org/zoheyr-doctor/popsummary/-/tree/main/">Popsummary</a> Standard Output<a class="headerlink" href="#saving-data-in-popsummary-standard-output" title="Link to this heading"></a></h1>
+<p>After using GWInferno, you may wish to save your results in a form easy for others to read and access. This can be done quickly with <cite>gwifnerno.postprocess.postprocess.PopSummaryWriteOut</cite>. Before saving your results in this manner, make sure your posterior samples are located in a dictionary. This can easily be done by using <cite>get_samples()</cite> after sampling, as in the code snippet below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">NUTS</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">mcmc</span> <span class="o">=</span> <span class="n">MCMC</span><span class="p">(</span><span class="n">kernel</span><span class="p">)</span>
+<span class="n">rng_key</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">mcmc</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">rng_key</span><span class="p">)</span>
+<span class="n">posteriors</span> <span class="o">=</span> <span class="n">mcmc</span><span class="o">.</span><span class="n">get_samples</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Rates <span class="math notranslate nohighlight">\(\frac{dN}{d\theta}\)</span> (or population PDFs <span class="math notranslate nohighlight">\(p(\theta|\Lambda)\)</span>) should also be located in a dictionary, along with whatever grids they were calculated over.</p>
+<p>In the below example, the posteriors and rates were already saved as dictionaries in h5 files using the <cite>deepdish</cite> package and are loaded in.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">gwinferno.postprocess.postprocess</span> <span class="kn">import</span> <span class="n">PopSummaryWriteOut</span>
+
+<span class="n">path_to_rate_file</span> <span class="o">=</span> <span class="s1">&#39;path-to-rate-file.h5&#39;</span>
+<span class="n">path_to_posterior_file</span> <span class="o">=</span> <span class="s1">&#39;path-to-posterior-file.h5&#39;</span>
+
+<span class="n">posteriors</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path_to_posterior_file</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;posteriors loaded&#39;</span><span class="p">)</span>
+
+<span class="n">ppds</span> <span class="o">=</span> <span class="n">dd</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">path_to_posterior_file</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;ppds loaded&#39;</span><span class="p">)</span>
+
+<span class="c1">#name of file to write data to</span>
+<span class="n">file_path</span> <span class="o">=</span> <span class="s1">&#39;name-of-popsummary-file.h5&#39;</span>
+
+<span class="c1">#Metadata</span>
+<span class="n">model_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Power Law Primary Mass&#39;</span><span class="p">,</span> <span class="s1">&#39;Power Law Mass Ratio&#39;</span><span class="p">]</span>
+<span class="n">hyperparameters</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;beta&#39;</span><span class="p">]</span>
+<span class="n">event_params</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;mass_1&#39;</span><span class="p">,</span> <span class="s1">&#39;mass_ratio&#39;</span><span class="p">]</span>
+<span class="n">event_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;GW150914&#39;</span><span class="p">,</span><span class="s1">&#39;GW151012&#39;</span><span class="p">,</span><span class="s1">&#39;GW151226&#39;</span><span class="p">,</span> <span class="s1">&#39;GW170104&#39;</span><span class="p">,</span><span class="s1">&#39;GW170608&#39;</span><span class="p">]</span>
+<span class="n">hyperparameter_descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Slope of primary mass powerlaw distribution&#39;</span><span class="p">,</span> <span class="s1">&#39;Slope of mass ratio powerlaw distribution&#39;</span><span class="p">]</span>
+<span class="n">waveforms</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;IRPhenomV2&#39;</span><span class="p">]</span>
+
+<span class="c1">#metadata can be specified during this initialization step, or added later with popsum.set_metadata() (see popsummary source code for more info on how to do this)</span>
+<span class="n">popsum</span> <span class="o">=</span> <span class="n">PopSummaryWriteOut</span><span class="p">(</span>
+    <span class="n">file_path</span><span class="p">,</span>
+    <span class="n">hyperparameters</span><span class="p">,</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">event_names</span><span class="p">,</span>
+    <span class="n">hyperparameter_descriptions</span> <span class="o">=</span> <span class="n">hyperparameter_descriptions</span><span class="p">,</span>
+    <span class="n">event_waveforms</span> <span class="o">=</span> <span class="n">waveforms</span><span class="p">,</span>
+    <span class="n">model_names</span> <span class="o">=</span> <span class="n">model_names</span>
+<span class="p">)</span>
+
+<span class="c1">#[&#39;primary_mass_rate&#39;, &#39;mass_ratio_rate&#39;, &#39;primary_spin_magnitide_rate&#39;]`overwrite=True` flag will overwrite if there are already hypersamples saved in the file but `overwrite=False` will cause it to fail if there are already hypersamples saved in the file.</span>
+<span class="n">popsum</span><span class="o">.</span><span class="n">save_hypersamples</span><span class="p">(</span><span class="n">path_to_posterior_file</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">popsum</span><span class="o">.</span><span class="n">save_reweighed_event_and_injection_samples</span><span class="p">(</span><span class="n">path_to_posterior_file</span><span class="p">,</span> <span class="n">overwrite</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">popsum</span><span class="o">.</span><span class="n">save_rates_on_grids</span><span class="p">(</span><span class="n">path_to_rate_file</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;mass_1&#39;</span><span class="p">,</span> <span class="s1">&#39;mass_ratio&#39;</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;primary_mass_rate&#39;</span><span class="p">,</span> <span class="s1">&#39;mass_ratio_rate&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Using%20Basis%20Splines.html" class="btn btn-neutral float-left" title="Using Basis Splines in Models" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api/gwinferno.cosmology.html" class="btn btn-neutral float-right" title="gwinferno.cosmology" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
