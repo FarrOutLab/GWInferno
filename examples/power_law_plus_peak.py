@@ -32,7 +32,7 @@ def truncated_powerlaw(xx, alpha, low, high):
 
 def truncated_normal(xx,mu,sigma,low,high):
     prob = (1./(sigma*jnp.sqrt(2.*jnp.pi))) * jnp.exp((-1./2.)*jnp.power((xx-mu)/sigma,2))
-    norm_factor = norm.cdf(low,loc=mu,scale=sigma) + (1.-norm.cdf(high,loc=mu,scale=sigma))
+    norm_factor = 1.- norm.cdf(low,loc=mu,scale=sigma) + (1.-norm.cdf(high,loc=mu,scale=sigma))
     return jnp.where(jnp.less(xx, low) | jnp.greater(xx, high), 0.0, prob/norm_factor)
 
 def truncated_powerlaw_plus_peak(xx,alpha, mmin, mmax, mu,sigma,gamma):
