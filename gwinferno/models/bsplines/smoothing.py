@@ -39,7 +39,7 @@ def apply_twod_difference_prior(coefs, inv_var_row, inv_var_col, degree_row=1, d
         difference order along axis 0 (row)
     degree_col: int, optional
         difference order along axis 1 (column)
-    
+
     Returns
     -------
     float
