@@ -446,16 +446,13 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
         inj_weights = jnp.sum(jnp.array([pop_models[k].log_prob(injs[k]) for k in source_param_names]), axis=0) - jnp.log(injs["prior"])
         pe_weights = jnp.sum(jnp.array([pop_models[k].log_prob(samps[k]) for k in source_param_names]), axis=0) - jnp.log(samps["prior"])
 
-        def shvf():
-            return pop_models["redshift"].norm
-
         hierarchical_likelihood_in_log(
             pe_weights,
             inj_weights,
             total_inj=Ninj,
             Nobs=Nobs,
             Tobs=Tobs,
-            surv_hypervolume_fct=shvf,
+            surv_hypervolume_fct=lambda *_: pop_models["redshift"].norm,
             vtfct_kwargs={},
             marginalize_selection=marginalize_selection,
             min_neff_cut=min_neff_cut,

@@ -47,7 +47,8 @@ class Sine(Distribution):
 
     @validate_sample
     def log_prob(self, value):
-        return jnp.sin(value) / 2.0
+        lp = jnp.log(jnp.sin(value) / 2.0)
+        return jnp.where(jnp.isnan(lp), -jnp.inf, lp)
 
     def cdf(self, value):
         cdf = jnp.atleast_1d((jnp.cos(value) - jnp.cos(self.minimum)) / (jnp.cos(self.maximum) - jnp.cos(self.minimum)))
@@ -83,7 +84,8 @@ class Cosine(Distribution):
 
     @validate_sample
     def log_prob(self, value):
-        return jnp.cos(value) / 2.0
+        lp = jnp.log(jnp.cos(value) / 2.0)
+        return jnp.where(jnp.isnan(lp), -jnp.inf, lp)
 
     def cdf(self, value):
         cdf = jnp.atleast_1d((jnp.sin(value) - jnp.sin(self.minimum)) / (jnp.sin(self.maximum) - jnp.sin(self.minimum)))
@@ -203,9 +205,9 @@ class PowerlawRedshift(NumericallyNormalizedDistribition):
     arg_constraints = {"maximum": constraints.positive, "lamb": constraints.real}
     reparametrized_params = ["maximum", "lamb"]
 
-    def __init__(self, lamb, maximum, Ngrid=1000, grid=None, validate_args=None):
+    def __init__(self, lamb, maximum, minimum=1e-11, Ngrid=1000, grid=None, validate_args=None):
         self.lamb = lamb
-        super().__init__(minimum=1e-11, maximum=maximum, Ngrid=Ngrid, grid=grid, validate_args=validate_args)
+        super().__init__(minimum=minimum, maximum=maximum, Ngrid=Ngrid, grid=grid, validate_args=validate_args)
         self._support = constraints.positive
 
     def _log_prob_nonorm(self, value):
