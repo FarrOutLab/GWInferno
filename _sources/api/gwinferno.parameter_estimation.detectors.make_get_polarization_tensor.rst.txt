@@ -1,6 +1,0 @@
-gwinferno.parameter\_estimation.detectors.make\_get\_polarization\_tensor
-=========================================================================
-
-.. currentmodule:: gwinferno.parameter_estimation.detectors
-
-.. autofunction:: make_get_polarization_tensor

@@ -1,6 +1,0 @@
-gwinferno.parameter\_estimation.likelihood.matched\_filter\_snr
-===============================================================
-
-.. currentmodule:: gwinferno.parameter_estimation.likelihood
-
-.. autofunction:: matched_filter_snr

@@ -1,6 +1,0 @@
-gwinferno.parameter\_estimation.detectors.get\_geocentric\_vertex
-=================================================================
-
-.. currentmodule:: gwinferno.parameter_estimation.detectors
-
-.. autofunction:: get_geocentric_vertex
