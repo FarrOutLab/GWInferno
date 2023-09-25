@@ -32,7 +32,7 @@ def truncated_powerlaw(xx, alpha, low, high):
 
 def truncated_normal(xx,mu,sigma,low,high):
     prob = (1./(sigma*jnp.sqrt(2.*jnp.pi))) * jnp.exp((-1./2.)*jnp.power((xx-mu)/sigma,2))
-    norm_factor = 1.- norm.cdf(low,loc=mu,scale=sigma) + (1.-norm.cdf(high,loc=mu,scale=sigma))
+    norm_factor = norm.cdf(high,loc=mu,scale=sigma) -  norm.cdf(low,loc=mu,scale=sigma)
     return jnp.where(jnp.less(xx, low) | jnp.greater(xx, high), 0.0, prob/norm_factor)
 
 def truncated_powerlaw_plus_peak(xx,alpha, mmin, mmax, mu,sigma,gamma):
@@ -126,7 +126,7 @@ def model(
     lamb = numpyro.sample("lamb", dist.Normal(0, 3))
     gamma = numpyro.sample("gamma",dist.Uniform(0,1))
     mu = numpyro.sample("mu",dist.Uniform(mmin,mmax))
-    sigma = numpyro.sample("sigma",dist.Uniform(3,20))
+    sigma = numpyro.sample("sigma",dist.LogUniform(0.01,1.5))
 
     if not sample_prior:
 

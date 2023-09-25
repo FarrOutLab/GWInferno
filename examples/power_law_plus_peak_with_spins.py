@@ -33,7 +33,7 @@ def truncated_powerlaw(xx, alpha, low, high):
 
 def truncated_normal(xx,mu,sigma,low,high):
     prob = (1./(sigma*jnp.sqrt(2.*jnp.pi))) * jnp.exp((-1./2.)*jnp.power((xx-mu)/sigma,2))
-    norm_factor = 1.- norm.cdf(low,loc=mu,scale=sigma) + (1.-norm.cdf(high,loc=mu,scale=sigma))
+    norm_factor = 1.- norm.cdf(low,loc=mu,scale=sigma) - (1.-norm.cdf(high,loc=mu,scale=sigma))
     return jnp.where(jnp.less(xx, low) | jnp.greater(xx, high), 0.0, prob/norm_factor)
 
 def truncated_powerlaw_plus_peak(xx,alpha, mmin, mmax, mu,sigma,gamma):
@@ -51,6 +51,7 @@ def norm_mass_model(alpha, beta, mmin, mmax, mu,sigma,gamma):
     p_mq = truncated_powerlaw_plus_peak(ms, alpha, mmin, mmax, mu,sigma,gamma) * truncated_powerlaw(qq, alpha=beta, low=mmin / mm, high=1)
     return jnp.trapz(jnp.trapz(p_mq, qs, axis=0), ms)
 
+
 def logit_normal(xx,mu,sigma,low=0.,high=1.):
     xx_new = (xx-low)/(high-low)
     prob = (1./(sigma*jnp.sqrt(2.*jnp.pi))) * jnp.exp((-1./2.)*jnp.power((logit(xx_new)-mu)/sigma,2)) / ((xx_new*(1.-xx_new)))
@@ -62,6 +63,7 @@ def PL_peak_w_spins(m1,q,a1,cost1,a2,cost2,alpha,beta,mmin,mmax,mu_m1,sigma_m1,g
     pa2 = logit_normal(a2,mu_a2,sigma_a2)
     pcost1 = logit_normal(cost1,mu_cost1,sigma_cost1,low=-1., high=1.)
     pcost2 = logit_normal(cost2,mu_cost2,sigma_cost2,low=-1., high=1.)
+    #print(f'pm1q:{pm1q},\n \n pa1:{pa1} \n \n ,pa2:{pa2}, \n\n pcost1:{pcost1}, \n\n pcost2:{pcost2}')
     return pm1q*pa1*pa2*pcost1*pcost2 
 
 def load_parser():
@@ -98,8 +100,8 @@ def setup(args):
         "mass_ratio",
         "redshift",
         "a_1",
-        "a_2",
         "cos_tilt_1",
+        "a_2",
         "cos_tilt_2",
         "prior",
     ]
@@ -138,8 +140,8 @@ def model(
 ):
     alpha = numpyro.sample("alpha", dist.Normal(0, 3))
     beta = numpyro.sample("beta", dist.Normal(0, 3))
-    mmin = 5.0  # numpyro.sample("mmin", dist.Uniform(4, 9))
-    mmax = 85.0  # numpyro.sample("mmax", dist.Uniform(50, 100))
+    mmin = numpyro.sample("mmin", dist.Uniform(4, 9))
+    mmax = numpyro.sample("mmax", dist.Uniform(50, 100))
     lamb = numpyro.sample("lamb", dist.Normal(0, 3))
     gamma_m1 = numpyro.sample("gamma_m1",dist.Uniform(0,1))
     mu_m1 = numpyro.sample("mu_m1",dist.Uniform(mmin,mmax))
@@ -211,10 +213,10 @@ def calculate_m1q(alpha, beta, mmin, mmax, mu, sigma, gamma, rate=None):
         return r * p_m / jnp.trapz(p_m, ms), r * p_q / jnp.trapz(p_q, qs)
 
     calc_pdf = jit(calc_pdf)
-    _ = calc_pdf(alpha[0], beta[0], mmin, mmax, mu[0], sigma[0], gamma[0], rate[0])
+    _ = calc_pdf(alpha[0], beta[0], mmin[0], mmax[0], mu[0], sigma[0], gamma[0], rate[0])
     # loop through hyperposterior samples
     for ii in trange(alpha.shape[0]):
-        mpdfs[ii], qpdfs[ii] = calc_pdf(alpha[ii], beta[ii], mmin, mmax, mu[ii], sigma[ii], gamma[ii], rate[ii])
+        mpdfs[ii], qpdfs[ii] = calc_pdf(alpha[ii], beta[ii], mmin[ii], mmax[ii], mu[ii], sigma[ii], gamma[ii], rate[ii])
     return mpdfs, qpdfs, ms, qs
 
 def calculate_spin_ppds(mu_a1,sigma_a1,mu_a2,sigma_a2,mu_cost1,sigma_cost1,mu_cost2,sigma_cost2,rate=None):
@@ -230,8 +232,8 @@ def calculate_spin_ppds(mu_a1,sigma_a1,mu_a2,sigma_a2,mu_cost1,sigma_cost1,mu_co
     def calc_pdf(ma1,sa1,ma2,sa2,mc1,sc1,mc2,sc2,r):
         p_a1 = logit_normal(a_grid,ma1,sa1)
         p_a2 = logit_normal(a_grid,ma2,sa2)
-        p_cost1 = logit_normal(cost_grid,mc1,sc1,low=0.,high=1.)
-        p_cost2 = logit_normal(cost_grid,mc2,sc2,low=0.,high=1.)
+        p_cost1 = logit_normal(cost_grid,mc1,sc1,low=-1.,high=1.)
+        p_cost2 = logit_normal(cost_grid,mc2,sc2,low=-1.,high=1.)
         return r*p_a1, r*p_a2, r*p_cost1, r*p_cost2
 
     calc_pdf = jit(calc_pdf)
@@ -309,9 +311,11 @@ def main():
         plot_params = [
             "alpha",
             "beta",
-            "mu",
-            "sigma",
-            "gamma",
+            "mmax",
+            "mmin",
+            "mu_m1",
+            "sigma_m1",
+            "gamma_m1",
             "mu_a1",
             "sigma_a1",
             "mu_cost1",
@@ -319,7 +323,7 @@ def main():
             "mu_a2",
             "sigma_a2",
             "mu_cost2",
-            "sigma_cost2"
+            "sigma_cost2",
             "detection_efficency",
             "lamb",
             "log_nEff_inj",
@@ -341,21 +345,21 @@ def main():
     prior_pm1s, prior_pqs, ms, qs = calculate_m1q(
         prior["alpha"],
         prior["beta"],
-        mmin=5.0,  # prior["mmin"],
-        mmax=85.0,  # prior["mmax"],
-        mu=prior["mu"],
-        sigma=prior["sigma"],
-        gamma=prior["gamma"],
+        mmin=prior["mmin"],
+        mmax=prior["mmax"],
+        mu=prior["mu_m1"],
+        sigma=prior["sigma_m1"],
+        gamma=prior["gamma_m1"],
     )
     print("calculating mass posterior ppds...")
     pm1s, pqs, ms, qs = calculate_m1q(
         posterior["alpha"],
         posterior["beta"],
-        mmin=5.0,  # posterior['mmin'],
-        mmax=85.0,  # posterior['mmax'],
-        mu=posterior["mu"],
-        sigma=posterior["sigma"],
-        gamma=posterior["gamma"],
+        mmin=posterior['mmin'],
+        mmax=posterior['mmax'],
+        mu=posterior["mu_m1"],
+        sigma=posterior["sigma_m1"],
+        gamma=posterior["gamma_m1"],
     )
    
     print("calculating spin prior ppds")
@@ -427,8 +431,8 @@ def main():
     
 def plot_spin_dist(pa1,pa2,pcost1,pcost2,a_grid,cost_grid):
     fig,ax = plt.subplots(1,2,figsize=(10,5))
-    a1_median, a1_lows, a1_highs, a2_median, a2_lows, a2_high= np.median(pa1, axis=0), np.percentile(pa1,5,axis=0), np.percentile(pa1,95,axis=0), np.median(pa2, axis=0),  np.percentile(pa2,5,axis=0), np.percentile(pa2,95,axis=0)
-    cost1_median, cost1_lows, cost1_highs, cost2_median, cost2_lows, cost2_high= np.median(pcost1,axis=0), np.percentile(pcost1,5,axis=0), np.percentile(pcost1,95,axis=0), np.median(pcost2,axis=0), np.percentile(pcost2,5,axis=0), np.percentile(pcost2,95,axis=0)
+    a1_median, a1_lows, a1_highs, a2_median, a2_lows, a2_highs= np.median(pa1, axis=0), np.percentile(pa1,5,axis=0), np.percentile(pa1,95,axis=0), np.median(pa2, axis=0),  np.percentile(pa2,5,axis=0), np.percentile(pa2,95,axis=0)
+    cost1_median, cost1_lows, cost1_highs, cost2_median, cost2_lows, cost2_highs= np.median(pcost1,axis=0), np.percentile(pcost1,5,axis=0), np.percentile(pcost1,95,axis=0), np.median(pcost2,axis=0), np.percentile(pcost2,5,axis=0), np.percentile(pcost2,95,axis=0)
 
     ax[0].fill_between(a_grid,a1_lows,a1_highs,alpha=0.4,color='green')
     ax[0].fill_between(a_grid,a2_lows,a2_highs,alpha=0.4,color='blue')
