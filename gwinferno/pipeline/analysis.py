@@ -1,5 +1,5 @@
 """
-a module that stores the meat of the calculations for hierarhical population inference
+a module that stores the meat of the calculations for hierarchical population inference
 """
 
 import jax.numpy as jnp
@@ -44,7 +44,7 @@ def find_map(rng_key, numpyro_model, *model_args, Niter=100, lr=0.01):
 @jit
 def per_event_log_bayes_factor_log_neffs(weights):
     """
-    per_event_log_bayes_factor_log_neffs calculate per event log BFs via montecarlo integrating.
+    per_event_log_bayes_factor_log_neffs calculate per event log BFs via Monte Carlo integrating.
     Also return effective samples size for convergence checks.
 
     Args:
@@ -62,7 +62,7 @@ def per_event_log_bayes_factor_log_neffs(weights):
 @jit
 def mu_neff_injections(weights, Ninj):
     """
-    mu_neff_injections calculates detection efficeny (mu) with monte carlo integration over found
+    mu_neff_injections calculates detection efficiency (mu) with Monte Carlo integration over found
     injections along with the integrals effective sample size
 
     Args:
@@ -81,7 +81,7 @@ def mu_neff_injections(weights, Ninj):
 @jit
 def per_event_log_bayes_factor_log_neffs_log(logweights):
     """
-    per_event_log_bayes_factor_log_neffs_log calculate per event log BFs via montecarlo integrating.
+    per_event_log_bayes_factor_log_neffs_log calculate per event log BFs via Monte Carlo integrating.
     Also return effective samples size for convergence checks. Performs calculation in log prob.
 
     Args:
@@ -99,7 +99,7 @@ def per_event_log_bayes_factor_log_neffs_log(logweights):
 @jit
 def logmu_logneff_injections_log(logweights, Ninj):
     """
-    logmu_logneff_injections_log calculates log detection efficeny (log_mu) with monte carlo
+    logmu_logneff_injections_log calculates log detection efficiency (log_mu) with monte carlo
     integration over found injections along with the integrals effective sample size.
     Performs calculation in log prob.
 
@@ -132,7 +132,7 @@ class TotalVTCalculator(object):
 
     def __call__(self, lamb=0):
         """
-        __call__ perfrom trapezoidal integration to get total hypervolume
+        __call__ perform trapezoidal integration to get total hypervolume
 
         Args:
             lamb (int, optional): exponent of power-law rate evolution.
@@ -169,8 +169,8 @@ def hierarchical_likelihood(
     mmax=100.0,
 ):
     """
-    hierarchical_likelihood performs the hierarchical likeihood calculation be
-        resampling over injections and pe samples from each event's indiviudally done analayses. f
+    hierarchical_likelihood performs the hierarchical likelihood calculation be
+        resampling over injections and pe samples from each event's individually done analyses. f
         or reference see:
     Args:
         pe_weights (jax.DeviceArray): JAX array of weights evaluated at pe samples to integrate over.
@@ -197,13 +197,13 @@ def hierarchical_likelihood(
         reconstruct_rate (bool, optional): Flag to reconstruct marginalize merger rate. Defaults to True.
         min_neff_cut (bool, optional): flag to use the min_neff cut on the likelihood
             ensuring monte carlo integrals converge. Defaults to True.
-        posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data to p
-            erform posterior predictive check. Defaults to False.
+        posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data to
+            perform posterior predictive check. Defaults to False.
         param_names (iterable, optional): parameters to sample for PPCs. Defaults to None.
         pedata (dict, optional): diction of PE data needed to perform PPCs. Defaults to None.
         injdata (dict, optional): diction of found injection data needed to perform PPCs. Defaults to None.
-        m2min (float, optional): mininmum mass for secondary components (solar masses). Defaults to 3.0.
-        m1min (float, optional): mininmum mass for primary components (solar masses). Defaults to 6.5.
+        m2min (float, optional): minimum mass for secondary components (solar masses). Defaults to 3.0.
+        m1min (float, optional): minimum mass for primary components (solar masses). Defaults to 6.5.
         mmax (float, optional): maximum mass for primary components (solar masses). Defaults to 100.0.
     """
     rate = None
