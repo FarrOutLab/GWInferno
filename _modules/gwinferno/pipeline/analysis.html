@@ -93,7 +93,7 @@
              
   <h1>Source code for gwinferno.pipeline.analysis</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">a module that stores the meat of the calculations for hierarhical population inference</span>
+<span class="sd">a module that stores the meat of the calculations for hierarchical population inference</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
@@ -143,7 +143,7 @@
 <span class="nd">@jit</span>
 <span class="k">def</span> <span class="nf">per_event_log_bayes_factor_log_neffs</span><span class="p">(</span><span class="n">weights</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    per_event_log_bayes_factor_log_neffs calculate per event log BFs via montecarlo integrating.</span>
+<span class="sd">    per_event_log_bayes_factor_log_neffs calculate per event log BFs via Monte Carlo integrating.</span>
 <span class="sd">    Also return effective samples size for convergence checks.</span>
 
 <span class="sd">    Args:</span>
@@ -164,7 +164,7 @@
 <span class="nd">@jit</span>
 <span class="k">def</span> <span class="nf">mu_neff_injections</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    mu_neff_injections calculates detection efficeny (mu) with monte carlo integration over found</span>
+<span class="sd">    mu_neff_injections calculates detection efficiency (mu) with Monte Carlo integration over found</span>
 <span class="sd">    injections along with the integrals effective sample size</span>
 
 <span class="sd">    Args:</span>
@@ -186,7 +186,7 @@
 <span class="nd">@jit</span>
 <span class="k">def</span> <span class="nf">per_event_log_bayes_factor_log_neffs_log</span><span class="p">(</span><span class="n">logweights</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    per_event_log_bayes_factor_log_neffs_log calculate per event log BFs via montecarlo integrating.</span>
+<span class="sd">    per_event_log_bayes_factor_log_neffs_log calculate per event log BFs via Monte Carlo integrating.</span>
 <span class="sd">    Also return effective samples size for convergence checks. Performs calculation in log prob.</span>
 
 <span class="sd">    Args:</span>
@@ -207,7 +207,7 @@
 <span class="nd">@jit</span>
 <span class="k">def</span> <span class="nf">logmu_logneff_injections_log</span><span class="p">(</span><span class="n">logweights</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    logmu_logneff_injections_log calculates log detection efficeny (log_mu) with monte carlo</span>
+<span class="sd">    logmu_logneff_injections_log calculates log detection efficiency (log_mu) with monte carlo</span>
 <span class="sd">    integration over found injections along with the integrals effective sample size.</span>
 <span class="sd">    Performs calculation in log prob.</span>
 
@@ -248,7 +248,7 @@
 <a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.TotalVTCalculator.html#gwinferno.pipeline.analysis.TotalVTCalculator.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lamb</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        __call__ perfrom trapezoidal integration to get total hypervolume</span>
+<span class="sd">        __call__ perform trapezoidal integration to get total hypervolume</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            lamb (int, optional): exponent of power-law rate evolution.</span>
@@ -289,8 +289,8 @@
     <span class="n">mmax</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    hierarchical_likelihood performs the hierarchical likeihood calculation be</span>
-<span class="sd">        resampling over injections and pe samples from each event&#39;s indiviudally done analayses. f</span>
+<span class="sd">    hierarchical_likelihood performs the hierarchical likelihood calculation be</span>
+<span class="sd">        resampling over injections and pe samples from each event&#39;s individually done analyses. f</span>
 <span class="sd">        or reference see:</span>
 <span class="sd">    Args:</span>
 <span class="sd">        pe_weights (jax.DeviceArray): JAX array of weights evaluated at pe samples to integrate over.</span>
@@ -317,13 +317,13 @@
 <span class="sd">        reconstruct_rate (bool, optional): Flag to reconstruct marginalize merger rate. Defaults to True.</span>
 <span class="sd">        min_neff_cut (bool, optional): flag to use the min_neff cut on the likelihood</span>
 <span class="sd">            ensuring monte carlo integrals converge. Defaults to True.</span>
-<span class="sd">        posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data to p</span>
-<span class="sd">            erform posterior predictive check. Defaults to False.</span>
+<span class="sd">        posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data to</span>
+<span class="sd">            perform posterior predictive check. Defaults to False.</span>
 <span class="sd">        param_names (iterable, optional): parameters to sample for PPCs. Defaults to None.</span>
 <span class="sd">        pedata (dict, optional): diction of PE data needed to perform PPCs. Defaults to None.</span>
 <span class="sd">        injdata (dict, optional): diction of found injection data needed to perform PPCs. Defaults to None.</span>
-<span class="sd">        m2min (float, optional): mininmum mass for secondary components (solar masses). Defaults to 3.0.</span>
-<span class="sd">        m1min (float, optional): mininmum mass for primary components (solar masses). Defaults to 6.5.</span>
+<span class="sd">        m2min (float, optional): minimum mass for secondary components (solar masses). Defaults to 3.0.</span>
+<span class="sd">        m1min (float, optional): minimum mass for primary components (solar masses). Defaults to 6.5.</span>
 <span class="sd">        mmax (float, optional): maximum mass for primary components (solar masses). Defaults to 100.0.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rate</span> <span class="o">=</span> <span class="kc">None</span>

@@ -119,7 +119,7 @@
 <dt class="sig sig-object py" id="gwinferno.pipeline.analysis.hierarchical_likelihood">
 <span class="sig-prename descclassname"><span class="pre">gwinferno.pipeline.analysis.</span></span><span class="sig-name descname"><span class="pre">hierarchical_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pe_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inj_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marginal_qs=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indv_weights=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rngkey=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_frac=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surv_hypervolume_fct=&lt;gwinferno.pipeline.analysis.TotalVTCalculator</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vtfct_kwargs={'lamb':</span> <span class="pre">0}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marginalize_selection=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruct_rate=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_neff_cut=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posterior_predictive_check=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pedata=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injdata=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2min=3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1min=5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax=100.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/analysis.html#hierarchical_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.analysis.hierarchical_likelihood" title="Link to this definition"></a></dt>
 <dd><dl>
-<dt>hierarchical_likelihood performs the hierarchical likeihood calculation be</dt><dd><p>resampling over injections and pe samples from each event’s indiviudally done analayses. f
+<dt>hierarchical_likelihood performs the hierarchical likelihood calculation be</dt><dd><p>resampling over injections and pe samples from each event’s individually done analyses. f
 or reference see:</p>
 </dd>
 <dt>Args:</dt><dd><dl class="simple">
@@ -155,14 +155,14 @@ min_neff_cut (bool, optional): flag to use the min_neff cut on the likelihood</p
 <div><p>ensuring monte carlo integrals converge. Defaults to True.</p>
 </div></blockquote>
 <dl class="simple">
-<dt>posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data to p</dt><dd><p>erform posterior predictive check. Defaults to False.</p>
+<dt>posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data to</dt><dd><p>perform posterior predictive check. Defaults to False.</p>
 </dd>
 </dl>
 <p>param_names (iterable, optional): parameters to sample for PPCs. Defaults to None.
 pedata (dict, optional): diction of PE data needed to perform PPCs. Defaults to None.
 injdata (dict, optional): diction of found injection data needed to perform PPCs. Defaults to None.
-m2min (float, optional): mininmum mass for secondary components (solar masses). Defaults to 3.0.
-m1min (float, optional): mininmum mass for primary components (solar masses). Defaults to 6.5.
+m2min (float, optional): minimum mass for secondary components (solar masses). Defaults to 3.0.
+m1min (float, optional): minimum mass for primary components (solar masses). Defaults to 6.5.
 mmax (float, optional): maximum mass for primary components (solar masses). Defaults to 100.0.</p>
 </dd>
 </dl>
