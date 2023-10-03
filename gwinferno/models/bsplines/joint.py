@@ -16,8 +16,6 @@ class Base2DBSplineModel(object):
         yy,
         xx_inj,
         yy_inj,
-        xorder = 3,
-        yorder = 3,
         xrange=(0, 1),
         yrange=(0, 1),
         xbasis = BSpline,
@@ -29,7 +27,7 @@ class Base2DBSplineModel(object):
         self.yknots = ynknots
         self.xmin, self.xmax = xrange
         self.ymin, self.ymax = yrange
-        self.interpolator = basis(xnknots, ynknots, xrange=xrange, yrange=yrange, xbasis=xbasis, ybasis=ybasis, kx=xorder, ky=yorder, **kwargs)
+        self.interpolator = basis(xnknots, ynknots, xrange=xrange, yrange=yrange, xbasis=xbasis, ybasis=ybasis, **kwargs)
         self.pe_design_matrix = jnp.array(self.interpolator.bases(xx, yy))
         self.inj_design_matrix = jnp.array(self.interpolator.bases(xx_inj, yy_inj))
         self.funcs = [self.inj_pdf, self.pe_pdf]
@@ -58,6 +56,8 @@ class BSplineJointMassRatioChiEffective(Base2DBSplineModel):
         q_inj,
         chieff_range=(-1,1),
         q_range=(0,1),
+        chi_order = 4,
+        q_order = 4,
         **kwargs,
     ):
         super().__init__(
@@ -69,6 +69,8 @@ class BSplineJointMassRatioChiEffective(Base2DBSplineModel):
             yy_inj=q_inj,
             xrange=chieff_range,
             yrange=q_range,
+            xorder = chi_order,
+            yorder = q_order,
             **kwargs,
         )
 class BSplineJointMassRedshift(Base2DBSplineModel):

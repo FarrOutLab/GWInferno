@@ -76,6 +76,7 @@ class BasisSpline(object):
         k=4,
         proper=True,
         normalize=True,
+        norm_grid = 1000
     ):
         """
         Class to construct a basis spline (with the M-Spline basis)
@@ -107,7 +108,7 @@ class BasisSpline(object):
         self.normalize = normalize
         self.basis_vols = np.ones(self.N)
         if normalize:
-            self.grid = jnp.linspace(*xrange, 1000)
+            self.grid = jnp.linspace(*xrange, norm_grid)
             self.grid_bases = jnp.array(self.bases(self.grid))
             self.basis_vols = jnp.array([jnp.trapz(self.grid_bases[i, :], self.grid) for i in range(self.N)])
 
@@ -240,6 +241,7 @@ class BSpline(BasisSpline):
         k=4,
         proper=True,
         normalize=False,
+        **kwargs
     ):
         """
         Class to construct a basis spline (B-Spline)
@@ -263,6 +265,7 @@ class BSpline(BasisSpline):
             k=k,
             proper=proper,
             normalize=normalize,
+            **kwargs
         )
 
     def _bases(self, xs):
@@ -440,11 +443,12 @@ class RectBivariateBasisSpline(object):
         ydf,
         xrange=(0, 1),
         yrange=(0, 1),
-        kx=4,
-        ky=4,
+        xorder=4,
+        yorder=4,
         xbasis=BSpline,
         ybasis=BSpline,
         normalize=True,
+        norm_grid=(1000, 1000)
     ):
         """
         Class to construct a 2D (bivariate) rectangular basis spline
@@ -462,14 +466,14 @@ class RectBivariateBasisSpline(object):
         """
         self.xdf = xdf
         self.ydf = ydf
-        self.x_interpolator = xbasis(xdf, xrange=xrange, k=kx, normalize=False)
-        self.y_interpolator = ybasis(ydf, xrange=yrange, k=ky, normalize=False)
+        self.x_interpolator = xbasis(xdf, xrange=xrange, k=xorder, normalize=False)
+        self.y_interpolator = ybasis(ydf, xrange=yrange, k=yorder, normalize=False)
         self.normalize = normalize
         self.x_bases = None
         self.y_bases = None
         if self.normalize:
-            self.gridx = jnp.linspace(*xrange, 750)
-            self.gridy = jnp.linspace(*yrange, 750)
+            self.gridx = jnp.linspace(*xrange, norm_grid[0])
+            self.gridy = jnp.linspace(*yrange, norm_grid[1])
             self.gxx, self.gyy = jnp.meshgrid(self.gridx, self.gridy)
             self.grid_bases = self.bases(self.gxx, self.gyy)
 
@@ -535,7 +539,7 @@ class RectBivariateBasisSpline(object):
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
-        return self._project(bases, coefs)* self.norm_2d(coefs)
+        return self._project(bases, coefs) * self.norm_2d(coefs)
 
 class LogZRectBivariateBasisSpline(RectBivariateBasisSpline):
     def __init__(
@@ -544,11 +548,12 @@ class LogZRectBivariateBasisSpline(RectBivariateBasisSpline):
             ydf,
             xrange=(0, 1),
             yrange=(0, 1),
-            kx=4,
-            ky=4,
+            xorder=4,
+            yorder=4,
             xbasis=BSpline,
             ybasis=BSpline,
             normalize=True,
+            norm_grid=(1000, 1000)
         ):
             """
             Class to construct a 2D (bivariate) rectangular basis spline
@@ -569,11 +574,12 @@ class LogZRectBivariateBasisSpline(RectBivariateBasisSpline):
                     ydf,
                     xrange=xrange,
                     yrange=yrange,
-                    kx=kx,
-                    ky=ky,
+                    xorder=xorder,
+                    yorder=yorder,
                     xbasis=xbasis,
                     ybasis=ybasis,
                     normalize=normalize,
+                    norm_grid = norm_grid
                 )
     def _project(self, bases, coefs):
         """
