@@ -34,3 +34,6 @@ docs/_build/_sources
 docs/_build/_static
 run-experimentation
 **.h5
+**.ipynb
+/posterior_samples_and_injections_spin_magnitude
+**.txt
