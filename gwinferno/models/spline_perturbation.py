@@ -328,7 +328,7 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
         Returns:
             _type_:
         """
-        pz = self.dVdc_ * jnp.power(1.0 + self.zs, lamb - 1)
+        pz = self.dVdz_ * jnp.power(1.0 + self.zs, lamb - 1)
         pz *= jnp.exp(self.interpolator.project(self.norm_design_matrix, cs))
         return jnp.trapz(pz, self.zs)
 
@@ -361,9 +361,9 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
             jnp.ndarray:
         """
         ndim = len(z.shape)
-        dV_cdz = self.dV_cdz[ndim - 1]
+        dVdz = self.dVdzs[ndim - 1]
         return jnp.where(
             jnp.less_equal(z, self.zmax),
-            self.prob(z, dV_cdz, lamb, cs) / self.normalization(lamb, cs),
+            self.prob(z, dVdz, lamb, cs) / self.normalization(lamb, cs),
             0,
         )
