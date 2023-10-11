@@ -160,6 +160,7 @@ def hierarchical_likelihood(
     marginalize_selection=False,
     reconstruct_rate=True,
     min_neff_cut=True,
+    min_neff_inj_cut=True,
     posterior_predictive_check=False,
     param_names=None,
     pedata=None,
@@ -195,7 +196,9 @@ def hierarchical_likelihood(
         marginalize_selection (bool, optional): Flag to marginalize over uncertainty in
             selection monte carlo integral. Defaults to True.
         reconstruct_rate (bool, optional): Flag to reconstruct marginalize merger rate. Defaults to True.
-        min_neff_cut (bool, optional): flag to use the min_neff cut on the likelihood
+        min_neff_cut (bool, optional): flag to impose the min_neff cut on events in the likelihood
+            ensuring monte carlo integrals converge. Defaults to True.
+        min_neff_inj_cut (bool, optional): flag to impose the min_neff cut on injections in the likelihood
             ensuring monte carlo integrals converge. Defaults to True.
         posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data to
             perform posterior predictive check. Defaults to False.
@@ -236,26 +239,37 @@ def hierarchical_likelihood(
             vt_factor / jnp.exp((3 + Nobs) / 2 / n_eff_inj),
             jnp.inf,
         )
+
     sel = numpyro.deterministic(
         "selection_factor",
         jnp.where(jnp.isinf(vt_factor), jnp.nan_to_num(-jnp.inf), -Nobs * jnp.log(vt_factor)),
     )
+    numpyro.factor("selection_factor", sel)
+
     sumlogBFs = numpyro.deterministic("sum_logBFs", jnp.sum(logBFs))
-    log_l = numpyro.deterministic("log_l", sel + sumlogBFs)
+    numpyro.factor("sum_log_BFs", sumlogBFs)
+
     if min_neff_cut:
-        numpyro.factor(
-            "log_likelihood",
+        rej_min_neff = numpyro.deterministic(
+            "min_neff_rejection",
             jnp.where(
-                jnp.isnan(log_l) | jnp.less_equal(jnp.exp(jnp.min(logn_effs)), Nobs),
+                jnp.less_equal(jnp.exp(jnp.min(logn_effs)), Nobs),
                 jnp.nan_to_num(-jnp.inf),
-                jnp.nan_to_num(log_l),
+                0,
             ),
         )
-    else:
-        numpyro.factor(
-            "log_likelihood",
-            jnp.where(jnp.isnan(log_l), jnp.nan_to_num(-jnp.inf), jnp.nan_to_num(log_l)),
+        numpyro.factor("min_neff_rejection", rej_min_neff)
+    if min_neff_inj_cut:
+        rej_min_neff_inj = numpyro.deterministic(
+            "min_neff_inj_rejection",
+            jnp.where(
+                jnp.less_equal(jnp.min(n_eff_inj), Nobs),
+                jnp.nan_to_num(-jnp.inf),
+                0,
+            ),
         )
+        numpyro.factor("min_neff_inj_rejection", rej_min_neff_inj)
+
     if posterior_predictive_check:
         if param_names is not None and injdata is not None and pedata is not None:
             cond = jnp.less(pedata["mass_1"], m1min) | jnp.greater(pedata["mass_1"], mmax)
