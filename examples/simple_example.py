@@ -243,7 +243,7 @@ def main():
         plot_params = [
             "alpha",
             "beta",
-            "detection_efficency",
+            "detection_efficiency",
             "lamb",
             "log_nEff_inj",
             "log_nEffs",

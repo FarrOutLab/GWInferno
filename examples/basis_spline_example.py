@@ -274,7 +274,7 @@ def main():
         posterior = mcmc.get_samples()
         dd.io.save(f"{label}_posterior_samples.h5", posterior)
         plot_params = [
-            "detection_efficency",
+            "detection_efficiency",
             "lamb",
             "log_nEff_inj",
             "log_nEffs",
