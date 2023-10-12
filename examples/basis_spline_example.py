@@ -152,12 +152,12 @@ def model(
     Tobs,
     sample_prior=False,
 ):
-    mass_knots = mass_model.primary_model.nknots
-    q_knots = mass_model.ratio_model.nknots
+    mass_knots = mass_model.primary_model.n_splines
+    q_knots = mass_model.ratio_model.n_splines
     mag_model = spin_models["mag"]
     tilt_model = spin_models["tilt"]
-    mag_knots = mag_model.primary_model.nknots
-    tilt_knots = tilt_model.primary_model.nknots
+    mag_knots = mag_model.primary_model.n_splines
+    tilt_knots = tilt_model.primary_model.n_splines
     z_knots = z_model.nknots
 
     mass_cs = numpyro.sample("mass_cs", dist.Normal(0, 6), sample_shape=(mass_knots,))
@@ -183,16 +183,16 @@ def model(
 
     if not sample_prior:
 
-        def get_weights(z, prior):
-            p_m1q = mass_model(len(z.shape), mass_cs, q_cs)
-            p_a1a2 = mag_model(len(z.shape), mag_cs)
-            p_ct1ct2 = tilt_model(len(z.shape), tilt_cs)
+        def get_weights(z, prior, pe_samples):
+            p_m1q = mass_model(mass_cs, q_cs, pe_samples=pe_samples)
+            p_a1a2 = mag_model(mag_cs, pe_samples=pe_samples)
+            p_ct1ct2 = tilt_model(tilt_cs, pe_samples=pe_samples)
             p_z = z_model(z, lamb, z_cs)
             wts = p_m1q * p_a1a2 * p_ct1ct2 * p_z / prior
             return jnp.where(jnp.isnan(wts) | jnp.isinf(wts), 0, wts)
 
-        peweights = get_weights(pedict["redshift"], pedict["prior"])
-        injweights = get_weights(injdict["redshift"], injdict["prior"])
+        peweights = get_weights(pedict["redshift"], pedict["prior"], pe_samples=True)
+        injweights = get_weights(injdict["redshift"], injdict["prior"], pe_samples=False)
         hierarchical_likelihood(
             peweights,
             injweights,
