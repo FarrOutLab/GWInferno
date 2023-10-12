@@ -315,6 +315,8 @@ def main():
             mmin=args.mmin,
             m1mmin=args.mmin,
             mmax=args.mmax,
+            basis_m=LogXLogYBSpline,
+            basis_q=LogYBSpline,
         )
     print("calculating mass posterior ppds...")
     pm1s, pqs, ms, qs = calculate_m1q_bspline_ppds(
@@ -326,6 +328,8 @@ def main():
         mmin=args.mmin,
         m1mmin=args.mmin,
         mmax=args.mmax,
+        basis_m=LogXLogYBSpline,
+        basis_q=LogYBSpline,
     )
 
     if not args.skip_prior:
