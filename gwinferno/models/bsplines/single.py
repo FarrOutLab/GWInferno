@@ -314,6 +314,7 @@ class BSplineRatio(Base1DBSplineModel):
             xrange=(qmin, 1),
             **kwargs,
         )
+        self.n_splines = n_splines
 
 
 class BSplineMass(Base1DBSplineModel):
