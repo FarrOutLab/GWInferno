@@ -140,7 +140,6 @@ class BSplineSpinMagnitude(Base1DBSplineModel):
             **kwargs,
         )
 
-
 class BSplineSpinTilt(Base1DBSplineModel):
     """Class to construct a cosine tilt (cos(theta)) B-Spline model for a single binary component
 
@@ -314,7 +313,6 @@ class BSplineRatio(Base1DBSplineModel):
             xrange=(qmin, 1),
             **kwargs,
         )
-        self.n_splines = n_splines
 
 
 class BSplineMass(Base1DBSplineModel):
