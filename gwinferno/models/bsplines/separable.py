@@ -729,3 +729,50 @@ class BSplineJointMassRedshiftBSplineRatio(object):
 
     def __call__(self, ndim, mcoefs, qcoefs):
         return self.ratio_model(ndim, qcoefs) * self.primary_model(ndim, mcoefs)
+
+#Testing
+class BSplineSeperableMassRatioChiEff(object):
+    def __init__(
+        self,
+        nknots_q,
+        nknots_chieff,
+        q,
+        q_inj,
+        chieff,
+        chieff_inj,
+        order_q=4,
+        order_chieff=4,
+        qknots = None,
+        chieffknots = None,
+        m1min=3.0,
+        m2min=3.0,
+        mmax=100.0,
+        basis_q=BSpline,
+        basis_chieff=BSpline,
+        **kwargs,
+    ):
+        self.nknots_q = nknots_q
+        self.nknots_chieff = nknots_chieff
+        self.ratio_model = BSplineRatio(
+            nknots_q,
+            q,
+            q_inj,
+            qmin=m2min / mmax,
+            knots=qknots,
+            degree=order_q-1,
+            basis=basis_q,
+            **kwargs,
+        )
+        
+        self.chieff_model = BSplineChiEffective(
+            nknots_chieff,
+            chieff,
+            chieff_inj,
+            knots=chieffknots,
+            degree=order_chieff-1,
+            basis=basis_chieff,
+            **kwargs,
+        )
+
+    def __call__(self, chieffcoefs, qcoefs, pe_samples):
+        return self.ratio_model(qcoefs, pe_samples=pe_samples) * self.chieff_model(chieffcoefs, pe_samples=pe_samples)
