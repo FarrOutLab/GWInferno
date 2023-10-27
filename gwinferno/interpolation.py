@@ -74,7 +74,6 @@ class BasisSpline(object):
         interior_knots=None,
         xrange=(0, 1),
         k=4,
-        proper=True,
         normalize=True,
         norm_grid = 1000
     ):
@@ -89,7 +88,6 @@ class BasisSpline(object):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         self.order = k
@@ -239,7 +237,6 @@ class BSpline(BasisSpline):
         interior_knots=None,
         xrange=(0, 1),
         k=4,
-        proper=True,
         normalize=False,
         **kwargs
     ):
@@ -254,7 +251,6 @@ class BSpline(BasisSpline):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to False.
         """
         super().__init__(
@@ -263,7 +259,6 @@ class BSpline(BasisSpline):
             interior_knots=interior_knots,
             xrange=xrange,
             k=k,
-            proper=proper,
             normalize=normalize,
             **kwargs
         )
@@ -333,7 +328,6 @@ class LogXBSpline(BSpline):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         knots = None if knots is None else np.log(knots)
@@ -373,7 +367,6 @@ class LogYBSpline(BSpline):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         super().__init__(n_df, knots=knots, interior_knots=interior_knots, xrange=xrange, **kwargs)
@@ -409,7 +402,6 @@ class LogXLogYBSpline(LogYBSpline):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         knots = None if knots is None else np.log(knots)
