@@ -82,7 +82,7 @@ def calculate_powerbspline_rate_of_z_ppds(lamb, z_cs, rate, model):
     rs = np.zeros((len(lamb), len(zs)))
 
     def calc_rz(cs, la, r):
-        return r * jnp.power(1.0 + zs, la) * jnp.exp(model.interpolator.project(model.norm_design_matrix, (model.nknots, 1), cs))
+        return r * jnp.power(1.0 + zs, la) * jnp.exp(model.interpolator.project(model.norm_design_matrix, cs))
 
     calc_rz = jit(calc_rz)
     _ = calc_rz(z_cs[0], lamb[0], rate[0])
