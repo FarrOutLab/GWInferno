@@ -120,11 +120,11 @@ class ConfigReader(object):
 
 def load_base_parser():
     parser = ArgumentParser()
-    parser.add_argument("--data-dir", type=str, default="/home/bruce.edelman/projects/GWTC3_allevents/")
+    parser.add_argument("--data-dir", type=str, default="/projects/farr_lab/shared/GWTC3/all_events")
     parser.add_argument(
         "--inj-file",
         type=str,
-        default="/home/bruce.edelman/projects/GWTC3_allevents/o1o2o3_mixture_injections.hdf5",
+        default="/projects/farr_lab/shared/GWTC3/o1o2o3_mixture_injections.hdf5",
     )
     parser.add_argument("--outdir", type=str, default="results")
     parser.add_argument("--mmin", type=float, default=3.0)
