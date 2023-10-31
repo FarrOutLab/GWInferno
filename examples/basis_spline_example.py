@@ -39,12 +39,13 @@ def load_parser():
     parser.add_argument("--q-knots", type=int, default=30)
     parser.add_argument("--tilt-knots", type=int, default=25)
     parser.add_argument("--z-knots", type=int, default=20)
+    parser.add_argument("--skip-prior", action="store_true", default=True)
     return parser.parse_args()
 
 
 def setup_mass_BSpline_model(injdata, pedata, pmap, nknots, qknots, mmin=3.0, mmax=100.0):
-    print(f"Basis Spline model in m1 w/ {nknots} knots logspaced from {mmin} to {mmax}...")
-    print(f"Basis Spline model in q w/ {qknots} knots linspaced from {mmin/mmax} to 1...")
+    print(f"Basis Spline model in m1 w/ {nknots} number of bases. Knots are logspaced from {mmin} to {mmax}...")
+    print(f"Basis Spline model in q w/ {qknots} number of bases. Knots are linspaced from {mmin/mmax} to 1...")
 
     model = BSplinePrimaryBSplineRatio(
         nknots,
@@ -152,48 +153,53 @@ def model(
     Tobs,
     sample_prior=False,
 ):
-    mass_knots = mass_model.primary_model.nknots
-    q_knots = mass_model.ratio_model.nknots
+    mass_knots = mass_model.primary_model.n_splines
+    q_knots = mass_model.ratio_model.n_splines
     mag_model = spin_models["mag"]
     tilt_model = spin_models["tilt"]
-    mag_knots = mag_model.primary_model.nknots
-    tilt_knots = tilt_model.primary_model.nknots
+    mag_knots = mag_model.primary_model.n_splines
+    tilt_knots = tilt_model.primary_model.n_splines
     z_knots = z_model.nknots
 
     mass_cs = numpyro.sample("mass_cs", dist.Normal(0, 6), sample_shape=(mass_knots,))
-    mass_tau = numpyro.sample("mass_tau", dist.Uniform(1, 1000))
-    numpyro.factor("mass_log_smoothing_prior", apply_difference_prior(mass_cs, mass_tau, degree=2))
+    mass_tau_squared = numpyro.sample("mass_tau_squared", dist.TruncatedDistribution(dist.Normal(scale = 0.01), low = 0, high = 1))
+    mass_lambda = numpyro.deterministic("mass_lambda", 1/mass_tau_squared)
+    numpyro.factor("mass_log_smoothing_prior", apply_difference_prior(mass_cs, mass_lambda, degree=2))
 
     q_cs = numpyro.sample("q_cs", dist.Normal(0, 4), sample_shape=(q_knots,))
-    q_tau = numpyro.sample("q_tau", dist.Uniform(1, 25))
-    numpyro.factor("q_log_smoothing_prior", apply_difference_prior(q_cs, q_tau, degree=2))
+    q_tau_squared = numpyro.sample("q_tau_squared", dist.TruncatedDistribution(dist.Normal(scale = 0.1), low = 0, high = 1))
+    q_lambda = numpyro.deterministic("q_lambda", 1/q_tau_squared)
+    numpyro.factor("q_log_smoothing_prior", apply_difference_prior(q_cs, q_lambda, degree=2))
 
     mag_cs = numpyro.sample("mag_cs", dist.Normal(0, 2), sample_shape=(mag_knots,))
-    mag_tau = numpyro.sample("mag_tau", dist.Uniform(1, 10))
-    numpyro.factor("mag_log_smoothing_prior", apply_difference_prior(mag_cs, mag_tau, degree=2))
+    mag_tau_squared = numpyro.sample("mag_tau_squared", dist.TruncatedDistribution(dist.Normal(scale = 0.1), low = 0, high = 1))
+    mag_lambda = numpyro.deterministic("mag_lambda", 1/mag_tau_squared)
+    numpyro.factor("mag_log_smoothing_prior", apply_difference_prior(mag_cs, mag_lambda, degree=2))
 
     tilt_cs = numpyro.sample("tilt_cs", dist.Normal(0, 2), sample_shape=(tilt_knots,))
-    tilt_tau = numpyro.sample("tilt_tau", dist.Uniform(1, 10))
-    numpyro.factor("tilt_log_smoothing_prior", apply_difference_prior(tilt_cs, tilt_tau, degree=2))
+    tilt_tau_squared = numpyro.sample("tilt_tau_squared", dist.TruncatedDistribution(dist.Normal(scale = 0.1), low = 0, high = 1))
+    tilt_lambda = numpyro.deterministic("tilt_lambda", 1/tilt_tau_squared)
+    numpyro.factor("tilt_log_smoothing_prior", apply_difference_prior(tilt_cs, tilt_lambda, degree=2))
 
     lamb = numpyro.sample("lamb", dist.Normal(0, 3))
     z_cs = numpyro.sample("z_cs", dist.Normal(), sample_shape=(z_knots,))
-    z_tau = numpyro.sample("z_tau", dist.Uniform(1, 5))
-    numpyro.factor("z_log_smoothing_prior", apply_difference_prior(z_cs, z_tau, degree=2))
+    z_tau_squared = numpyro.sample("z_tau_squared", dist.Uniform(1, 10))
+    z_lambda = numpyro.deterministic("z_lambda", 1/z_tau_squared)
+    numpyro.factor("z_log_smoothing_prior", apply_difference_prior(z_cs, z_lambda, degree=2))
 
     if not sample_prior:
 
-        def get_weights(z, prior):
-            p_m1q = mass_model(len(z.shape), mass_cs, q_cs)
-            p_a1a2 = mag_model(len(z.shape), mag_cs)
-            p_ct1ct2 = tilt_model(len(z.shape), tilt_cs)
+        def get_weights(z, prior, pe_samples = True):
+            p_m1q = mass_model(mass_cs, q_cs, pe_samples)
+            p_a1a2 = mag_model(mag_cs, pe_samples)
+            p_ct1ct2 = tilt_model(tilt_cs, pe_samples)
             p_z = z_model(z, lamb, z_cs)
             wts = p_m1q * p_a1a2 * p_ct1ct2 * p_z / prior
             
             return jnp.where(jnp.isnan(wts) | jnp.isinf(wts), 0, wts)
 
         peweights = get_weights(pedict["redshift"], pedict["prior"])
-        injweights = get_weights(injdict["redshift"], injdict["prior"])
+        injweights = get_weights(injdict["redshift"], injdict["prior"], pe_samples=False)
         hierarchical_likelihood(
             peweights,
             injweights,
@@ -203,7 +209,7 @@ def model(
             surv_hypervolume_fct=z_model.normalization,
             vtfct_kwargs=dict(lamb=lamb, cs=z_cs),
             marginalize_selection=False,
-            min_neff_cut=True,
+            min_neff_cut=False,
             posterior_predictive_check=True,
             pedata=pedict,
             injdata=injdict,
@@ -282,17 +288,17 @@ def main():
             "logBFs",
             "log_l",
             "mag_cs",
-            "mag_tau",
+            "mag_lambda",
             "mass_cs",
-            "mass_tau",
+            "mass_lambda",
             "q_cs",
-            "q_tau",
+            "q_lambda",
             "rate",
             "surveyed_hypervolume",
             "tilt_cs",
-            "tilt_tau",
+            "tilt_lambda",
             "z_cs",
-            "z_tau",
+            "z_lambda",
         ]
         fig = az.plot_trace(az.from_numpyro(mcmc), var_names=plot_params)
         plt.savefig(f"{label}_trace_plot.png")
@@ -312,6 +318,8 @@ def main():
         mmin=args.mmin,
         m1mmin=args.mmin,
         mmax=args.mmax,
+        basis_m=LogXLogYBSpline,
+        basis_q=LogYBSpline,
     )
     print("calculating mass posterior ppds...")
     pm1s, pqs, ms, qs = calculate_m1q_bspline_ppds(
@@ -323,52 +331,63 @@ def main():
         mmin=args.mmin,
         m1mmin=args.mmin,
         mmax=args.mmax,
+        basis_m=LogXLogYBSpline,
+        basis_q=LogYBSpline,
     )
 
-    print("calculating mag prior ppds...")
-    prior_pmags, mags = calculate_iid_spin_bspline_ppds(prior["mag_cs"], BSplineIIDSpinMagnitudes, args.mag_knots, xmin=0, xmax=1)
+    if not args.skip_prior:
+        print("calculating mag prior ppds...")
+        prior_pmags, mags = calculate_iid_spin_bspline_ppds(prior["mag_cs"], BSplineIIDSpinMagnitudes, args.mag_knots, xmin=0, xmax=1, basis=LogYBSpline)
     print("calculating mag posterior ppds...")
-    pmags, mags = calculate_iid_spin_bspline_ppds(posterior["mag_cs"], BSplineIIDSpinMagnitudes, args.mag_knots, xmin=0, xmax=1)
+    pmags, mags = calculate_iid_spin_bspline_ppds(posterior["mag_cs"], BSplineIIDSpinMagnitudes, args.mag_knots, xmin=0, xmax=1, basis=LogYBSpline)
 
-    print("calculating tilt prior ppds...")
-    prior_ptilts, tilts = calculate_iid_spin_bspline_ppds(prior["tilt_cs"], BSplineIIDSpinTilts, args.tilt_knots, xmin=-1, xmax=1)
+    if not args.skip_prior:
+        print("calculating tilt prior ppds...")
+        prior_ptilts, tilts = calculate_iid_spin_bspline_ppds(prior["tilt_cs"], BSplineIIDSpinTilts, args.tilt_knots, xmin=-1, xmax=1, basis=LogYBSpline)
     print("calculating tilt posterior ppds...")
-    ptilts, tilts = calculate_iid_spin_bspline_ppds(posterior["tilt_cs"], BSplineIIDSpinTilts, args.tilt_knots, xmin=-1, xmax=1)
+    ptilts, tilts = calculate_iid_spin_bspline_ppds(posterior["tilt_cs"], BSplineIIDSpinTilts, args.tilt_knots, xmin=-1, xmax=1, basis=LogYBSpline)
 
-    print("calculating rate prior ppds...")
-    prior_Rofz, zs = calculate_powerbspline_rate_of_z_ppds(prior["lamb"], prior["z_cs"], jnp.ones_like(prior["lamb"]), z)
+    if not args.skip_prior:
+        print("calculating rate prior ppds...")
+        prior_Rofz, zs = calculate_powerbspline_rate_of_z_ppds(prior["lamb"], prior["z_cs"], jnp.ones_like(prior["lamb"]), z)
     print("calculating rate posterior ppds...")
     Rofz, zs = calculate_powerbspline_rate_of_z_ppds(posterior["lamb"], posterior["z_cs"], posterior["rate"], z)
 
-    ppd_dict = {
-        "dRdm1": pm1s,
-        "dRdq": pqs,
-        "m1s": ms,
-        "qs": qs,
-        "dRda": pmags,
-        "mags": mags,
-        "dRdct": ptilts,
-        "tilts": tilts,
-        "Rofz": Rofz,
-        "zs": zs,
-    }
-    dd.io.save(f"{label}_ppds.h5", ppd_dict)
-    prior_ppd_dict = {
-        "pm1": prior_pm1s,
-        "pq": prior_pqs,
-        "pa": prior_pmags,
-        "pct": prior_ptilts,
-        "m1s": ms,
-        "qs": qs,
-        "mags": mags,
-        "tilts": tilts,
-        "Rofz": prior_Rofz,
-        "zs": zs,
-    }
-    dd.io.save(f"{label}_prior_ppds.h5", prior_ppd_dict)
-    del ppd_dict, prior_ppd_dict
+# Lines (357-383) are commented out due to deepdish errors
+    # if not args.skip_prior:
+    #     prior_ppd_dict = {
+    #     "pm1": prior_pm1s,
+    #     "pq": prior_pqs,
+    #     "pa": prior_pmags,
+    #     "pct": prior_ptilts,
+    #     "m1s": ms,
+    #     "qs": qs,
+    #     "mags": mags,
+    #     "tilts": tilts,
+    #     "Rofz": prior_Rofz,
+    #     "zs": zs,
+    #     }
+
+    #     dd.io.save(f"{label}_prior_ppds.h5", prior_ppd_dict)
+    #     del prior_ppd_dict
+
+    # ppd_dict = {
+    #     "dRdm1": pm1s,
+    #     "dRdq": pqs,
+    #     "m1s": ms,
+    #     "qs": qs,
+    #     "dRda": pmags,
+    #     "mags": mags,
+    #     "dRdct": ptilts,
+    #     "tilts": tilts,
+    #     "Rofz": Rofz,
+    #     "zs": zs,
+    # }
+    # dd.io.save(f"{label}_ppds.h5", ppd_dict)
+    # del ppd_dict
 
     print("plotting mass distribution...")
+    priors = None if args.skip_prior else {"m1": prior_pm1s, "q": prior_pqs}
     fig = plot_mass_dist(
         pm1s,
         pqs,
@@ -376,21 +395,24 @@ def main():
         qs,
         mmin=5.0,
         mmax=args.mmax,
-        priors={"m1": prior_pm1s, "q": prior_pqs},
+        priors=priors,
     )
     plt.savefig(f"{label}_mass_distribution.png")
     del fig
 
     print("plotting spin distributions...")
-    fig = plot_iid_spin_dist(pmags, ptilts, mags, tilts, priors={"mags": prior_pmags, "tilts": prior_ptilts})
+    priors = None if args.skip_prior else {"mags": prior_pmags, "tilts": prior_ptilts}
+    fig = plot_iid_spin_dist(pmags, ptilts, mags, tilts, priors=priors)
     plt.savefig(f"{label}_iid_component_spin_distribution.png")
     del fig
 
     print("plotting R(z)...")
-    fig = plot_rofz(Rofz, zs, prior=prior_Rofz)
+    prior = None if args.skip_prior else prior_Rofz
+    fig = plot_rofz(Rofz, zs, prior=prior)
     plt.savefig(f"{label}_rate_vs_z.png")
     del fig
-    fig = plot_rofz(Rofz, zs, logx=True, prior=prior_Rofz)
+    prior = None if args.skip_prior else prior_Rofz
+    fig = plot_rofz(Rofz, zs, logx=True, prior=prior)
     plt.savefig(f"{label}_rate_vs_z_logscale.png")
     del fig
 
