@@ -246,7 +246,7 @@ def setup_posterior_samples_and_injections(data_dir, inj_file, param_names=None,
         injdata, new_pmap = convert_component_spin_injections_to_chieff(injdata, param_map, chip=chi_p)
         param_map = new_pmap
         pedata = jnp.array(pedata)
-        injdata = jnp.array(pedata)
+        injdata = jnp.array(injdata)
         if save:
             mag_data = {
                 "injdata": injdata,

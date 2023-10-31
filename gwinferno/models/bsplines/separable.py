@@ -676,3 +676,103 @@ class BSplineEffectiveSpinDims(object):
         p_chieff = self.chi_eff_model(ecoefs, pe_samples=pe_samples)
         p_chip = self.chi_p_model(pcoefs, pe_samples=pe_samples)
         return p_chieff * p_chip
+
+class BSplineJointMassRedshiftBSplineRatio(object):
+    def __init__(
+        self,
+        nknots_m,
+        nknots_z,
+        nknots_q,
+        m1,
+        m1_inj,
+        q,
+        q_inj,
+        z,
+        z_inj,
+        order_m=3,
+        order_q=3,
+        order_z=3,
+        m1min=3.0,
+        m2min=3.0,
+        mmax=100.0,
+        basis_m=BSpline,
+        basis_q=BSpline,
+        basis_z=BSpline,
+        **kwargs,
+    ):
+        self.primary_model = BSplineJointMassRedshift(
+            nknots_m,
+            nknots_z,
+            m1,
+            z,
+            m1_inj,
+            z_inj,
+            mmin=m1min,
+            mmax=mmax,
+            order_m=order_m,
+            order_z=order_z,
+            basis_m=basis_m,
+            basis_z=basis_z,
+            **kwargs,
+        )
+        self.ratio_model = BSplineRatio(
+            nknots_q,
+            q,
+            q_inj,
+            qmin=m2min / mmax,
+            knots=knots_q,
+            order=order_q,
+            prefix=prefix_q,
+            basis=basis_q,
+            **kwargs,
+        )
+
+    def __call__(self, ndim, mcoefs, qcoefs):
+        return self.ratio_model(ndim, qcoefs) * self.primary_model(ndim, mcoefs)
+
+#Testing
+class BSplineSeperableMassRatioChiEff(object):
+    def __init__(
+        self,
+        nknots_q,
+        nknots_chieff,
+        q,
+        q_inj,
+        chieff,
+        chieff_inj,
+        order_q=4,
+        order_chieff=4,
+        qknots = None,
+        chieffknots = None,
+        m1min=3.0,
+        m2min=3.0,
+        mmax=100.0,
+        basis_q=BSpline,
+        basis_chieff=BSpline,
+        **kwargs,
+    ):
+        self.nknots_q = nknots_q
+        self.nknots_chieff = nknots_chieff
+        self.ratio_model = BSplineRatio(
+            nknots_q,
+            q,
+            q_inj,
+            qmin=m2min / mmax,
+            knots=qknots,
+            degree=order_q-1,
+            basis=basis_q,
+            **kwargs,
+        )
+        
+        self.chieff_model = BSplineChiEffective(
+            nknots_chieff,
+            chieff,
+            chieff_inj,
+            knots=chieffknots,
+            degree=order_chieff-1,
+            basis=basis_chieff,
+            **kwargs,
+        )
+
+    def __call__(self, chieffcoefs, qcoefs, pe_samples):
+        return self.ratio_model(qcoefs, pe_samples=pe_samples) * self.chieff_model(chieffcoefs, pe_samples=pe_samples)

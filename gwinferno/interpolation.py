@@ -75,6 +75,7 @@ class BasisSpline(object):
         xrange=(0, 1),
         k=4,
         normalize=True,
+        norm_grid = 1000
     ):
         """
         Class to construct a basis spline (with the M-Spline basis)
@@ -105,7 +106,7 @@ class BasisSpline(object):
         self.normalize = normalize
         self.basis_vols = np.ones(self.N)
         if normalize:
-            self.grid = jnp.linspace(*xrange, 1000)
+            self.grid = jnp.linspace(*xrange, norm_grid)
             self.grid_bases = jnp.array(self.bases(self.grid))
             self.basis_vols = jnp.array([jnp.trapz(self.grid_bases[i, :], self.grid) for i in range(self.N)])
 
@@ -237,6 +238,7 @@ class BSpline(BasisSpline):
         xrange=(0, 1),
         k=4,
         normalize=False,
+        **kwargs
     ):
         """
         Class to construct a basis spline (B-Spline)
@@ -258,6 +260,7 @@ class BSpline(BasisSpline):
             xrange=xrange,
             k=k,
             normalize=normalize,
+            **kwargs
         )
 
     def _bases(self, xs):
@@ -432,11 +435,12 @@ class RectBivariateBasisSpline(object):
         ydf,
         xrange=(0, 1),
         yrange=(0, 1),
-        kx=4,
-        ky=4,
+        xorder=4,
+        yorder=4,
         xbasis=BSpline,
         ybasis=BSpline,
         normalize=True,
+        norm_grid=(1000, 1000)
     ):
         """
         Class to construct a 2D (bivariate) rectangular basis spline
@@ -454,14 +458,14 @@ class RectBivariateBasisSpline(object):
         """
         self.xdf = xdf
         self.ydf = ydf
-        self.x_interpolator = xbasis(xdf, xrange=xrange, k=kx, normalize=False)
-        self.y_interpolator = ybasis(ydf, xrange=yrange, k=ky, normalize=False)
+        self.x_interpolator = xbasis(xdf, xrange=xrange, k=xorder, normalize=False)
+        self.y_interpolator = ybasis(ydf, xrange=yrange, k=yorder, normalize=False)
         self.normalize = normalize
         self.x_bases = None
         self.y_bases = None
         if self.normalize:
-            self.gridx = jnp.linspace(*xrange, 750)
-            self.gridy = jnp.linspace(*yrange, 750)
+            self.gridx = jnp.linspace(*xrange, norm_grid[0])
+            self.gridy = jnp.linspace(*yrange, norm_grid[1])
             self.gxx, self.gyy = jnp.meshgrid(self.gridx, self.gridy)
             self.grid_bases = self.bases(self.gxx, self.gyy)
 
@@ -488,17 +492,18 @@ class RectBivariateBasisSpline(object):
 
         Args:
             xs (array_like): input values to evaluate the X basis spline at
-            xs (array_like): input values to evaluate the Y basis spline at
+            ys (array_like): input values to evaluate the Y basis spline at
 
         Returns:
             array_like: the design matrix evaluated at xs. shape (xdf, ydf, *xs.shape)
         """
-        self.x_bases = self.x_interpolator.bases(xs)
+        self.x_bases = self.x_interpolator.bases(xs) 
         self.y_bases = self.y_interpolator.bases(ys)
         out = jnp.array([[self.x_bases[i] * self.y_bases[j] for i in range(self.xdf)] for j in range(self.ydf)]).reshape(
-            self.xdf, self.ydf, *xs.shape
+             self.xdf, self.ydf, *xs.shape
         )
-        self.reset_bases()
+        self._reset_bases()
+
         return out
 
     def _project(self, bases, coefs):
@@ -512,7 +517,8 @@ class RectBivariateBasisSpline(object):
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
-        return jnp.exp(jnp.einsum("ij...,ij->...", bases, coefs))
+        #NOTE jnp.exp(jnp.einsum("ij...,ij->...", bases, coefs))this would be for the logz2dbasis class
+        return jnp.einsum("ij...,ij->...", bases, coefs)
 
     def project(self, bases, coefs):
         """
@@ -526,3 +532,56 @@ class RectBivariateBasisSpline(object):
             array_like: The linear combination of the basis components given the coefficients
         """
         return self._project(bases, coefs) * self.norm_2d(coefs)
+
+class LogZRectBivariateBasisSpline(RectBivariateBasisSpline):
+    def __init__(
+            self,
+            xdf,
+            ydf,
+            xrange=(0, 1),
+            yrange=(0, 1),
+            xorder=4,
+            yorder=4,
+            xbasis=BSpline,
+            ybasis=BSpline,
+            normalize=True,
+            norm_grid=(1000, 1000)
+        ):
+            """
+            Class to construct a 2D (bivariate) rectangular basis spline
+
+            Args:
+                xdf (int): number of degrees of freedom for the spline in the X direction
+                ydf (int): number of degrees of freedom for the spline in the Y direction
+                xrange (tuple, optional): domain of X spline. Defaults to (0, 1).
+                yrange (tuple, optional): domain of Y spline. Defaults to (0, 1).
+                kx (int, optional): order of the X spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+                ky (int, optional): order of the Y spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+                xbasis (object, optional): Choice of basis to use for the X spline. Defaults to BSpline.
+                ybasis (object, optional): Choice of basis to use for the Y spline. Defaults to BSpline.
+                normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
+            """
+            super().__init__(
+                    xdf,
+                    ydf,
+                    xrange=xrange,
+                    yrange=yrange,
+                    xorder=xorder,
+                    yorder=yorder,
+                    xbasis=xbasis,
+                    ybasis=ybasis,
+                    normalize=normalize,
+                    norm_grid = norm_grid
+                )
+    def _project(self, bases, coefs):
+        """
+        _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline
+
+        Args:
+            bases (array_like): The set of basis components or design matrix to project onto
+            coefs (array_like): coefficients for the basis components
+
+        Returns:
+            array_like: The linear combination of the basis components given the coefficients
+        """
+        return jnp.exp(jnp.einsum("ij...,ij->...", bases, coefs))

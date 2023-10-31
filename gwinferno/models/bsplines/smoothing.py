@@ -22,7 +22,7 @@ def apply_difference_prior(coefs, inv_var, degree=1):
     return -0.5 * inv_var * jnp.dot(delta_c, delta_c.T)
 
 
-def apply_twod_difference_prior(coefs, inv_var_row, inv_var_col, degree_row=1, degree_col=1):
+def apply_2d_difference_prior(coefs, inv_var_row, inv_var_col, degree_row=1, degree_col=1):
     """
     Computes the difference penalty for a 2d B-spline.
     Uses equation 4.19 from Practical Smoothing by Eilers and Marx.
