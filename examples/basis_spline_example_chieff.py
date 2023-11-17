@@ -23,11 +23,8 @@ from gwinferno.postprocess.plotting import plot_m1_vs_z_ppc
 from gwinferno.postprocess.plotting import plot_mass_dist
 from gwinferno.postprocess.plotting import plot_rofz
 from gwinferno.postprocess.plotting import plot_chieff_dist
-from gwinferno.preprocess.data_collection import load_injections
-from gwinferno.preprocess.data_collection import load_posterior_samples
 
 az.style.use("arviz-darkgrid")
-
 
 def load_parser():
     parser = load_base_parser()
@@ -80,7 +77,9 @@ def setup_redshift_model(injdata, pedata, pmap):
 
 
 def setup(args):
-    df = dd.io.load("./saved-pe-and-injs/posterior_samples_and_injections_chi_effective.h5")
+    #Provide location to PE and injection samples below.
+    inj_pe_path = "./saved-pe-and-injs/posterior_samples_and_injections_chi_effective.h5"
+    df = dd.io.load(inj_pe_path)
     pedata = df['pedata']
     injdata = df['injdata']
     param_map = df['param_map']
