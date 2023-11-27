@@ -240,16 +240,18 @@ def hierarchical_likelihood(
             jnp.inf,
         )
 
-    sel = numpyro.deterministic(
-        "selection_factor",
-        jnp.where(jnp.isinf(vt_factor), jnp.nan_to_num(-jnp.inf), -Nobs * jnp.log(vt_factor)),
-    )
-    numpyro.factor("selection_factor", sel)
-
+    sel = numpyro.deterministic("selection_factor", -Nobs * jnp.log(vt_factor))
     sumlogBFs = numpyro.deterministic("sum_logBFs", jnp.sum(logBFs))
+    numpyro.deterministic("log_l", sel + sumlogBFs)
+
+    sel = jnp.nan_to_num(sel, nan=-jnp.inf, posinf=-jnp.inf, neginf=-jnp.inf)
+    numpyro.factor("sel_factor", sel)
+
+    sumlogBFs = jnp.nan_to_num(sumlogBFs, nan=-jnp.inf, posinf=-jnp.inf, neginf=-jnp.inf)
     numpyro.factor("sum_log_BFs", sumlogBFs)
 
     if min_neff_cut:
+        logn_effs = jnp.nan_to_num(logn_effs, nan=-jnp.inf, posinf=-jnp.inf, neginf=-jnp.inf)
         rej_min_neff = numpyro.deterministic(
             "min_neff_rejection",
             jnp.where(
@@ -258,8 +260,9 @@ def hierarchical_likelihood(
                 0,
             ),
         )
-        numpyro.factor("min_neff_rejection", rej_min_neff)
+        numpyro.factor("min_neff_reject", rej_min_neff)
     if min_neff_inj_cut:
+        n_eff_inj = jnp.nan_to_num(n_eff_inj, nan=-jnp.inf, posinf=-jnp.inf, neginf=-jnp.inf)
         rej_min_neff_inj = numpyro.deterministic(
             "min_neff_inj_rejection",
             jnp.where(
@@ -268,7 +271,7 @@ def hierarchical_likelihood(
                 0,
             ),
         )
-        numpyro.factor("min_neff_inj_rejection", rej_min_neff_inj)
+        numpyro.factor("min_neff_inj_reject", rej_min_neff_inj)
 
     if posterior_predictive_check:
         if param_names is not None and injdata is not None and pedata is not None:
