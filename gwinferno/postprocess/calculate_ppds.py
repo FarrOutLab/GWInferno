@@ -171,7 +171,7 @@ def calculate_m1q_bspline_ppds(
         return r * p_m * pop_frac / jnp.trapz(p_m, ms), r * p_q * pop_frac / jnp.trapz(p_q, qs)
 
     calc_pdf = jit(calc_pdf)
-    _ = calc_pdf(mcoefs[0], qcoefs[0], rate[0], pop_frac[0][0])
+    # _ = calc_pdf(mcoefs[0], qcoefs[0], rate[0], pop_frac[0][0])
     # loop through hyperposterior samples
     if isinstance(pop_frac, int):
         for ii in trange(mcoefs.shape[0]):
