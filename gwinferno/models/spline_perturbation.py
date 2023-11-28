@@ -328,11 +328,11 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
         Returns:
             _type_:
         """
-        pz = self.dVdc_ * jnp.power(1.0 + self.zs, lamb - 1)
+        pz = self.dVdz_ * jnp.power(1.0 + self.zs, lamb - 1)
         pz *= jnp.exp(self.interpolator.project(self.norm_design_matrix, cs))
         return jnp.trapz(pz, self.zs)
 
-    def prob(self, z: jnp.ndarray, dV_cdz: jnp.ndarray, lamb: float, cs: jnp.ndarray):
+    def prob(self, z: jnp.ndarray, dVdz: jnp.ndarray, lamb: float, cs: jnp.ndarray):
         """
         prob Returns probability
 
@@ -346,7 +346,7 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
             _type_:
         """
         ndim = len(z.shape)
-        return dV_cdz * jnp.power(1.0 + z, lamb - 1.0) * jnp.exp(self.interpolator.project(self.dmats[ndim - 1], cs))
+        return dVdz * jnp.power(1.0 + z, lamb - 1.0) * jnp.exp(self.interpolator.project(self.dmats[ndim - 1], cs))
 
     def __call__(self, z: jnp.ndarray, lamb: float, cs: jnp.ndarray) -> jnp.ndarray:
         """
@@ -361,9 +361,9 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
             jnp.ndarray:
         """
         ndim = len(z.shape)
-        dV_cdz = self.dV_cdz[ndim - 1]
+        dVdz = self.dVdzs[ndim - 1]
         return jnp.where(
             jnp.less_equal(z, self.zmax),
-            self.prob(z, dV_cdz, lamb, cs) / self.normalization(lamb, cs),
+            self.prob(z, dVdz, lamb, cs) / self.normalization(lamb, cs),
             0,
         )
