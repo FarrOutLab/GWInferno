@@ -246,7 +246,7 @@ def hierarchical_likelihood(
         numpyro.factor(
             "log_likelihood",
             jnp.where(
-                jnp.isnan(log_l) | jnp.isnan(jnp.min(logn_effs)) | jnp.less_equal(jnp.exp(jnp.min(logn_effs)), 4*Nobs),
+                jnp.isnan(log_l) | jnp.isnan(jnp.min(logn_effs)) | jnp.less_equal(jnp.exp(jnp.min(logn_effs)), Nobs),
                 -1000,
                 log_l,
             ),
