@@ -9,17 +9,17 @@ import h5py
 import jax.numpy as jnp
 import numpy as np
 import pandas as pd
-from tqdm import trange
 import xarray as xr
+from tqdm import trange
 
 from ..cosmology import PLANCK_2018_Cosmology as cosmo
+from ..types.data import GWInfernoData
 from .conversions import chieff_from_q_component_spins
 from .conversions import chip_from_q_component_spins
 from .priors import chi_effective_prior_from_isotropic_spins
 from .priors import joint_prior_from_isotropic_spins
 from .selection import convert_component_spin_injections_to_chieff
 from .selection import load_injections
-from ..types.data import GWInfernoData
 
 GWTC1 = [
     "GW150914",
@@ -236,33 +236,38 @@ def setup_posterior_samples_and_injections(data_dir, inj_file, param_names=None,
         injdata = np.array([injections[k] for k in param_names])
         if save:
 
-            pe_coords = ['param', 'pe_event', 'draw']
-            inj_coords = ['param', 'inj_event']
+            pe_coords = ["param", "pe_event", "draw"]
+            inj_coords = ["param", "inj_event"]
 
             pexr = xr.Dataset(
-                data_vars = dict(
-                    data = (pe_coords, pedata),
+                data_vars=dict(
+                    data=(pe_coords, pedata),
                 ),
-                coords = dict(
-                    param = param_names,
-                    pe_event = range(pedata.shape[1]),
-                    draw = range(pedata.shape[2]),
+                coords=dict(
+                    param=param_names,
+                    pe_event=range(pedata.shape[1]),
+                    draw=range(pedata.shape[2]),
                 ),
-                attrs = dict(num_events = pedata.shape[1], names = names)
+                attrs=dict(num_events=pedata.shape[1], names=names),
             )
 
             injxr = xr.Dataset(
-                data_vars = dict(
-                    data = (inj_coords, injdata),
+                data_vars=dict(
+                    data=(inj_coords, injdata),
                 ),
-                coords = dict(
-                    param = param_names,
-                    inj_event = range(injdata.shape[1]),
+                coords=dict(
+                    param=param_names,
+                    inj_event=range(injdata.shape[1]),
                 ),
-                attrs = dict(total_generated_injections = injections["total_generated"], injection_analysis_time = injections["analysis_time"], num_events = pedata.shape[1], names = names)
+                attrs=dict(
+                    total_generated_injections=injections["total_generated"],
+                    injection_analysis_time=injections["analysis_time"],
+                    num_events=pedata.shape[1],
+                    names=names,
+                ),
             )
 
-            GWInfernoData(ligo_posterior_samples = pexr, ligo_injections = injxr).to_netcdf("posterior_samples_and_injections_spin_magnitude.h5")
+            GWInfernoData(ligo_posterior_samples=pexr, ligo_injections=injxr).to_netcdf("posterior_samples_and_injections_spin_magnitude.h5")
 
         pedata, new_pmap, new_pnames = convert_component_spin_posteriors_to_chieff(pedata, param_map, chip=chi_p)
         injdata, new_pmap = convert_component_spin_injections_to_chieff(injdata, param_map, chip=chi_p)
@@ -272,34 +277,40 @@ def setup_posterior_samples_and_injections(data_dir, inj_file, param_names=None,
         injdata = jnp.array(pedata)
         if save:
 
-            pe_coords = ['param', 'pe_event', 'draw']
-            inj_coords = ['param', 'inj_event']
+            pe_coords = ["param", "pe_event", "draw"]
+            inj_coords = ["param", "inj_event"]
 
             pexr = xr.Dataset(
-                data_vars = dict(
-                    data = (pe_coords, pedata),
+                data_vars=dict(
+                    data=(pe_coords, pedata),
                 ),
-                coords = dict(
-                    param = param_names,
-                    pe_event = range(pedata.shape[1]),
-                    draw = range(pedata.shape[2]),
+                coords=dict(
+                    param=param_names,
+                    pe_event=range(pedata.shape[1]),
+                    draw=range(pedata.shape[2]),
                 ),
-                attrs = dict(num_events = pedata.shape[1], names = names, param_nums = [i for i,p in enumerate(param_names)])
+                attrs=dict(num_events=pedata.shape[1], names=names, param_nums=[i for i, p in enumerate(param_names)]),
             )
 
             injxr = xr.Dataset(
-                data_vars = dict(
-                    data = (inj_coords, injdata),
+                data_vars=dict(
+                    data=(inj_coords, injdata),
                 ),
-                coords = dict(
-                    param = param_names,
-                    inj_event = range(injdata.shape[1]),
+                coords=dict(
+                    param=param_names,
+                    inj_event=range(injdata.shape[1]),
                 ),
-                attrs = dict(total_generated_injections = injections["total_generated"], injection_analysis_time = injections["analysis_time"], num_events = pedata.shape[1], names = names, param_nums = [i for i,p in enumerate(param_names)])
+                attrs=dict(
+                    total_generated_injections=injections["total_generated"],
+                    injection_analysis_time=injections["analysis_time"],
+                    num_events=pedata.shape[1],
+                    names=names,
+                    param_nums=[i for i, p in enumerate(param_names)],
+                ),
             )
 
-            GWInfernoData(ligo_posterior_samples = pexr, ligo_injections = injxr).to_netcdf("posterior_samples_and_injections_chi_effective.h5")
-            
+            GWInfernoData(ligo_posterior_samples=pexr, ligo_injections=injxr).to_netcdf("posterior_samples_and_injections_chi_effective.h5")
+
     else:
         pedata = jnp.array([[pe_samples[e][p] for e in names] for p in param_names])
         injdata = jnp.array([injections[k] for k in param_names])

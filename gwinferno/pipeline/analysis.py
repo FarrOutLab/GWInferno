@@ -243,16 +243,15 @@ def hierarchical_likelihood(
     sumlogBFs = numpyro.deterministic("sum_logBFs", jnp.sum(logBFs))
     log_l = numpyro.deterministic("log_l", sel + sumlogBFs)
 
-    #TODO: clean this up, make value of min_neff a fucntion kwarg
+    # TODO: clean this up, make value of min_neff a fucntion kwarg
     if min_neff_cut:
 
         mins = jnp.min(jnp.nan_to_num(logn_effs))
-        cut_log_l = numpyro.deterministic("neff_less_4obs", jnp.where(jnp.less_equal(jnp.exp(mins), Nobs), jnp.nan_to_num(-jnp.inf),
-                jnp.nan_to_num(log_l)))
+        cut_log_l = numpyro.deterministic(
+            "neff_less_4obs", jnp.where(jnp.less_equal(jnp.exp(mins), Nobs), jnp.nan_to_num(-jnp.inf), jnp.nan_to_num(log_l))
+        )
 
-        numpyro.factor(
-            "log_likelihood",
-            cut_log_l)
+        numpyro.factor("log_likelihood", cut_log_l)
 
     else:
         numpyro.factor(
@@ -367,7 +366,7 @@ def hierarchical_likelihood_in_log(
     sumlogBFs = numpyro.deterministic("sum_logBFs", jnp.sum(logBFs))
     log_l = numpyro.deterministic("log_l", sel + sumlogBFs)
 
-    #TODO: Clean this up, make min_neff a function kwarg
+    # TODO: Clean this up, make min_neff a function kwarg
     if min_neff_cut:
         numpyro.factor(
             "log_likelihood",

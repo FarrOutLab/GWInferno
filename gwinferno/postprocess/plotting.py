@@ -97,7 +97,7 @@ def plot_ppc_brontosaurus(po, Nobs, m1min, mmax=100, zmax=1.3, chieff=False, par
 
     for ax, param in zip(axs, params):
 
-        #TODO: remove idata flag and replace logic to recognize the different file types automatically
+        # TODO: remove idata flag and replace logic to recognize the different file types automatically
         if idata:
             observed = np.array([po[f"{param}_obs_event_{i}"].values[0] for i in range(Nobs)])
             synthetic = np.array([po[f"{param}_pred_event_{i}"].values[0] for i in range(Nobs)])
@@ -154,7 +154,7 @@ def plot_ppc_brontosaurus(po, Nobs, m1min, mmax=100, zmax=1.3, chieff=False, par
             np.median(np.sort(synthetic, axis=0), axis=1),
             np.linspace(0, 1, len(synthetic[:, 0])),
             color="tab:red",
-            label='median',
+            label="median",
             alpha=0.9,
             lw=4,
         )
