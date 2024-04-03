@@ -115,3 +115,62 @@ def checkpoint(
 
     else:
         return first_10percent_idata.posterior
+
+
+
+def new_checkpoint(
+    kernel,
+    rng_key,
+    file_label,
+    file_path="",
+    num_warmup=50000,
+    max_samples=100000,
+    split = 10,
+    num_chains=1,
+    thinning=1,
+    model_kwargs={},
+    mcmc_kwargs={},
+):
+
+    num_samples = int(max_samples / split)
+    MCMC_RNG, PRIOR_RNG, _RNG = random.split(rng_key, num=3)
+
+    mcmc = MCMC(kernel, thinning=thinning, num_warmup=num_warmup, num_samples=num_samples, num_chains=num_chains, **mcmc_kwargs)
+    mcmc.run(MCMC_RNG, **model_kwargs)
+
+    idata = az.from_numpyro(mcmc)
+    mass_matrix = mcmc._last_state.adapt_state.inverse_mass_matrix
+    step_size = mcmc._last_state.adapt_state.step_size
+
+    key = list(mass_matrix.keys())[0]
+
+    matrix = xr.Dataset({'mass_matrix': (list(key), np.asarray(mass_matrix[key]))}, attrs = {'step_size': step_size})
+
+    GWInfernoData(posterior = idata.posterior, mass_matrix = matrix).to_netcdf(file_path + file_label + f"_{num_samples}x{count}_dataset.h5")
+    print(f"checkpoint file {count} saved")
+    del matrix, idata
+    count = 1
+    while count < split:
+
+        mcmc.post_warmup_state = mcmc.last_state
+        mcmc.run(mcmc.post_warmup_state.rng_key, **model_kwargs)
+        new_mass_matrix = mcmc._last_state.adapt_state.inverse_mass_matrix
+        new_step_size = mcmc._last_state.adapt_state.step_size
+        count += 1
+        idata = az.from_numpyro(mcmc)
+        matrix = xr.Dataset({'mass_matrix': (list(key), np.asarray(new_mass_matrix[key]))}, attrs = {'step_size': new_step_size})
+        GWInfernoData(posterior = idata.posterior, mass_matrix = matrix).to_netcdf(file_path + f'{file_label}_mass_matrix_{count}.h5')
+
+        del matrix, idata
+
+
+    print('merging data')
+    dataset = GWInfernoData.from_netcdf(file_path + file_label + f"_{num_samples}x1_dataset.h5")
+    dataset = dataset.posterior
+    for i in np.arange(2, count + 1):
+        dat = GWInfernoData.from_netcdf(file_path + file_label + f"_{num_samples}x{i}_dataset.h5")
+        dat.posterior["draw"] = dat.posterior["draw"] + num_samples * (i - 1)
+        dataset = xr.merge([dataset, dat.posterior])
+    GWInfernoData(posterior=dataset).to_netcdf(file_path + file_label + f"_{num_samples*count}s_merged{count}_dataset.h5")
+
+    return dataset
