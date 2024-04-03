@@ -78,7 +78,7 @@ def plot_iid_spin_dist(pmags, ptilts, mags, tilts, priors=None):
     return fig
 
 
-def plot_ppc_brontosaurus(po, Nobs, m1min, mmax=100, zmax=1.3, chieff=False, params=None):
+def plot_ppc_brontosaurus(po, Nobs, m1min, mmax=100, zmax=1.3, chieff=False, params=None, idata=False):
     if params is None:
         if chieff:
             params = ["mass_1", "mass_ratio", "redshift", "chi_eff"]
@@ -97,8 +97,13 @@ def plot_ppc_brontosaurus(po, Nobs, m1min, mmax=100, zmax=1.3, chieff=False, par
 
     for ax, param in zip(axs, params):
 
-        observed = np.array([po[f"{param}_obs_event_{i}"] for i in range(Nobs)])
-        synthetic = np.array([po[f"{param}_pred_event_{i}"] for i in range(Nobs)])
+        #TODO: remove idata flag and replace logic to recognize the different file types automatically
+        if idata:
+            observed = np.array([po[f"{param}_obs_event_{i}"].values[0] for i in range(Nobs)])
+            synthetic = np.array([po[f"{param}_pred_event_{i}"].values[0] for i in range(Nobs)])
+        else:
+            observed = np.array([po[f"{param}_obs_event_{i}"] for i in range(Nobs)])
+            synthetic = np.array([po[f"{param}_pred_event_{i}"] for i in range(Nobs)])
 
         ax.fill_betweenx(
             y=np.linspace(0, 1, len(observed[:, 0])),
@@ -127,7 +132,7 @@ def plot_ppc_brontosaurus(po, Nobs, m1min, mmax=100, zmax=1.3, chieff=False, par
             y=np.linspace(0, 1, len(synthetic[:, 0])),
             x1=np.quantile(np.sort(synthetic, axis=0), 0.05, axis=1),
             x2=np.quantile(np.sort(synthetic, axis=0), 0.95, axis=1),
-            color="tab:blue",
+            color="tab:red",
             alpha=0.3,
             label="Predicted",
         )
@@ -148,7 +153,8 @@ def plot_ppc_brontosaurus(po, Nobs, m1min, mmax=100, zmax=1.3, chieff=False, par
         ax.plot(
             np.median(np.sort(synthetic, axis=0), axis=1),
             np.linspace(0, 1, len(synthetic[:, 0])),
-            color="tab:blue",
+            color="tab:red",
+            label='median',
             alpha=0.9,
             lw=4,
         )
