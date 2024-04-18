@@ -16,7 +16,8 @@ from .single import BSplineSpinTilt
 
 
 class BSplineIIDSpinMagnitudes(object):
-    """Class to construct a spin magnitude B-Spline model for both binary components, assuming they are indipendently and identically distributed (IID).
+    """Class to construct a spin magnitude B-Spline model for both binary components, assuming they
+        are independently and identically distributed (IID).
 
     Args:
         n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
@@ -58,8 +59,9 @@ class BSplineIIDSpinMagnitudes(object):
         )
 
     def __call__(self, coefs, pe_samples=True):
-        """will evalute the joint probability density distribution for the primary and secondary spin magnitude along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+        """will evaluate the joint probability density distribution for the primary and secondary spin
+        magnitude along the posterior or injection samples. Use flag `pe_samples` to specify which type
+        of samples are being evaluated (pe or injection).
 
         Args:
             coefs (array_like): basis spline coefficients
@@ -124,8 +126,9 @@ class BSplineIndependentSpinMagnitudes(object):
         )
 
     def __call__(self, pcoefs, scoefs, pe_samples=True):
-        """will evalute the joint probability density distribution for the primary and secondary spin magnitude along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+        """will evaluate the joint probability density distribution for the primary and secondary spin
+        magnitude along the posterior or injection samples. Use flag `pe_samples` to specify which type
+        of samples are being evaluated (pe or injection).
 
         Args:
             pcoefs (array_like): primary component spin magnitude basis spline coefficients

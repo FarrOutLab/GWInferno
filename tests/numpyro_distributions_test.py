@@ -2,7 +2,9 @@ import unittest
 
 import jax.numpy as jnp
 import numpy as np
+from astropy.cosmology import Planck15
 from jax import random
+from jax.scipy.integrate import trapezoid
 from scipy.integrate import cumtrapz as scipy_cumtrapz
 from scipy.stats import truncnorm
 
@@ -12,8 +14,6 @@ from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
 from gwinferno.numpyro_distributions import BSplineDistribution
 from gwinferno.numpyro_distributions import Cosine
-from gwinferno.numpyro_distributions import CubicInterpolatedPowerlaw
-from gwinferno.numpyro_distributions import LinearInterpolatedPowerlaw
 from gwinferno.numpyro_distributions import Powerlaw
 from gwinferno.numpyro_distributions import PowerlawRedshift
 from gwinferno.numpyro_distributions import PSplineCoeficientPrior
@@ -57,7 +57,7 @@ class TestNPDistributions(unittest.TestCase):
         d = Cosine(minimum=-np.pi / 2.0, maximum=np.pi / 2.0)
         grid = np.linspace(-np.pi / 2.0, np.pi / 2.0, 1000)
         lpdfs = d.log_prob(grid)
-        self.assertAlmostEqual(jnp.trapz(jnp.exp(lpdfs), grid), 1.0, places=4)
+        self.assertAlmostEqual(trapezoid(jnp.exp(lpdfs), grid), 1.0, places=4)
         samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
         self.assertTrue(jnp.all((samps >= -np.pi / 2.0) & (samps <= np.pi / 2.0)))
 
@@ -65,38 +65,24 @@ class TestNPDistributions(unittest.TestCase):
         d = Sine(minimum=0.0, maximum=np.pi)
         grid = np.linspace(0, np.pi, 1000)
         lpdfs = d.log_prob(grid)
-        self.assertAlmostEqual(jnp.trapz(jnp.exp(lpdfs), grid), 1.0, places=4)
+        self.assertAlmostEqual(trapezoid(jnp.exp(lpdfs), grid), 1.0, places=4)
         samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
         self.assertTrue(jnp.all((samps >= 0.0) & (samps <= np.pi)))
 
     def test_powerlaw(self):
         d = Powerlaw(alpha=1.0, minimum=0.001, maximum=1.0)
         lpdfs = d.log_prob(self.grid)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.grid)
+        norm = trapezoid(jnp.exp(lpdfs), self.grid)
         self.assertAlmostEqual(norm, 1.0, places=4)
         samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
         self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
 
     def test_powerlaw_redshift(self):
-        d = PowerlawRedshift(lamb=0.0, minimum=0.001, maximum=1.0)
+        z_grid = jnp.linspace(0.001, 1, 1000)
+        dVcdz_grid = Planck15.differential_comoving_volume(z_grid).value * 4.0 * jnp.pi
+        d = PowerlawRedshift(lamb=0.0, maximum=1.0, zgrid=z_grid, dVcdz=dVcdz_grid)
         lpdfs = d.log_prob(self.grid)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.grid)
-        self.assertAlmostEqual(norm, 1.0, places=4)
-        samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
-        self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
-
-    def test_linear_interpolated_powerlaw(self):
-        d = LinearInterpolatedPowerlaw(alpha=1.0, minimum=0.001, maximum=1.0, xinterps=self.x_interps, yinterps=self.y_interps)
-        lpdfs = d.log_prob(self.grid)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.grid)
-        self.assertAlmostEqual(norm, 1.0, places=4)
-        samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
-        self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
-
-    def test_cubic_interpolated_powerlaw(self):
-        d = CubicInterpolatedPowerlaw(alpha=1.0, minimum=0.001, maximum=1.0, xinterps=self.x_interps, yinterps=self.y_interps)
-        lpdfs = d.log_prob(self.grid)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.grid)
+        norm = trapezoid(jnp.exp(lpdfs), self.grid)
         self.assertAlmostEqual(norm, 1.0, places=4)
         samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
         self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
@@ -105,7 +91,7 @@ class TestNPDistributions(unittest.TestCase):
         grid_dmat = BSpline(20, normalize=True).bases(self.gr)
         d = BSplineDistribution(minimum=0.0, maximum=1.0, cs=self.cs, grid=self.gr, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.gr)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.gr)
+        norm = trapezoid(jnp.exp(lpdfs), self.gr)
         self.assertAlmostEqual(norm, 1.0, places=4)
         samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
         self.assertTrue(jnp.all((samps >= 0.0) & (samps <= 1.0)))
@@ -115,7 +101,7 @@ class TestNPDistributions(unittest.TestCase):
         grid_dmat = BSpline(20, normalize=True).bases(self.gr)
         d = BSplineDistribution(minimum=0.0, maximum=1.0, cs=cs, grid=self.gr, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.gr)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.gr)
+        norm = trapezoid(jnp.exp(lpdfs), self.gr)
         self.assertAlmostEqual(norm, 1.0, places=4)
         samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
         self.assertTrue(jnp.all((samps >= 0.0) & (samps <= 1.0)))
@@ -124,7 +110,7 @@ class TestNPDistributions(unittest.TestCase):
         grid_dmat = LogYBSpline(20, normalize=True).bases(self.gr)
         d = BSplineDistribution(minimum=0.0, maximum=1.0, cs=self.cs_pn, grid=self.gr, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.gr)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.gr)
+        norm = trapezoid(jnp.exp(lpdfs), self.gr)
         self.assertAlmostEqual(norm, 1.0, places=4)
         samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
         self.assertTrue(jnp.all((samps >= 0.0) & (samps <= 1.0)))
@@ -133,7 +119,7 @@ class TestNPDistributions(unittest.TestCase):
         grid_dmat = LogXBSpline(20, normalize=True).bases(self.grid)
         d = BSplineDistribution(minimum=0.001, maximum=1.0, cs=self.cs, grid=self.grid, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.grid)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.grid)
+        norm = trapezoid(jnp.exp(lpdfs), self.grid)
         self.assertAlmostEqual(norm, 1.0, places=4)
         samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
         self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
@@ -142,7 +128,7 @@ class TestNPDistributions(unittest.TestCase):
         grid_dmat = LogXLogYBSpline(20, normalize=True).bases(self.grid)
         d = BSplineDistribution(minimum=0.001, maximum=1.0, cs=self.cs_pn, grid=self.grid, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.grid)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.grid)
+        norm = trapezoid(jnp.exp(lpdfs), self.grid)
         self.assertAlmostEqual(norm, 1.0, places=4)
         samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
         self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))

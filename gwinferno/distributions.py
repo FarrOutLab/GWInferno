@@ -13,7 +13,7 @@ This file contains some functions copied from https://github.com/ColmTalbot/gwpo
 """
 
 
-def log_logistic_unit(x, x0):
+def log_logistic_unit(x, x0, sgn=1, sc=4):
     """
     log_logistic_unit soft truncate a distribution with the log logistic unit
 
@@ -26,10 +26,16 @@ def log_logistic_unit(x, x0):
     """
     diff = x - x0
     return jnp.where(
-        jnp.greater(diff, 0),
-        -jnp.log1p(jnp.exp(-4 * diff)),
-        4 * diff - jnp.log1p(jnp.exp(4 * diff)),
+        jnp.less(diff * sgn * sc, 0),
+        jnp.log(logistic_unit(x, x0, sgn=sgn, sc=sc)),
+        -sgn * sc * (x - x0) + jnp.log(logistic_unit(x, x0, sgn=-sgn, sc=sc)),
     )
+    # diff = x - x0
+    # return jnp.where(
+    #     jnp.greater(diff, 0),
+    #     -jnp.log1p(jnp.exp(-4 * diff)),
+    #     4 * diff - jnp.log1p(jnp.exp(4 * diff)),
+    # )
 
 
 def logistic_unit(x, x0, sgn=1, sc=4):

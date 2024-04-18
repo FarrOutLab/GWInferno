@@ -19,7 +19,17 @@ def apply_difference_prior(coefs, inv_var, degree=1):
         float: log of the difference prior
     """
     delta_c = jnp.diff(coefs, n=degree)
-    return -0.5 * inv_var * jnp.dot(delta_c, delta_c.T)
+    prior = -0.5 * inv_var * jnp.dot(delta_c, delta_c.T)
+    return prior
+
+
+def adaptive_difference_prior(coefs, inv_var, delta, degree=1):
+    m = coefs.shape[0]
+    mat = jnp.eye(m, k=degree) * delta
+    off = mat.T + mat
+    pen_matrix = jnp.diag(jnp.matmul(off, jnp.eye(m, k=-1) + jnp.eye(m, k=1))) * jnp.eye(m) - off
+    prior = -0.5 * inv_var * jnp.dot(coefs.T, jnp.dot(pen_matrix, coefs))
+    return prior
 
 
 def apply_twod_difference_prior(coefs, inv_var_row, inv_var_col, degree_row=1, degree_col=1):

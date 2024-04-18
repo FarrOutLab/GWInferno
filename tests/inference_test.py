@@ -8,6 +8,7 @@ import numpy as np
 import numpyro
 import numpyro.distributions as dist
 from jax import random
+from jax.scipy.integrate import trapezoid
 from numpyro.infer import MCMC
 from numpyro.infer import NUTS
 
@@ -26,7 +27,7 @@ def norm_mass_model(alpha, beta, mmin, mmax):
     qs = jnp.linspace(0.01, 1, 300)
     mm, qq = jnp.meshgrid(ms, qs)
     p_mq = powerlaw_primary_ratio_pdf(mm, qq, alpha=alpha, beta=beta, mmin=mmin, mmax=mmax)
-    return jnp.trapz(jnp.trapz(p_mq, qs, axis=0), ms)
+    return trapezoid(trapezoid(p_mq, qs, axis=0), ms)
 
 
 class TestTruncatedModelInference(unittest.TestCase):

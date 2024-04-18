@@ -9,6 +9,7 @@ import numpyro.distributions as dist
 from astropy.cosmology import Planck15
 from jax import jit
 from jax import random
+from jax.scipy.integrate import trapezoid
 from jax.scipy.special import logsumexp
 from numpyro.infer import SVI
 from numpyro.infer import Trace_ELBO
@@ -141,7 +142,7 @@ class TotalVTCalculator(object):
         Returns:
             (float): total hypervolume out to z=zmax. In units of Gpc^3*yr
         """
-        return jnp.trapz(self.dVdcs * jnp.power(1 + self.zs, lamb - 1), self.zs)
+        return trapezoid(self.dVdcs * jnp.power(1 + self.zs, lamb - 1), self.zs)
 
 
 def hierarchical_likelihood(
@@ -242,15 +243,17 @@ def hierarchical_likelihood(
     )
     sumlogBFs = numpyro.deterministic("sum_logBFs", jnp.sum(logBFs))
     log_l = numpyro.deterministic("log_l", sel + sumlogBFs)
+
+    # TODO: clean this up, make value of min_neff a fucntion kwarg
     if min_neff_cut:
-        numpyro.factor(
-            "log_likelihood",
-            jnp.where(
-                jnp.isnan(log_l) | jnp.less_equal(jnp.exp(jnp.min(logn_effs)), Nobs),
-                jnp.nan_to_num(-jnp.inf),
-                jnp.nan_to_num(log_l),
-            ),
+
+        mins = jnp.min(jnp.nan_to_num(logn_effs))
+        cut_log_l = numpyro.deterministic(
+            "neff_less_4obs", jnp.where(jnp.less_equal(jnp.exp(mins), Nobs), jnp.nan_to_num(-jnp.inf), jnp.nan_to_num(log_l))
         )
+
+        numpyro.factor("log_likelihood", cut_log_l)
+
     else:
         numpyro.factor(
             "log_likelihood",
@@ -282,7 +285,7 @@ def hierarchical_likelihood(
 
                 if marginal_qs:
                     for i in range(len(indv_weights)):
-                        numpyro.deterministic(f"cat_frac_subpop_{i+1}_event_{ev}", indv_weights[i][ev, obs_idx] / pe_weights[ev, obs_idx])
+                        numpyro.deterministic(f"cat_frac_subpop_{i + 1}_event_{ev}", indv_weights[i][ev, obs_idx] / pe_weights[ev, obs_idx])
 
                 pred_idx = random.choice(k2, inj_weights.shape[0], p=inj_weights / jnp.sum(inj_weights))
                 for p in param_names:
@@ -363,11 +366,13 @@ def hierarchical_likelihood_in_log(
     )
     sumlogBFs = numpyro.deterministic("sum_logBFs", jnp.sum(logBFs))
     log_l = numpyro.deterministic("log_l", sel + sumlogBFs)
+
+    # TODO: Clean this up, make min_neff a function kwarg
     if min_neff_cut:
         numpyro.factor(
             "log_likelihood",
             jnp.where(
-                jnp.isnan(log_l) | jnp.less_equal(jnp.exp(jnp.min(logn_effs)), 10),
+                jnp.isnan(log_l) | jnp.less_equal(jnp.exp(jnp.min(logn_effs)), Nobs),
                 jnp.nan_to_num(-jnp.inf),
                 jnp.nan_to_num(log_l),
             ),
@@ -427,7 +432,8 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
         for k, v in model_dict.items():
             if isinstance(v, PopMixtureModel):
                 components = [
-                    v.components[i](**{p: hyper_params[f"{k}_component_{i+1}_{p}"] for p in v.component_params[i]}) for i in range(len(v.components))
+                    v.components[i](**{p: hyper_params[f"{k}_component_{i + 1}_{p}"] for p in v.component_params[i]})
+                    for i in range(len(v.components))
                 ]
                 mixing_dist = v.mixing_dist(**{p: hyper_params[f"{k}_mixture_dist_{p}"] for p in v.mixing_params})
                 pop_models[k] = v.model(mixing_dist, components)

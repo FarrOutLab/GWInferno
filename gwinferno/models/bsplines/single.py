@@ -5,6 +5,7 @@ a module that stores 1D population models constructed from bsplines
 import jax.numpy as jnp
 import numpy as np
 from astropy.cosmology import Planck15
+from jax.scipy.integrate import trapezoid
 
 from ...interpolation import BSpline
 
@@ -415,7 +416,7 @@ class BSplineRedshift(Base1DBSplineModel):
         Returns:
             float: the redshift normalization coefficient.
         """
-        return jnp.trapz(
+        return trapezoid(
             self.dVcdzgrid / (1 + self.grid) * jnp.einsum("i...,i->...", self.grid_bases, coefs),
             self.grid,
         )

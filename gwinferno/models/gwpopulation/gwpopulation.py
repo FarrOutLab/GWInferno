@@ -1,6 +1,7 @@
 import jax.numpy as jnp
 import numpy as np
 from astropy.cosmology import Planck15
+from jax.scipy.integrate import trapezoid
 
 from ...distributions import betadist
 from ...distributions import powerlaw_logit_pdf
@@ -103,7 +104,7 @@ class PowerlawRedshiftModel(object):
         ]
 
     def normalization(self, lamb):
-        return jnp.trapz(self.prob(self.zs, self.dVdz_, lamb), self.zs)
+        return trapezoid(self.prob(self.zs, self.dVdz_, lamb), self.zs)
 
     def prob(self, z, dVdz, lamb):
         return dVdz * jnp.power(1.0 + z, lamb - 1.0)

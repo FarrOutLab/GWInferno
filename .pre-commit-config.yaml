@@ -18,17 +18,7 @@ repos:
     -   id: black
         language_version: python3
         args: ['-l 150']
--   repo: local
-    hooks:
-    -   id: flynt
-        name: flynt
-        entry: flynt
-        args: [--fail-on-change]
-        types: [python]
-        language: python
-        additional_dependencies:
-            - flynt
 -   repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 7.0.0
     hooks:
     -   id: flake8
