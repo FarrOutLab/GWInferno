@@ -271,7 +271,7 @@ class BSplineDistribution(Distribution):
         self.grid = grid
         self.lpdfs = jnp.einsum("i,i...->...", self.cs, grid_dmat)
         self.pdfs = jnp.exp(self.lpdfs)
-        self.norm = jnp.trapz(self.pdfs, self.grid)
+        self.norm = trapezoid(self.pdfs, self.grid)
         self.pdfs /= self.norm
         self.cdfgrid = cumtrapz(self.pdfs, self.grid)
         self.cdfgrid = self.cdfgrid.at[-1].set(1)

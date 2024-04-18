@@ -10,6 +10,7 @@ import jax.numpy as jnp
 import numpy as np
 import pandas as pd
 import xarray as xr
+from jax.scipy.integrate import trapezoid
 from tqdm import trange
 
 from ..cosmology import PLANCK_2018_Cosmology as cosmo
@@ -57,7 +58,7 @@ def p_m1src_q_z_lal_pe_prior(posts, spin=False):
             z_max = max(posts[ev]["redshift"])
     zs = jnp.linspace(0, z_max * 1.01, 1000)
     p_z = dl_2_prior_on_z(zs)
-    p_z /= jnp.trapz(p_z, zs)
+    p_z /= trapezoid(p_z, zs)
     for event, post in posts.items():
         posts[event]["prior"] = jnp.interp(np.array(post["redshift"]), zs, p_z) * post["mass_1"] * (1 + post["redshift"]) ** 2
         if spin:

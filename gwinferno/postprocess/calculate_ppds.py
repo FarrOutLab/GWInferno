@@ -5,6 +5,7 @@ a module with utilities for calculating population posterior distributions (i.e.
 import jax.numpy as jnp
 import numpy as np
 from jax import jit
+from jax.scipy.integrate import trapezoid
 from tqdm import trange
 
 from gwinferno.interpolation import LogXLogYBSpline
@@ -24,8 +25,8 @@ def calculate_m1q_ppds_plbspline_model(posterior, mass_model, nknots, rate=None,
     def calc_pdf(a, b, mi, ma, fs, r):
         p_mq = masspdf(mm, qq, alpha=a, beta=b, mmin=mi, mmax=ma, cs=fs)
         p_mq = jnp.where(jnp.isinf(p_mq) | jnp.isnan(p_mq), 0, p_mq)
-        p_m = jnp.trapz(p_mq, qs, axis=0)
-        p_q = jnp.trapz(p_mq, ms, axis=1)
+        p_m = trapezoid(p_mq, qs, axis=0)
+        p_q = trapezoid(p_mq, ms, axis=1)
         return p_m * r, p_q * r
 
     try:
@@ -166,9 +167,9 @@ def calculate_m1q_bspline_ppds(
     def calc_pdf(mcs, qcs, r, pop_frac):
         p_mq = mass_pdf(mcs, qcs)
         p_mq = jnp.where(jnp.less(mm, m1mmin) | jnp.less(mm * qq, mmin), 0, p_mq)
-        p_m = jnp.trapz(p_mq, qs, axis=0)
-        p_q = jnp.trapz(p_mq, ms, axis=1)
-        return r * p_m * pop_frac / jnp.trapz(p_m, ms), r * p_q * pop_frac / jnp.trapz(p_q, qs)
+        p_m = trapezoid(p_mq, qs, axis=0)
+        p_q = trapezoid(p_mq, ms, axis=1)
+        return r * p_m * pop_frac / trapezoid(p_m, ms), r * p_q * pop_frac / trapezoid(p_q, qs)
 
     calc_pdf = jit(calc_pdf)
     # _ = calc_pdf(mcoefs[0], qcoefs[0], rate[0], pop_frac[0][0])
@@ -241,9 +242,9 @@ def calculate_m1_bspline_q_powerlaw_ppds(
     def calc_pdf(mcs, r, pop_frac, beta):
         p_mq = mass_pdf(mm, qq, beta, mmin, mcs)
         p_mq = jnp.where(jnp.less(mm, m1mmin) | jnp.less(mm * qq, mmin), 0, p_mq)
-        p_m = jnp.trapz(p_mq, qs, axis=0)
-        p_q = jnp.trapz(p_mq, ms, axis=1)
-        return r * p_m * pop_frac / jnp.trapz(p_m, ms), r * p_q * pop_frac / jnp.trapz(p_q, qs)
+        p_m = trapezoid(p_mq, qs, axis=0)
+        p_q = trapezoid(p_mq, ms, axis=1)
+        return r * p_m * pop_frac / trapezoid(p_m, ms), r * p_q * pop_frac / trapezoid(p_q, qs)
 
     calc_pdf = jit(calc_pdf)
     # loop through hyperposterior samples
@@ -276,9 +277,9 @@ def calculate_m1m2_bspline_ppds(
     def calc_pdf(mcs1, r, pop_frac, beta):
         p_m1m2 = mass_pdf(mcs1, beta=beta)
         p_m1m2 = jnp.where(jnp.less(mm1, mmin) | jnp.less(mm2, mmin), 0, p_m1m2)
-        p_m1 = jnp.trapz(p_m1m2, ms2, axis=0)
-        p_m2 = jnp.trapz(p_m1m2, ms1, axis=1)
-        return r * p_m1 * pop_frac / jnp.trapz(p_m1, ms1), r * p_m2 * pop_frac / jnp.trapz(p_m2, ms2)
+        p_m1 = trapezoid(p_m1m2, ms2, axis=0)
+        p_m2 = trapezoid(p_m1m2, ms1, axis=1)
+        return r * p_m1 * pop_frac / trapezoid(p_m1, ms1), r * p_m2 * pop_frac / trapezoid(p_m2, ms2)
 
     calc_pdf = jit(calc_pdf)
     # loop through hyperposterior samples

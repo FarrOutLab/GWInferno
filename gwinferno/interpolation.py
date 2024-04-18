@@ -4,6 +4,7 @@ a module for interpolation calculations using jax
 
 import jax.numpy as jnp
 import numpy as np
+from jax.scipy.integrate import trapezoid
 from jax.tree_util import register_pytree_node_class
 
 
@@ -107,7 +108,7 @@ class BasisSpline(object):
         if normalize:
             self.grid = jnp.linspace(*xrange, 1000)
             self.grid_bases = jnp.array(self.bases(self.grid))
-            self.basis_vols = jnp.array([jnp.trapz(self.grid_bases[i, :], self.grid) for i in range(self.N)])
+            self.basis_vols = jnp.array([trapezoid(self.grid_bases[i, :], self.grid) for i in range(self.N)])
 
     def norm(self, coefs):
         """
@@ -282,7 +283,7 @@ class BSpline(BasisSpline):
         Returns:
             float: the normalization factor given the coefficients
         """
-        n = 1.0 / jnp.trapz(self._project(self.grid_bases, coefs), self.grid) if self.normalize else 1.0
+        n = 1.0 / trapezoid(self._project(self.grid_bases, coefs), self.grid) if self.normalize else 1.0
         return n
 
     def _project(self, bases, coefs):
@@ -475,7 +476,7 @@ class RectBivariateBasisSpline(object):
         Returns:
             float: the normalization factor given the coefficients
         """
-        n = 1.0 / jnp.trapz(jnp.trapz(self._project(self.grid_bases, coefs), self.gridy), self.gridx) if self.normalize else 1.0
+        n = 1.0 / trapezoid(trapezoid(self._project(self.grid_bases, coefs), self.gridy), self.gridx) if self.normalize else 1.0
         return n
 
     def _reset_bases(self):

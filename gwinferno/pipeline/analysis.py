@@ -9,6 +9,7 @@ import numpyro.distributions as dist
 from astropy.cosmology import Planck15
 from jax import jit
 from jax import random
+from jax.scipy.integrate import trapezoid
 from jax.scipy.special import logsumexp
 from numpyro.infer import SVI
 from numpyro.infer import Trace_ELBO
@@ -141,7 +142,7 @@ class TotalVTCalculator(object):
         Returns:
             (float): total hypervolume out to z=zmax. In units of Gpc^3*yr
         """
-        return jnp.trapz(self.dVdcs * jnp.power(1 + self.zs, lamb - 1), self.zs)
+        return trapezoid(self.dVdcs * jnp.power(1 + self.zs, lamb - 1), self.zs)
 
 
 def hierarchical_likelihood(

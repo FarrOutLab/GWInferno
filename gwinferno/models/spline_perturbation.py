@@ -4,6 +4,7 @@ a module that stores spline perturbation related population models
 
 import jax.numpy as jnp
 import numpy as np
+from jax.scipy.integrate import trapezoid
 
 from ..distributions import powerlaw_pdf
 from ..interpolation import BSpline
@@ -116,7 +117,7 @@ class PowerlawBasisSplinePrimaryPowerlawRatio(object):
         """
         p_m = powerlaw_pdf(self.ms, alpha=-alpha, low=mmin, high=mmax)
         perturbation = jnp.exp(self.interpolator.project(self.norm_design_matrix, cs))
-        return jnp.trapz(y=p_m * perturbation, x=self.ms)
+        return trapezoid(y=p_m * perturbation, x=self.ms)
 
     def p_q(self, q: jnp.ndarray, m1: jnp.ndarray, beta: float):
         """
@@ -257,7 +258,7 @@ class PowerlawBasisSplinePrimaryRatio(object):
         p_q = powerlaw_pdf(self.qq, alpha=beta, low=mmin / self.mm, high=1)
         qperturbation = jnp.exp(self.qinterpolator.project(self.qnorm_design_matrix, vs))
         p_mq = p_m * perturbation * p_q * qperturbation
-        return jnp.trapz(jnp.trapz(p_mq, self.qs, axis=0), self.ms)
+        return trapezoid(trapezoid(p_mq, self.qs, axis=0), self.ms)
 
     def p_q(self, q: jnp.ndarray, m1: jnp.ndarray, beta: float, mmin: float, vs: jnp.ndarray):
         """
@@ -330,7 +331,7 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
         """
         pz = self.dVdz_ * jnp.power(1.0 + self.zs, lamb - 1)
         pz *= jnp.exp(self.interpolator.project(self.norm_design_matrix, cs))
-        return jnp.trapz(pz, self.zs)
+        return trapezoid(pz, self.zs)
 
     def prob(self, z: jnp.ndarray, dVdz: jnp.ndarray, lamb: float, cs: jnp.ndarray):
         """
