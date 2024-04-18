@@ -78,7 +78,7 @@ class PopSummaryWriteOut(PopulationResult):
             x = posteriors[hp].transpose()
             if len(x.shape) > 1:
                 for j in range(len(x)):
-                    names.append(self.new_hyperparameter_names[i] + f"_{j+1}")
+                    names.append(self.new_hyperparameter_names[i] + f"_{j + 1}")
                     hyperparameter_samples.append(x[j])
             else:
                 names.append(self.new_hyperparameter_names[i])

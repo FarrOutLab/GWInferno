@@ -78,12 +78,12 @@ class ConfigReader(object):
     def add_prior(self, key, subd):
         if "prior" in subd and "prior_params" in subd:
             for k in subd["prior_params"]:
-                if type(subd["prior_params"][k]) == list:
+                if type(subd["prior_params"][k]) is list:
                     subd["prior_params"][k] = jnp.array(subd["prior_params"][k])
             self.priors[key] = PopPrior(load_dist_from_string(subd["prior"]), subd["prior_params"])
             self.sampling_params.append(key)
         elif "value" in subd:
-            if type(subd["value"]) == list:
+            if type(subd["value"]) is list:
                 self.priors[key] = jnp.array(subd["value"])
             else:
                 self.priors[key] = subd["value"]
@@ -108,11 +108,11 @@ class ConfigReader(object):
         components = []
         component_params = []
         for i in range(N):
-            name = f"component_{i+1}"
+            name = f"component_{i + 1}"
             components.append(load_dist_from_string(subd[name]["model"]))
             component_params.append([p for p in subd[name]["hyper_params"]])
             for hp in subd[name]["hyper_params"]:
-                self.add_prior(f"{param}_component_{i+1}_{hp}", subd[name]["hyper_params"][hp])
+                self.add_prior(f"{param}_component_{i + 1}_{hp}", subd[name]["hyper_params"][hp])
         self.models[param] = PopMixtureModel(model, mix_dist, mix_params, components, component_params)
         if "iid" in subd[name]:
             self.add_iid_model(param, subd[name]["iid"]["shared_parameter"])

@@ -284,7 +284,7 @@ def hierarchical_likelihood(
 
                 if marginal_qs:
                     for i in range(len(indv_weights)):
-                        numpyro.deterministic(f"cat_frac_subpop_{i+1}_event_{ev}", indv_weights[i][ev, obs_idx] / pe_weights[ev, obs_idx])
+                        numpyro.deterministic(f"cat_frac_subpop_{i + 1}_event_{ev}", indv_weights[i][ev, obs_idx] / pe_weights[ev, obs_idx])
 
                 pred_idx = random.choice(k2, inj_weights.shape[0], p=inj_weights / jnp.sum(inj_weights))
                 for p in param_names:
@@ -431,7 +431,8 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
         for k, v in model_dict.items():
             if isinstance(v, PopMixtureModel):
                 components = [
-                    v.components[i](**{p: hyper_params[f"{k}_component_{i+1}_{p}"] for p in v.component_params[i]}) for i in range(len(v.components))
+                    v.components[i](**{p: hyper_params[f"{k}_component_{i + 1}_{p}"] for p in v.component_params[i]})
+                    for i in range(len(v.components))
                 ]
                 mixing_dist = v.mixing_dist(**{p: hyper_params[f"{k}_mixture_dist_{p}"] for p in v.mixing_params})
                 pop_models[k] = v.model(mixing_dist, components)

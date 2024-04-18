@@ -45,7 +45,7 @@ def load_parser():
 
 def setup_mass_BSpline_model(injdata, pedata, pmap, nknots, qknots, mmin=3.0, mmax=100.0):
     print(f"Basis Spline model in m1 w/ {nknots} knots logspaced from {mmin} to {mmax}...")
-    print(f"Basis Spline model in q w/ {qknots} knots linspaced from {mmin/mmax} to 1...")
+    print(f"Basis Spline model in q w/ {qknots} knots linspaced from {mmin / mmax} to 1...")
 
     model = BSplinePrimaryBSplineRatio(
         nknots,
