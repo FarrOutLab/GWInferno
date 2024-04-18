@@ -2,6 +2,7 @@ import unittest
 
 import jax.numpy as jnp
 import numpy as np
+from astropy.cosmology import Planck15
 from jax import random
 from scipy.integrate import cumtrapz as scipy_cumtrapz
 from scipy.stats import truncnorm
@@ -17,7 +18,6 @@ from gwinferno.numpyro_distributions import PowerlawRedshift
 from gwinferno.numpyro_distributions import PSplineCoeficientPrior
 from gwinferno.numpyro_distributions import Sine
 from gwinferno.numpyro_distributions import cumtrapz
-from astropy.cosmology import Planck15
 
 
 class TestJaxCumtrapz(unittest.TestCase):
