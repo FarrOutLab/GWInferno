@@ -112,7 +112,7 @@ class GWInfernoData(Mapping[str, xr.Dataset]):
 
     def __repr__(self) -> str:
         """Make string representation of GWInfernoData object."""
-        msg = f"Inference data with groups:\n\t> {'\\n\\t> '.join(self._groups)}"
+        msg = "Inference data with groups:\n\t> {options}".format(options="\n\t> ".join(self._groups))
         return msg
 
     def _repr_html_(self) -> str:
