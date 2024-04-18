@@ -38,6 +38,8 @@ jobs:
             pip install numpyro 
             pip install -r pip_requirements.txt
             pip install -r docs/requirements.txt
+            pip install arviz==0.15.1
+            pip install scipy==1.11.1
             pip install .
 
       - name: Build documentation
