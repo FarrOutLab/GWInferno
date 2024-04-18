@@ -39,6 +39,7 @@ def load_parser():
     parser.add_argument("--q-knots", type=int, default=30)
     parser.add_argument("--tilt-knots", type=int, default=25)
     parser.add_argument("--z-knots", type=int, default=20)
+    parser.add_argument("--skip-prior", action="store_true", default=False)
     return parser.parse_args()
 
 
@@ -152,12 +153,12 @@ def model(
     Tobs,
     sample_prior=False,
 ):
-    mass_knots = mass_model.primary_model.nknots
-    q_knots = mass_model.ratio_model.nknots
+    mass_knots = mass_model.primary_model.n_splines
+    q_knots = mass_model.ratio_model.n_splines
     mag_model = spin_models["mag"]
     tilt_model = spin_models["tilt"]
-    mag_knots = mag_model.primary_model.nknots
-    tilt_knots = tilt_model.primary_model.nknots
+    mag_knots = mag_model.primary_model.n_splines
+    tilt_knots = tilt_model.primary_model.n_splines
     z_knots = z_model.nknots
 
     mass_cs = numpyro.sample("mass_cs", dist.Normal(0, 6), sample_shape=(mass_knots,))
@@ -183,16 +184,16 @@ def model(
 
     if not sample_prior:
 
-        def get_weights(z, prior):
-            p_m1q = mass_model(len(z.shape), mass_cs, q_cs)
-            p_a1a2 = mag_model(len(z.shape), mag_cs)
-            p_ct1ct2 = tilt_model(len(z.shape), tilt_cs)
+        def get_weights(z, prior, pe_samples):
+            p_m1q = mass_model(mass_cs, q_cs, pe_samples=pe_samples)
+            p_a1a2 = mag_model(mag_cs, pe_samples=pe_samples)
+            p_ct1ct2 = tilt_model(tilt_cs, pe_samples=pe_samples)
             p_z = z_model(z, lamb, z_cs)
             wts = p_m1q * p_a1a2 * p_ct1ct2 * p_z / prior
             return jnp.where(jnp.isnan(wts) | jnp.isinf(wts), 0, wts)
 
-        peweights = get_weights(pedict["redshift"], pedict["prior"])
-        injweights = get_weights(injdict["redshift"], injdict["prior"])
+        peweights = get_weights(pedict["redshift"], pedict["prior"], pe_samples=True)
+        injweights = get_weights(injdict["redshift"], injdict["prior"], pe_samples=False)
         hierarchical_likelihood(
             peweights,
             injweights,
@@ -225,29 +226,30 @@ def main():
     if not args.skip_inference:
         RNG = random.PRNGKey(0)
         MCMC_RNG, PRIOR_RNG, _RNG = random.split(RNG, num=3)
-        kernel = NUTS(model)
-        mcmc = MCMC(
-            kernel,
-            thinning=args.thinning,
-            num_warmup=args.warmup,
-            num_samples=args.samples,
-            num_chains=args.chains,
-        )
-        print("running mcmc: sampling prior...")
-        mcmc.run(
-            PRIOR_RNG,
-            mass,
-            spin,
-            z,
-            pedict,
-            injdict,
-            float(total_inj),
-            nObs,
-            obs_time,
-            sample_prior=True,
-        )
-        prior = mcmc.get_samples()
-        dd.io.save(f"{label}_prior_samples.h5", prior)
+        if not args.skip_prior:
+            kernel = NUTS(model)
+            mcmc = MCMC(
+                kernel,
+                thinning=args.thinning,
+                num_warmup=args.warmup,
+                num_samples=args.samples,
+                num_chains=args.chains,
+            )
+            print("running mcmc: sampling prior...")
+            mcmc.run(
+                PRIOR_RNG,
+                mass,
+                spin,
+                z,
+                pedict,
+                injdict,
+                float(total_inj),
+                nObs,
+                obs_time,
+                sample_prior=True,
+            )
+            prior = mcmc.get_samples()
+            dd.io.save(f"{label}_prior_samples.h5", prior)
 
         kernel = NUTS(model)
         mcmc = MCMC(
@@ -298,20 +300,24 @@ def main():
         del fig, mcmc, pedict, injdict, total_inj, obs_time
     else:
         print(f"loading prior and posterior samples from run with label: {label}...")
-        prior = dd.io.load(f"{label}_prior_samples.h5")
+        if not args.skip_prior:
+            prior = dd.io.load(f"{label}_prior_samples.h5")
         posterior = dd.io.load(f"{label}_posterior_samples.h5")
 
-    print("calculating mass prior ppds...")
-    prior_pm1s, prior_pqs, ms, qs = calculate_m1q_bspline_ppds(
-        prior["mass_cs"],
-        prior["q_cs"],
-        BSplinePrimaryBSplineRatio,
-        args.mass_knots,
-        args.q_knots,
-        mmin=args.mmin,
-        m1mmin=args.mmin,
-        mmax=args.mmax,
-    )
+    if not args.skip_prior:
+        print("calculating mass prior ppds...")
+        prior_pm1s, prior_pqs, ms, qs = calculate_m1q_bspline_ppds(
+            prior["mass_cs"],
+            prior["q_cs"],
+            BSplinePrimaryBSplineRatio,
+            args.mass_knots,
+            args.q_knots,
+            mmin=args.mmin,
+            m1mmin=args.mmin,
+            mmax=args.mmax,
+            basis_m=LogXLogYBSpline,
+            basis_q=LogYBSpline,
+        )
     print("calculating mass posterior ppds...")
     pm1s, pqs, ms, qs = calculate_m1q_bspline_ppds(
         posterior["mass_cs"],
@@ -322,23 +328,43 @@ def main():
         mmin=args.mmin,
         m1mmin=args.mmin,
         mmax=args.mmax,
+        basis_m=LogXLogYBSpline,
+        basis_q=LogYBSpline,
     )
 
-    print("calculating mag prior ppds...")
-    prior_pmags, mags = calculate_iid_spin_bspline_ppds(prior["mag_cs"], BSplineIIDSpinMagnitudes, args.mag_knots, xmin=0, xmax=1)
+    if not args.skip_prior:
+        print("calculating mag prior ppds...")
+        prior_pmags, mags = calculate_iid_spin_bspline_ppds(prior["mag_cs"], BSplineIIDSpinMagnitudes, args.mag_knots, xmin=0, xmax=1)
     print("calculating mag posterior ppds...")
     pmags, mags = calculate_iid_spin_bspline_ppds(posterior["mag_cs"], BSplineIIDSpinMagnitudes, args.mag_knots, xmin=0, xmax=1)
 
-    print("calculating tilt prior ppds...")
-    prior_ptilts, tilts = calculate_iid_spin_bspline_ppds(prior["tilt_cs"], BSplineIIDSpinTilts, args.tilt_knots, xmin=-1, xmax=1)
+    if not args.skip_prior:
+        print("calculating tilt prior ppds...")
+        prior_ptilts, tilts = calculate_iid_spin_bspline_ppds(prior["tilt_cs"], BSplineIIDSpinTilts, args.tilt_knots, xmin=-1, xmax=1)
     print("calculating tilt posterior ppds...")
     ptilts, tilts = calculate_iid_spin_bspline_ppds(posterior["tilt_cs"], BSplineIIDSpinTilts, args.tilt_knots, xmin=-1, xmax=1)
 
-    print("calculating rate prior ppds...")
-    prior_Rofz, zs = calculate_powerbspline_rate_of_z_ppds(prior["lamb"], prior["z_cs"], jnp.ones_like(prior["lamb"]), z)
+    if not args.skip_prior:
+        print("calculating rate prior ppds...")
+        prior_Rofz, zs = calculate_powerbspline_rate_of_z_ppds(prior["lamb"], prior["z_cs"], jnp.ones_like(prior["lamb"]), z)
     print("calculating rate posterior ppds...")
     Rofz, zs = calculate_powerbspline_rate_of_z_ppds(posterior["lamb"], posterior["z_cs"], posterior["rate"], z)
 
+    if not args.skip_prior:
+        prior_ppd_dict = {
+            "pm1": prior_pm1s,
+            "pq": prior_pqs,
+            "pa": prior_pmags,
+            "pct": prior_ptilts,
+            "m1s": ms,
+            "qs": qs,
+            "mags": mags,
+            "tilts": tilts,
+            "Rofz": prior_Rofz,
+            "zs": zs,
+        }
+        dd.io.save(f"{label}_prior_ppds.h5", prior_ppd_dict)
+        del prior_ppd_dict
     ppd_dict = {
         "dRdm1": pm1s,
         "dRdq": pqs,
@@ -352,22 +378,10 @@ def main():
         "zs": zs,
     }
     dd.io.save(f"{label}_ppds.h5", ppd_dict)
-    prior_ppd_dict = {
-        "pm1": prior_pm1s,
-        "pq": prior_pqs,
-        "pa": prior_pmags,
-        "pct": prior_ptilts,
-        "m1s": ms,
-        "qs": qs,
-        "mags": mags,
-        "tilts": tilts,
-        "Rofz": prior_Rofz,
-        "zs": zs,
-    }
-    dd.io.save(f"{label}_prior_ppds.h5", prior_ppd_dict)
-    del ppd_dict, prior_ppd_dict
+    del ppd_dict
 
     print("plotting mass distribution...")
+    priors = None if args.skip_prior else {"m1": prior_pm1s, "q": prior_pqs}
     fig = plot_mass_dist(
         pm1s,
         pqs,
@@ -375,21 +389,24 @@ def main():
         qs,
         mmin=5.0,
         mmax=args.mmax,
-        priors={"m1": prior_pm1s, "q": prior_pqs},
+        priors=priors,
     )
     plt.savefig(f"{label}_mass_distribution.png")
     del fig
 
     print("plotting spin distributions...")
-    fig = plot_iid_spin_dist(pmags, ptilts, mags, tilts, priors={"mags": prior_pmags, "tilts": prior_ptilts})
+    priors = None if args.skip_prior else {"mags": prior_pmags, "tilts": prior_ptilts}
+    fig = plot_iid_spin_dist(pmags, ptilts, mags, tilts, priors=priors)
     plt.savefig(f"{label}_iid_component_spin_distribution.png")
     del fig
 
     print("plotting R(z)...")
-    fig = plot_rofz(Rofz, zs, prior=prior_Rofz)
+    prior = None if args.skip_prior else prior_Rofz
+    fig = plot_rofz(Rofz, zs, prior=prior)
     plt.savefig(f"{label}_rate_vs_z.png")
     del fig
-    fig = plot_rofz(Rofz, zs, logx=True, prior=prior_Rofz)
+    prior = None if args.skip_prior else prior_Rofz
+    fig = plot_rofz(Rofz, zs, logx=True, prior=prior)
     plt.savefig(f"{label}_rate_vs_z_logscale.png")
     del fig
 
