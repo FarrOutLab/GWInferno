@@ -12,13 +12,12 @@ from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
 from gwinferno.numpyro_distributions import BSplineDistribution
 from gwinferno.numpyro_distributions import Cosine
-from gwinferno.numpyro_distributions import CubicInterpolatedPowerlaw
-from gwinferno.numpyro_distributions import LinearInterpolatedPowerlaw
 from gwinferno.numpyro_distributions import Powerlaw
 from gwinferno.numpyro_distributions import PowerlawRedshift
 from gwinferno.numpyro_distributions import PSplineCoeficientPrior
 from gwinferno.numpyro_distributions import Sine
 from gwinferno.numpyro_distributions import cumtrapz
+from astropy.cosmology import Planck15
 
 
 class TestJaxCumtrapz(unittest.TestCase):
@@ -78,23 +77,9 @@ class TestNPDistributions(unittest.TestCase):
         self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
 
     def test_powerlaw_redshift(self):
-        d = PowerlawRedshift(lamb=0.0, minimum=0.001, maximum=1.0)
-        lpdfs = d.log_prob(self.grid)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.grid)
-        self.assertAlmostEqual(norm, 1.0, places=4)
-        samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
-        self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
-
-    def test_linear_interpolated_powerlaw(self):
-        d = LinearInterpolatedPowerlaw(alpha=1.0, minimum=0.001, maximum=1.0, xinterps=self.x_interps, yinterps=self.y_interps)
-        lpdfs = d.log_prob(self.grid)
-        norm = jnp.trapz(jnp.exp(lpdfs), self.grid)
-        self.assertAlmostEqual(norm, 1.0, places=4)
-        samps = d.sample(random.PRNGKey(0), sample_shape=(100,))
-        self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
-
-    def test_cubic_interpolated_powerlaw(self):
-        d = CubicInterpolatedPowerlaw(alpha=1.0, minimum=0.001, maximum=1.0, xinterps=self.x_interps, yinterps=self.y_interps)
+        z_grid = jnp.linspace(0.001, 1, 1000)
+        dVcdz_grid = Planck15.differential_comoving_volume(z_grid).value * 4.0 * jnp.pi
+        d = PowerlawRedshift(lamb=0.0, maximum=1.0, zgrid=z_grid, dVcdz=dVcdz_grid)
         lpdfs = d.log_prob(self.grid)
         norm = jnp.trapz(jnp.exp(lpdfs), self.grid)
         self.assertAlmostEqual(norm, 1.0, places=4)
