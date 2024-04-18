@@ -260,27 +260,22 @@ class BSplineDistribution(Distribution):
     arg_constraints = {
         "maximum": constraints.real,
         "minimum": constraints.real,
-        "coefficients": constraints.real_vector,
-        "grid": constraints.real_vector,
-        "grid_dmat": constraints.real_matrix,
+        "cs": constraints.real_vector,
     }
-    reparametrized_params = ["maximum", "minimum", "coefficients"]
+    reparametrized_params = ["maximum", "minimum", "cs"]
 
-    def __init__(self, minimum, maximum, coefficients, grid, grid_dmat, validate_args=None):
-        if jnp.ndim(coefficients) < 1:
-            raise ValueError("`coefficients` parameter must be at least one-dimensional.")
-        batch_shape, event_shape = coefficients.shape[:-1], coefficients.shape[-1:]
-
-        self.event_shape = event_shape
-        self.maximum, self.minimum, self.coefficients = promote_shapes(maximum, minimum, coefficients)
+    def __init__(self, minimum, maximum, cs, grid, grid_dmat, validate_args=None):
+        self.maximum, self.minimum, self.cs = promote_shapes(maximum, minimum, cs)
         self._support = constraints.interval(minimum, maximum)
+        batch_shape = lax.broadcast_shapes(jnp.shape(maximum), jnp.shape(minimum), jnp.shape(cs))
         super(BSplineDistribution, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
         self.grid = grid
-        self.grid_dmat = grid_dmat
-        self.grid_pdf = jnp.einsum("i,i...->...", self.coefficients, self.grid_dmat)
-        self.grid_log_pdf = jnp.log(self.grid_pdf)
-        self.grid_cdf = cumtrapz(self.grid_pdf, self.grid)
-        self.grid_cdf = self.grid_cdf.at[-1].set(1)
+        self.lpdfs = jnp.einsum("i,i...->...", self.cs, grid_dmat)
+        self.pdfs = jnp.exp(self.lpdfs)
+        self.norm = jnp.trapz(self.pdfs, self.grid)
+        self.pdfs /= self.norm
+        self.cdfgrid = cumtrapz(self.pdfs, self.grid)
+        self.cdfgrid = self.cdfgrid.at[-1].set(1)
 
     @constraints.dependent_property(is_discrete=False, event_dim=0)
     def support(self):
@@ -290,103 +285,28 @@ class BSplineDistribution(Distribution):
         assert is_prng_key(key)
         return self.icdf(random.uniform(key, shape=sample_shape + self.batch_shape))
 
-    @validate_sample
-    def log_prob(self, value):
-        return jnp.interp(value, self.grid, self.grid_log_pdf)
-
-    def cdf(self, value):
-        return jnp.interp(value, self.grid, self.grid_cdf)
-
-    def icdf(self, q):
-        return jnp.interp(q, self.grid_cdf, self.grid)
-
-
-class LogXBSplineDistribution(Distribution):
-    arg_constraints = {
-        "maximum": constraints.real,
-        "minimum": constraints.real,
-        "coefficients": constraints.real_vector,
-        "grid": constraints.real_vector,
-        "grid_dmat": constraints.real_matrix,
-    }
-    reparametrized_params = ["maximum", "minimum", "coefficients"]
-
-    def __init__(self, minimum, maximum, coefficients, log_grid, log_grid_dmat, validate_args=None):
-        if jnp.ndim(coefficients) < 1:
-            raise ValueError("`coefficients` parameter must be at least one-dimensional.")
-        batch_shape, event_shape = coefficients.shape[:-1], coefficients.shape[-1:]
-        self.event_shape = event_shape
-
-        self.maximum, self.minimum, self.coefficients = promote_shapes(maximum, minimum, coefficients)
-        self._support = constraints.interval(minimum, maximum)
-        super(LogXBSplineDistribution, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
-        self.log_grid = log_grid
-        self.log_grid_dmat = log_grid_dmat
-        self.log_grid_pdf = jnp.einsum("i,i...->...", self.coefficients, self.log_grid_dmat)
-        self.log_grid_log_pdf = jnp.log(self.log_grid_pdf)
-        self.log_grid_cdf = cumtrapz(self.log_grid_pdf, self.log_grid)
-        self.log_grid_cdf = self.log_grid_cdf.at[-1].set(1)
-
-    @constraints.dependent_property(is_discrete=False, event_dim=0)
-    def support(self):
-        return self._support
-
-    def sample(self, key, sample_shape=()):
-        assert is_prng_key(key)
-        return self.icdf(random.uniform(key, shape=sample_shape + self.batch_shape))
+    def _log_prob_nonorm(self, value):
+        return jnp.interp(value, self.grid, self.lpdfs)
 
     @validate_sample
     def log_prob(self, value):
-        return jnp.interp(jnp.log(value), self.log_grid, self.log_grid_log_pdf)
+        return self._log_prob_nonorm(value) - jnp.log(self.norm)
 
     def cdf(self, value):
-        return jnp.interp(jnp.log(value), self.log_grid, self.log_grid_cdf)
+        return jnp.interp(value, self.grid, self.cdfgrid)
 
     def icdf(self, q):
-        return jnp.exp(jnp.interp(q, self.log_grid_cdf, self.log_grid))
-
-
-class _BSplineCoefficient(constraints.Constraint):
-    def __init__(self, basis_norms):
-        self.basis_norms = basis_norms
-
-    def __call__(self, x):
-        prob = (self.basis_norms * x).sum(axis=-1)
-        return (prob < 1 + 1e-6) & (prob > 1 - 1e-6)
-
-    def tree_flatten(self):
-        return (self.basis_norms,), (("basis_norms",), dict())
-
-    def feasible_like(self, prototype):
-        return jnp.full_like(prototype, 1 / prototype.shape[-1])
-
-    def __eq__(self, other):
-        if not isinstance(other, _BSplineCoefficient):
-            return False
-        return jnp.array_equal(self.basis_norms, other.basis_norms)
-
-
-bspline_constraint = _BSplineCoefficient
-
-
-@transforms.biject_to.register(bspline_constraint)
-def _transform_to_bspline_coefficients(constraint):
-    return transforms.ComposeTransform(
-        [
-            transforms.StickBreakingTransform(),
-            transforms.AffineTransform(0, 1 / constraint.basis_norms),
-        ]
-    )
+        return jnp.interp(q, self.cdfgrid, self.grid)
 
 
 class PSplineCoeficientPrior(Distribution):
     arg_constraints = {"inv_var": constraints.positive}
     reparametrized_params = ["inv_var"]
 
-    def __init__(self, N, inv_var, basis_norms, diff_order=2, validate_args=None):
+    def __init__(self, N, inv_var, diff_order=2, validate_args=None):
         (self.inv_var,) = promote_shapes(inv_var)
-        self._support = bspline_constraint(basis_norms)
-        batch_shape = broadcast_shapes(jnp.shape(inv_var))
+        self._support = constraints.real_vector
+        batch_shape = lax.broadcast_shapes(jnp.shape(inv_var))
         super(PSplineCoeficientPrior, self).__init__(batch_shape=batch_shape, validate_args=validate_args, event_shape=(N,))
         self.diff_order = diff_order
         self.N = N
@@ -394,6 +314,10 @@ class PSplineCoeficientPrior(Distribution):
     @constraints.dependent_property(is_discrete=False, event_dim=0)
     def support(self):
         return self._support
+
+    def sample(self, key, sample_shape=()):
+        assert is_prng_key(key)
+        return jnp.ones(shape=sample_shape + self.batch_shape)
 
     @validate_sample
     def log_prob(self, value):
