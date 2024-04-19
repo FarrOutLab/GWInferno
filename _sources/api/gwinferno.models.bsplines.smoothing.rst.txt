@@ -17,6 +17,8 @@ gwinferno.models.bsplines.smoothing
       :toctree:
    
       
+      adaptive_difference_prior
+      
       apply_difference_prior
       
       apply_twod_difference_prior

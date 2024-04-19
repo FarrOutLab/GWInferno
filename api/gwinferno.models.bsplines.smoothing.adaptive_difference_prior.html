@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf &mdash; gwinferno 0.0 documentation</title>
+  <title>gwinferno.models.bsplines.smoothing.adaptive_difference_prior &mdash; gwinferno 0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
@@ -23,8 +23,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf" href="gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf.html" />
-    <link rel="prev" title="gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf" href="gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf.html" /> 
+    <link rel="next" title="gwinferno.models.bsplines.smoothing.apply_difference_prior" href="gwinferno.models.bsplines.smoothing.apply_difference_prior.html" />
+    <link rel="prev" title="gwinferno.models.bsplines.smoothing" href="gwinferno.models.bsplines.smoothing.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -65,20 +65,22 @@
 <li class="toctree-l1"><a class="reference internal" href="gwinferno.distributions.html">gwinferno.distributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="gwinferno.interpolation.html">gwinferno.interpolation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.bsplines.html">gwinferno.models.bsplines</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="gwinferno.models.bsplines.html">gwinferno.models.bsplines</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.joint.html">gwinferno.models.bsplines.joint</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.separable.html">gwinferno.models.bsplines.separable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.single.html">gwinferno.models.bsplines.single</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.html">gwinferno.models.bsplines.smoothing</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">gwinferno.models.bsplines.smoothing.adaptive_difference_prior</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.apply_difference_prior.html">gwinferno.models.bsplines.smoothing.apply_difference_prior</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.apply_twod_difference_prior.html">gwinferno.models.bsplines.smoothing.apply_twod_difference_prior</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.get_adaptive_Lambda.html">gwinferno.models.bsplines.smoothing.get_adaptive_Lambda</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.mixture_smoothing_parameter.html">gwinferno.models.bsplines.smoothing.mixture_smoothing_parameter</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.models.gwpopulation.html">gwinferno.models.gwpopulation</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="gwinferno.models.mass_gap.html">gwinferno.models.mass_gap</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.mass_gap.logistic_unit.html">gwinferno.models.mass_gap.logistic_unit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf.html">gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf"><code class="docutils literal notranslate"><span class="pre">powerlaw_gap_cutoff_primary_ratio_pdf()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf.html">gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.mass_gap.powerlaw_gap_logit_primary_pdf.html">gwinferno.models.mass_gap.powerlaw_gap_logit_primary_pdf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.mass_gap.powerlaw_gap_primary_ratio_pdf.html">gwinferno.models.mass_gap.powerlaw_gap_primary_ratio_pdf</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.mass_gap.html">gwinferno.models.mass_gap</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.models.spline_perturbation.html">gwinferno.models.spline_perturbation</a></li>
 </ul>
 </li>
@@ -103,10 +105,11 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="gwinferno.models.html">gwinferno.models</a></li>
-          <li class="breadcrumb-item"><a href="gwinferno.models.mass_gap.html">gwinferno.models.mass_gap</a></li>
-      <li class="breadcrumb-item active">gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf</li>
+          <li class="breadcrumb-item"><a href="gwinferno.models.bsplines.html">gwinferno.models.bsplines</a></li>
+          <li class="breadcrumb-item"><a href="gwinferno.models.bsplines.smoothing.html">gwinferno.models.bsplines.smoothing</a></li>
+      <li class="breadcrumb-item active">gwinferno.models.bsplines.smoothing.adaptive_difference_prior</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api/gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/gwinferno.models.bsplines.smoothing.adaptive_difference_prior.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -114,11 +117,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwinferno-models-mass-gap-powerlaw-gap-cutoff-primary-ratio-pdf">
-<h1>gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf<a class="headerlink" href="#gwinferno-models-mass-gap-powerlaw-gap-cutoff-primary-ratio-pdf" title="Link to this heading"></a></h1>
+  <section id="gwinferno-models-bsplines-smoothing-adaptive-difference-prior">
+<h1>gwinferno.models.bsplines.smoothing.adaptive_difference_prior<a class="headerlink" href="#gwinferno-models-bsplines-smoothing-adaptive-difference-prior" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf">
-<span class="sig-prename descclassname"><span class="pre">gwinferno.models.mass_gap.</span></span><span class="sig-name descname"><span class="pre">powerlaw_gap_cutoff_primary_ratio_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gapmin</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/mass_gap.html#powerlaw_gap_cutoff_primary_ratio_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.mass_gap.powerlaw_gap_cutoff_primary_ratio_pdf" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwinferno.models.bsplines.smoothing.adaptive_difference_prior">
+<span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.smoothing.</span></span><span class="sig-name descname"><span class="pre">adaptive_difference_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/smoothing.html#adaptive_difference_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.smoothing.adaptive_difference_prior" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
@@ -127,8 +130,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf.html" class="btn btn-neutral float-left" title="gwinferno.models.mass_gap.plpeak_gap_primary_ratio_pdf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf.html" class="btn btn-neutral float-right" title="gwinferno.models.mass_gap.powerlaw_gap_logit_ben_primary_pdf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwinferno.models.bsplines.smoothing.html" class="btn btn-neutral float-left" title="gwinferno.models.bsplines.smoothing" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.models.bsplines.smoothing.apply_difference_prior.html" class="btn btn-neutral float-right" title="gwinferno.models.bsplines.smoothing.apply_difference_prior" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

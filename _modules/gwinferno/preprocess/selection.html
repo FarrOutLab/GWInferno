@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gwinferno.preprocess.selection &mdash; gwinferno 0.0 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -14,7 +16,7 @@
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../../../_static/documentation_options.js?v=837179f8"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -153,11 +155,19 @@
 
 <div class="viewcode-block" id="get_semianlytic_injection_dict">
 <a class="viewcode-back" href="../../../api/gwinferno.preprocess.selection.get_semianlytic_injection_dict.html#gwinferno.preprocess.selection.get_semianlytic_injection_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">get_semianlytic_injection_dict</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_semianlytic_injection_dict</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">o4</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">ff</span><span class="p">[</span><span class="s2">&quot;injections&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">o4</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">ff</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">ff</span><span class="p">[</span><span class="s2">&quot;injections&quot;</span><span class="p">]</span>
         <span class="n">found</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="n">found</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;optimal_snr_l&quot;</span><span class="p">][()]</span> <span class="o">&gt;</span> <span class="n">snr</span>
+        <span class="k">if</span> <span class="n">o4</span><span class="p">:</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;snr_L&quot;</span><span class="p">][()]</span> <span class="o">&gt;</span> <span class="n">snr</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="s2">&quot;z&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;optimal_snr_l&quot;</span><span class="p">][()]</span> <span class="o">&gt;</span> <span class="n">snr</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="s2">&quot;redshift&quot;</span>
         <span class="k">if</span> <span class="n">additional_cuts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">additional_cuts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                 <span class="n">found</span> <span class="o">=</span> <span class="n">found</span> <span class="o">|</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">][()]</span> <span class="o">&gt;</span> <span class="n">additional_cuts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
@@ -165,7 +175,7 @@
             <span class="n">mass_1</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
             <span class="n">mass_2</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass2_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
             <span class="n">mass_ratio</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass2_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
-            <span class="n">redshift</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
+            <span class="n">redshift</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">z</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
             <span class="n">total_generated</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">][()]),</span>
             <span class="n">analysis_time</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;analysis_time_s&quot;</span><span class="p">][()]</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span>
         <span class="p">)</span>
@@ -176,16 +186,9 @@
 
 <div class="viewcode-block" id="load_injections">
 <a class="viewcode-back" href="../../../api/gwinferno.preprocess.selection.load_injections.html#gwinferno.preprocess.selection.load_injections">[docs]</a>
-<span class="k">def</span> <span class="nf">load_injections</span><span class="p">(</span>
-    <span class="n">injfile</span><span class="p">,</span>
-    <span class="n">ifar_threshold</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">snr_threshold</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
-    <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">semianalytic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="k">def</span> <span class="nf">load_injections</span><span class="p">(</span><span class="n">injfile</span><span class="p">,</span> <span class="n">ifar_threshold</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr_threshold</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">semianalytic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">o4</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">semianalytic</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">get_semianlytic_injection_dict</span><span class="p">(</span><span class="n">injfile</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="n">additional_cuts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">get_semianlytic_injection_dict</span><span class="p">(</span><span class="n">injfile</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="n">additional_cuts</span><span class="p">,</span> <span class="n">o4</span><span class="o">=</span><span class="n">o4</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">get_injection_dict</span><span class="p">(</span>
             <span class="n">injfile</span><span class="p">,</span>

@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gwinferno.preprocess.data_collection &mdash; gwinferno 0.0 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -14,7 +16,7 @@
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../../../_static/documentation_options.js?v=837179f8"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -103,9 +105,12 @@
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">from</span> <span class="nn">jax.scipy.integrate</span> <span class="kn">import</span> <span class="n">trapezoid</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
 
 <span class="kn">from</span> <span class="nn">..cosmology</span> <span class="kn">import</span> <span class="n">PLANCK_2018_Cosmology</span> <span class="k">as</span> <span class="n">cosmo</span>
+<span class="kn">from</span> <span class="nn">..types.data</span> <span class="kn">import</span> <span class="n">GWInfernoData</span>
 <span class="kn">from</span> <span class="nn">.conversions</span> <span class="kn">import</span> <span class="n">chieff_from_q_component_spins</span>
 <span class="kn">from</span> <span class="nn">.conversions</span> <span class="kn">import</span> <span class="n">chip_from_q_component_spins</span>
 <span class="kn">from</span> <span class="nn">.priors</span> <span class="kn">import</span> <span class="n">chi_effective_prior_from_isotropic_spins</span>
@@ -154,7 +159,7 @@
             <span class="n">z_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">posts</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span>
     <span class="n">zs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">z_max</span> <span class="o">*</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
     <span class="n">p_z</span> <span class="o">=</span> <span class="n">dl_2_prior_on_z</span><span class="p">(</span><span class="n">zs</span><span class="p">)</span>
-    <span class="n">p_z</span> <span class="o">/=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">p_z</span><span class="p">,</span> <span class="n">zs</span><span class="p">)</span>
+    <span class="n">p_z</span> <span class="o">/=</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_z</span><span class="p">,</span> <span class="n">zs</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">posts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">posts</span><span class="p">[</span><span class="n">event</span><span class="p">][</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">post</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">]),</span> <span class="n">zs</span><span class="p">,</span> <span class="n">p_z</span><span class="p">)</span> <span class="o">*</span> <span class="n">post</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">post</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
         <span class="k">if</span> <span class="n">spin</span><span class="p">:</span>
@@ -350,29 +355,81 @@
         <span class="n">pedata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">pe_samples</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">])</span>
         <span class="n">injdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">injections</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
-            <span class="n">mag_data</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;injdata&quot;</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injdata</span><span class="p">),</span>
-                <span class="s2">&quot;pedata&quot;</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pedata</span><span class="p">),</span>
-                <span class="s2">&quot;param_map&quot;</span><span class="p">:</span> <span class="n">param_map</span><span class="p">,</span>
-                <span class="s2">&quot;total_generated&quot;</span><span class="p">:</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;analysis_time&quot;</span><span class="p">:</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">],</span>
-            <span class="p">}</span>
-            <span class="n">dd</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;posterior_samples_and_injections_spin_magnitude&quot;</span><span class="p">,</span> <span class="n">mag_data</span><span class="p">)</span>
 
-        <span class="n">pedata</span><span class="p">,</span> <span class="n">new_pmap</span> <span class="o">=</span> <span class="n">convert_component_spin_posteriors_to_chieff</span><span class="p">(</span><span class="n">pedata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">chip</span><span class="o">=</span><span class="n">chi_p</span><span class="p">)</span>
+            <span class="n">pe_coords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;pe_event&quot;</span><span class="p">,</span> <span class="s2">&quot;draw&quot;</span><span class="p">]</span>
+            <span class="n">inj_coords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;inj_event&quot;</span><span class="p">]</span>
+
+            <span class="n">pexr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+                <span class="n">data_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">pe_coords</span><span class="p">,</span> <span class="n">pedata</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">param</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
+                    <span class="n">pe_event</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                    <span class="n">draw</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                <span class="p">),</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">num_events</span><span class="o">=</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="n">injxr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+                <span class="n">data_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">inj_coords</span><span class="p">,</span> <span class="n">injdata</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">param</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
+                    <span class="n">inj_event</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">injdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="p">),</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">total_generated_injections</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">],</span>
+                    <span class="n">injection_analysis_time</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">],</span>
+                    <span class="n">num_events</span><span class="o">=</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="n">GWInfernoData</span><span class="p">(</span><span class="n">ligo_posterior_samples</span><span class="o">=</span><span class="n">pexr</span><span class="p">,</span> <span class="n">ligo_injections</span><span class="o">=</span><span class="n">injxr</span><span class="p">)</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">&quot;posterior_samples_and_injections_spin_magnitude.h5&quot;</span><span class="p">)</span>
+
+        <span class="n">pedata</span><span class="p">,</span> <span class="n">new_pmap</span><span class="p">,</span> <span class="n">new_pnames</span> <span class="o">=</span> <span class="n">convert_component_spin_posteriors_to_chieff</span><span class="p">(</span><span class="n">pedata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">chip</span><span class="o">=</span><span class="n">chi_p</span><span class="p">)</span>
         <span class="n">injdata</span><span class="p">,</span> <span class="n">new_pmap</span> <span class="o">=</span> <span class="n">convert_component_spin_injections_to_chieff</span><span class="p">(</span><span class="n">injdata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">chip</span><span class="o">=</span><span class="n">chi_p</span><span class="p">)</span>
         <span class="n">param_map</span> <span class="o">=</span> <span class="n">new_pmap</span>
+        <span class="n">param_names</span> <span class="o">=</span> <span class="n">new_pnames</span>
         <span class="n">pedata</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pedata</span><span class="p">)</span>
         <span class="n">injdata</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pedata</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
-            <span class="n">mag_data</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;injdata&quot;</span><span class="p">:</span> <span class="n">injdata</span><span class="p">,</span>
-                <span class="s2">&quot;pedata&quot;</span><span class="p">:</span> <span class="n">pedata</span><span class="p">,</span>
-                <span class="s2">&quot;param_map&quot;</span><span class="p">:</span> <span class="n">param_map</span><span class="p">,</span>
-                <span class="s2">&quot;total_generated&quot;</span><span class="p">:</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;analysis_time&quot;</span><span class="p">:</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">],</span>
-            <span class="p">}</span>
-            <span class="n">dd</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;posterior_samples_and_injections_chi_effective.h5&quot;</span><span class="p">,</span> <span class="n">mag_data</span><span class="p">)</span>
+
+            <span class="n">pe_coords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;pe_event&quot;</span><span class="p">,</span> <span class="s2">&quot;draw&quot;</span><span class="p">]</span>
+            <span class="n">inj_coords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;inj_event&quot;</span><span class="p">]</span>
+
+            <span class="n">pexr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+                <span class="n">data_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">pe_coords</span><span class="p">,</span> <span class="n">pedata</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">param</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
+                    <span class="n">pe_event</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                    <span class="n">draw</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+                <span class="p">),</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">num_events</span><span class="o">=</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">param_nums</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">param_names</span><span class="p">)]),</span>
+            <span class="p">)</span>
+
+            <span class="n">injxr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+                <span class="n">data_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">inj_coords</span><span class="p">,</span> <span class="n">injdata</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">param</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
+                    <span class="n">inj_event</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">injdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="p">),</span>
+                <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
+                    <span class="n">total_generated_injections</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">],</span>
+                    <span class="n">injection_analysis_time</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">],</span>
+                    <span class="n">num_events</span><span class="o">=</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
+                    <span class="n">param_nums</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">param_names</span><span class="p">)],</span>
+                <span class="p">),</span>
+            <span class="p">)</span>
+
+            <span class="n">GWInfernoData</span><span class="p">(</span><span class="n">ligo_posterior_samples</span><span class="o">=</span><span class="n">pexr</span><span class="p">,</span> <span class="n">ligo_injections</span><span class="o">=</span><span class="n">injxr</span><span class="p">)</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">&quot;posterior_samples_and_injections_chi_effective.h5&quot;</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">pedata</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">pe_samples</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">])</span>
@@ -449,7 +506,7 @@
             <span class="n">new_pe_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chi_eff</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">new_pe_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chi_p</span>
-    <span class="k">return</span> <span class="n">new_pe_data</span><span class="p">,</span> <span class="n">new_pmap</span></div>
+    <span class="k">return</span> <span class="n">new_pe_data</span><span class="p">,</span> <span class="n">new_pmap</span><span class="p">,</span> <span class="n">new_params</span></div>
 
 </pre></div>
 

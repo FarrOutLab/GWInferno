@@ -34,17 +34,13 @@
       
       Cosine
       
-      CubicInterpolatedPowerlaw
-      
-      LinearInterpolatedPowerlaw
-      
-      NumericallyNormalizedDistribition
-      
       PSplineCoeficientPrior
       
       Powerlaw
       
       PowerlawRedshift
+      
+      PowerlawSmoothedPowerlaw
       
       Sine
    

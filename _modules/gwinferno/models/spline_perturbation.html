@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gwinferno.models.spline_perturbation &mdash; gwinferno 0.0 documentation</title>
-      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
+
+  
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -14,7 +16,7 @@
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../../../_static/documentation_options.js?v=837179f8"></script>
-        <script src="../../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script src="../../../_static/tabs.js?v=3030b3cb"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
@@ -98,6 +100,7 @@
 
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jax.scipy.integrate</span> <span class="kn">import</span> <span class="n">trapezoid</span>
 
 <span class="kn">from</span> <span class="nn">..distributions</span> <span class="kn">import</span> <span class="n">powerlaw_pdf</span>
 <span class="kn">from</span> <span class="nn">..interpolation</span> <span class="kn">import</span> <span class="n">BSpline</span>
@@ -223,7 +226,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_m</span> <span class="o">=</span> <span class="n">powerlaw_pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=-</span><span class="n">alpha</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="n">mmax</span><span class="p">)</span>
         <span class="n">perturbation</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">norm_design_matrix</span><span class="p">,</span> <span class="n">cs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">p_m</span> <span class="o">*</span> <span class="n">perturbation</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="n">p_m</span> <span class="o">*</span> <span class="n">perturbation</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PowerlawBasisSplinePrimaryPowerlawRatio.p_q">
@@ -382,7 +385,7 @@
         <span class="n">p_q</span> <span class="o">=</span> <span class="n">powerlaw_pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qq</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">beta</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="n">mmin</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">mm</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">qperturbation</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qinterpolator</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">qnorm_design_matrix</span><span class="p">,</span> <span class="n">vs</span><span class="p">))</span>
         <span class="n">p_mq</span> <span class="o">=</span> <span class="n">p_m</span> <span class="o">*</span> <span class="n">perturbation</span> <span class="o">*</span> <span class="n">p_q</span> <span class="o">*</span> <span class="n">qperturbation</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">p_mq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">qs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">trapezoid</span><span class="p">(</span><span class="n">p_mq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">qs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ms</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PowerlawBasisSplinePrimaryRatio.p_q">
@@ -470,12 +473,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pz</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dVdz_</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">,</span> <span class="n">lamb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">pz</span> <span class="o">*=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">norm_design_matrix</span><span class="p">,</span> <span class="n">cs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">trapz</span><span class="p">(</span><span class="n">pz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">pz</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PowerlawSplineRedshiftModel.prob">
 <a class="viewcode-back" href="../../../api/gwinferno.models.spline_perturbation.PowerlawSplineRedshiftModel.html#gwinferno.models.spline_perturbation.PowerlawSplineRedshiftModel.prob">[docs]</a>
-    <span class="k">def</span> <span class="nf">prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dV_cdz</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lamb</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">cs</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">prob</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">z</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dVdz</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">lamb</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">cs</span><span class="p">:</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        prob Returns probability</span>
 
@@ -489,7 +492,7 @@
 <span class="sd">            _type_:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ndim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dV_cdz</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">z</span><span class="p">,</span> <span class="n">lamb</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dmats</span><span class="p">[</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cs</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="n">dVdz</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">z</span><span class="p">,</span> <span class="n">lamb</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dmats</span><span class="p">[</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">cs</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="PowerlawSplineRedshiftModel.__call__">

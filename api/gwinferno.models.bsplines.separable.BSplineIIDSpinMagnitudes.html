@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes &mdash; gwinferno 0.0 documentation</title>
-      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../_static/tabs.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
+
+  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -15,7 +17,7 @@
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="../_static/documentation_options.js?v=837179f8"></script>
-        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script src="../_static/js/theme.js"></script>
@@ -126,8 +128,9 @@
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">BSplineIIDSpinMagnitudes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a1_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIIDSpinMagnitudes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to construct a spin magnitude B-Spline model for both binary components, assuming they are indipendently and identically distributed (IID).</p>
 <dl>
+<dt>Class to construct a spin magnitude B-Spline model for both binary components, assuming they</dt><dd><p>are independently and identically distributed (IID).</p>
+</dd>
 <dt>Args:</dt><dd><p>n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
 a1 (array_like): primary component spin magntiude pe samples to evaluate the basis spline at
 a2 (array_like): secondary component spin magntiude pe samples to evaluate the basis spline at
@@ -148,8 +151,9 @@ knots (array_like, optional): array of knots, if non-uniform knot placing is pre
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIIDSpinMagnitudes.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.__call__" title="Link to this definition"></a></dt>
-<dd><p>will evalute the joint probability density distribution for the primary and secondary spin magnitude along the posterior or injection samples.
-Use flag <cite>pe_samples</cite> to specify which type of samples are being evaluated (pe or injection).</p>
+<dd><p>will evaluate the joint probability density distribution for the primary and secondary spin
+magnitude along the posterior or injection samples. Use flag <cite>pe_samples</cite> to specify which type
+of samples are being evaluated (pe or injection).</p>
 <dl>
 <dt>Args:</dt><dd><p>coefs (array_like): basis spline coefficients
 pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</p>
