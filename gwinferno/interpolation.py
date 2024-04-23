@@ -4,6 +4,7 @@ a module for interpolation calculations using jax
 
 import jax.numpy as jnp
 import numpy as np
+from jax.scipy.integrate import trapezoid
 from jax.tree_util import register_pytree_node_class
 
 
@@ -74,7 +75,6 @@ class BasisSpline(object):
         interior_knots=None,
         xrange=(0, 1),
         k=4,
-        proper=True,
         normalize=True,
     ):
         """
@@ -88,7 +88,6 @@ class BasisSpline(object):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         self.order = k
@@ -96,26 +95,20 @@ class BasisSpline(object):
         self.xrange = xrange
         if knots is None:
             if interior_knots is None:
-                interior_knots = np.linspace(*(0, 1), n_df - k + 2)
-            if proper:
-                dx = interior_knots[1] - interior_knots[0]
-                knots = (xrange[1] - xrange[0]) * jnp.linspace(-dx * (k - 1), 1 + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
+                interior_knots = np.linspace(xrange[0], xrange[1], n_df - k + 2)
+            dx = interior_knots[1] - interior_knots[0]
+            knots = jnp.linspace(xrange[0] - dx * (k - 1), xrange[1] + dx * (k - 1), len(interior_knots) + (k - 1) * 2)
 
-            else:
-                knots = np.append(
-                    np.append(np.array([xrange[0]] * (k - 1)), interior_knots),
-                    np.array([xrange[1]] * (k - 1)),
-                )
         self.knots = knots
-        self.interior_knots = (xrange[1] - xrange[0]) * interior_knots
+        self.interior_knots = interior_knots
         assert len(self.knots) == self.N + self.order
 
         self.normalize = normalize
         self.basis_vols = np.ones(self.N)
         if normalize:
-            grid = jnp.linspace(*xrange, 1000)
-            grid_bases = jnp.array(self.bases(grid))
-            self.basis_vols = jnp.array([jnp.trapz(grid_bases[i, :], grid) for i in range(self.N)])
+            self.grid = jnp.linspace(*xrange, 1000)
+            self.grid_bases = jnp.array(self.bases(self.grid))
+            self.basis_vols = jnp.array([trapezoid(self.grid_bases[i, :], self.grid) for i in range(self.N)])
 
     def norm(self, coefs):
         """
@@ -244,7 +237,6 @@ class BSpline(BasisSpline):
         interior_knots=None,
         xrange=(0, 1),
         k=4,
-        proper=True,
         normalize=False,
     ):
         """
@@ -258,7 +250,6 @@ class BSpline(BasisSpline):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to False.
         """
         super().__init__(
@@ -267,7 +258,6 @@ class BSpline(BasisSpline):
             interior_knots=interior_knots,
             xrange=xrange,
             k=k,
-            proper=proper,
             normalize=normalize,
         )
 
@@ -283,9 +273,22 @@ class BSpline(BasisSpline):
         """
         return [(self.knots[i + self.order] - self.knots[i]) / self.order * self._basis(xs, i, k=self.order) for i in range(self.N)]
 
-    def project(self, bases, coefs):
+    def norm(self, coefs):
         """
-        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline
+        norm numerically normalizes the spline
+
+        Args:
+            coefs (array_like): coefficients for the basis components
+
+        Returns:
+            float: the normalization factor given the coefficients
+        """
+        n = 1.0 / trapezoid(self._project(self.grid_bases, coefs), self.grid) if self.normalize else 1.0
+        return n
+
+    def _project(self, bases, coefs):
+        """
+        _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline
 
         Args:
             bases (array_like): The set of basis components or design matrix to project onto
@@ -294,7 +297,20 @@ class BSpline(BasisSpline):
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
-        return jnp.einsum("i...,i->...", bases, coefs) * self.norm(coefs)
+        return jnp.einsum("i...,i->...", bases, coefs)
+
+    def project(self, bases, coefs):
+        """
+        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization
+
+        Args:
+            bases (array_like): The set of basis components or design matrix to project onto
+            coefs (array_like): coefficients for the basis components
+
+        Returns:
+            array_like: The linear combination of the basis components given the coefficients
+        """
+        return self._project(bases, coefs) * self.norm(coefs)
 
 
 class LogXBSpline(BSpline):
@@ -310,7 +326,6 @@ class LogXBSpline(BSpline):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         knots = None if knots is None else np.log(knots)
@@ -350,7 +365,6 @@ class LogYBSpline(BSpline):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         super().__init__(n_df, knots=knots, interior_knots=interior_knots, xrange=xrange, **kwargs)
@@ -372,32 +386,6 @@ class LogYBSpline(BSpline):
         """
         return jnp.exp(jnp.einsum("i...,i->...", bases, coefs))
 
-    def project(self, bases, coefs):
-        """
-        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization
-
-        Args:
-            bases (array_like): The set of basis components or design matrix to project onto
-            coefs (array_like): coefficients for the basis components
-
-        Returns:
-            array_like: The linear combination of the basis components given the coefficients
-        """
-        return self._project(bases, coefs) * self.norm(coefs)
-
-    def norm(self, coefs):
-        """
-        norm numerically normalizes the spline
-
-        Args:
-            coefs (array_like): coefficients for the basis components
-
-        Returns:
-            float: the normalization factor given the coefficients
-        """
-        n = 1.0 / jnp.trapz(self._project(self.grid_bases, coefs), self.grid) if self.normalize else 1.0
-        return n
-
 
 class LogXLogYBSpline(LogYBSpline):
     def __init__(self, n_df, knots=None, interior_knots=None, xrange=(0.1, 1), normalize=True, **kwargs):
@@ -412,7 +400,6 @@ class LogXLogYBSpline(LogYBSpline):
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).
             k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            proper (bool, optional): flag to extend knots past boundaries (no stacking on bounds). Defaults to True.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         knots = None if knots is None else np.log(knots)
@@ -437,19 +424,6 @@ class LogXLogYBSpline(LogYBSpline):
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
         return super().bases(jnp.log(xs))
-
-    def project(self, bases, coefs):
-        """
-        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization
-
-        Args:
-            bases (array_like): The set of basis components or design matrix to project onto
-            coefs (array_like): coefficients for the basis components
-
-        Returns:
-            array_like: The linear combination of the basis components given the coefficients
-        """
-        return self._project(bases, coefs) * self.norm(coefs)
 
 
 class RectBivariateBasisSpline(object):
@@ -502,7 +476,7 @@ class RectBivariateBasisSpline(object):
         Returns:
             float: the normalization factor given the coefficients
         """
-        n = 1.0 / jnp.trapz(jnp.trapz(self._project(self.grid_bases, coefs), self.gridy), self.gridx) if self.normalize else 1.0
+        n = 1.0 / trapezoid(trapezoid(self._project(self.grid_bases, coefs), self.gridy), self.gridx) if self.normalize else 1.0
         return n
 
     def _reset_bases(self):

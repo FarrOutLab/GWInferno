@@ -8,12 +8,16 @@ import numpy as np
 import numpyro
 import numpyro.distributions as dist
 from jax import random
+from jax.scipy.integrate import trapezoid
 from numpyro.infer import MCMC
 from numpyro.infer import NUTS
 
 from gwinferno.models.gwpopulation.gwpopulation import PowerlawRedshiftModel
 from gwinferno.models.gwpopulation.gwpopulation import powerlaw_primary_ratio_pdf
+from gwinferno.pipeline.analysis import construct_hierarchical_model
 from gwinferno.pipeline.analysis import hierarchical_likelihood
+from gwinferno.pipeline.parser import ConfigReader
+from gwinferno.pipeline.parser import load_model_from_python_file
 from gwinferno.preprocess.data_collection import load_posterior_samples
 from gwinferno.preprocess.selection import load_injections
 
@@ -23,7 +27,7 @@ def norm_mass_model(alpha, beta, mmin, mmax):
     qs = jnp.linspace(0.01, 1, 300)
     mm, qq = jnp.meshgrid(ms, qs)
     p_mq = powerlaw_primary_ratio_pdf(mm, qq, alpha=alpha, beta=beta, mmin=mmin, mmax=mmax)
-    return jnp.trapz(jnp.trapz(p_mq, qs, axis=0), ms)
+    return trapezoid(trapezoid(p_mq, qs, axis=0), ms)
 
 
 class TestTruncatedModelInference(unittest.TestCase):
@@ -144,7 +148,7 @@ class TestTruncatedModelInference(unittest.TestCase):
 
     def test_truncated_prior_sample(self):
         RNG = random.PRNGKey(3)
-        kernel = NUTS(self.truncated_numpyro_model)
+        kernel = NUTS(self.truncated_numpyro_model, max_tree_depth=2, adapt_mass_matrix=False)
         mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
         mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=True)
         samples = mcmc.get_samples()
@@ -154,10 +158,30 @@ class TestTruncatedModelInference(unittest.TestCase):
 
     def test_truncated_posterior_sample(self):
         RNG = random.PRNGKey(4)
-        kernel = NUTS(self.truncated_numpyro_model)
+        kernel = NUTS(self.truncated_numpyro_model, max_tree_depth=2, adapt_mass_matrix=False)
         mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
         mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=False)
         samples = mcmc.get_samples()
         self.assertEqual(samples["alpha"].shape, (5,))
         self.assertEqual(samples["beta"].shape, (5,))
         self.assertEqual(samples["lamb"].shape, (5,))
+
+    def test_config_reader(self):
+        config_reader = ConfigReader()
+        config_reader.parse("gwinferno/pipeline/config_files/example_config.yml")
+        model_dict, prior_dict = config_reader.models, config_reader.priors
+        data_conf, sampler_conf, likelihood_kwargs = config_reader.data_conf, config_reader.sampler_conf, config_reader.likelihood_kwargs
+        sampling_params, label, outdir = config_reader.sampling_params, config_reader.label, config_reader.outdir
+        model = construct_hierarchical_model(model_dict, prior_dict, **likelihood_kwargs)
+        del data_conf, sampler_conf, sampling_params, label, outdir, model, likelihood_kwargs, prior_dict
+
+    def test_config_py_reader(self):
+        config_reader = ConfigReader()
+        config_reader.parse("gwinferno/pipeline/config_files/example_config_python_model.yml")
+        model_dict, prior_dict = config_reader.models, config_reader.priors
+        data_conf, sampler_conf, likelihood_kwargs = config_reader.data_conf, config_reader.sampler_conf, config_reader.likelihood_kwargs
+        sampling_params, label, outdir = config_reader.sampling_params, config_reader.label, config_reader.outdir
+        model = load_model_from_python_file(model_dict.pop("file_path"))
+        self.assertFalse(prior_dict)
+        self.assertFalse(model_dict)
+        del data_conf, sampler_conf, sampling_params, label, outdir, model, likelihood_kwargs, prior_dict

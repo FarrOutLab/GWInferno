@@ -11,24 +11,14 @@ repos:
     rev: 5.12.0
     hooks:
     -   id: isort # sort imports alphabetically and separates import into sections
-        args: [-w=150, -sl, --gitignore]
+        args: [-w=150, --sl, --gitignore]
 -   repo: https://github.com/ambv/black
     rev: 22.6.0
     hooks:
     -   id: black
         language_version: python3
         args: ['-l 150']
--   repo: local
-    hooks:
-    -   id: flynt
-        name: flynt
-        entry: flynt
-        args: [--fail-on-change]
-        types: [python]
-        language: python
-        additional_dependencies:
-            - flynt
 -   repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 7.0.0
     hooks:
     -   id: flake8

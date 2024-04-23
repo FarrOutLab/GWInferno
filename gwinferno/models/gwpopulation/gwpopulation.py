@@ -1,6 +1,7 @@
 import jax.numpy as jnp
 import numpy as np
 from astropy.cosmology import Planck15
+from jax.scipy.integrate import trapezoid
 
 from ...distributions import betadist
 from ...distributions import powerlaw_logit_pdf
@@ -96,32 +97,32 @@ class PowerlawRedshiftModel(object):
         self.zmin = jnp.max(jnp.array([jnp.min(z_pe), jnp.min(z_inj)]))
         self.zmax = jnp.min(jnp.array([jnp.max(z_pe), jnp.max(z_inj)]))
         self.zs = jnp.linspace(self.zmin, self.zmax, 1000)
-        self.dVdc_ = jnp.array(Planck15.differential_comoving_volume(np.array(self.zs)).value * 4.0 * np.pi)
-        self.dVdcs = [
+        self.dVdz_ = jnp.array(Planck15.differential_comoving_volume(np.array(self.zs)).value * 4.0 * np.pi)
+        self.dVdzs = [
             jnp.array(Planck15.differential_comoving_volume(np.array(z_inj)).value * 4.0 * np.pi),
             jnp.array(Planck15.differential_comoving_volume(np.array(z_pe)).value * 4.0 * np.pi),
         ]
 
     def normalization(self, lamb):
-        return jnp.trapz(self.prob(self.zs, self.dVdc_, lamb), self.zs)
+        return trapezoid(self.prob(self.zs, self.dVdz_, lamb), self.zs)
 
-    def prob(self, z, dVdc, lamb):
-        return dVdc * jnp.power(1.0 + z, lamb - 1.0)
+    def prob(self, z, dVdz, lamb):
+        return dVdz * jnp.power(1.0 + z, lamb - 1.0)
 
     def log_prob(self, z, lamb):
         ndim = len(z.shape)
-        dVdc = self.dVdcs[ndim - 1]
+        dVdz = self.dVdzs[ndim - 1]
         return jnp.where(
             jnp.less_equal(z, self.zmax),
-            jnp.log(dVdc) + (lamb - 1.0) * jnp.log(1.0 + z) - jnp.log(self.normalization(lamb)),
+            jnp.log(dVdz) + (lamb - 1.0) * jnp.log(1.0 + z) - jnp.log(self.normalization(lamb)),
             jnp.nan_to_num(-jnp.inf),
         )
 
     def __call__(self, z, lamb):
         ndim = len(z.shape)
-        dVdc = self.dVdcs[ndim - 1]
+        dVdz = self.dVdzs[ndim - 1]
         return jnp.where(
             jnp.less_equal(z, self.zmax),
-            self.prob(z, dVdc, lamb) / self.normalization(lamb),
+            self.prob(z, dVdz, lamb) / self.normalization(lamb),
             0,
         )

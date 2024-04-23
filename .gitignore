@@ -34,3 +34,7 @@ docs/_build/_sources
 docs/_build/_static
 environment.yml
 gwinferno_env.txt
+bin/submit**
+environment.txt
+*.h5
+conda_env.sh

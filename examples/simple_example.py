@@ -8,6 +8,7 @@ import numpy as np
 import numpyro
 from jax import jit
 from jax import random
+from jax.scipy.integrate import trapezoid
 from numpyro import distributions as dist
 from numpyro.infer import MCMC
 from numpyro.infer import NUTS
@@ -39,7 +40,7 @@ def norm_mass_model(alpha, beta, mmin, mmax):
     qs = jnp.linspace(0.01, 1, 500)
     mm, qq = jnp.meshgrid(ms, qs)
     p_mq = truncated_powerlaw(mm, alpha=-alpha, low=mmin, high=mmax) * truncated_powerlaw(qq, alpha=beta, low=mmin / mm, high=1)
-    return jnp.trapz(jnp.trapz(p_mq, qs, axis=0), ms)
+    return trapezoid(trapezoid(p_mq, qs, axis=0), ms)
 
 
 def load_parser():
@@ -163,9 +164,9 @@ def calculate_m1q(alpha, beta, mmin, mmax, rate=None):
     def calc_pdf(a, b, mi, ma, r):
         p_mq = truncated(mm, qq, alpha=a, beta=b, mmin=mi, mmax=ma)
         p_mq = jnp.where(jnp.less(mm, mmin) | jnp.less(mm * qq, mmin), 0, p_mq)
-        p_m = jnp.trapz(p_mq, qs, axis=0)
-        p_q = jnp.trapz(p_mq, ms, axis=1)
-        return r * p_m / jnp.trapz(p_m, ms), r * p_q / jnp.trapz(p_q, qs)
+        p_m = trapezoid(p_mq, qs, axis=0)
+        p_q = trapezoid(p_mq, ms, axis=1)
+        return r * p_m / trapezoid(p_m, ms), r * p_q / trapezoid(p_q, qs)
 
     calc_pdf = jit(calc_pdf)
     _ = calc_pdf(alpha[0], beta[0], mmin, mmax, rate[0])

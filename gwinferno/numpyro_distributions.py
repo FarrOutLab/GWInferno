@@ -6,14 +6,14 @@ import jax.numpy as jnp
 from jax import lax
 from jax import random
 from jax import vmap
+from jax.lax import broadcast_shapes
+from jax.scipy.integrate import trapezoid
 from numpyro.distributions import Distribution
 from numpyro.distributions import constraints
 from numpyro.distributions.util import is_prng_key
 from numpyro.distributions.util import promote_shapes
 from numpyro.distributions.util import validate_sample
 
-from .cosmology import PLANCK_2018_Cosmology as cosmo
-from .interpolation import NaturalCubicUnivariateSpline
 from .models.bsplines.smoothing import apply_difference_prior
 
 
@@ -47,7 +47,8 @@ class Sine(Distribution):
 
     @validate_sample
     def log_prob(self, value):
-        return jnp.sin(value) / 2.0
+        lp = jnp.log(jnp.sin(value) / 2.0)
+        return jnp.where(jnp.isnan(lp), -jnp.inf, lp)
 
     def cdf(self, value):
         cdf = jnp.atleast_1d((jnp.cos(value) - jnp.cos(self.minimum)) / (jnp.cos(self.maximum) - jnp.cos(self.minimum)))
@@ -83,7 +84,8 @@ class Cosine(Distribution):
 
     @validate_sample
     def log_prob(self, value):
-        return jnp.cos(value) / 2.0
+        lp = jnp.log(jnp.cos(value) / 2.0)
+        return jnp.where(jnp.isnan(lp), -jnp.inf, lp)
 
     def cdf(self, value):
         cdf = jnp.atleast_1d((jnp.sin(value) - jnp.sin(self.minimum)) / (jnp.sin(self.maximum) - jnp.sin(self.minimum)))
@@ -104,10 +106,10 @@ class Powerlaw(Distribution):
     }
     reparametrized_params = ["minimum", "maximum", "alpha"]
 
-    def __init__(self, alpha, minimum=0.0, maximum=1.0, low=0.0, high=0.0, validate_args=None):
+    def __init__(self, alpha, minimum=0.0, maximum=1.0, low=0.0, high=1.0, validate_args=None):
         self.minimum, self.maximum, self.alpha = promote_shapes(minimum, maximum, alpha)
         self._support = constraints.interval(low, high)
-        batch_shape = lax.broadcast_shapes(
+        batch_shape = broadcast_shapes(
             jnp.shape(minimum),
             jnp.shape(maximum),
             jnp.shape(alpha),
@@ -151,26 +153,27 @@ class Powerlaw(Distribution):
         return jnp.where(jnp.equal(self.alpha, -1.0), icdf_neg1, icdf)
 
 
-class NumericallyNormalizedDistribition(Distribution):
+class PowerlawRedshift(Distribution):
     arg_constraints = {
-        "maximum": constraints.real,
-        "minimum": constraints.real,
+        "maximum": constraints.positive,
+        "lamb": constraints.real,
     }
-    reparametrized_params = ["maximum", "minimum"]
+    reparametrized_params = ["maximum", "lamb"]
 
-    def __init__(self, minimum, maximum, Ngrid=1000, grid=None, validate_args=None):
-        self.maximum, self.minimum = promote_shapes(maximum, minimum)
-        self._support = constraints.real
-        batch_shape = lax.broadcast_shapes(
+    def __init__(self, lamb, maximum, zgrid, dVcdz, low=0.0, high=1000.0, validate_args=None):
+        self.maximum, self.lamb = promote_shapes(maximum, lamb)
+        self._support = constraints.interval(low, high)
+        batch_shape = broadcast_shapes(
             jnp.shape(maximum),
-            jnp.shape(minimum),
+            jnp.shape(lamb),
         )
-        super(NumericallyNormalizedDistribition, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
-        self.grid = grid if grid is not None else jnp.linspace(minimum, maximum, Ngrid)
-        self.pdfs = jnp.exp(self._log_prob_nonorm(self.grid))
-        self.norm = jnp.trapz(self.pdfs, self.grid)
+        super(PowerlawRedshift, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
+        self.zs = zgrid
+        self.dVdc_ = dVcdz
+        self.pdfs = self.dVdc_ * (1 + self.zs) ** (lamb - 1)
+        self.norm = trapezoid(self.pdfs, self.zs)
         self.pdfs /= self.norm
-        self.cdfgrid = cumtrapz(self.pdfs, self.grid)
+        self.cdfgrid = cumtrapz(self.pdfs, self.zs)
         self.cdfgrid = self.cdfgrid.at[-1].set(1)
 
     @constraints.dependent_property(is_discrete=False, event_dim=0)
@@ -181,64 +184,75 @@ class NumericallyNormalizedDistribition(Distribution):
         assert is_prng_key(key)
         return self.icdf(random.uniform(key, shape=sample_shape + self.batch_shape))
 
-    def _log_prob_nonorm(self, value):
-        raise NotImplementedError
-
     @validate_sample
-    def log_prob(self, value):
+    def log_prob(self, value, dVdc=None):
+        if dVdc is None:
+            dVdc = jnp.interp(value, self.zs, self.dVdc_)
         return jnp.where(
-            jnp.less(value, self.minimum) | jnp.greater(value, self.maximum),
+            jnp.less_equal(value, self.maximum),
+            jnp.log(dVdc) + (self.lamb - 1.0) * jnp.log(1.0 + value) - jnp.log(self.norm),
             jnp.nan_to_num(-jnp.inf),
-            self._log_prob_nonorm(value) - jnp.log(self.norm),
         )
 
     def cdf(self, value):
-        return jnp.interp(value, self.grid, self.cdfgrid)
+        return jnp.interp(value, self.zs, self.cdfgrid)
 
     def icdf(self, q):
-        return jnp.interp(q, self.cdfgrid, self.grid)
+        return jnp.interp(q, self.cdfgrid, self.zs)
 
 
-class PowerlawRedshift(NumericallyNormalizedDistribition):
-    arg_constraints = {"maximum": constraints.positive, "lamb": constraints.real}
-    reparametrized_params = ["maximum", "lamb"]
-
-    def __init__(self, lamb, maximum, Ngrid=1000, grid=None, validate_args=None):
-        self.lamb = lamb
-        super().__init__(minimum=1e-11, maximum=maximum, Ngrid=Ngrid, grid=grid, validate_args=validate_args)
-        self._support = constraints.positive
-
-    def _log_prob_nonorm(self, value):
-        return (self.lamb - 1) * jnp.log(1 + value) + cosmo.logdVcdz(value)
-
-
-class LinearInterpolatedPowerlaw(NumericallyNormalizedDistribition):
+class PowerlawSmoothedPowerlaw(Distribution):
     arg_constraints = {
-        "yinterps": constraints.real_vector,
-        "xinterps": constraints.ordered_vector,
-        "maximum": constraints.real,
-        "minimum": constraints.real,
+        "minimum": constraints.positive,
+        "maximum": constraints.positive,
         "alpha": constraints.real,
+        "alpha_max": constraints.positive,
+        "alpha_min": constraints.positive,
     }
-    reparametrized_params = ["yinterps", "xinterps", "maximum", "minimum", "alpha"]
+    reparametrized_params = ["minimum", "maximum", "alpha", "alpha_max", "alpha_min"]
 
-    def __init__(self, xinterps, yinterps, minimum, maximum, alpha, Ngrid=1000, validate_args=None):
-        self.alpha = alpha
-        self.xinterps = xinterps
-        self.yinterps = yinterps
-        super(LinearInterpolatedPowerlaw, self).__init__(minimum, maximum, Ngrid=Ngrid, validate_args=validate_args)
+    def __init__(self, alpha, minimum, maximum, alpha_max, alpha_min, low, high, validate_args=None):
+        self.minimum, self.maximum, self.alpha, self.alpha_max, self.alpha_min = promote_shapes(minimum, maximum, alpha, alpha_max, alpha_min)
+        self.alpha_max = -self.alpha_max
+        self._support = constraints.interval(low, high)
+        self.low, self.high = low, high
+        batch_shape = broadcast_shapes(jnp.shape(maximum), jnp.shape(minimum), jnp.shape(alpha), jnp.shape(alpha_max), jnp.shape(alpha_min))
+        super(PowerlawSmoothedPowerlaw, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
+        gamma = (self.alpha_min + 1) / (self.minimum ** (self.alpha_min + 1) - self.low ** (self.alpha_min + 1))
+        self.k1 = -gamma / (
+            1
+            + gamma
+            / (self.alpha + 1)
+            * self.minimum ** (self.alpha_min - self.alpha)
+            * (self.minimum ** (self.alpha + 1) - self.maximum ** (self.alpha + 1))
+            + gamma
+            / (self.alpha_max + 1)
+            * self.minimum ** (self.alpha_min - self.alpha)
+            * self.maximum ** (self.alpha - self.alpha_max)
+            * (self.maximum ** (self.alpha_max + 1) - self.high ** (self.alpha_max + 1))
+        )
+        self.k2 = self.k1 * self.minimum ** (self.alpha_min - self.alpha)
+        self.k3 = self.k2 * self.maximum ** (self.alpha - self.alpha_max)
 
-    def _log_prob_nonorm(self, value):
-        return self.alpha * jnp.log(value) + jnp.interp(value, self.xinterps, self.yinterps)
+    @constraints.dependent_property(is_discrete=False, event_dim=0)
+    def support(self):
+        return self._support
 
+    def sample(self, key, sample_shape=()):
+        assert is_prng_key(key)
+        shape = sample_shape + self.batch_shape
+        return jnp.ones(shape)
 
-class CubicInterpolatedPowerlaw(LinearInterpolatedPowerlaw):
-    def __init__(self, xinterps, yinterps, minimum, maximum, alpha, Ngrid=1000, validate_args=None):
-        self.interpolator = NaturalCubicUnivariateSpline(xinterps, yinterps)
-        super(CubicInterpolatedPowerlaw, self).__init__(xinterps, yinterps, minimum, maximum, alpha, Ngrid=Ngrid, validate_args=validate_args)
-
-    def _log_prob_nonorm(self, value):
-        return self.alpha * jnp.log(value) + self.interpolator(value)
+    @validate_sample
+    def log_prob(self, value):
+        low_pl = jnp.where(jnp.less(value, self.minimum), jnp.log(self.k1) + jnp.log(value) * self.alpha_min, 0.0)
+        high_pl = jnp.where(jnp.greater(value, self.maximum), jnp.log(self.k3) + jnp.log(value) * self.alpha_max, 0.0)
+        mid_pl = jnp.where(
+            jnp.greater_equal(value, self.minimum),
+            jnp.where(jnp.less_equal(value, self.maximum), jnp.log(self.k2) + jnp.log(value) * self.alpha, 0.0),
+            0.0,
+        )
+        return low_pl + mid_pl + high_pl
 
 
 class BSplineDistribution(Distribution):
@@ -257,7 +271,7 @@ class BSplineDistribution(Distribution):
         self.grid = grid
         self.lpdfs = jnp.einsum("i,i...->...", self.cs, grid_dmat)
         self.pdfs = jnp.exp(self.lpdfs)
-        self.norm = jnp.trapz(self.pdfs, self.grid)
+        self.norm = trapezoid(self.pdfs, self.grid)
         self.pdfs /= self.norm
         self.cdfgrid = cumtrapz(self.pdfs, self.grid)
         self.cdfgrid = self.cdfgrid.at[-1].set(1)

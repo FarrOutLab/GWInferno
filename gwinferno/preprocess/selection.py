@@ -54,11 +54,19 @@ def get_injection_dict(fi, ifar=1, snr=11, spin=False, additional_cuts=None):
     return injs
 
 
-def get_semianlytic_injection_dict(fi, snr=8, additional_cuts=None):
+def get_semianlytic_injection_dict(fi, snr=8, additional_cuts=None, o4=False):
     with h5py.File(fi, "r") as ff:
-        data = ff["injections"]
+        if o4:
+            data = ff["events"]
+        else:
+            data = ff["injections"]
         found = np.zeros_like(data["mass1_source"][()], dtype=bool)
-        found = data["optimal_snr_l"][()] > snr
+        if o4:
+            found = data["snr_L"][()] > snr
+            z = "z"
+        else:
+            found = data["optimal_snr_l"][()] > snr
+            z = "redshift"
         if additional_cuts is not None:
             for k in additional_cuts.keys():
                 found = found | data[k][()] > additional_cuts[k]
@@ -66,7 +74,7 @@ def get_semianlytic_injection_dict(fi, snr=8, additional_cuts=None):
             mass_1=data["mass1_source"][()][found],
             mass_2=data["mass2_source"][()][found],
             mass_ratio=data["mass2_source"][()][found] / data["mass1_source"][()][found],
-            redshift=data["redshift"][()][found],
+            redshift=data[z][()][found],
             total_generated=int(data.attrs["total_generated"][()]),
             analysis_time=data.attrs["analysis_time_s"][()] / 365.25 / 24 / 60 / 60,
         )
@@ -74,16 +82,9 @@ def get_semianlytic_injection_dict(fi, snr=8, additional_cuts=None):
     return injs
 
 
-def load_injections(
-    injfile,
-    ifar_threshold=1,
-    snr_threshold=11,
-    spin=False,
-    semianalytic=False,
-    additional_cuts=None,
-):
+def load_injections(injfile, ifar_threshold=1, snr_threshold=11, spin=False, semianalytic=False, additional_cuts=None, o4=False):
     if semianalytic:
-        return get_semianlytic_injection_dict(injfile, additional_cuts=additional_cuts)
+        return get_semianlytic_injection_dict(injfile, additional_cuts=additional_cuts, o4=o4)
     else:
         return get_injection_dict(
             injfile,

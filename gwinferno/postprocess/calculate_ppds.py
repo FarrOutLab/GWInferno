@@ -5,6 +5,7 @@ a module with utilities for calculating population posterior distributions (i.e.
 import jax.numpy as jnp
 import numpy as np
 from jax import jit
+from jax.scipy.integrate import trapezoid
 from tqdm import trange
 
 from gwinferno.interpolation import LogXLogYBSpline
@@ -24,8 +25,8 @@ def calculate_m1q_ppds_plbspline_model(posterior, mass_model, nknots, rate=None,
     def calc_pdf(a, b, mi, ma, fs, r):
         p_mq = masspdf(mm, qq, alpha=a, beta=b, mmin=mi, mmax=ma, cs=fs)
         p_mq = jnp.where(jnp.isinf(p_mq) | jnp.isnan(p_mq), 0, p_mq)
-        p_m = jnp.trapz(p_mq, qs, axis=0)
-        p_q = jnp.trapz(p_mq, ms, axis=1)
+        p_m = trapezoid(p_mq, qs, axis=0)
+        p_q = trapezoid(p_mq, ms, axis=1)
         return p_m * r, p_q * r
 
     try:
@@ -82,7 +83,7 @@ def calculate_powerbspline_rate_of_z_ppds(lamb, z_cs, rate, model):
     rs = np.zeros((len(lamb), len(zs)))
 
     def calc_rz(cs, la, r):
-        return r * jnp.power(1.0 + zs, la) * jnp.exp(model.interpolator.project(model.norm_design_matrix, (model.nknots, 1), cs))
+        return r * jnp.power(1.0 + zs, la) * jnp.exp(model.interpolator.project(model.norm_design_matrix, cs))
 
     calc_rz = jit(calc_rz)
     _ = calc_rz(z_cs[0], lamb[0], rate[0])
@@ -93,13 +94,13 @@ def calculate_powerbspline_rate_of_z_ppds(lamb, z_cs, rate, model):
 
 def calculate_iid_spin_bspline_ppds(coefs, model, nknots, rate=None, xmin=0, xmax=1, k=4, ngrid=500, pop_frac=None, pop_num=None, **model_kwargs):
     xs = np.linspace(xmin, xmax, ngrid)
-    pdf = model(nknots, xs, xs, xs, xs, order=k - 1, **model_kwargs)
+    pdf = model(nknots, xs, xs, xs, xs, degree=k - 1, **model_kwargs)
     pdfs = np.zeros((coefs.shape[0], len(xs)))
     if rate is None:
         rate = jnp.ones(coefs.shape[0])
 
     def calc_pdf(cs, r):
-        return pdf.primary_model(1, cs)  # * r
+        return pdf.primary_model(cs)  # * r
 
     calc_pdf = jit(calc_pdf)
     _ = calc_pdf(coefs[0], rate[0])
@@ -116,14 +117,14 @@ def calculate_iid_spin_bspline_ppds(coefs, model, nknots, rate=None, xmin=0, xma
 
 def calculate_ind_spin_bspline_ppds(coefs, scoefs, model, nknots, rate=None, xmin=0, xmax=1, k=4, ngrid=750, **model_kwargs):
     xs = jnp.linspace(xmin, xmax, ngrid)
-    pdf = model(nknots, xs, xs, xs, xs, order=k - 1, **model_kwargs)
+    pdf = model(nknots, xs, xs, xs, xs, degree=k - 1, **model_kwargs)
     ppdfs = np.zeros((coefs.shape[0], len(xs)))
     spdfs = np.zeros((coefs.shape[0], len(xs)))
     if rate is None:
         rate = jnp.ones(coefs.shape[0])
 
     def calc_pdf(pcs, scs, r):
-        return pdf.primary_model(1, pcs), pdf.secondary_model(1, scs)  # * r
+        return pdf.primary_model(pcs), pdf.secondary_model(scs)  # * r
 
     calc_pdf = jit(calc_pdf)
     _, _ = calc_pdf(coefs[0], scoefs[0], rate[0])
@@ -135,13 +136,13 @@ def calculate_ind_spin_bspline_ppds(coefs, scoefs, model, nknots, rate=None, xmi
 
 def calculate_chieff_bspline_ppds(coefs, model, nknots, rate=None, xmin=-1, xmax=1, k=4, ngrid=750, **model_kwargs):
     xs = jnp.linspace(xmin, xmax, ngrid)
-    pdf = model(nknots, xs, xs, order=k - 1, **model_kwargs)
+    pdf = model(nknots, xs, xs, degree=k - 1, **model_kwargs)
     pdfs = np.zeros((coefs.shape[0], len(xs)))
     if rate is None:
         rate = jnp.ones(coefs.shape[0])
 
     def calc_pdf(cs, r):
-        return pdf(1, cs) * r
+        return pdf(cs) * r
 
     calc_pdf = jit(calc_pdf)
     _ = calc_pdf(coefs[0], rate[0])
@@ -164,14 +165,15 @@ def calculate_m1q_bspline_ppds(
         rate = jnp.ones(mcoefs.shape[0])
 
     def calc_pdf(mcs, qcs, r, pop_frac):
-        p_mq = mass_pdf(2, mcs, qcs)
+        p_mq = mass_pdf(mcs, qcs)
         p_mq = jnp.where(jnp.less(mm, m1mmin) | jnp.less(mm * qq, mmin), 0, p_mq)
-        p_m = jnp.trapz(p_mq, qs, axis=0)
-        p_q = jnp.trapz(p_mq, ms, axis=1)
-        return r * p_m * pop_frac / jnp.trapz(p_m, ms), r * p_q * pop_frac / jnp.trapz(p_q, qs)
+        p_m = trapezoid(p_mq, qs, axis=0)
+        p_q = trapezoid(p_mq, ms, axis=1)
+        return r * p_m * pop_frac / trapezoid(p_m, ms), r * p_q * pop_frac / trapezoid(p_q, qs)
 
     calc_pdf = jit(calc_pdf)
-    _ = calc_pdf(mcoefs[0], qcoefs[0], rate[0], pop_frac[0][0])
+    # _ = calc_pdf(mcoefs[0], qcoefs[0], rate[0], pop_frac[0][0])
+
     # loop through hyperposterior samples
     if isinstance(pop_frac, int):
         for ii in trange(mcoefs.shape[0]):
@@ -189,7 +191,7 @@ def calculate_m1q_bspline_weights(
     rate = 1
 
     def calc_pdf(mcs, qcs, r):
-        p_mq = mass_pdf(2, mcs, qcs)
+        p_mq = mass_pdf(mcs, qcs)
         p_mq = jnp.where(jnp.less(m, m1mmin) | jnp.less(m * q, mmin), 0, p_mq)
         return r * p_mq
 
@@ -200,11 +202,11 @@ def calculate_m1q_bspline_weights(
 
 
 def calculate_iid_spin_bspline_weights(xs, coefs, model, nknots, rate=1, xmin=0, xmax=1, k=4, ngrid=500, pop_frac=None, pop_num=None, **model_kwargs):
-    pdf = model(nknots, xs, xs, xs, xs, order=k - 1, **model_kwargs)
+    pdf = model(nknots, xs, xs, xs, xs, degree=k - 1, **model_kwargs)
     pdfs = np.zeros((coefs.shape[0], len(xs)))
 
     def calc_pdf(cs, r):
-        return pdf.primary_model(1, cs)  # * r
+        return pdf.primary_model(cs)  # * r
 
     calc_pdf = jit(calc_pdf)
     # loop through hyperposterior samples
@@ -219,7 +221,7 @@ def calculate_iid_spin_bspline_weights(xs, coefs, model, nknots, rate=1, xmin=0,
 
 
 def calculate_m1_bspline_q_powerlaw_ppds(
-    mcoefs, mass_model, nknots, rate=None, mmin=3.0, m1mmin=3.0, mmax=100.0, pop_frac=1, basis=LogXLogYBSpline, **model_kwargs
+    mcoefs, mass_model, nknots, rate=None, mmin=3.0, m1mmin=3.0, mmax=100.0, pop_frac=1, pop_num=2, basis=LogXLogYBSpline, **model_kwargs
 ):
     ms = np.linspace(m1mmin, mmax, 800)
     qs = np.linspace(mmin / mmax, 1, 800)
@@ -240,14 +242,14 @@ def calculate_m1_bspline_q_powerlaw_ppds(
     def calc_pdf(mcs, r, pop_frac, beta):
         p_mq = mass_pdf(mm, qq, beta, mmin, mcs)
         p_mq = jnp.where(jnp.less(mm, m1mmin) | jnp.less(mm * qq, mmin), 0, p_mq)
-        p_m = jnp.trapz(p_mq, qs, axis=0)
-        p_q = jnp.trapz(p_mq, ms, axis=1)
-        return r * p_m * pop_frac / jnp.trapz(p_m, ms), r * p_q * pop_frac / jnp.trapz(p_q, qs)
+        p_m = trapezoid(p_mq, qs, axis=0)
+        p_q = trapezoid(p_mq, ms, axis=1)
+        return r * p_m * pop_frac / trapezoid(p_m, ms), r * p_q * pop_frac / trapezoid(p_q, qs)
 
     calc_pdf = jit(calc_pdf)
     # loop through hyperposterior samples
     for ii in trange(mcoefs.shape[0]):
-        mpdfs[ii], qpdfs[ii] = calc_pdf(mcoefs[ii], rate[ii], pop_frac[ii][2], model_kwargs["beta"][ii])
+        mpdfs[ii], qpdfs[ii] = calc_pdf(mcoefs[ii], rate[ii], pop_frac[ii][pop_num], model_kwargs["beta"][ii])
     return mpdfs, qpdfs, ms, qs
 
 
@@ -273,11 +275,11 @@ def calculate_m1m2_bspline_ppds(
         rate = jnp.ones(mcoefs.shape[0])
 
     def calc_pdf(mcs1, r, pop_frac, beta):
-        p_m1m2 = mass_pdf(2, mcs1, beta=beta)
+        p_m1m2 = mass_pdf(mcs1, beta=beta)
         p_m1m2 = jnp.where(jnp.less(mm1, mmin) | jnp.less(mm2, mmin), 0, p_m1m2)
-        p_m1 = jnp.trapz(p_m1m2, ms2, axis=0)
-        p_m2 = jnp.trapz(p_m1m2, ms1, axis=1)
-        return r * p_m1 * pop_frac / jnp.trapz(p_m1, ms1), r * p_m2 * pop_frac / jnp.trapz(p_m2, ms2)
+        p_m1 = trapezoid(p_m1m2, ms2, axis=0)
+        p_m2 = trapezoid(p_m1m2, ms1, axis=1)
+        return r * p_m1 * pop_frac / trapezoid(p_m1, ms1), r * p_m2 * pop_frac / trapezoid(p_m2, ms2)
 
     calc_pdf = jit(calc_pdf)
     # loop through hyperposterior samples
