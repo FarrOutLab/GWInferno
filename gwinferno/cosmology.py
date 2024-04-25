@@ -21,11 +21,11 @@ PC_CGS = PC_SI * 1e2
 MPC_CGS = MPC_SI * 1e2
 MSUN_CGS = MSUN_SI * 1e3
 
-# Planck 2018 Cosmology (Table1 in arXiv:1807.06209)
-PLANCK_2018_Ho = 67.32 / (MPC_SI * 1e-3)  # (km/s/Mpc) / (m/Mpc * km/m) = s**-1
-PLANCK_2018_OmegaMatter = 0.3158
-PLANCK_2018_OmegaLambda = 1.0 - PLANCK_2018_OmegaMatter
-PLANCK_2018_OmegaRadiation = 0.0
+# Planck 2015 Cosmology (Table4 in arXiv:1502.01589, OmegaMatter from astropy Planck 2015)
+PLANCK_2015_Ho = 67.74 / (MPC_SI * 1e-3)  # (km/s/Mpc) / (m/Mpc * km/m) = s**-1
+PLANCK_2015_OmegaMatter = 0.3089
+PLANCK_2015_OmegaLambda = 1.0 - PLANCK_2015_OmegaMatter
+PLANCK_2015_OmegaRadiation = 0.0
 
 DEFAULT_DZ = 1e-3  # should be good enough for most numeric integrations we want to do
 
@@ -152,9 +152,9 @@ class Cosmology(object):
 
 # define default cosmology
 
-PLANCK_2018_Cosmology = Cosmology(
-    PLANCK_2018_Ho,
-    PLANCK_2018_OmegaMatter,
-    PLANCK_2018_OmegaRadiation,
-    PLANCK_2018_OmegaLambda,
+PLANCK_2015_Cosmology = Cosmology(
+    PLANCK_2015_Ho,
+    PLANCK_2015_OmegaMatter,
+    PLANCK_2015_OmegaRadiation,
+    PLANCK_2015_OmegaLambda,
 )
