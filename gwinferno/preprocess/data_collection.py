@@ -13,7 +13,7 @@ import xarray as xr
 from jax.scipy.integrate import trapezoid
 from tqdm import trange
 
-from ..cosmology import PLANCK_2018_Cosmology as cosmo
+from ..cosmology import PLANCK_2015_Cosmology as cosmo
 from ..types.data import GWInfernoData
 from .conversions import chieff_from_q_component_spins
 from .conversions import chip_from_q_component_spins
