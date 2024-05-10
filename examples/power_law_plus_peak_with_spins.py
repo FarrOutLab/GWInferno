@@ -74,7 +74,7 @@ def load_parser():
         type=str,
         default="/home/bruce.edelman/projects/GWTC3_allevents/o1o2o3_mixture_injections.hdf5",
     )
-    parser.add_argument("--outdir", type=str, default="test")
+    parser.add_argument("--outdir", type=str, default="PLPeakResults")
     parser.add_argument("--mmin", type=float, default=4.0)
     parser.add_argument("--mmax", type=float, default=100.0)
     parser.add_argument("--chains", type=int, default=1)

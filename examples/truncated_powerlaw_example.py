@@ -98,6 +98,8 @@ def model(
     mmin = 5.0  # numpyro.sample("mmin", dist.Uniform(4, 9))
     mmax = 85.0  # numpyro.sample("mmax", dist.Uniform(50, 100))
     lamb = numpyro.sample("lamb", dist.Normal(0, 3))
+    
+    print('printing alpha',alpha)
 
     if not sample_prior:
 
