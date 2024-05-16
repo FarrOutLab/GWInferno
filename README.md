@@ -41,8 +41,8 @@ To enable JAX access to CUDA enabled GPUs we need to specify specific versions t
 cd gwinferno
 conda create -n gwinferno_gpu python=3.10
 conda activate gwinferno_gpu
-conda install -c nvidia -c conda-forge jaxlib=*=*cuda* jax cuda-nvcc numpyro h5py
-pip install --upgrade pip
+pip install numpyro[cuda] -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+conda install h5py
 pip install -r pip_requirements.txt
 python -m pip install .
 ```
