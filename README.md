@@ -42,7 +42,7 @@ cd gwinferno
 conda create -n gwinferno_gpu python=3.10
 conda activate gwinferno_gpu
 pip install numpyro[cuda] -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-conda install h5py
+conda install h5py cudnn
 pip install -r pip_requirements.txt
 python -m pip install .
 ```
