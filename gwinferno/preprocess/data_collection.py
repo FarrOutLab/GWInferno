@@ -4,7 +4,6 @@ a module that stores functions for collecting input data (GW Posteriors and Inje
 
 import json
 
-import deepdish as dd
 import h5py
 import jax.numpy as jnp
 import numpy as np
