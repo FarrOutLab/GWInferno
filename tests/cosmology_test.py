@@ -6,7 +6,7 @@ from astropy import units as u
 from astropy.cosmology import Planck15 as astropy_cosmology
 from astropy.cosmology import z_at_value
 
-from gwinferno.cosmology import PLANCK_2018_Cosmology as cosmology
+from gwinferno.cosmology import PLANCK_2015_Cosmology as cosmology
 
 
 class TestDefaultCosmology(unittest.TestCase):
