@@ -47,6 +47,16 @@ pip install -r pip_requirements.txt
 python -m pip install .
 ```
 
+Install popsummary dependency:
+
+In a folder outside the gwinferno folder, run (make sure gwinferno conda environemnt is active):
+
+```bash
+git clone https://git.ligo.org/zoheyr-doctor/popsummary.git
+cd popsummary
+pip install .
+```
+
 ## Quick Start
 Given a catalog of GW Posterior samples in standardized PESummary format, defined by catalog.json file to run population inference with GWInferno one must write a yaml file defining the desired model, hyperparameters, and other auxiliary configuration arguments. 
 
