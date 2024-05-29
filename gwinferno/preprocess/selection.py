@@ -13,38 +13,42 @@ from .conversions import chip_from_q_component_spins
 from .priors import chi_effective_prior_from_isotropic_spins
 from .priors import joint_prior_from_isotropic_spins
 
+
 def get_o4a_cumulative_injection_dict(file, far=1, snr=10, spin=False):
     with h5py.File(file, "r") as ff:
-        total_generated = ff.attrs['total_generated']
-        analysis_time = ff.attrs['analysis_time']
-        injections = np.asarray(ff['events'][:])
+        total_generated = ff.attrs["total_generated"]
+        analysis_time = ff.attrs["analysis_time"]
+        injections = np.asarray(ff["events"][:])
 
-    found = (injections['far_gstlal'] <= far) | (injections['semianalytic_observed_phase_maximized_snr_net'] >= snr)
-    inj_weights = injections[found]['weights']
+    found = (injections["far_gstlal"] <= far) | (injections["semianalytic_observed_phase_maximized_snr_net"] >= snr)
+    inj_weights = injections[found]["weights"]
 
     injs = dict(
-                mass_1=injections["mass1_source"][found],
-                mass_2=injections["mass2_source"][found],
-                mass_ratio=injections["mass2_source"][found] / injections["mass1_source"][found],
-                redshift=injections["redshift"][found],
-                inj_weights=inj_weights,
-                total_generated=int(total_generated),
-                analysis_time=analysis_time / 365.25 / 24 / 60 / 60,
-            )
+        mass_1=injections["mass1_source"][found],
+        mass_2=injections["mass2_source"][found],
+        mass_ratio=injections["mass2_source"][found] / injections["mass1_source"][found],
+        redshift=injections["redshift"][found],
+        inj_weights=inj_weights,
+        total_generated=int(total_generated),
+        analysis_time=analysis_time / 365.25 / 24 / 60 / 60,
+    )
 
-    injs["prior"] = jnp.exp(injections["lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z"][found]) * injections["mass1_source"][found] / inj_weights
+    injs["prior"] = (
+        jnp.exp(injections["lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z"][found])
+        * injections["mass1_source"][found]
+        / inj_weights
+    )
 
     if spin:
         for ii in [1, 2]:
             injs[f"a_{ii}"] = (
-                injections[f"spin{ii}x"][found] ** 2
-                + injections[f"spin{ii}y"][found] ** 2
-                + injections[f"spin{ii}z"][found] ** 2
+                injections[f"spin{ii}x"][found] ** 2 + injections[f"spin{ii}y"][found] ** 2 + injections[f"spin{ii}z"][found] ** 2
             ) ** 0.5
             injs[f"cos_tilt_{ii}"] = injections[f"spin{ii}z"][found] / injs[f"a_{ii}"]
         injs["prior"] *= (2 * np.pi * injs["a_1"] ** 2) * (2 * np.pi * injs["a_2"] ** 2)
-    
+
     return injs
+
 
 def get_o3_cumulative_injection_dict(fi, ifar=1, snr=10, spin=False, additional_cuts=None):
     """
@@ -114,7 +118,7 @@ def get_o3_cumulative_injection_dict(fi, ifar=1, snr=10, spin=False, additional_
 #     return injs
 
 
-def load_injections(injfile, through_o4a = True, through_o3 = False, ifar_threshold=1, snr_threshold=11, spin=False, additional_cuts=None):
+def load_injections(injfile, through_o4a=True, through_o3=False, ifar_threshold=1, snr_threshold=11, spin=False, additional_cuts=None):
 
     if through_o4a:
         return get_o4a_cumulative_injection_dict(
@@ -125,16 +129,9 @@ def load_injections(injfile, through_o4a = True, through_o3 = False, ifar_thresh
         )
 
     elif through_o3:
-        return get_o3_cumulative_injection_dict(
-            injfile,
-            spin=spin,
-            ifar=ifar_threshold,
-            snr=snr_threshold,
-            additional_cuts=additional_cuts
-        )
+        return get_o3_cumulative_injection_dict(injfile, spin=spin, ifar=ifar_threshold, snr=snr_threshold, additional_cuts=additional_cuts)
     else:
         raise AssertionError("One kwarg `through_o3` or `through_o4a` must be true. Please specify which injection file you are using.")
-
 
 
 def convert_component_spin_injections_to_chieff(injdata, param_map, chip=False):
