@@ -319,17 +319,43 @@ def setup_posterior_samples_and_injections(
             GWInfernoData(ligo_posterior_samples=pexr, ligo_injections=injxr).to_netcdf("posterior_samples_and_injections_chi_effective.h5")
 
     else:
-        pedata = jnp.array([[pe_samples[e][p] for e in names] for p in param_names])
-        injdata = jnp.array([injections[k] for k in param_names])
+        
+        pedata = np.array([[pe_samples[e][p] for e in names] for p in param_names])
+        injdata = np.array([injections[k] for k in param_names])
         if save:
-            mag_data = {
-                "injdata": injdata,
-                "pedata": pedata,
-                "param_map": param_map,
-                "total_generated": injections["total_generated"],
-                "analysis_time": injections["analysis_time"],
-            }
-            dd.io.save("posterior_samples_and_injections_spin_magnitude.h5", mag_data)
+
+            pe_coords = ["param", "pe_event", "draw"]
+            inj_coords = ["param", "inj_event"]
+
+            pexr = xr.Dataset(
+                data_vars=dict(
+                    data=(pe_coords, pedata),
+                ),
+                coords=dict(
+                    param=param_names,
+                    pe_event=range(pedata.shape[1]),
+                    draw=range(pedata.shape[2]),
+                ),
+                attrs=dict(num_events=pedata.shape[1], names=names),
+            )
+
+            injxr = xr.Dataset(
+                data_vars=dict(
+                    data=(inj_coords, injdata),
+                ),
+                coords=dict(
+                    param=param_names,
+                    inj_event=range(injdata.shape[1]),
+                ),
+                attrs=dict(
+                    total_generated_injections=injections["total_generated"],
+                    injection_analysis_time=injections["analysis_time"],
+                    num_events=pedata.shape[1],
+                    names=names,
+                ),
+            )
+
+            GWInfernoData(ligo_posterior_samples=pexr, ligo_injections=injxr).to_netcdf("posterior_samples_and_injections_spin_magnitude.h5")
 
     return pedata, injdata, param_map, inj_attributes, names
 
