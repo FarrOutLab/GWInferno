@@ -41,7 +41,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         self.param_names = ["mass_1", "mass_ratio", "redshift", "prior"]
         self.param_map = {p: i for i, p in enumerate(self.param_names)}
         self.pedict, self.Nobs, self.Nsamples = self.load_data()
-        self.injdict, self.total_inj, self.obs_time = self.load_injections()
+        self.injdict, self.total_inj, self.obs_time = self.load_injections(through_o4a=False, through_o3=True)
         self.z_model = self.setup_redshift_model()
         self.truncated_numpyro_model = self.setup_numpyro_model()
 
