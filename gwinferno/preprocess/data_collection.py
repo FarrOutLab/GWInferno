@@ -198,7 +198,7 @@ def load_posterior_samples(data_dir, run_map=None, keyfile=None, ignore=None, bb
     return posteriors, names
 
 
-def setup_posterior_samples_and_injections(data_dir, inj_file, param_names=None, chi_eff=False, chi_p=False, save=False, jax_device=None):
+def setup_posterior_samples_and_injections(data_dir, inj_file, injs_through_o4a = True, injs_through_o3 = False, param_names=None, chi_eff=False, chi_p=False, save=False, jax_device=None):
     """
     Sets up posterior sample and injections to be used during inference or saves them to a file
 
@@ -225,13 +225,18 @@ def setup_posterior_samples_and_injections(data_dir, inj_file, param_names=None,
         spin = True
     else:
         spin = False
-    injections = load_injections(inj_file, spin=spin)
+    injections = load_injections(inj_file, spin=spin, through_o3=injs_through_o3, through_o4a=injs_through_o4a)
     pe_samples, names = load_posterior_samples(data_dir, spin=spin)
     param_map = {p: i for i, p in enumerate(param_names)}
     inj_attributes = {
         "total_generated": injections["total_generated"],
         "analysis_time": injections["analysis_time"],
     }
+
+    if 'mass_2' in param_names:
+        injections['prior'] /= injections['mass_1']
+        assert 'mass_ratio' not in param_names, "`mass_ratio` and `mass_2` cannot both be in `param_names`. Please remove one."
+
     if chi_eff and spin:
         pedata = np.array([[pe_samples[e][p] for e in names] for p in param_names])
         injdata = np.array([injections[k] for k in param_names])
