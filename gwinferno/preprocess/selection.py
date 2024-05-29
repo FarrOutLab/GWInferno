@@ -14,13 +14,13 @@ from .priors import chi_effective_prior_from_isotropic_spins
 from .priors import joint_prior_from_isotropic_spins
 
 
-def get_o4a_cumulative_injection_dict(file, far=1, snr=10, spin=False):
+def get_o4a_cumulative_injection_dict(file, ifar=1, snr=10, spin=False):
     with h5py.File(file, "r") as ff:
         total_generated = ff.attrs["total_generated"]
         analysis_time = ff.attrs["analysis_time"]
         injections = np.asarray(ff["events"][:])
 
-    found = (injections["far_gstlal"] <= far) | (injections["semianalytic_observed_phase_maximized_snr_net"] >= snr)
+    found = (injections["far_gstlal"] <= 1/ifar) | (injections["semianalytic_observed_phase_maximized_snr_net"] >= snr)
     inj_weights = injections[found]["weights"]
 
     injs = dict(
