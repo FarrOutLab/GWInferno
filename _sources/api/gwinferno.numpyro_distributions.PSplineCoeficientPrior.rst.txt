@@ -19,6 +19,7 @@ gwinferno.numpyro\_distributions.PSplineCoeficientPrior
    
       ~PSplineCoeficientPrior.__init__
       ~PSplineCoeficientPrior.cdf
+      ~PSplineCoeficientPrior.entropy
       ~PSplineCoeficientPrior.enumerate_support
       ~PSplineCoeficientPrior.expand
       ~PSplineCoeficientPrior.expand_by

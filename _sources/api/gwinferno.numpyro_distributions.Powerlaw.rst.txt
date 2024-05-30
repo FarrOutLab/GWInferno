@@ -19,6 +19,7 @@ gwinferno.numpyro\_distributions.Powerlaw
    
       ~Powerlaw.__init__
       ~Powerlaw.cdf
+      ~Powerlaw.entropy
       ~Powerlaw.enumerate_support
       ~Powerlaw.expand
       ~Powerlaw.expand_by

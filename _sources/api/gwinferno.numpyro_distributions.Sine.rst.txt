@@ -19,6 +19,7 @@ gwinferno.numpyro\_distributions.Sine
    
       ~Sine.__init__
       ~Sine.cdf
+      ~Sine.entropy
       ~Sine.enumerate_support
       ~Sine.expand
       ~Sine.expand_by

@@ -19,6 +19,7 @@ gwinferno.numpyro\_distributions.Cosine
    
       ~Cosine.__init__
       ~Cosine.cdf
+      ~Cosine.entropy
       ~Cosine.enumerate_support
       ~Cosine.expand
       ~Cosine.expand_by

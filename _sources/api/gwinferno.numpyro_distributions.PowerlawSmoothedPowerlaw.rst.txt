@@ -19,6 +19,7 @@ gwinferno.numpyro\_distributions.PowerlawSmoothedPowerlaw
    
       ~PowerlawSmoothedPowerlaw.__init__
       ~PowerlawSmoothedPowerlaw.cdf
+      ~PowerlawSmoothedPowerlaw.entropy
       ~PowerlawSmoothedPowerlaw.enumerate_support
       ~PowerlawSmoothedPowerlaw.expand
       ~PowerlawSmoothedPowerlaw.expand_by

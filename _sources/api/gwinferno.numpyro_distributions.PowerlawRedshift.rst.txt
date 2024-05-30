@@ -19,6 +19,7 @@ gwinferno.numpyro\_distributions.PowerlawRedshift
    
       ~PowerlawRedshift.__init__
       ~PowerlawRedshift.cdf
+      ~PowerlawRedshift.entropy
       ~PowerlawRedshift.enumerate_support
       ~PowerlawRedshift.expand
       ~PowerlawRedshift.expand_by

@@ -78,6 +78,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.__call__"><code class="docutils literal notranslate"><span class="pre">PowerlawSmoothedPowerlaw.__call__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.batch_shape"><code class="docutils literal notranslate"><span class="pre">PowerlawSmoothedPowerlaw.batch_shape</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.cdf"><code class="docutils literal notranslate"><span class="pre">PowerlawSmoothedPowerlaw.cdf()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.entropy"><code class="docutils literal notranslate"><span class="pre">PowerlawSmoothedPowerlaw.entropy()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.enumerate_support"><code class="docutils literal notranslate"><span class="pre">PowerlawSmoothedPowerlaw.enumerate_support()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.event_dim"><code class="docutils literal notranslate"><span class="pre">PowerlawSmoothedPowerlaw.event_dim</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.event_shape"><code class="docutils literal notranslate"><span class="pre">PowerlawSmoothedPowerlaw.event_shape</span></code></a></li>
@@ -156,55 +157,58 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.cdf" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.cdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cdf</span></code></a>(value)</p></td>
 <td><p>The cummulative distribution function of this distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.enumerate_support" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.enumerate_support"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enumerate_support</span></code></a>([expand])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.entropy" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.entropy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entropy</span></code></a>()</p></td>
+<td><p>Returns the entropy of the distribution.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.enumerate_support" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.enumerate_support"><code class="xref py py-obj docutils literal notranslate"><span class="pre">enumerate_support</span></code></a>([expand])</p></td>
 <td><p>Returns an array with shape <cite>len(support) x batch_shape</cite> containing all values in the support.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.expand" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand</span></code></a>(batch_shape)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.expand" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.expand"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand</span></code></a>(batch_shape)</p></td>
 <td><p>Returns a new <code class="xref py py-class docutils literal notranslate"><span class="pre">ExpandedDistribution</span></code> instance with batch dimensions expanded to <cite>batch_shape</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.expand_by" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.expand_by"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_by</span></code></a>(sample_shape)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.expand_by" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.expand_by"><code class="xref py py-obj docutils literal notranslate"><span class="pre">expand_by</span></code></a>(sample_shape)</p></td>
 <td><p>Expands a distribution by adding <code class="docutils literal notranslate"><span class="pre">sample_shape</span></code> to the left side of its <code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_shape</span></code>.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gather_pytree_aux_fields</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gather_pytree_aux_fields</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gather_pytree_data_fields</span></code>()</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gather_pytree_data_fields</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.icdf" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.icdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icdf</span></code></a>(q)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.icdf" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.icdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icdf</span></code></a>(q)</p></td>
 <td><p>The inverse cumulative distribution function of this distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.infer_shapes" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.infer_shapes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_shapes</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.infer_shapes" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.infer_shapes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_shapes</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Infers <code class="docutils literal notranslate"><span class="pre">batch_shape</span></code> and <code class="docutils literal notranslate"><span class="pre">event_shape</span></code> given shapes of args to <a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.__init__" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.__init__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.log_prob" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.log_prob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_prob</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.log_prob" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.log_prob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_prob</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Evaluates the log probability density for a batch of samples given by <cite>value</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.mask" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mask</span></code></a>(mask)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.mask" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mask</span></code></a>(mask)</p></td>
 <td><p>Masks a distribution by a boolean or boolean-valued array that is broadcastable to the distributions <code class="xref py py-attr docutils literal notranslate"><span class="pre">Distribution.batch_shape</span></code> .</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rsample</span></code>(key[, sample_shape])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rsample</span></code>(key[, sample_shape])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.sample" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(key[, sample_shape])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.sample" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(key[, sample_shape])</p></td>
 <td><p>Returns a sample from the distribution having shape given by <cite>sample_shape + batch_shape + event_shape</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.sample_with_intermediates" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.sample_with_intermediates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_with_intermediates</span></code></a>(key[, sample_shape])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.sample_with_intermediates" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.sample_with_intermediates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_with_intermediates</span></code></a>(key[, sample_shape])</p></td>
 <td><p>Same as <code class="docutils literal notranslate"><span class="pre">sample</span></code> except that any intermediate computations are returned (useful for <cite>TransformedDistribution</cite>).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_validate_args</span></code>(value)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_validate_args</span></code>(value)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.shape" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>([sample_shape])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.shape" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>([sample_shape])</p></td>
 <td><p>The tensor shape of samples from this distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.to_event" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.to_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_event</span></code></a>([reinterpreted_batch_ndims])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.to_event" title="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.to_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_event</span></code></a>([reinterpreted_batch_ndims])</p></td>
 <td><p>Interpret the rightmost <cite>reinterpreted_batch_ndims</cite> batch dimensions as dependent event dimensions.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree_flatten</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree_flatten</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree_unflatten</span></code>(aux_data, params)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree_unflatten</span></code>(aux_data, params)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -284,6 +288,12 @@
 <dd class="field-even"><p>output of the cummulative distribution function evaluated at <cite>value</cite>.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.entropy">
+<span class="sig-name descname"><span class="pre">entropy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.numpyro_distributions.PowerlawSmoothedPowerlaw.entropy" title="Link to this definition"></a></dt>
+<dd><p>Returns the entropy of the distribution.</p>
 </dd></dl>
 
 <dl class="py method">
