@@ -3,7 +3,11 @@
 [![codecov](https://codecov.io/gh/FarrOutLab/GWInferno/branch/main/graph/badge.svg?token=PLXM4211S3)](https://codecov.io/gh/FarrOutLab/GWInferno)
 [![License](https://img.shields.io/badge/License-MIT-blue)](#license)
 
-# GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
+
+![Untitled-3](https://github.com/FarrOutLab/GWInferno/assets/80279129/a0b90bd3-5d9e-48a3-a977-134f588fdec3)
+
+
+# Gravitational-Wave Hierarchical Inference with NumPyro
 
 ## Documentation
 
