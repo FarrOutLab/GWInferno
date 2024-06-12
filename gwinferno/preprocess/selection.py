@@ -5,8 +5,8 @@ a module that stores functions for reading in and processing injection search re
 import h5py
 import jax.numpy as jnp
 import numpy as np
-from jax import random
 import xarray as xr
+from jax import random
 
 from .conversions import convert_component_spins_to_chieff
 
@@ -27,19 +27,16 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
         redshift=injections["redshift"][found],
     )
 
-    inj_weights=inj_weights
-    total_generated=int(total_generated)
-    analysis_time=analysis_time / 365.25 / 24 / 60 / 60
+    inj_weights = inj_weights
+    total_generated = int(total_generated)
+    analysis_time = analysis_time / 365.25 / 24 / 60 / 60
 
-    injs["prior"] = (
-        jnp.exp(injections["lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z"][found])
-        / inj_weights
-    )
+    injs["prior"] = jnp.exp(injections["lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z"][found]) / inj_weights
 
-    if 'mass_ratio' in param_names:
-        injs['prior'] *= injections["mass1_source"][found]
+    if "mass_ratio" in param_names:
+        injs["prior"] *= injections["mass1_source"][found]
 
-    if ('a_1' in  param_names) | ('chi_eff' in param_names):
+    if ("a_1" in param_names) | ("chi_eff" in param_names):
         for ii in [1, 2]:
             injs[f"a_{ii}"] = (
                 injections[f"spin{ii}x"][found] ** 2 + injections[f"spin{ii}y"][found] ** 2 + injections[f"spin{ii}z"][found] ** 2
@@ -49,7 +46,12 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
 
     injdata = np.array([injs[param] for param in list(injs.keys())])
 
-    inj_array = xr.DataArray(injdata, dims = ['param', 'injection'], coords = {'param': list(injs.keys()), 'injection': np.arange(sum(found))}, attrs = {'total_generated': total_generated, 'analysis_time': analysis_time})
+    inj_array = xr.DataArray(
+        injdata,
+        dims=["param", "injection"],
+        coords={"param": list(injs.keys()), "injection": np.arange(sum(found))},
+        attrs={"total_generated": total_generated, "analysis_time": analysis_time},
+    )
 
     return inj_array
 
@@ -99,32 +101,32 @@ def load_injections(injfile, param_names, through_o4a=True, through_o3=False, if
     if through_o4a:
         injs = get_o4a_cumulative_injection_dict(
             injfile,
-            param_names = param_names,
+            param_names=param_names,
             ifar=ifar_threshold,
             snr=snr_threshold,
         )
 
     elif through_o3:
         # TODO: Use xarrays
-        injs = get_o3_cumulative_injection_dict(injfile, spin=spin, ifar=ifar_threshold, snr=snr_threshold, additional_cuts=additional_cuts)
+        injs = get_o3_cumulative_injection_dict(injfile, ifar=ifar_threshold, snr=snr_threshold, additional_cuts=additional_cuts)
 
     else:
         raise AssertionError("One kwarg `through_o3` or `through_o4a` must be true. Please specify which injection file you are using.")
 
-    if 'chi_eff' in param_names:
-        new_injs = convert_component_spins_to_chieff(injs, param_names, injections = True)
-        remove = ['a_1', 'a_2', 'cos_tilt_1', 'cos_tilt_2']
-    
-        remove.append('mass_ratio') if 'mass_2' in param_names else remove.append('mass_2')
-        new_injs = new_injs.drop_sel(param = remove)
+    if "chi_eff" in param_names:
+        new_injs = convert_component_spins_to_chieff(injs, param_names, injections=True)
+        remove = ["a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
+
+        remove.append("mass_ratio") if "mass_2" in param_names else remove.append("mass_2")
+        new_injs = new_injs.drop_sel(param=remove)
         return new_injs
 
     else:
 
-        param_names.append('prior')
+        param_names.append("prior")
         remove = np.setxor1d(injs.param.values, np.array(param_names))
 
-        return injs.drop_sel(param = remove)
+        return injs.drop_sel(param=remove)
 
 
 def resample_injections(rng_key, model_prob, injdata, Ndraw, param_map, **kwargs):

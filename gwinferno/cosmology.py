@@ -105,13 +105,13 @@ class Cosmology(object):
             return dDc / MPC_CGS
         return dDc
 
-    def dVcdz(self, z, Dc=None, dz=DEFAULT_DZ, Mpc = False):
+    def dVcdz(self, z, Dc=None, dz=DEFAULT_DZ, Mpc=False):
         """
         return dVc/dz
         """
         if Dc is None:
             Dc = self.z2Dc(z, dz=dz, Mpc=Mpc)
-        return 4 * jnp.pi * Dc**2 * self.dDcdz(z, mpc = Mpc)
+        return 4 * jnp.pi * Dc**2 * self.dDcdz(z, mpc=Mpc)
 
     def logdVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
         """
@@ -121,13 +121,13 @@ class Cosmology(object):
             Dc = self.z2Dc(z, dz=dz)
         return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z)) - 3.0 * jnp.log(self.unit_mod)
 
-    def z2Dc(self, z, dz=DEFAULT_DZ, Mpc = False):
+    def z2Dc(self, z, dz=DEFAULT_DZ, Mpc=False):
         """
         return Dc for each z specified
         """
         max_z = jnp.max(z)
         if jnp.greater(max_z, jnp.max(self.z)):
-           self.extend(max_z=max_z,dz=dz)
+            self.extend(max_z=max_z, dz=dz)
 
         if Mpc:
             return jnp.interp(z, self.z, self.Dc) / MPC_CGS
