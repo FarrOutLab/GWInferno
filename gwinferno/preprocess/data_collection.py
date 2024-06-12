@@ -7,89 +7,29 @@ import json
 import h5py
 import jax.numpy as jnp
 import numpy as np
-import pandas as pd
 import xarray as xr
 from jax.scipy.integrate import trapezoid
-from tqdm import trange
+import arviz as az
 
 from ..cosmology import PLANCK_2015_Cosmology as cosmo
-from ..types.data import GWInfernoData
-from .conversions import chieff_from_q_component_spins
-from .conversions import chip_from_q_component_spins
-from .priors import chi_effective_prior_from_isotropic_spins
-from .priors import joint_prior_from_isotropic_spins
-from .selection import convert_component_spin_injections_to_chieff
+from .conversions import convert_component_spins_to_chieff
 from .selection import load_injections
 
-GWTC1 = [
-    "GW150914",
-    "GW151012",
-    "GW151226",
-    "GW170104",
-    "GW170608",
-    "GW170729",
-    "GW170809",
-    "GW170814",
-    "GW170817",
-    "GW170818",
-    "GW170823",
-]
-EVENTS_WITH_NS = [
-    "GW170817",
-    "GW190425",
-    "GW190814",
-    "GW190426_152155",
-    "GW190917_114630",
-    "GW200105_162426",
-    "GW200115_042309",
-]
+def collect_data(run_map):
+    posteriors = {}
+    for ev in list(run_map.keys()):
+        with h5py.File(run_map[ev]['file_path'], 'r') as f:
+            wf = run_map[ev]['waveform']
+            z_prior = run_map[ev]['redshift_prior']
+            catalog = run_map[ev]['catalog']
+            if catalog == 'GWTC-1':
+                post = f[wf][:]
+            else:
+                post = f[wf]['posterior_samples'][:]
+            posteriors[ev] = {'posterior': post, 'redshift_prior': z_prior, 'catalog': catalog}
+    return posteriors
 
-
-def dl_2_prior_on_z(z):
-    dl = cosmo.z2DL(z) / 1e3
-    return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z, mpc=True) / 1e3)
-
-
-def p_m1src_q_z_lal_pe_prior(posts, spin=False):
-    z_max = 1.9
-    for ev in posts.keys():
-        if max(posts[ev]["redshift"]) > z_max:
-            z_max = max(posts[ev]["redshift"])
-    zs = jnp.linspace(0, z_max * 1.01, 1000)
-    p_z = dl_2_prior_on_z(zs)
-    p_z /= trapezoid(p_z, zs)
-    for event, post in posts.items():
-        posts[event]["prior"] = jnp.interp(np.array(post["redshift"]), zs, p_z) * post["mass_1"] * (1 + post["redshift"]) ** 2
-        if spin:
-            posts[event]["prior"] /= 4
-    return posts
-
-
-def _standardize_new_post(df, param_mapping):
-    try:
-        return pd.DataFrame({key: df[new_key] for key, new_key in param_mapping.items()})
-    except KeyError:  # Catch error if we use this for posterior samples with no spin
-        param_map = dict(
-            mass_1="mass_1_source",
-            mass_2="mass_2_source",
-            mass_ratio="mass_ratio",
-            redshift="redshift",
-        )
-        return pd.DataFrame({key: df[new_key] for key, new_key in param_map.items()})
-
-
-def _standardize_GWTC1_post(df):
-    post = pd.DataFrame()
-    post["redshift"] = cosmo.DL2z(df["luminosity_distance_Mpc"])
-    for ii in [1, 2]:
-        post[f"mass_{ii}"] = df[f"m{ii}_detector_frame_Msun"] / (1 + post["redshift"])
-        post[f"a_{ii}"] = df[f"spin{ii}"]
-        post[f"cos_tilt_{ii}"] = df[f"costilt{ii}"]
-    post["mass_ratio"] = post["mass_2"] / post["mass_1"]
-    return post
-
-
-def _standardize_posterior_fmt(df, k):
+def format_data(posteriors):
     param_mapping = dict(
         mass_1="mass_1_source",
         mass_2="mass_2_source",
@@ -100,320 +40,122 @@ def _standardize_posterior_fmt(df, k):
         cos_tilt_1="cos_tilt_1",
         cos_tilt_2="cos_tilt_2",
     )
-    if isinstance(df, pd.DataFrame) and k not in GWTC1:
-        post = _standardize_new_post(df, param_mapping)
-    elif k in GWTC1:  # GWTC1 posterior fmt has detector frame -- we need to convert to source
-        post = _standardize_GWTC1_post(df)
-    else:
-        raise ValueError(f"Event {k} not able to converted to correct parameters...")
-    return post
 
+    max_samples = 10000
+    event_names = list(posteriors.keys())
+    dataset = {}
+    for ev in event_names:
 
-def downsample_posteriors_to_consistent_nsamps(posteriors, max_samples=10000):
-    data = {}
-    names = []
-    for ev, posterior in posteriors.items():
-        max_samples = min(len(posterior), max_samples)
-        names.append(ev)
-    print(f"Saving {max_samples} samples for each of the {len(names)} events")
-    for ev, posterior in posteriors.items():
-        data[ev] = posterior.sample(max_samples)
-    return data, names
+        if posteriors[ev]['catalog'] == 'GWTC-1':
+            redshift = cosmo.DL2z(posteriors[ev]['posterior']["luminosity_distance_Mpc"])
+            mass = []
+            spin = []
+            tilt = []
+            for ii in [1, 2]:
+                mass.append(posteriors[ev]['posterior'][f"m{ii}_detector_frame_Msun"] / (1 + redshift))
+                spin.append(posteriors[ev]['posterior'][f"spin{ii}"])
+                tilt.append(posteriors[ev]['posterior'][f"costilt{ii}"])
+            mass_ratio  = mass[1] / mass[0]
+            data = np.array([mass[0], mass[1], mass_ratio, redshift, spin[0], spin[1], tilt[0], tilt[1]])
 
-
-def preprocess_data(data_dir, run_map, ignore=[], spin=False, max_samples=10000, no_downsample=False):
-    posteriors = {}
-    for event, wf in run_map.items():
-        if event in ignore:
-            continue
-        print(f"loading {wf} for {event}")
-        if wf == "MDC":
-            with h5py.File(f"{data_dir}/{event}.h5", "r") as ff:
-                post = pd.DataFrame(dict(ff[wf]["posterior_samples"]))
-                posteriors[event] = post
-        elif event not in GWTC1:
-            with h5py.File(f"{data_dir}/{event}.h5", "r") as ff:
-                post = pd.DataFrame(ff[wf]["posterior_samples"][:])
-                posteriors[event] = post
         else:
-            with h5py.File(f"{data_dir}/{event}.h5", "r") as ff:
-                post = np.array(ff[f"{wf}_posterior"])
-                posteriors[event] = post
-    posteriors = p_m1src_q_z_lal_pe_prior(
-        {k: _standardize_posterior_fmt(v, k) for k, v in posteriors.items()},
-        spin=spin,
-    )
-    print(f"Loaded {len(posteriors.keys())} Single Event Posteriors")
-    if no_downsample:
-        return posteriors, [ev for ev in posteriors.keys()]
-    posteriors, names = downsample_posteriors_to_consistent_nsamps(posteriors, max_samples=max_samples)
-    return posteriors, names
+            data = np.array([posteriors[ev]['posterior'][param_mapping[param]] for param in list(param_mapping.keys())])
+        max_samples = min(data.shape[1], max_samples)
+        data_array = xr.DataArray(data, dims = ['param', 'samples'], coords = {'param': list(param_mapping.keys()), 'samples': np.arange(0, data.shape[1])}, attrs = {'redshift_prior': posteriors[ev]['redshift_prior'], 'catalog': posteriors[ev]['catalog']})
+        dataset[ev] = data_array
 
-
-def apply_priors(posteriors, spin=False, downsample=True, max_samples=10000):
-    posteriors = p_m1src_q_z_lal_pe_prior(
-        {k: _standardize_posterior_fmt(v, k) for k, v in posteriors.items()},
-        spin=spin,
-    )
-    print(f"Loaded {len(posteriors.keys())} Single Event Posteriors")
-    if downsample:
-        posteriors, _ = downsample_posteriors_to_consistent_nsamps(posteriors, max_samples=max_samples)
-    return posteriors, [ev for ev in posteriors.keys()]
-
-
-def _load_single_posterior(fi, ev, wf):
-    if wf == "MDC":
-        with h5py.File(fi, "r") as ff:
-            post = pd.DataFrame(dict(ff[wf]["posterior_samples"]))
-    elif ev not in GWTC1:
-        with h5py.File(fi, "r") as ff:
-            post = pd.DataFrame(ff[wf]["posterior_samples"][:])
-    else:
-        with h5py.File(fi, "r") as ff:
-            post = np.array(ff[f"{wf}_posterior"])
-    return post
-
-
-def load_catalog_from_metadata(catalog_summary_file, **kwargs):
-    with open(catalog_summary_file, "r") as f:
-        catsum = json.load(f)
-    posteriors = {}
-    for ev in catsum.keys():
-        if ev == "Injections" or ev == "metadata_directory" or ev == "FAR_threshold":
-            continue
-        posteriors[ev] = _load_single_posterior(catsum[ev]["path"], ev, catsum[ev]["waveform"])
-    return apply_priors(posteriors, **kwargs), catsum["Injections"], catsum["FAR_threshold"], catsum["metadata_directory"]
-
-
-def load_posterior_samples(data_dir, run_map=None, keyfile=None, ignore=None, bbh=True, spin=False, max_samples=10000, no_downsample=False):
-    if run_map is None:
-        if keyfile is None:
-            keyfile = f"{data_dir}/keys_to_read.json"
-        with open(keyfile, "r") as f:
-            run_map = json.load(f)
-    if ignore is None:
-        ignore = EVENTS_WITH_NS if bbh else []
-    posteriors, names = preprocess_data(data_dir, run_map, ignore=ignore, spin=spin, max_samples=max_samples, no_downsample=no_downsample)
-    return posteriors, names
-
-
-def setup_posterior_samples_and_injections(
-    data_dir, inj_file, injs_through_o4a=True, injs_through_o3=False, param_names=None, chi_eff=False, chi_p=False, save=False, jax_device=None
-):
-    """
-    Sets up posterior sample and injections to be used during inference or saves them to a file
-
-        Parameters:
-            data_dir (strs): path to directory where posterior samples are stored
-            inj_file (strs): path to injection file
-            param_names (list of strs): list of desired parameters to be saved in new file
-            chi_eff (bool): True converts spin magnitude parameters to chi_eff.
-            chi_p (bool): True converts spin magnitude parameters to chi_p
-            save (bool): True saves the desired output to a .h5 datafile
-
-        Returns:
-            pedata (jax.numpy array): posterior samples for the parameters specified in param_names
-            injdata (jax.numpy array): injection data for the parameters specified in param_names
-            param_map (dict): dictionary that associates an index to each name in param_names
-            inj_attributes (dict): dictionary that includes total number of generated injections
-                                    analysis time
-            names (list of strs): list with the names of each GW event
-    """
-
-    if param_names is None:
-        param_names = ["mass_1", "mass_ratio", "redshift", "prior"]
-    if "a_1" in param_names or "cos_tilt_1" in param_names:
-        spin = True
-    else:
-        spin = False
-    injections = load_injections(inj_file, spin=spin, through_o3=injs_through_o3, through_o4a=injs_through_o4a)
-    pe_samples, names = load_posterior_samples(data_dir, spin=spin)
-    param_map = {p: i for i, p in enumerate(param_names)}
-    inj_attributes = {
-        "total_generated": injections["total_generated"],
-        "analysis_time": injections["analysis_time"],
-    }
-
-    if "mass_2" in param_names:
-        injections["prior"] /= injections["mass_1"]
-        assert "mass_ratio" not in param_names, "`mass_ratio` and `mass_2` cannot both be in `param_names`. Please remove one."
-
-    if chi_eff and spin:
-        pedata = np.array([[pe_samples[e][p] for e in names] for p in param_names])
-        injdata = np.array([injections[k] for k in param_names])
-        if save:
-
-            pe_coords = ["param", "pe_event", "draw"]
-            inj_coords = ["param", "inj_event"]
-
-            pexr = xr.Dataset(
-                data_vars=dict(
-                    data=(pe_coords, pedata),
-                ),
-                coords=dict(
-                    param=param_names,
-                    pe_event=range(pedata.shape[1]),
-                    draw=range(pedata.shape[2]),
-                ),
-                attrs=dict(num_events=pedata.shape[1], names=names),
-            )
-
-            injxr = xr.Dataset(
-                data_vars=dict(
-                    data=(inj_coords, injdata),
-                ),
-                coords=dict(
-                    param=param_names,
-                    inj_event=range(injdata.shape[1]),
-                ),
-                attrs=dict(
-                    total_generated_injections=injections["total_generated"],
-                    injection_analysis_time=injections["analysis_time"],
-                    num_events=pedata.shape[1],
-                    names=names,
-                ),
-            )
-
-            GWInfernoData(ligo_posterior_samples=pexr, ligo_injections=injxr).to_netcdf("posterior_samples_and_injections_spin_magnitude.h5")
-
-        pedata, new_pmap, new_pnames = convert_component_spin_posteriors_to_chieff(pedata, param_map, chip=chi_p)
-        injdata, new_pmap = convert_component_spin_injections_to_chieff(injdata, param_map, chip=chi_p)
-        param_map = new_pmap
-        param_names = new_pnames
-        pedata = jnp.array(pedata)
-        injdata = jnp.array(pedata)
-        if save:
-
-            pe_coords = ["param", "pe_event", "draw"]
-            inj_coords = ["param", "inj_event"]
-
-            pexr = xr.Dataset(
-                data_vars=dict(
-                    data=(pe_coords, pedata),
-                ),
-                coords=dict(
-                    param=param_names,
-                    pe_event=range(pedata.shape[1]),
-                    draw=range(pedata.shape[2]),
-                ),
-                attrs=dict(num_events=pedata.shape[1], names=names, param_nums=[i for i, p in enumerate(param_names)]),
-            )
-
-            injxr = xr.Dataset(
-                data_vars=dict(
-                    data=(inj_coords, injdata),
-                ),
-                coords=dict(
-                    param=param_names,
-                    inj_event=range(injdata.shape[1]),
-                ),
-                attrs=dict(
-                    total_generated_injections=injections["total_generated"],
-                    injection_analysis_time=injections["analysis_time"],
-                    num_events=pedata.shape[1],
-                    names=names,
-                    param_nums=[i for i, p in enumerate(param_names)],
-                ),
-            )
-
-            GWInfernoData(ligo_posterior_samples=pexr, ligo_injections=injxr).to_netcdf("posterior_samples_and_injections_chi_effective.h5")
-
-    else:
+    downsampled_data = {}
+    for ev in list(dataset.keys()):
+        downsamp = dataset[ev].sel({'samples': np.random.choice(dataset[ev].samples.values, max_samples, replace = False)})
+        downsampled_data[ev] = downsamp.assign_coords(samples = np.arange(max_samples))
         
-        pedata = np.array([[pe_samples[e][p] for e in names] for p in param_names])
-        injdata = np.array([injections[k] for k in param_names])
-        if save:
-
-            pe_coords = ["param", "pe_event", "draw"]
-            inj_coords = ["param", "inj_event"]
-
-            pexr = xr.Dataset(
-                data_vars=dict(
-                    data=(pe_coords, pedata),
-                ),
-                coords=dict(
-                    param=param_names,
-                    pe_event=range(pedata.shape[1]),
-                    draw=range(pedata.shape[2]),
-                ),
-                attrs=dict(num_events=pedata.shape[1], names=names),
-            )
-
-            injxr = xr.Dataset(
-                data_vars=dict(
-                    data=(inj_coords, injdata),
-                ),
-                coords=dict(
-                    param=param_names,
-                    inj_event=range(injdata.shape[1]),
-                ),
-                attrs=dict(
-                    total_generated_injections=injections["total_generated"],
-                    injection_analysis_time=injections["analysis_time"],
-                    num_events=pedata.shape[1],
-                    names=names,
-                ),
-            )
-
-            GWInfernoData(ligo_posterior_samples=pexr, ligo_injections=injxr).to_netcdf("posterior_samples_and_injections_spin_magnitude.h5")
-
-    return pedata, injdata, param_map, inj_attributes, names
-
-
-def convert_component_spin_posteriors_to_chieff(pedata, param_map, chip=False):
-    new_params = ["mass_1", "mass_ratio", "redshift", "chi_eff", "prior"]
-    if chip:
-        new_params.append("chi_p")
-    old_pe_shape = pedata.shape
-    new_pe_shape = (len(new_params), old_pe_shape[1], old_pe_shape[2])
-    new_pe_data = np.zeros(new_pe_shape)
-    new_pmap = {p: i for i, p in enumerate(new_params)}
-    chi_eff = chieff_from_q_component_spins(
-        pedata[param_map["mass_ratio"]],
-        pedata[param_map["a_1"]],
-        pedata[param_map["a_2"]],
-        pedata[param_map["cos_tilt_1"]],
-        pedata[param_map["cos_tilt_2"]],
+    catalog_dataset = xr.Dataset(
+        data_vars = downsampled_data,
+        coords = {
+            'param': list(param_mapping.keys()), 
+            'samples': np.arange(0, max_samples)
+        }
     )
-    if chip:
-        chi_p = chip_from_q_component_spins(
-            pedata[param_map["mass_ratio"]],
-            pedata[param_map["a_1"]],
-            pedata[param_map["a_2"]],
-            pedata[param_map["cos_tilt_1"]],
-            pedata[param_map["cos_tilt_2"]],
-        )
-    new_prior = np.zeros_like(pedata[param_map["prior"]])
-    for jj in trange(new_prior.shape[0]):
-        for ii in range(new_prior.shape[1]):
-            if chip:
-                new_prior[jj, ii] = (
-                    pedata[param_map["prior"], jj, ii]
-                    * 4
-                    * joint_prior_from_isotropic_spins(
-                        np.array(pedata[param_map["mass_ratio"], jj, ii]),
-                        1.0,
-                        np.array(chi_eff[jj, ii]),
-                        np.array(chi_p[jj, ii]),
-                    )
-                )
-            else:
-                new_prior[jj, ii] = (
-                    pedata[param_map["prior"], jj, ii]
-                    * 4
-                    * chi_effective_prior_from_isotropic_spins(
-                        np.array(pedata[param_map["mass_ratio"], jj, ii]),
-                        1.0,
-                        np.array(chi_eff[jj, ii]),
-                    )
-                )
-    for p in new_params:
-        if p not in ["prior", "chi_eff", "chi_p"]:
-            new_pe_data[new_pmap[p]] = pedata[param_map[p]]
-        elif p == "prior":
-            new_pe_data[new_pmap[p]] = new_prior
-        elif p == "chi_eff":
-            new_pe_data[new_pmap[p]] = chi_eff
-        else:
-            new_pe_data[new_pmap[p]] = chi_p
-    return new_pe_data, new_pmap, new_params
+    return catalog_dataset
+
+
+def dl_2_prior_on_z(z, euclidean = False):
+    if euclidean:
+        dl = cosmo.z2DL(z) / 1e3
+        return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z, mpc=True) / 1e3)
+    else:
+        return cosmo.dVcdz(z, Mpc = True) * 4 * np.pi / (1+z)
+    
+
+def evaluate_prior(full_catalog, param_names):
+    if 'redshift' in param_names:
+        z_max = 1.9
+        cat_z_max = full_catalog.sel(param = 'redshift').max().to_dataarray().max().values
+        z_max = cat_z_max if cat_z_max > z_max else z_max
+        cat_z_max
+        zs = jnp.linspace(0, z_max * 1.01, 1000)
+        p_z_euclid = dl_2_prior_on_z(zs, euclidean = True)
+        p_z_comoving = dl_2_prior_on_z(zs)
+        p_z_euclid /= trapezoid(p_z_euclid, zs)
+        p_z_comoving /= trapezoid(p_z_comoving, zs)
+
+    events = list(full_catalog.data_vars)
+    num_events = len(events)
+    num_samples = full_catalog['samples'].shape[0]
+
+    priors = jnp.zeros((num_events, 1, num_samples))
+    for i, ev in enumerate(events):
+        prior = jnp.ones(num_samples)
+        if 'redshift' in param_names:
+            p_z = p_z_euclid if full_catalog[ev].attrs['redshift_prior'] == 'euclidean' else p_z_comoving
+            prior *= jnp.interp(full_catalog[ev].sel(param='redshift').values, zs, p_z)
+        if 'mass_1' in param_names:
+            prior *= (1 + full_catalog[ev].sel(param='mass_1').values) ** 2 # flat detector components
+        if 'mass_raito' in param_names:
+            prior *= full_catalog[ev].sel(param="mass_1").values
+        if 'a_1' in param_names:
+            prior *= 1/4
+        priors = priors.at[i].set(prior)
+
+    prior_array = xr.DataArray(priors, dims = ['event', 'param', 'samples'], coords = {'param': ['prior'], 'samples': np.arange(num_samples), 'event': events})
+    catalog_array = full_catalog.to_dataarray(dim='event')
+    
+    new_full_catalog = xr.concat([catalog_array, prior_array], dim = 'param')
+    
+    return new_full_catalog
+
+
+def load_posterior_data(key_file, param_names = ['mass_1', 'mass_ratio', 'redshift']):
+    
+    with open(key_file, "r") as f:
+        run_map = json.load(f)
+    
+    posterior_dict = collect_data(run_map)
+    catalog = format_data(posterior_dict)
+    full_catalog = evaluate_prior(catalog, param_names)
+
+    if 'chi_eff' in param_names:
+        new_pe = convert_component_spins_to_chieff(full_catalog, param_names)
+        remove = ['a_1', 'a_2', 'cos_tilt_1', 'cos_tilt_2']
+    
+        remove.append('mass_ratio') if 'mass_2' in param_names else remove.append('mass_2')
+        new_pe = new_pe.drop_sel(param = remove)
+        return new_pe
+    
+    else:   
+        param_names.append('prior')
+        remove = np.setxor1d(full_catalog.param.values, np.array(param_names))
+        full_catalog = full_catalog.drop_sel(param=remove)
+        return full_catalog
+    
+
+def load_posterior_samples_and_injections(key_file, injfile, param_names, outdir, ifar_threshold=1, snr_threshold=11):
+    #TODO: support for injections through only o3
+
+    pe_array = load_posterior_data(key_file, param_names = param_names).to_dataset(name='posteriors')
+    inj_array = load_injections(injfile, param_names, ifar_threshold=ifar_threshold, snr_threshold=snr_threshold).to_dataset(name = 'injections')
+
+    idata = az.InferenceData(pe_data = pe_array, inj_data = inj_array)
+    idata.to_netcdf(outdir+'/xarray_posterior_samples_and_injections.h5')
+
+    return idata
