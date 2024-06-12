@@ -89,7 +89,6 @@ def alpha_beta_from_mu_var(mu, var, amax=1):
     return alpha, beta
 
 
-
 def convert_component_spins_to_chieff(dat_array, param_names, injections=False):
 
     chip = True if "chi_p" in param_names else False
@@ -202,5 +201,3 @@ def convert_component_spins_to_chieff(dat_array, param_names, injections=False):
         new_dat_array = xr.concat([new_dat_array, arr], dim="param")
 
     return new_dat_array
-
-
