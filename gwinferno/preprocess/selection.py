@@ -6,15 +6,12 @@ import h5py
 import jax.numpy as jnp
 import numpy as np
 from jax import random
-from tqdm import trange
+import xarray as xr
 
-from .conversions import chieff_from_q_component_spins
-from .conversions import chip_from_q_component_spins
-from .priors import chi_effective_prior_from_isotropic_spins
-from .priors import joint_prior_from_isotropic_spins
+from .conversions import convert_component_spins_to_chieff
 
 
-def get_o4a_cumulative_injection_dict(file, ifar=1, snr=10, spin=False):
+def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
     with h5py.File(file, "r") as ff:
         total_generated = ff.attrs["total_generated"]
         analysis_time = ff.attrs["analysis_time"]
@@ -28,18 +25,21 @@ def get_o4a_cumulative_injection_dict(file, ifar=1, snr=10, spin=False):
         mass_2=injections["mass2_source"][found],
         mass_ratio=injections["mass2_source"][found] / injections["mass1_source"][found],
         redshift=injections["redshift"][found],
-        inj_weights=inj_weights,
-        total_generated=int(total_generated),
-        analysis_time=analysis_time / 365.25 / 24 / 60 / 60,
     )
+
+    inj_weights=inj_weights
+    total_generated=int(total_generated)
+    analysis_time=analysis_time / 365.25 / 24 / 60 / 60
 
     injs["prior"] = (
         jnp.exp(injections["lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z"][found])
-        * injections["mass1_source"][found]
         / inj_weights
     )
 
-    if spin:
+    if 'mass_ratio' in param_names:
+        injs['prior'] *= injections["mass1_source"][found]
+
+    if ('a_1' in  param_names) | ('chi_eff' in param_names):
         for ii in [1, 2]:
             injs[f"a_{ii}"] = (
                 injections[f"spin{ii}x"][found] ** 2 + injections[f"spin{ii}y"][found] ** 2 + injections[f"spin{ii}z"][found] ** 2
@@ -47,7 +47,11 @@ def get_o4a_cumulative_injection_dict(file, ifar=1, snr=10, spin=False):
             injs[f"cos_tilt_{ii}"] = injections[f"spin{ii}z"][found] / injs[f"a_{ii}"]
         injs["prior"] *= (2 * np.pi * injs["a_1"] ** 2) * (2 * np.pi * injs["a_2"] ** 2)
 
-    return injs
+    injdata = np.array([injs[param] for param in list(injs.keys())])
+
+    inj_array = xr.DataArray(injdata, dims = ['param', 'injection'], coords = {'param': list(injs.keys()), 'injection': np.arange(sum(found))}, attrs = {'total_generated': total_generated, 'analysis_time': analysis_time})
+
+    return inj_array
 
 
 def get_o3_cumulative_injection_dict(fi, ifar=1, snr=10, spin=False, additional_cuts=None):
@@ -90,106 +94,37 @@ def get_o3_cumulative_injection_dict(fi, ifar=1, snr=10, spin=False, additional_
     return injs
 
 
-# def get_semianlytic_injection_dict(fi, snr=8, additional_cuts=None, o4=False):
-#     with h5py.File(fi, "r") as ff:
-#         if o4:
-#             data = ff["events"]
-#         else:
-#             data = ff["injections"]
-#         found = np.zeros_like(data["mass1_source"][()], dtype=bool)
-#         if o4:
-#             found = data["snr_L"][()] > snr
-#             z = "z"
-#         else:
-#             found = data["optimal_snr_l"][()] > snr
-#             z = "redshift"
-#         if additional_cuts is not None:
-#             for k in additional_cuts.keys():
-#                 found = found | data[k][()] > additional_cuts[k]
-#         injs = dict(
-#             mass_1=data["mass1_source"][()][found],
-#             mass_2=data["mass2_source"][()][found],
-#             mass_ratio=data["mass2_source"][()][found] / data["mass1_source"][()][found],
-#             redshift=data[z][()][found],
-#             total_generated=int(data.attrs["total_generated"][()]),
-#             analysis_time=data.attrs["analysis_time_s"][()] / 365.25 / 24 / 60 / 60,
-#         )
-#         injs["prior"] = data["sampling_pdf"][()][found] * data["mass1_source"][()][found]
-#     return injs
-
-
-def load_injections(injfile, through_o4a=True, through_o3=False, ifar_threshold=1, snr_threshold=11, spin=False, additional_cuts=None):
+def load_injections(injfile, param_names, through_o4a=True, through_o3=False, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
 
     if through_o4a:
-        return get_o4a_cumulative_injection_dict(
+        injs = get_o4a_cumulative_injection_dict(
             injfile,
-            spin=spin,
+            param_names = param_names,
             ifar=ifar_threshold,
             snr=snr_threshold,
         )
 
     elif through_o3:
-        return get_o3_cumulative_injection_dict(injfile, spin=spin, ifar=ifar_threshold, snr=snr_threshold, additional_cuts=additional_cuts)
+        # TODO: Use xarrays
+        injs = get_o3_cumulative_injection_dict(injfile, spin=spin, ifar=ifar_threshold, snr=snr_threshold, additional_cuts=additional_cuts)
+
     else:
         raise AssertionError("One kwarg `through_o3` or `through_o4a` must be true. Please specify which injection file you are using.")
 
+    if 'chi_eff' in param_names:
+        new_injs = convert_component_spins_to_chieff(injs, param_names, injections = True)
+        remove = ['a_1', 'a_2', 'cos_tilt_1', 'cos_tilt_2']
+    
+        remove.append('mass_ratio') if 'mass_2' in param_names else remove.append('mass_2')
+        new_injs = new_injs.drop_sel(param = remove)
+        return new_injs
 
-def convert_component_spin_injections_to_chieff(injdata, param_map, chip=False):
-    new_params = ["mass_1", "mass_ratio", "redshift", "chi_eff", "prior"]
-    if chip:
-        new_params.append("chi_p")
-    old_inj_shape = injdata.shape
-    new_inj_shape = (len(new_params), old_inj_shape[1])
-    new_inj_data = np.zeros(new_inj_shape)
-    new_pmap = {p: i for i, p in enumerate(new_params)}
-    chi_eff = chieff_from_q_component_spins(
-        injdata[param_map["mass_ratio"]],
-        injdata[param_map["a_1"]],
-        injdata[param_map["a_2"]],
-        injdata[param_map["cos_tilt_1"]],
-        injdata[param_map["cos_tilt_2"]],
-    )
-    if chip:
-        chi_p = chip_from_q_component_spins(
-            injdata[param_map["mass_ratio"]],
-            injdata[param_map["a_1"]],
-            injdata[param_map["a_2"]],
-            injdata[param_map["cos_tilt_1"]],
-            injdata[param_map["cos_tilt_2"]],
-        )
-    new_prior = np.zeros_like(injdata[param_map["prior"]])
-    for ii in trange(new_prior.shape[0]):
-        if chip:
-            new_prior[ii] = (
-                injdata[param_map["prior"], ii]
-                / ((2 * np.pi * injdata[param_map["a_1"], ii] ** 2) * (2 * np.pi * injdata[param_map["a_2"], ii] ** 2))
-                * joint_prior_from_isotropic_spins(
-                    np.array(injdata[param_map["mass_ratio"], ii]),
-                    1.0,
-                    np.array(chi_eff[ii]),
-                    np.array(chi_p[ii]),
-                )
-            )
-        else:
-            new_prior[ii] = (
-                injdata[param_map["prior"], ii]
-                / ((2 * np.pi * injdata[param_map["a_1"], ii] ** 2) * (2 * np.pi * injdata[param_map["a_2"], ii] ** 2))
-                * chi_effective_prior_from_isotropic_spins(
-                    np.array(injdata[param_map["mass_ratio"], ii]),
-                    1.0,
-                    np.array(chi_eff[ii]),
-                )
-            )
-    for p in new_params:
-        if p not in ["prior", "chi_eff", "chi_p"]:
-            new_inj_data[new_pmap[p]] = injdata[param_map[p]]
-        elif p == "prior":
-            new_inj_data[new_pmap[p]] = new_prior
-        elif p == "chi_eff":
-            new_inj_data[new_pmap[p]] = chi_eff
-        else:
-            new_inj_data[new_pmap[p]] = chi_p
-    return new_inj_data, new_pmap
+    else:
+
+        param_names.append('prior')
+        remove = np.setxor1d(injs.param.values, np.array(param_names))
+
+        return injs.drop_sel(param = remove)
 
 
 def resample_injections(rng_key, model_prob, injdata, Ndraw, param_map, **kwargs):
