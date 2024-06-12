@@ -10,10 +10,15 @@ import jax.numpy as jnp
 import numpy as np
 import xarray as xr
 from jax.scipy.integrate import trapezoid
+from tqdm import trange
 
 from ..cosmology import PLANCK_2015_Cosmology as cosmo
-from .conversions import convert_component_spins_to_chieff
-from .selection import load_injections
+from .conversions import chieff_from_q_component_spins
+from .conversions import chip_from_q_component_spins
+from .priors import chi_effective_prior_from_isotropic_spins
+from .priors import joint_prior_from_isotropic_spins
+from .selection import get_o3_cumulative_injection_dict
+from .selection import get_o4a_cumulative_injection_dict
 
 
 def collect_data(run_map):
@@ -152,6 +157,39 @@ def load_posterior_data(key_file, param_names=["mass_1", "mass_ratio", "redshift
         return full_catalog
 
 
+def load_injections(injfile, param_names, through_o4a=True, through_o3=False, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
+
+    if through_o4a:
+        injs = get_o4a_cumulative_injection_dict(
+            injfile,
+            param_names=param_names,
+            ifar=ifar_threshold,
+            snr=snr_threshold,
+        )
+
+    elif through_o3:
+        # TODO: Use xarrays
+        injs = get_o3_cumulative_injection_dict(injfile, ifar=ifar_threshold, snr=snr_threshold, additional_cuts=additional_cuts)
+
+    else:
+        raise AssertionError("One kwarg `through_o3` or `through_o4a` must be true. Please specify which injection file you are using.")
+
+    if "chi_eff" in param_names:
+        new_injs = convert_component_spins_to_chieff(injs, param_names, injections=True)
+        remove = ["a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
+
+        remove.append("mass_ratio") if "mass_2" in param_names else remove.append("mass_2")
+        new_injs = new_injs.drop_sel(param=remove)
+        return new_injs
+
+    else:
+
+        param_names.append("prior")
+        remove = np.setxor1d(injs.param.values, np.array(param_names))
+
+        return injs.drop_sel(param=remove)
+
+
 def load_posterior_samples_and_injections(key_file, injfile, param_names, outdir, ifar_threshold=1, snr_threshold=11):
     # TODO: support for injections through only o3
 
@@ -162,3 +200,117 @@ def load_posterior_samples_and_injections(key_file, injfile, param_names, outdir
     idata.to_netcdf(outdir + "/xarray_posterior_samples_and_injections.h5")
 
     return idata
+
+
+def convert_component_spins_to_chieff(dat_array, param_names, injections=False):
+
+    chip = True if "chi_p" in param_names else False
+
+    q = dat_array.sel(param="mass_ratio").values
+    a_1 = dat_array.sel(param="a_1").values
+    a_2 = dat_array.sel(param="a_2").values
+    tilt_1 = dat_array.sel(param="cos_tilt_1").values
+    tilt_2 = dat_array.sel(param="cos_tilt_2").values
+    prior = dat_array.sel(param="prior").values
+
+    chi_eff = chieff_from_q_component_spins(
+        q,
+        a_1,
+        a_2,
+        tilt_1,
+        tilt_2,
+    )
+    if chip:
+        chi_p = chip_from_q_component_spins(
+            q,
+            a_1,
+            a_2,
+            tilt_1,
+            tilt_2,
+        )
+
+    new_prior = np.zeros_like(prior)
+    for ii in trange(new_prior.shape[0]):
+        for jj in range(new_prior.shape[1]):
+            if chip:
+                new_prior[ii][jj] = (
+                    prior[ii][jj]
+                    / ((2 * jnp.pi * a_1[ii][jj] ** 2) * (2 * jnp.pi * a_2[ii][jj] ** 2))
+                    * jnp.asarray(
+                        joint_prior_from_isotropic_spins(
+                            np.array(q[ii][jj]),
+                            1.0,
+                            np.array(chi_eff[ii][jj]),
+                            np.array(chi_p[ii][jj]),
+                        )
+                    )
+                )
+            else:
+                new_prior[ii][jj] = (
+                    prior[ii][jj]
+                    / ((2 * jnp.pi * a_1[ii][jj] ** 2) * (2 * jnp.pi * a_2[ii][jj] ** 2))
+                    * jnp.asarray(
+                        chi_effective_prior_from_isotropic_spins(
+                            q[ii][jj],
+                            1.0,
+                            chi_eff[ii][jj],
+                        )
+                    )[0]
+                )
+
+    new_arrays = []
+
+    if injections:
+        chi_eff_array = xr.DataArray(
+            chi_eff.reshape(1, chi_eff.shape[0]),
+            dims=["param", "injection"],
+            coords={"param": ["chi_eff"], "injection": np.arange(dat_array.injection.shape[0])},
+        )
+        prior_array = xr.DataArray(
+            new_prior.reshape(1, chi_eff.shape[0]),
+            dims=["param", "injection"],
+            coords={"param": ["prior"], "injection": np.arange(dat_array.injection.shape[0])},
+        )
+        new_arrays.append(chi_eff_array)
+        new_arrays.append(prior_array)
+
+        if chip:
+            chip_array = xr.DataArray(
+                chi_p.reshape(1, chi_p.shape[0]),
+                dims=["param", "injection"],
+                coords={"param": ["chi_p"], "injection": np.arange(dat_array.injection.shape[0])},
+            )
+            new_arrays.append(chip_array)
+
+    else:
+        chi_eff_array = xr.DataArray(
+            chi_eff.reshape(chi_eff.shape[0], 1, chi_eff.shape[1]),
+            dims=[
+                "event",
+                "param",
+                "samples",
+            ],
+            coords={"event": dat_array.event, "param": ["chi_eff"], "samples": dat_array.samples},
+        )
+        prior_array = xr.DataArray(
+            new_prior.reshape(prior.shape[0], 1, prior.shape[1]),
+            dims=["event", "param", "samples"],
+            coords={"event": dat_array.event, "param": ["prior"], "samples": dat_array.samples},
+        )
+        new_arrays.append(chi_eff_array)
+        new_arrays.append(prior_array)
+
+        if chip:
+            chip_array = xr.DataArray(
+                chi_p.reshape(1, chi_p.shape[0]),
+                dims=["event", "param", "samples"],
+                coords={"event": dat_array.event, "param": ["chi_p"], "samples": dat_array.samples},
+            )
+            new_arrays.append(chip_array)
+
+    new_dat_array = dat_array.drop_sel(param="prior")
+
+    for arr in new_arrays:
+        new_dat_array = xr.concat([new_dat_array, arr], dim="param")
+
+    return new_dat_array

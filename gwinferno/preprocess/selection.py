@@ -8,8 +8,6 @@ import numpy as np
 import xarray as xr
 from jax import random
 
-from .conversions import convert_component_spins_to_chieff
-
 
 def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
     with h5py.File(file, "r") as ff:
@@ -94,39 +92,6 @@ def get_o3_cumulative_injection_dict(fi, ifar=1, snr=10, spin=False, additional_
         if spin:
             injs["prior"] *= (2 * np.pi * injs["a_1"] ** 2) * (2 * np.pi * injs["a_2"] ** 2)
     return injs
-
-
-def load_injections(injfile, param_names, through_o4a=True, through_o3=False, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
-
-    if through_o4a:
-        injs = get_o4a_cumulative_injection_dict(
-            injfile,
-            param_names=param_names,
-            ifar=ifar_threshold,
-            snr=snr_threshold,
-        )
-
-    elif through_o3:
-        # TODO: Use xarrays
-        injs = get_o3_cumulative_injection_dict(injfile, ifar=ifar_threshold, snr=snr_threshold, additional_cuts=additional_cuts)
-
-    else:
-        raise AssertionError("One kwarg `through_o3` or `through_o4a` must be true. Please specify which injection file you are using.")
-
-    if "chi_eff" in param_names:
-        new_injs = convert_component_spins_to_chieff(injs, param_names, injections=True)
-        remove = ["a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
-
-        remove.append("mass_ratio") if "mass_2" in param_names else remove.append("mass_2")
-        new_injs = new_injs.drop_sel(param=remove)
-        return new_injs
-
-    else:
-
-        param_names.append("prior")
-        remove = np.setxor1d(injs.param.values, np.array(param_names))
-
-        return injs.drop_sel(param=remove)
 
 
 def resample_injections(rng_key, model_prob, injdata, Ndraw, param_map, **kwargs):
