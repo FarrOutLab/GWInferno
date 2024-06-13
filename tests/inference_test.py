@@ -92,7 +92,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         injdata = jnp.asarray(injections.data)
         total_inj = injections.attrs["total_generated"]
         obs_time = injections.attrs["analysis_time"]
-        injdict = {k: injdata[i] for i,k in enumerate(injections.param.values)}
+        injdict = {k: injdata[i] for i, k in enumerate(injections.param.values)}
         return injdict, float(total_inj), obs_time
 
     def test_injection_shape(self):
