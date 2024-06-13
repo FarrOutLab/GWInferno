@@ -74,14 +74,18 @@ class TestTruncatedModelInference(unittest.TestCase):
     def test_load_pe_samples(self):
         fns = glob.glob(f"{self.data_dir}/S*.h5")
         evs = [s.split("/")[-1].replace(".h5", "") for s in fns]
-        run_map = {e: "C01:Mixed" for e in evs}
-        pe_samples, names = load_posterior_data(self.data_dir, run_map=run_map, spin=False)
-        pedata = jnp.array([[pe_samples[e][p].values for e in names] for p in self.param_names])
-        Nobs = pedata.shape[1]
+        run_map = {}
+
+        for ev, file in zip(evs, fns):
+            run_map[ev] = {"file_path": file, "waveform": "C01:Mixed", "redshift_prior": "euclidean", "catalog": "GWTC-3"}
+
+        pe_catalog = load_posterior_data(run_map=run_map, param_names=self.param_names)
+        pedata = jnp.asarray(pe_catalog.data)
+        Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]
-        pedict = {k: pedata[self.param_map[k]] for k in self.param_names}
-        for param in pedict.keys():
-            self.assertEqual(pedict[param].shape, (Nobs, Nsamples))
+        self.pedict = {k: pedata[i] for i, k in enumerate(pe_catalog.param.values)}
+        for param in self.pedict.keys():
+            self.assertEqual(self.pedict[param].shape, (Nobs, Nsamples))
 
     def test_pe_shape(self):
         for param in self.pedict.keys():
