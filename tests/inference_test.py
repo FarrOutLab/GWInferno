@@ -18,7 +18,8 @@ from gwinferno.pipeline.analysis import construct_hierarchical_model
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.pipeline.parser import ConfigReader
 from gwinferno.pipeline.parser import load_model_from_python_file
-from gwinferno.preprocess.data_collection import load_posterior_data, load_injections
+from gwinferno.preprocess.data_collection import load_injections
+from gwinferno.preprocess.data_collection import load_posterior_data
 
 
 def norm_mass_model(alpha, beta, mmin, mmax):
