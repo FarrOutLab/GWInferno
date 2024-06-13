@@ -54,7 +54,7 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
     return inj_array
 
 
-def get_o3_cumulative_injection_dict(fi, ifar=1, snr=10, spin=False, additional_cuts=None):
+def get_o3_cumulative_injection_dict(fi, param_names, ifar=1, snr=10, spin=False, additional_cuts=None):
     """
     Based from the function load_injection_data() at:
     https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66
@@ -77,10 +77,14 @@ def get_o3_cumulative_injection_dict(fi, ifar=1, snr=10, spin=False, additional_
             mass_2=data["mass2_source"][()][found],
             mass_ratio=data["mass2_source"][()][found] / data["mass1_source"][()][found],
             redshift=data["redshift"][()][found],
-            total_generated=int(data.attrs["total_generated"][()]),
-            analysis_time=data.attrs["analysis_time_s"][()] / 365.25 / 24 / 60 / 60,
         )
-        if spin:
+
+        total_generated = int(data.attrs["total_generated"][()])
+        analysis_time = data.attrs["analysis_time_s"][()] / 365.25 / 24 / 60 / 60
+
+        injs["prior"] = data["sampling_pdf"][()][found]
+
+        if ("a_1" in param_names) | ("chi_eff" in param_names):
             for ii in [1, 2]:
                 injs[f"a_{ii}"] = (
                     data.get(f"spin{ii}x", np.zeros(n_found))[()][found] ** 2
@@ -88,10 +92,21 @@ def get_o3_cumulative_injection_dict(fi, ifar=1, snr=10, spin=False, additional_
                     + data[f"spin{ii}z"][()][found] ** 2
                 ) ** 0.5
                 injs[f"cos_tilt_{ii}"] = data[f"spin{ii}z"][()][found] / injs[f"a_{ii}"]
-        injs["prior"] = data["sampling_pdf"][()][found] * data["mass1_source"][()][found]
-        if spin:
+
             injs["prior"] *= (2 * np.pi * injs["a_1"] ** 2) * (2 * np.pi * injs["a_2"] ** 2)
-    return injs
+
+        if "mass_ratio" in param_names:
+            injs["prior"] *= data["mass1_source"][()][found]
+
+    injdata = np.array([np.asarray(injs[param]) for param in list(injs.keys())])
+    inj_array = xr.DataArray(
+        injdata,
+        dims=["param", "injection"],
+        coords={"param": list(injs.keys()), "injection": np.arange(sum(found))},
+        attrs={"total_generated": total_generated, "analysis_time": analysis_time},
+    )
+
+    return inj_array
 
 
 def resample_injections(rng_key, model_prob, injdata, Ndraw, param_map, **kwargs):

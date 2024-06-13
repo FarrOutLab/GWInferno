@@ -168,14 +168,14 @@ def load_injections(injfile, param_names, through_o4a=True, through_o3=False, if
         )
 
     elif through_o3:
-        # TODO: Use xarrays
-        injs = get_o3_cumulative_injection_dict(injfile, ifar=ifar_threshold, snr=snr_threshold, additional_cuts=additional_cuts)
+
+        injs = get_o3_cumulative_injection_dict(injfile, param_names, ifar=ifar_threshold, snr=snr_threshold, additional_cuts=additional_cuts)
 
     else:
         raise AssertionError("One kwarg `through_o3` or `through_o4a` must be true. Please specify which injection file you are using.")
 
     if "chi_eff" in param_names:
-        new_injs = convert_component_spins_to_chieff(injs, param_names, injections=True)
+        new_injs = convert_component_spin_injections_to_chieff(injs, param_names)
         remove = ["a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
 
         remove.append("mass_ratio") if "mass_2" in param_names else remove.append("mass_2")
@@ -186,7 +186,6 @@ def load_injections(injfile, param_names, through_o4a=True, through_o3=False, if
 
         param_names.append("prior")
         remove = np.setxor1d(injs.param.values, np.array(param_names))
-
         return injs.drop_sel(param=remove)
 
 
