@@ -88,11 +88,11 @@ class TestTruncatedModelInference(unittest.TestCase):
             self.assertEqual(self.pedict[param].shape, (self.Nobs, self.Nsamples))
 
     def load_injections(self, **kwargs):
-        injections = load_injections(self.inj_file, spin=False, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
-        injdata = jnp.array([injections[k] for k in self.param_names])
-        total_inj = injections["total_generated"]
-        obs_time = injections["analysis_time"]
-        injdict = {k: injdata[self.param_map[k]] for k in self.param_names}
+        injections = load_injections(self.inj_file, self.param_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
+        injdata = jnp.asarray(injections.data)
+        total_inj = injections.attrs["total_generated"]
+        obs_time = injections.attrs["analysis_time"]
+        injdict = {k: injdata[i] for i,k in enumerate(injections.param.values)}
         return injdict, float(total_inj), obs_time
 
     def test_injection_shape(self):
