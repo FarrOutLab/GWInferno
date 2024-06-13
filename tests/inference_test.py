@@ -18,8 +18,7 @@ from gwinferno.pipeline.analysis import construct_hierarchical_model
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.pipeline.parser import ConfigReader
 from gwinferno.pipeline.parser import load_model_from_python_file
-from gwinferno.preprocess.data_collection import load_posterior_samples
-from gwinferno.preprocess.selection import load_injections
+from gwinferno.preprocess.data_collection import load_posterior_data, load_injections
 
 
 def norm_mass_model(alpha, beta, mmin, mmax):
@@ -75,7 +74,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         fns = glob.glob(f"{self.data_dir}/S*.h5")
         evs = [s.split("/")[-1].replace(".h5", "") for s in fns]
         run_map = {e: "C01:Mixed" for e in evs}
-        pe_samples, names = load_posterior_samples(self.data_dir, run_map=run_map, spin=False)
+        pe_samples, names = load_posterior_data(self.data_dir, run_map=run_map, spin=False)
         pedata = jnp.array([[pe_samples[e][p].values for e in names] for p in self.param_names])
         Nobs = pedata.shape[1]
         Nsamples = pedata.shape[-1]
