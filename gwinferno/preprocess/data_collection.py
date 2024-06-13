@@ -133,10 +133,12 @@ def evaluate_prior(full_catalog, param_names):
     return new_full_catalog
 
 
-def load_posterior_data(key_file, param_names=["mass_1", "mass_ratio", "redshift"]):
-
-    with open(key_file, "r") as f:
-        run_map = json.load(f)
+def load_posterior_data(run_map=None, key_file=None, param_names=["mass_1", "mass_ratio", "redshift"]):
+    if run_map is None:
+        with open(key_file, "r") as f:
+            run_map = json.load(f)
+        if key_file is None:
+            raise AssertionError("run_map or key_file must be specified")
 
     posterior_dict = collect_data(run_map)
     catalog = format_data(posterior_dict)
@@ -192,7 +194,7 @@ def load_injections(injfile, param_names, through_o4a=True, through_o3=False, if
 def load_posterior_samples_and_injections(key_file, injfile, param_names, outdir, ifar_threshold=1, snr_threshold=11):
     # TODO: support for injections through only o3
 
-    pe_array = load_posterior_data(key_file, param_names=param_names).to_dataset(name="posteriors")
+    pe_array = load_posterior_data(key_file=key_file, param_names=param_names).to_dataset(name="posteriors")
     inj_array = load_injections(injfile, param_names, ifar_threshold=ifar_threshold, snr_threshold=snr_threshold).to_dataset(name="injections")
 
     idata = az.InferenceData(pe_data=pe_array, inj_data=inj_array)
