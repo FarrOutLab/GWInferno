@@ -191,14 +191,15 @@ def load_injections(injfile, param_names, through_o4a=True, through_o3=False, if
         return injs.drop_sel(param=remove)
 
 
-def load_posterior_samples_and_injections(key_file, injfile, param_names, outdir, ifar_threshold=1, snr_threshold=11):
-    # TODO: support for injections through only o3
+def load_posterior_samples_and_injections(key_file, injfile, param_names, outdir, ifar_threshold=1, snr_threshold=11, save=False):
 
     pe_array = load_posterior_data(key_file=key_file, param_names=param_names).to_dataset(name="posteriors")
     inj_array = load_injections(injfile, param_names, ifar_threshold=ifar_threshold, snr_threshold=snr_threshold).to_dataset(name="injections")
 
     idata = az.InferenceData(pe_data=pe_array, inj_data=inj_array)
-    idata.to_netcdf(outdir + "/xarray_posterior_samples_and_injections.h5")
+
+    if save:
+        idata.to_netcdf(outdir + "/xarray_posterior_samples_and_injections.h5")
 
     return idata
 
