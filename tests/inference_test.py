@@ -83,7 +83,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         pedata = jnp.asarray(pe_catalog.data)
         Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]
-        self.pedict = {k: pedata[i] for i, k in enumerate(pe_catalog.param.values)}
+        self.pedict = {k: pedata[:, i] for i, k in enumerate(pe_catalog.param.values)}
         for param in self.pedict.keys():
             self.assertEqual(self.pedict[param].shape, (Nobs, Nsamples))
 
