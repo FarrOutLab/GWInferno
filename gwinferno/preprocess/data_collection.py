@@ -177,7 +177,7 @@ def load_injections(injfile, param_names, through_o4a=True, through_o3=False, if
         raise AssertionError("One kwarg `through_o3` or `through_o4a` must be true. Please specify which injection file you are using.")
 
     if "chi_eff" in param_names:
-        new_injs = convert_component_spins_to_chieff(injs, param_names)
+        new_injs = convert_component_spins_to_chieff(injs, param_names, injections=True)
         remove = ["a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
 
         remove.append("mass_ratio") if "mass_2" in param_names else remove.append("mass_2")
@@ -198,8 +198,12 @@ def load_posterior_samples_and_injections(key_file, injfile, param_names, outdir
 
     idata = az.InferenceData(pe_data=pe_array, inj_data=inj_array)
 
+    label = ''
+    for i in param_names:
+        label = label + f'-{i}'
+
     if save:
-        idata.to_netcdf(outdir + "/xarray_posterior_samples_and_injections.h5")
+        idata.to_netcdf(outdir + f"/xarray_through-o4a_posterior_samples_and_injections{label}.h5")
 
     return idata
 
@@ -231,34 +235,62 @@ def convert_component_spins_to_chieff(dat_array, param_names, injections=False):
             tilt_2,
         )
 
-    new_prior = np.zeros_like(prior)
-    for ii in trange(new_prior.shape[0]):
-        for jj in range(new_prior.shape[1]):
+    if injections:
+
+        new_prior = np.zeros_like(prior)
+        for ii in trange(new_prior.shape[0]):
             if chip:
-                new_prior[ii][jj] = (
-                    prior[ii][jj]
-                    / ((2 * jnp.pi * a_1[ii][jj] ** 2) * (2 * jnp.pi * a_2[ii][jj] ** 2))
-                    * jnp.asarray(
-                        joint_prior_from_isotropic_spins(
-                            np.array(q[ii][jj]),
-                            1.0,
-                            np.array(chi_eff[ii][jj]),
-                            np.array(chi_p[ii][jj]),
-                        )
-                    )
+                new_prior[ii] = (
+                    prior[ii]
+                    / ((2 * jnp.pi * a_1[ii] ** 2) * (2 * jnp.pi * a_2[ii] ** 2))
+                    * jnp.asarray(joint_prior_from_isotropic_spins(
+                        np.array(q[ii]),
+                        1.0,
+                        np.array(chi_eff[ii]),
+                        np.array(chi_p[ii]),
+                    ))
                 )
             else:
-                new_prior[ii][jj] = (
-                    prior[ii][jj]
-                    / ((2 * jnp.pi * a_1[ii][jj] ** 2) * (2 * jnp.pi * a_2[ii][jj] ** 2))
-                    * jnp.asarray(
-                        chi_effective_prior_from_isotropic_spins(
-                            q[ii][jj],
-                            1.0,
-                            chi_eff[ii][jj],
-                        )
-                    )[0]
+
+                new_prior[ii] = (
+                    prior[ii]
+                    / ((2 * jnp.pi * a_1[ii] ** 2) * (2 * jnp.pi * a_2[ii] ** 2))
+                    * jnp.asarray(chi_effective_prior_from_isotropic_spins(
+                        np.asarray(q[ii]),
+                        1.0,
+                        np.asarray(chi_eff[ii]),
+                    ))[0]
                 )
+
+    else:
+        new_prior = np.zeros_like(prior)
+        for ii in trange(new_prior.shape[0]):
+            for jj in range(new_prior.shape[1]):
+                if chip:
+                    new_prior[ii][jj] = (
+                        prior[ii][jj]
+                        / ((2 * jnp.pi * a_1[ii][jj] ** 2) * (2 * jnp.pi * a_2[ii][jj] ** 2))
+                        * jnp.asarray(
+                            joint_prior_from_isotropic_spins(
+                                np.array(q[ii][jj]),
+                                1.0,
+                                np.array(chi_eff[ii][jj]),
+                                np.array(chi_p[ii][jj]),
+                            )
+                        )
+                    )
+                else:
+                    new_prior[ii][jj] = (
+                        prior[ii][jj]
+                        / ((2 * jnp.pi * a_1[ii][jj] ** 2) * (2 * jnp.pi * a_2[ii][jj] ** 2))
+                        * jnp.asarray(
+                            chi_effective_prior_from_isotropic_spins(
+                                q[ii][jj],
+                                1.0,
+                                chi_eff[ii][jj],
+                            )
+                        )[0]
+                    )
 
     new_arrays = []
 
