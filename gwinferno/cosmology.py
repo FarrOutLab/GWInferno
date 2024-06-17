@@ -5,7 +5,15 @@ a module for basic cosmology calculations using jax
 # adapted from code written by Reed Essick included in the gw-distributions package at:
 # https://git.ligo.org/reed.essick/gw-distributions/-/blob/master/gwdistributions/utils/cosmology.py
 
+import os
+
 import jax.numpy as jnp
+import xarray as xr
+
+from gwinferno import interpolation
+
+fp = interpolation.__file__
+gwp = fp.split("/interpolation")[0] + "/cache/cosmo_grid"
 
 # define units in SI
 C_SI = 299792458.0
@@ -45,10 +53,25 @@ class Cosmology(object):
         self.OmegaLambda = omega_lambda
         self.OmegaKappa = 1.0 - (self.OmegaMatter + self.OmegaRadiation + self.OmegaLambda)
         assert self.OmegaKappa == 0, "we only implement flat cosmologies! OmegaKappa must be 0"
-        self.z = jnp.array([0.0])
-        self.Dc = jnp.array([0.0])
-        self.Vc = jnp.array([0.0])
-        self.extend(max_z=2.3, dz=DEFAULT_DZ)
+
+        if not os.path.exists(gwp + f"_{distance_unit}.h5"):
+            self.z = jnp.array([0.0])
+            self.Dc = jnp.array([0.0])
+            self.Vc = jnp.array([0.0])
+            self.extend(max_z=2.3, dz=DEFAULT_DZ)
+
+            cosmo_data = xr.Dataset(
+                data_vars={"z": (["grid"], self.z), "Dc": (["grid"], self.Dc), "Vc": (["grid"], self.Vc)},
+                coords={"grid": ("grid", jnp.arange(self.z.shape[0]))},
+            )
+
+            cosmo_data.to_netcdf(gwp + f"_{distance_unit}.h5")
+
+        else:
+            cosmo_data = xr.open_dataset(f"./cosmo_grid_{distance_unit}.h5")
+            self.z = jnp.asarray(cosmo_data.z.data)
+            self.Dc = jnp.asarray(cosmo_data.Dc.data)
+            self.Vc = jnp.asarray(cosmo_data.Vc.data)
 
     @property
     def DL(self):

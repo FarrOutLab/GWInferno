@@ -198,9 +198,9 @@ def load_posterior_samples_and_injections(key_file, injfile, param_names, outdir
 
     idata = az.InferenceData(pe_data=pe_array, inj_data=inj_array)
 
-    label = ''
+    label = ""
     for i in param_names:
-        label = label + f'-{i}'
+        label = label + f"-{i}"
 
     if save:
         idata.to_netcdf(outdir + f"/xarray_through-o4a_posterior_samples_and_injections{label}.h5")
@@ -243,23 +243,27 @@ def convert_component_spins_to_chieff(dat_array, param_names, injections=False):
                 new_prior[ii] = (
                     prior[ii]
                     / ((2 * jnp.pi * a_1[ii] ** 2) * (2 * jnp.pi * a_2[ii] ** 2))
-                    * jnp.asarray(joint_prior_from_isotropic_spins(
-                        np.array(q[ii]),
-                        1.0,
-                        np.array(chi_eff[ii]),
-                        np.array(chi_p[ii]),
-                    ))
+                    * jnp.asarray(
+                        joint_prior_from_isotropic_spins(
+                            np.array(q[ii]),
+                            1.0,
+                            np.array(chi_eff[ii]),
+                            np.array(chi_p[ii]),
+                        )
+                    )
                 )
             else:
 
                 new_prior[ii] = (
                     prior[ii]
                     / ((2 * jnp.pi * a_1[ii] ** 2) * (2 * jnp.pi * a_2[ii] ** 2))
-                    * jnp.asarray(chi_effective_prior_from_isotropic_spins(
-                        np.asarray(q[ii]),
-                        1.0,
-                        np.asarray(chi_eff[ii]),
-                    ))[0]
+                    * jnp.asarray(
+                        chi_effective_prior_from_isotropic_spins(
+                            np.asarray(q[ii]),
+                            1.0,
+                            np.asarray(chi_eff[ii]),
+                        )
+                    )[0]
                 )
 
     else:
