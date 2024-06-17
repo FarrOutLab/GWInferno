@@ -68,7 +68,7 @@ class Cosmology(object):
             cosmo_data.to_netcdf(gwp + f"_{distance_unit}.h5")
 
         else:
-            cosmo_data = xr.open_dataset(f"./cosmo_grid_{distance_unit}.h5")
+            cosmo_data = xr.open_dataset(gwp + f"_{distance_unit}.h5")
             self.z = jnp.asarray(cosmo_data.z.data)
             self.Dc = jnp.asarray(cosmo_data.Dc.data)
             self.Vc = jnp.asarray(cosmo_data.Vc.data)
