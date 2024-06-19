@@ -38,7 +38,7 @@ class TestTruncatedModelInference(unittest.TestCase):
             pref = "tests/data"
         self.data_dir = pref
         self.inj_file = f"{pref}/injections.h5"
-        self.param_names = ["mass_1", "mass_ratio", "redshift"]
+        self.param_names = ["mass_1", "mass_ratio", "redshift", "prior"]
         self.param_map = {p: i for i, p in enumerate(self.param_names)}
         self.pedict, self.Nobs, self.Nsamples = self.load_data()
         self.injdict, self.total_inj, self.obs_time = self.load_injections(through_o4a=False, through_o3=True)
@@ -79,7 +79,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         for ev, file in zip(evs, fns):
             run_map[ev] = {"file_path": file, "waveform": "C01:Mixed", "redshift_prior": "euclidean", "catalog": "GWTC-3"}
 
-        pe_catalog = load_posterior_data(run_map=run_map, param_names=self.param_names)
+        pe_catalog = load_posterior_data(run_map=run_map, param_names=self.param_names.remove("prior"))
         pedata = jnp.asarray(pe_catalog.data)
         Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]
@@ -92,7 +92,9 @@ class TestTruncatedModelInference(unittest.TestCase):
             self.assertEqual(self.pedict[param].shape, (self.Nobs, self.Nsamples))
 
     def load_injections(self, **kwargs):
-        injections = load_injections(self.inj_file, self.param_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
+        injections = load_injections(
+            self.inj_file, self.param_names.remove("prior"), through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"]
+        )
         injdata = jnp.asarray(injections.data)
         total_inj = injections.attrs["total_generated"]
         obs_time = injections.attrs["analysis_time"]
