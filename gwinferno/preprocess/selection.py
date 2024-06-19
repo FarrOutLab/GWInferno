@@ -73,7 +73,7 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
     return inj_array
 
 
-def get_o3_cumulative_injection_dict(fi, param_names, ifar=1, snr=10, spin=False, additional_cuts=None):
+def get_o3_cumulative_injection_dict(fi, param_names, ifar=1, snr=10, additional_cuts=None):
     """
     Based from the function load_injection_data() at:
     https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66
