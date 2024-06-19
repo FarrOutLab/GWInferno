@@ -1,36 +1,17 @@
 """
-a module for basic cosmology calculations using jax
+a module for basic cosmology calculations using jax. See https://arxiv.org/pdf/astro-ph/9905116 for description of parameters and functions.
 """
 
 # adapted from code written by Reed Essick included in the gw-distributions package at:
 # https://git.ligo.org/reed.essick/gw-distributions/-/blob/master/gwdistributions/utils/cosmology.py
 
-import os
 
 import jax.numpy as jnp
-import xarray as xr
-
-from gwinferno import interpolation
-
-fp = interpolation.__file__
-gwp = fp.split("/interpolation")[0] + "/cache/cosmo_grid"
-
-# define units in SI
-C_SI = 299792458.0
-PC_SI = 3.085677581491367e16
-MPC_SI = PC_SI * 1e6
-G_SI = 6.6743e-11
-MSUN_SI = 1.9884099021470415e30
-
-# define units in CGS
-G_CGS = G_SI * 1e3
-C_CGS = C_SI * 1e2
-PC_CGS = PC_SI * 1e2
-MPC_CGS = MPC_SI * 1e2
-MSUN_CGS = MSUN_SI * 1e3
+from jax.lax import fori_loop
 
 # Planck 2015 Cosmology (Table4 in arXiv:1502.01589, OmegaMatter from astropy Planck 2015)
-PLANCK_2015_Ho = 67.74 / (MPC_SI * 1e-3)  # (km/s/Mpc) / (m/Mpc * km/m) = s**-1
+C_SI = 299792458.0  # m/s
+PLANCK_2015_Ho = 67.74 / (1e-3)  # (km/s/Mpc) / (km/m) = m/s/Mpc
 PLANCK_2015_OmegaMatter = 0.3089
 PLANCK_2015_OmegaLambda = 1.0 - PLANCK_2015_OmegaMatter
 PLANCK_2015_OmegaRadiation = 0.0
@@ -41,74 +22,54 @@ DEFAULT_DZ = 1e-3  # should be good enough for most numeric integrations we want
 class Cosmology(object):
     """
     a class that implements specific cosmological computations.
-    **NOTE**, we work in CGS units throughout, so Ho must be specified in s**-1 and distances are specified in cm
+    **NOTE**, we work in SI units throughout, though distances are specified in Mpc.
     """
 
-    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, distance_unit="mpc", initial_z_integ=2.3):
+    def __init__(self, Ho, omega_matter, omega_radiation, omega_lambda, max_z=10.0, dz=DEFAULT_DZ):
         self.Ho = Ho
-        self.c_over_Ho = C_CGS / self.Ho
-        self.unit_mod = MPC_CGS if distance_unit == "mpc" else 1.0
+        self.c_over_Ho = C_SI / self.Ho
         self.OmegaMatter = omega_matter
         self.OmegaRadiation = omega_radiation
         self.OmegaLambda = omega_lambda
         self.OmegaKappa = 1.0 - (self.OmegaMatter + self.OmegaRadiation + self.OmegaLambda)
         assert self.OmegaKappa == 0, "we only implement flat cosmologies! OmegaKappa must be 0"
 
-        if not os.path.exists(gwp + f"_{distance_unit}.h5"):
-            self.z = jnp.array([0.0])
-            self.Dc = jnp.array([0.0])
-            self.Vc = jnp.array([0.0])
-            self.extend(max_z=2.3, dz=DEFAULT_DZ)
-
-            cosmo_data = xr.Dataset(
-                data_vars={"z": (["grid"], self.z), "Dc": (["grid"], self.Dc), "Vc": (["grid"], self.Vc)},
-                coords={"grid": ("grid", jnp.arange(self.z.shape[0]))},
-            )
-
-            cosmo_data.to_netcdf(gwp + f"_{distance_unit}.h5")
-
-        else:
-            cosmo_data = xr.open_dataset(gwp + f"_{distance_unit}.h5")
-            self.z = jnp.asarray(cosmo_data.z.data)
-            self.Dc = jnp.asarray(cosmo_data.Dc.data)
-            self.Vc = jnp.asarray(cosmo_data.Vc.data)
+        self.extend(max_z, dz=dz)
 
     @property
     def DL(self):
         return self.Dc * (1 + self.z)
 
-    def extend(self, max_DL=-jnp.inf, max_Dc=-jnp.inf, max_z=-jnp.inf, max_Vc=-jnp.inf, dz=DEFAULT_DZ):
+    def update(self, i, x):
+
+        z = x[0]
+        dz = z[1] - z[0]
+        Dc = x[1]
+        Vc = x[2]
+
+        dDcdz = self.dDcdz(z[i])
+        dVcdz = self.dVcdz(z[i], Dc[i])
+        new_dDcdz = self.dDcdz(z[i] + dz)
+        Dc = Dc.at[i + 1].set(Dc[i] + 0.5 * (dDcdz + new_dDcdz) * dz)
+
+        new_dVcdz = self.dVcdz(z[i] + dz, Dc[i + 1])
+        Vc = Vc.at[i + 1].set(Vc[i] + 0.5 * (dVcdz + new_dVcdz) * dz)
+
+        return jnp.array([z, Dc, Vc])
+
+    def extend(self, max_z, dz=DEFAULT_DZ):
         """
         integrate to solve for distance measures.
         """
-        # note, this could be slow due to trapazoidal approximation with small step size
-        # extract current state
-        zs = list(self.z)
-        Dcs = list(self.Dc)
-        Vcs = list(self.Vc)
-        z = zs[-1]
-        Dc = Dcs[-1]
-        Vc = Vcs[-1]
-        DL = Dc * (1 + z)
 
-        while jnp.less(Dc, max_Dc) | jnp.less(DL, max_DL) | jnp.less(z, max_z) | jnp.less(Vc, max_Vc):
-            dDcdz = self.dDcdz(z)
-            dVcdz = self.dVcdz(z, Dc)
-            new_z = z + dz
-            new_dDcdz = self.dDcdz(new_z)
-            new_Dc = Dc + 0.5 * (dDcdz + new_dDcdz) * dz
-            new_dVcdz = self.dVcdz(new_z, new_Dc)
-            new_Vc = Vc + 0.5 * (dVcdz + new_dVcdz) * dz
-            new_DL = (1 + new_z) * new_Dc
-            # update state
-            z, DL, Dc, Vc = new_z, new_DL, new_Dc, new_Vc
-            # append to arrays
-            zs.append(z)
-            Dcs.append(Dc)
-            Vcs.append(Vc)
-        self.z = jnp.array(zs)
-        self.Dc = jnp.array(Dcs)
-        self.Vc = jnp.array(Vcs)
+        self.z = jnp.arange(0, max_z, dz)
+        Dc = jnp.zeros_like(self.z)
+        Vc = jnp.zeros_like(self.z)
+
+        X = jnp.array([self.z, Dc, Vc])
+        extended_X = fori_loop(0, self.z.shape[0] - 1, self.update, X)
+        self.Dc = extended_X[1]
+        self.Vc = extended_X[2]
 
     def z2E(self, z):
         """
@@ -119,22 +80,20 @@ class Cosmology(object):
             self.OmegaLambda + self.OmegaKappa * one_plus_z**2 + self.OmegaMatter * one_plus_z**3 + self.OmegaRadiation * one_plus_z**4
         ) ** 0.5
 
-    def dDcdz(self, z, mpc=False):
+    def dDcdz(self, z):
         """
         returns (c/Ho)/E(z)
         """
         dDc = self.c_over_Ho / self.z2E(z)
-        if mpc:
-            return dDc / MPC_CGS
         return dDc
 
-    def dVcdz(self, z, Dc=None, dz=DEFAULT_DZ, Mpc=False):
+    def dVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
         """
         return dVc/dz
         """
         if Dc is None:
-            Dc = self.z2Dc(z, dz=dz, Mpc=Mpc)
-        return 4 * jnp.pi * Dc**2 * self.dDcdz(z, mpc=Mpc)
+            Dc = self.z2Dc(z, dz=dz)
+        return 4 * jnp.pi * Dc**2 * self.dDcdz(z)
 
     def logdVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
         """
@@ -142,18 +101,16 @@ class Cosmology(object):
         """
         if Dc is None:
             Dc = self.z2Dc(z, dz=dz)
-        return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z)) - 3.0 * jnp.log(self.unit_mod)
+        return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z))
 
-    def z2Dc(self, z, dz=DEFAULT_DZ, Mpc=False):
+    def z2Dc(self, z, dz=DEFAULT_DZ):
         """
         return Dc for each z specified
         """
         max_z = jnp.max(z)
         if jnp.greater(max_z, jnp.max(self.z)):
             self.extend(max_z=max_z, dz=dz)
-
-        if Mpc:
-            return jnp.interp(z, self.z, self.Dc) / MPC_CGS
+            return jnp.interp(z, self.z, self.Dc)
         else:
             return jnp.interp(z, self.z, self.Dc)
 
@@ -161,11 +118,10 @@ class Cosmology(object):
         """
         returns redshifts for each DL specified.
         """
-        DL_cgs = DL * self.unit_mod
-        max_DL = jnp.max(DL_cgs)
+        max_DL = jnp.max(DL)
         if max_DL > jnp.max(self.DL):  # need to extend the integration
             self.extend(max_DL=max_DL, dz=dz)
-        return jnp.interp(DL_cgs, self.DL, self.z)
+        return jnp.interp(DL, self.DL, self.z)
 
     def z2DL(self, z, dz=DEFAULT_DZ):
         """
@@ -174,7 +130,7 @@ class Cosmology(object):
         max_z = jnp.max(z)
         if max_z > jnp.max(self.z):
             self.extend(max_z=max_z, dz=dz)
-        return jnp.interp(z, self.z, self.DL) / self.unit_mod
+        return jnp.interp(z, self.z, self.DL)
 
 
 # define default cosmology
