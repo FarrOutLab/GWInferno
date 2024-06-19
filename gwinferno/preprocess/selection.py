@@ -15,7 +15,12 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
         analysis_time = ff.attrs["analysis_time"]
         injections = np.asarray(ff["events"][:])
 
-    found = (injections["far_gstlal"] <= 1 / ifar) | (injections["semianalytic_observed_phase_maximized_snr_net"] >= snr)
+    found = injections["semianalytic_observed_phase_maximized_snr_net"] >= snr
+
+    for key in injections.dtype.names:
+        if "far" in key:
+            found |= injections[key] <= 1 / ifar
+
     inj_weights = injections[found]["weights"]
 
     injs = dict(
