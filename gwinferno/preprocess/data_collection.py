@@ -88,9 +88,9 @@ def format_data(posteriors):
 def dl_2_prior_on_z(z, euclidean=False):
     if euclidean:
         dl = cosmo.z2DL(z) / 1e3
-        return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z, mpc=True) / 1e3)
+        return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z) / 1e3)
     else:
-        return cosmo.dVcdz(z, Mpc=True) * 4 * np.pi / (1 + z)
+        return cosmo.dVcdz(z) * 4 * np.pi / (1 + z)
 
 
 def evaluate_prior(full_catalog, param_names):
@@ -153,9 +153,10 @@ def load_posterior_data(run_map=None, key_file=None, param_names=["mass_1", "mas
         return new_pe
 
     else:
-        param_names.append("prior")
-        remove = np.setxor1d(full_catalog.param.values, np.array(param_names))
+        remove = list(np.setxor1d(full_catalog.param.values, np.array(param_names)))
+        remove.remove("prior")
         full_catalog = full_catalog.drop_sel(param=remove)
+
         return full_catalog
 
 
@@ -185,21 +186,19 @@ def load_injections(injfile, param_names, through_o4a=True, through_o3=False, if
         return new_injs
 
     else:
-
-        param_names.append("prior")
-        remove = np.setxor1d(injs.param.values, np.array(param_names))
+        remove = list(np.setxor1d(injs.param.values, np.array(param_names)))
+        remove.remove("prior")
         return injs.drop_sel(param=remove)
 
 
-def load_posterior_samples_and_injections(key_file, injfile, param_names, outdir, ifar_threshold=1, snr_threshold=11, save=False):
-
-    pe_array = load_posterior_data(key_file=key_file, param_names=param_names).to_dataset(name="posteriors")
-    inj_array = load_injections(injfile, param_names, ifar_threshold=ifar_threshold, snr_threshold=snr_threshold).to_dataset(name="injections")
+def load_posterior_samples_and_injections(key_file, injfile, parameter_names, outdir, ifar_threshold=1, snr_threshold=11, save=False):
+    pe_array = load_posterior_data(key_file=key_file, param_names=parameter_names).to_dataset(name="posteriors")
+    inj_array = load_injections(injfile, parameter_names, ifar_threshold=ifar_threshold, snr_threshold=snr_threshold).to_dataset(name="injections")
 
     idata = az.InferenceData(pe_data=pe_array, inj_data=inj_array)
 
     label = ""
-    for i in param_names:
+    for i in parameter_names:
         label = label + f"-{i}"
 
     if save:
