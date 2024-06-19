@@ -78,8 +78,8 @@ class TestTruncatedModelInference(unittest.TestCase):
 
         for ev, file in zip(evs, fns):
             run_map[ev] = {"file_path": file, "waveform": "C01:Mixed", "redshift_prior": "euclidean", "catalog": "GWTC-3"}
-
-        pe_catalog = load_posterior_data(run_map=run_map, param_names=self.param_names.remove("prior"))
+        p_names = self.sparam_names.remove("prior")
+        pe_catalog = load_posterior_data(run_map=run_map, param_names=p_names)
         pedata = jnp.asarray(pe_catalog.data)
         Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]
