@@ -38,7 +38,7 @@ class TestTruncatedModelInference(unittest.TestCase):
             pref = "tests/data"
         self.data_dir = pref
         self.inj_file = f"{pref}/injections.h5"
-        self.param_names = ["mass_1", "mass_ratio", "redshift", "prior"]
+        self.param_names = ["mass_1", "mass_ratio", "redshift"]
         self.param_map = {p: i for i, p in enumerate(self.param_names)}
         self.pedict, self.Nobs, self.Nsamples = self.load_data()
         self.injdict, self.total_inj, self.obs_time = self.load_injections(through_o4a=False, through_o3=True)
