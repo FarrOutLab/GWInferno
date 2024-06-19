@@ -78,7 +78,8 @@ class TestTruncatedModelInference(unittest.TestCase):
 
         for ev, file in zip(evs, fns):
             run_map[ev] = {"file_path": file, "waveform": "C01:Mixed", "redshift_prior": "euclidean", "catalog": "GWTC-3"}
-        p_names = self.sparam_names.remove("prior")
+        p_names = self.param_names.copy()
+        p_names.remove("prior")
         pe_catalog = load_posterior_data(run_map=run_map, param_names=p_names)
         pedata = jnp.asarray(pe_catalog.data)
         Nobs = pedata.shape[0]
@@ -92,7 +93,8 @@ class TestTruncatedModelInference(unittest.TestCase):
             self.assertEqual(self.pedict[param].shape, (self.Nobs, self.Nsamples))
 
     def load_injections(self, **kwargs):
-        p_names = self.param_names.remove("prior")
+        p_names = self.param_names.copy()
+        p_names.remove("prior")
         injections = load_injections(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
         injdata = jnp.asarray(injections.data)
         total_inj = injections.attrs["total_generated"]
