@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue)](#license)
 
 
-![Untitled-3](https://github.com/FarrOutLab/GWInferno/assets/80279129/a0b90bd3-5d9e-48a3-a977-134f588fdec3)
+![logo_github_inferno](https://github.com/FarrOutLab/GWInferno/assets/80279129/39a9529e-9668-44ee-8319-2694abf6f629)
 
 
 # Gravitational-Wave Hierarchical Inference with NumPyro
