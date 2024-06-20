@@ -109,6 +109,44 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<div class="viewcode-block" id="logistic_function">
+<a class="viewcode-back" href="../../api/gwinferno.distributions.logistic_function.html#gwinferno.distributions.logistic_function">[docs]</a>
+<span class="k">def</span> <span class="nf">logistic_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Logistic function or logistic curve</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (array_like): input array to evaluate logistic function at</span>
+<span class="sd">        L (float): curve&#39;s maximum value</span>
+<span class="sd">        k (float): logistic growth rate (positive values for left truncation, negative for right truncation)</span>
+<span class="sd">        x0 (float): x-value of the sigmoid&#39;s midpoint</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        array_like: logistic function evaluated at x</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">L</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)))</span></div>
+
+
+
+<div class="viewcode-block" id="logistic_unit">
+<a class="viewcode-back" href="../../api/gwinferno.distributions.logistic_unit.html#gwinferno.distributions.logistic_unit">[docs]</a>
+<span class="k">def</span> <span class="nf">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    logistic_unit soft truncate a distribution with the logistic unit</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        x (array_like): input array to truncate</span>
+<span class="sd">        x0 (float): value of array we want to apply a soft truncation to</span>
+<span class="sd">        sgn (int, optional): Which side do we truncate on (1 for right, -1 for left). Defaults to 1.</span>
+<span class="sd">        sc (int, optional): scale of truncation, where higher values is sharper. Defaults to 4.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        array_like: input array with the soft truncation at x0 applied</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">logistic_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">sgn</span> <span class="o">*</span> <span class="n">sc</span><span class="p">,</span> <span class="n">x0</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="log_logistic_unit">
 <a class="viewcode-back" href="../../api/gwinferno.distributions.log_logistic_unit.html#gwinferno.distributions.log_logistic_unit">[docs]</a>
 <span class="k">def</span> <span class="nf">log_logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
@@ -128,31 +166,6 @@
         <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="n">sgn</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">sc</span><span class="p">)),</span>
         <span class="o">-</span><span class="n">sgn</span> <span class="o">*</span> <span class="n">sc</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=-</span><span class="n">sgn</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">sc</span><span class="p">)),</span>
     <span class="p">)</span></div>
-
-    <span class="c1"># diff = x - x0</span>
-    <span class="c1"># return jnp.where(</span>
-    <span class="c1">#     jnp.greater(diff, 0),</span>
-    <span class="c1">#     -jnp.log1p(jnp.exp(-4 * diff)),</span>
-    <span class="c1">#     4 * diff - jnp.log1p(jnp.exp(4 * diff)),</span>
-    <span class="c1"># )</span>
-
-
-<div class="viewcode-block" id="logistic_unit">
-<a class="viewcode-back" href="../../api/gwinferno.distributions.logistic_unit.html#gwinferno.distributions.logistic_unit">[docs]</a>
-<span class="k">def</span> <span class="nf">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    logistic_unit soft truncate a distribution with the logistic unit</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        x (array_like): input array to truncate</span>
-<span class="sd">        x0 (float): value of array we want to apply a soft truncation to</span>
-<span class="sd">        sgn (int, optional): Which side do we truncate on (1 for right, -1 for left). Defaults to 1.</span>
-<span class="sd">        sc (int, optional): scale of truncation, where higher values is sharper. Defaults to 4.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        array_like: input array with the soft truncation at x0 applied</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">sgn</span> <span class="o">*</span> <span class="n">sc</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">x0</span><span class="p">)))</span></div>
 
 
 

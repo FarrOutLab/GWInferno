@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwinferno.distributions.powerlaw_pdf &mdash; gwinferno 0.0 documentation</title>
+  <title>gwinferno.distributions.logistic_function &mdash; gwinferno 0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
@@ -23,8 +23,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.distributions.truncnorm_pdf" href="gwinferno.distributions.truncnorm_pdf.html" />
-    <link rel="prev" title="gwinferno.distributions.powerlaw_logit_pdf" href="gwinferno.distributions.powerlaw_logit_pdf.html" /> 
+    <link rel="next" title="gwinferno.distributions.logistic_unit" href="gwinferno.distributions.logistic_unit.html" />
+    <link rel="prev" title="gwinferno.distributions.log_logistic_unit" href="gwinferno.distributions.log_logistic_unit.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -66,13 +66,13 @@
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.betadist.html">gwinferno.distributions.betadist</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.ln_beta_fct.html">gwinferno.distributions.ln_beta_fct</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.log_logistic_unit.html">gwinferno.distributions.log_logistic_unit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.logistic_function.html">gwinferno.distributions.logistic_function</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.logistic_unit.html">gwinferno.distributions.logistic_unit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.powerlaw_logit_pdf.html">gwinferno.distributions.powerlaw_logit_pdf</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">gwinferno.distributions.powerlaw_pdf</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#gwinferno.distributions.powerlaw_pdf"><code class="docutils literal notranslate"><span class="pre">powerlaw_pdf()</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">gwinferno.distributions.logistic_function</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gwinferno.distributions.logistic_function"><code class="docutils literal notranslate"><span class="pre">logistic_function()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.logistic_unit.html">gwinferno.distributions.logistic_unit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.powerlaw_logit_pdf.html">gwinferno.distributions.powerlaw_logit_pdf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.powerlaw_pdf.html">gwinferno.distributions.powerlaw_pdf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.truncnorm_pdf.html">gwinferno.distributions.truncnorm_pdf</a></li>
 </ul>
 </li>
@@ -99,9 +99,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="gwinferno.distributions.html">gwinferno.distributions</a></li>
-      <li class="breadcrumb-item active">gwinferno.distributions.powerlaw_pdf</li>
+      <li class="breadcrumb-item active">gwinferno.distributions.logistic_function</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api/gwinferno.distributions.powerlaw_pdf.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/gwinferno.distributions.logistic_function.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -109,18 +109,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwinferno-distributions-powerlaw-pdf">
-<h1>gwinferno.distributions.powerlaw_pdf<a class="headerlink" href="#gwinferno-distributions-powerlaw-pdf" title="Link to this heading"></a></h1>
+  <section id="gwinferno-distributions-logistic-function">
+<h1>gwinferno.distributions.logistic_function<a class="headerlink" href="#gwinferno-distributions-logistic-function" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="gwinferno.distributions.powerlaw_pdf">
-<span class="sig-prename descclassname"><span class="pre">gwinferno.distributions.</span></span><span class="sig-name descname"><span class="pre">powerlaw_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">floor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/distributions.html#powerlaw_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.distributions.powerlaw_pdf" title="Link to this definition"></a></dt>
-<dd><p>powerlaw_pdf pdf of sharp truncated powerlaw:</p>
+<dt class="sig sig-object py" id="gwinferno.distributions.logistic_function">
+<span class="sig-prename descclassname"><span class="pre">gwinferno.distributions.</span></span><span class="sig-name descname"><span class="pre">logistic_function</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/distributions.html#logistic_function"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.distributions.logistic_function" title="Link to this definition"></a></dt>
+<dd><p>Logistic function or logistic curve</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>xx (array_like): points to evaluate pdf at
-alpha (float): power law index
-low (float): low end truncation bound
-high (float): high end truncation bound
-floor (float, optional): lower bound of pdf (Defaults to 0.0)</p>
+<dt>Args:</dt><dd><p>x (array_like): input array to evaluate logistic function at
+L (float): curve’s maximum value
+k (float): logistic growth rate (positive values for left truncation, negative for right truncation)
+x0 (float): x-value of the sigmoid’s midpoint</p>
+</dd>
+<dt>Returns:</dt><dd><p>array_like: logistic function evaluated at x</p>
 </dd>
 </dl>
 </dd></dl>
@@ -131,8 +132,8 @@ floor (float, optional): lower bound of pdf (Defaults to 0.0)</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gwinferno.distributions.powerlaw_logit_pdf.html" class="btn btn-neutral float-left" title="gwinferno.distributions.powerlaw_logit_pdf" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwinferno.distributions.truncnorm_pdf.html" class="btn btn-neutral float-right" title="gwinferno.distributions.truncnorm_pdf" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwinferno.distributions.log_logistic_unit.html" class="btn btn-neutral float-left" title="gwinferno.distributions.log_logistic_unit" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.distributions.logistic_unit.html" class="btn btn-neutral float-right" title="gwinferno.distributions.logistic_unit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

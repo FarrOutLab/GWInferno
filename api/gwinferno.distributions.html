@@ -66,6 +66,7 @@
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.betadist.html">gwinferno.distributions.betadist</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.ln_beta_fct.html">gwinferno.distributions.ln_beta_fct</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.log_logistic_unit.html">gwinferno.distributions.log_logistic_unit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.logistic_function.html">gwinferno.distributions.logistic_function</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.logistic_unit.html">gwinferno.distributions.logistic_unit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.powerlaw_logit_pdf.html">gwinferno.distributions.powerlaw_logit_pdf</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.distributions.powerlaw_pdf.html">gwinferno.distributions.powerlaw_pdf</a></li>
@@ -119,16 +120,19 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.distributions.log_logistic_unit.html#gwinferno.distributions.log_logistic_unit" title="gwinferno.distributions.log_logistic_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_logistic_unit</span></code></a>(x, x0[, sgn, sc])</p></td>
 <td><p>log_logistic_unit soft truncate a distribution with the log logistic unit</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.distributions.logistic_unit.html#gwinferno.distributions.logistic_unit" title="gwinferno.distributions.logistic_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logistic_unit</span></code></a>(x, x0[, sgn, sc])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.distributions.logistic_function.html#gwinferno.distributions.logistic_function" title="gwinferno.distributions.logistic_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logistic_function</span></code></a>(x, L, k, x0)</p></td>
+<td><p>Logistic function or logistic curve</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.distributions.logistic_unit.html#gwinferno.distributions.logistic_unit" title="gwinferno.distributions.logistic_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logistic_unit</span></code></a>(x, x0[, sgn, sc])</p></td>
 <td><p>logistic_unit soft truncate a distribution with the logistic unit</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.distributions.powerlaw_logit_pdf.html#gwinferno.distributions.powerlaw_logit_pdf" title="gwinferno.distributions.powerlaw_logit_pdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">powerlaw_logit_pdf</span></code></a>(xx, alpha, high, fall_off)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.distributions.powerlaw_logit_pdf.html#gwinferno.distributions.powerlaw_logit_pdf" title="gwinferno.distributions.powerlaw_logit_pdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">powerlaw_logit_pdf</span></code></a>(xx, alpha, high, fall_off)</p></td>
 <td><p>powerlaw_logit_pdf pdf of high mass soft truncation powerlaw:</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.distributions.powerlaw_pdf.html#gwinferno.distributions.powerlaw_pdf" title="gwinferno.distributions.powerlaw_pdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">powerlaw_pdf</span></code></a>(xx, alpha, low, high[, floor])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.distributions.powerlaw_pdf.html#gwinferno.distributions.powerlaw_pdf" title="gwinferno.distributions.powerlaw_pdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">powerlaw_pdf</span></code></a>(xx, alpha, low, high[, floor])</p></td>
 <td><p>powerlaw_pdf pdf of sharp truncated powerlaw:</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.distributions.truncnorm_pdf.html#gwinferno.distributions.truncnorm_pdf" title="gwinferno.distributions.truncnorm_pdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">truncnorm_pdf</span></code></a>(xx, mu, sig, low, high[, log])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.distributions.truncnorm_pdf.html#gwinferno.distributions.truncnorm_pdf" title="gwinferno.distributions.truncnorm_pdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">truncnorm_pdf</span></code></a>(xx, mu, sig, low, high[, log])</p></td>
 <td><p>$$ p(x) propto mathcal{N}(x | mu, sigma)Theta(<a href="#id1"><span class="problematic" id="id2">x-x_</span></a>mathrm{min})Theta(<a href="#id3"><span class="problematic" id="id4">x_</span></a>mathrm{max}-x) $$</p></td>
 </tr>
 </tbody>

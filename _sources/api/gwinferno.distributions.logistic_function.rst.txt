@@ -1,0 +1,6 @@
+gwinferno.distributions.logistic\_function
+==========================================
+
+.. currentmodule:: gwinferno.distributions
+
+.. autofunction:: logistic_function
