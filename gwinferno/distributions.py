@@ -13,6 +13,38 @@ This file contains some functions copied from https://github.com/ColmTalbot/gwpo
 """
 
 
+def logistic_function(x, L, k, x0):
+    """
+    Logistic function or logistic curve
+
+    Args:
+        x (array_like): input array to evaluate logistic function at
+        L (float): curve's maximum value
+        k (float): logistic growth rate (positive values for left truncation, negative for right truncation)
+        x0 (float): x-value of the sigmoid's midpoint
+
+    Returns:
+        array_like: logistic function evaluated at x
+    """
+    return L / (1 + jnp.exp(-k * (x - x0)))
+
+
+def logistic_unit(x, x0, sgn=1, sc=4):
+    """
+    logistic_unit soft truncate a distribution with the logistic unit
+
+    Args:
+        x (array_like): input array to truncate
+        x0 (float): value of array we want to apply a soft truncation to
+        sgn (int, optional): Which side do we truncate on (1 for right, -1 for left). Defaults to 1.
+        sc (int, optional): scale of truncation, where higher values is sharper. Defaults to 4.
+
+    Returns:
+        array_like: input array with the soft truncation at x0 applied
+    """
+    return logistic_function(x, 1.0, -1 * sgn * sc, x0)
+
+
 def log_logistic_unit(x, x0, sgn=1, sc=4):
     """
     log_logistic_unit soft truncate a distribution with the log logistic unit
@@ -30,28 +62,6 @@ def log_logistic_unit(x, x0, sgn=1, sc=4):
         jnp.log(logistic_unit(x, x0, sgn=sgn, sc=sc)),
         -sgn * sc * (x - x0) + jnp.log(logistic_unit(x, x0, sgn=-sgn, sc=sc)),
     )
-    # diff = x - x0
-    # return jnp.where(
-    #     jnp.greater(diff, 0),
-    #     -jnp.log1p(jnp.exp(-4 * diff)),
-    #     4 * diff - jnp.log1p(jnp.exp(4 * diff)),
-    # )
-
-
-def logistic_unit(x, x0, sgn=1, sc=4):
-    """
-    logistic_unit soft truncate a distribution with the logistic unit
-
-    Args:
-        x (array_like): input array to truncate
-        x0 (float): value of array we want to apply a soft truncation to
-        sgn (int, optional): Which side do we truncate on (1 for right, -1 for left). Defaults to 1.
-        sc (int, optional): scale of truncation, where higher values is sharper. Defaults to 4.
-
-    Returns:
-        array_like: input array with the soft truncation at x0 applied
-    """
-    return 1.0 / (1.0 + jnp.exp(sgn * sc * (x - x0)))
 
 
 def powerlaw_logit_pdf(xx, alpha, high, fall_off):
