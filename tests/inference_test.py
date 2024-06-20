@@ -18,8 +18,8 @@ from gwinferno.pipeline.analysis import construct_hierarchical_model
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.pipeline.parser import ConfigReader
 from gwinferno.pipeline.parser import load_model_from_python_file
-from gwinferno.preprocess.data_collection import load_posterior_samples
-from gwinferno.preprocess.selection import load_injections
+from gwinferno.preprocess.data_collection import load_injections
+from gwinferno.preprocess.data_collection import load_posterior_data
 
 
 def norm_mass_model(alpha, beta, mmin, mmax):
@@ -41,7 +41,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         self.param_names = ["mass_1", "mass_ratio", "redshift", "prior"]
         self.param_map = {p: i for i, p in enumerate(self.param_names)}
         self.pedict, self.Nobs, self.Nsamples = self.load_data()
-        self.injdict, self.total_inj, self.obs_time = self.load_injections()
+        self.injdict, self.total_inj, self.obs_time = self.load_injections(through_o4a=False, through_o3=True)
         self.z_model = self.setup_redshift_model()
         self.truncated_numpyro_model = self.setup_numpyro_model()
 
@@ -74,25 +74,32 @@ class TestTruncatedModelInference(unittest.TestCase):
     def test_load_pe_samples(self):
         fns = glob.glob(f"{self.data_dir}/S*.h5")
         evs = [s.split("/")[-1].replace(".h5", "") for s in fns]
-        run_map = {e: "C01:Mixed" for e in evs}
-        pe_samples, names = load_posterior_samples(self.data_dir, run_map=run_map, spin=False)
-        pedata = jnp.array([[pe_samples[e][p].values for e in names] for p in self.param_names])
-        Nobs = pedata.shape[1]
+        run_map = {}
+
+        for ev, file in zip(evs, fns):
+            run_map[ev] = {"file_path": file, "waveform": "C01:Mixed", "redshift_prior": "euclidean", "catalog": "GWTC-3"}
+        p_names = self.param_names.copy()
+        p_names.remove("prior")
+        pe_catalog = load_posterior_data(run_map=run_map, param_names=p_names)
+        pedata = jnp.asarray(pe_catalog.data)
+        Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]
-        pedict = {k: pedata[self.param_map[k]] for k in self.param_names}
-        for param in pedict.keys():
-            self.assertEqual(pedict[param].shape, (Nobs, Nsamples))
+        self.pedict = {k: pedata[:, i] for i, k in enumerate(pe_catalog.param.values)}
+        for param in self.pedict.keys():
+            self.assertEqual(self.pedict[param].shape, (Nobs, Nsamples))
 
     def test_pe_shape(self):
         for param in self.pedict.keys():
             self.assertEqual(self.pedict[param].shape, (self.Nobs, self.Nsamples))
 
-    def load_injections(self):
-        injections = load_injections(self.inj_file, spin=False)
-        injdata = jnp.array([injections[k] for k in self.param_names])
-        total_inj = injections["total_generated"]
-        obs_time = injections["analysis_time"]
-        injdict = {k: injdata[self.param_map[k]] for k in self.param_names}
+    def load_injections(self, **kwargs):
+        p_names = self.param_names.copy()
+        p_names.remove("prior")
+        injections = load_injections(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
+        injdata = jnp.asarray(injections.data)
+        total_inj = injections.attrs["total_generated"]
+        obs_time = injections.attrs["analysis_time"]
+        injdict = {k: injdata[i] for i, k in enumerate(injections.param.values)}
         return injdict, float(total_inj), obs_time
 
     def test_injection_shape(self):
