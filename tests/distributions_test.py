@@ -1,7 +1,8 @@
-from numpy.testing import assert_allclose
-import gwinferno.distributions as dist
 import jax.numpy as jnp
+from numpy.testing import assert_allclose
 from scipy.special import expit
+
+import gwinferno.distributions as dist
 
 
 def test_logistic_functions():
