@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.format\_data
+==================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: format_data

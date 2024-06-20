@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.load\_posterior\_data
+===========================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: load_posterior_data

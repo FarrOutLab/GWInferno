@@ -1,6 +1,0 @@
-gwinferno.preprocess.data\_collection.p\_m1src\_q\_z\_lal\_pe\_prior
-====================================================================
-
-.. currentmodule:: gwinferno.preprocess.data_collection
-
-.. autofunction:: p_m1src_q_z_lal_pe_prior

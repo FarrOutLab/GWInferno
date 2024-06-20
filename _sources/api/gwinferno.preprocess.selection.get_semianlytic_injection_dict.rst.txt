@@ -1,6 +1,0 @@
-gwinferno.preprocess.selection.get\_semianlytic\_injection\_dict
-================================================================
-
-.. currentmodule:: gwinferno.preprocess.selection
-
-.. autofunction:: get_semianlytic_injection_dict

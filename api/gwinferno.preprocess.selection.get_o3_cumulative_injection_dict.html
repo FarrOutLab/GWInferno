@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps &mdash; gwinferno 0.0 documentation</title>
+  <title>gwinferno.preprocess.selection.get_o3_cumulative_injection_dict &mdash; gwinferno 0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
@@ -23,8 +23,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.preprocess.data_collection.load_catalog_from_metadata" href="gwinferno.preprocess.data_collection.load_catalog_from_metadata.html" />
-    <link rel="prev" title="gwinferno.preprocess.data_collection.dl_2_prior_on_z" href="gwinferno.preprocess.data_collection.dl_2_prior_on_z.html" /> 
+    <link rel="next" title="gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict" href="gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict.html" />
+    <link rel="prev" title="gwinferno.preprocess.selection" href="gwinferno.preprocess.selection.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -70,23 +70,17 @@
 <li class="toctree-l1"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.conversions.html">gwinferno.preprocess.conversions</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.apply_priors.html">gwinferno.preprocess.data_collection.apply_priors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff.html">gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.dl_2_prior_on_z.html">gwinferno.preprocess.data_collection.dl_2_prior_on_z</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps"><code class="docutils literal notranslate"><span class="pre">downsample_posteriors_to_consistent_nsamps()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_catalog_from_metadata.html">gwinferno.preprocess.data_collection.load_catalog_from_metadata</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_samples.html">gwinferno.preprocess.data_collection.load_posterior_samples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior.html">gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.preprocess_data.html">gwinferno.preprocess.data_collection.preprocess_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections.html">gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.priors.html">gwinferno.preprocess.priors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.selection.html">gwinferno.preprocess.selection</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="gwinferno.preprocess.selection.html">gwinferno.preprocess.selection</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.preprocess.selection.get_o3_cumulative_injection_dict</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.preprocess.selection.get_o3_cumulative_injection_dict"><code class="docutils literal notranslate"><span class="pre">get_o3_cumulative_injection_dict()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict.html">gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.resample_injections.html">gwinferno.preprocess.selection.resample_injections</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -106,10 +100,10 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
-          <li class="breadcrumb-item"><a href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a></li>
-      <li class="breadcrumb-item active">gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps</li>
+          <li class="breadcrumb-item"><a href="gwinferno.preprocess.selection.html">gwinferno.preprocess.selection</a></li>
+      <li class="breadcrumb-item active">gwinferno.preprocess.selection.get_o3_cumulative_injection_dict</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api/gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/gwinferno.preprocess.selection.get_o3_cumulative_injection_dict.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -117,12 +111,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwinferno-preprocess-data-collection-downsample-posteriors-to-consistent-nsamps">
-<h1>gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps<a class="headerlink" href="#gwinferno-preprocess-data-collection-downsample-posteriors-to-consistent-nsamps" title="Link to this heading"></a></h1>
+  <section id="gwinferno-preprocess-selection-get-o3-cumulative-injection-dict">
+<h1>gwinferno.preprocess.selection.get_o3_cumulative_injection_dict<a class="headerlink" href="#gwinferno-preprocess-selection-get-o3-cumulative-injection-dict" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps">
-<span class="sig-prename descclassname"><span class="pre">gwinferno.preprocess.data_collection.</span></span><span class="sig-name descname"><span class="pre">downsample_posteriors_to_consistent_nsamps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">posteriors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/data_collection.html#downsample_posteriors_to_consistent_nsamps"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="gwinferno.preprocess.selection.get_o3_cumulative_injection_dict">
+<span class="sig-prename descclassname"><span class="pre">gwinferno.preprocess.selection.</span></span><span class="sig-name descname"><span class="pre">get_o3_cumulative_injection_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ifar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_cuts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/selection.html#get_o3_cumulative_injection_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.selection.get_o3_cumulative_injection_dict" title="Link to this definition"></a></dt>
+<dd><p>Based from the function load_injection_data() at:
+<a class="reference external" href="https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66">https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66</a></p>
+</dd></dl>
 
 </section>
 
@@ -130,8 +126,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gwinferno.preprocess.data_collection.dl_2_prior_on_z.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.data_collection.dl_2_prior_on_z" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwinferno.preprocess.data_collection.load_catalog_from_metadata.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.data_collection.load_catalog_from_metadata" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwinferno.preprocess.selection.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.selection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

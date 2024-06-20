@@ -23,7 +23,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff" href="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff.html" />
+    <link rel="next" title="gwinferno.preprocess.selection.get_o3_cumulative_injection_dict" href="gwinferno.preprocess.selection.get_o3_cumulative_injection_dict.html" />
     <link rel="prev" title="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins" href="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins.html" /> 
 </head>
 
@@ -73,10 +73,8 @@
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.priors.html">gwinferno.preprocess.priors</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">gwinferno.preprocess.selection</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff.html">gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.get_injection_dict.html">gwinferno.preprocess.selection.get_injection_dict</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.get_semianlytic_injection_dict.html">gwinferno.preprocess.selection.get_semianlytic_injection_dict</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.load_injections.html">gwinferno.preprocess.selection.load_injections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.get_o3_cumulative_injection_dict.html">gwinferno.preprocess.selection.get_o3_cumulative_injection_dict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict.html">gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.selection.resample_injections.html">gwinferno.preprocess.selection.resample_injections</a></li>
 </ul>
 </li>
@@ -115,17 +113,11 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff.html#gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff" title="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convert_component_spin_injections_to_chieff</span></code></a>(...)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.get_injection_dict.html#gwinferno.preprocess.selection.get_injection_dict" title="gwinferno.preprocess.selection.get_injection_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_injection_dict</span></code></a>(fi[, ifar, snr, spin, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.get_o3_cumulative_injection_dict.html#gwinferno.preprocess.selection.get_o3_cumulative_injection_dict" title="gwinferno.preprocess.selection.get_o3_cumulative_injection_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_o3_cumulative_injection_dict</span></code></a>(fi, param_names)</p></td>
 <td><p>Based from the function load_injection_data() at: <a class="reference external" href="https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66">https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66</a></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.get_semianlytic_injection_dict.html#gwinferno.preprocess.selection.get_semianlytic_injection_dict" title="gwinferno.preprocess.selection.get_semianlytic_injection_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_semianlytic_injection_dict</span></code></a>(fi[, snr, ...])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.load_injections.html#gwinferno.preprocess.selection.load_injections" title="gwinferno.preprocess.selection.load_injections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_injections</span></code></a>(injfile[, ifar_threshold, ...])</p></td>
-<td><p></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict.html#gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict" title="gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_o4a_cumulative_injection_dict</span></code></a>(file, ...)</p></td>
+<td><p>Generates injection dataset with desired parameters and proper prior density calculated.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.selection.resample_injections.html#gwinferno.preprocess.selection.resample_injections" title="gwinferno.preprocess.selection.resample_injections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resample_injections</span></code></a>(rng_key, model_prob, ...)</p></td>
 <td><p></p></td>
@@ -139,7 +131,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwinferno.preprocess.selection.get_o3_cumulative_injection_dict.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.selection.get_o3_cumulative_injection_dict" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

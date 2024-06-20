@@ -23,8 +23,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps" href="gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps.html" />
-    <link rel="prev" title="gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff" href="gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff.html" /> 
+    <link rel="next" title="gwinferno.preprocess.data_collection.evaluate_prior" href="gwinferno.preprocess.data_collection.evaluate_prior.html" />
+    <link rel="prev" title="gwinferno.preprocess.data_collection.convert_component_spins_to_chieff" href="gwinferno.preprocess.data_collection.convert_component_spins_to_chieff.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,18 +71,17 @@
 <li class="toctree-l1 current"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.conversions.html">gwinferno.preprocess.conversions</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.apply_priors.html">gwinferno.preprocess.data_collection.apply_priors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff.html">gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.collect_data.html">gwinferno.preprocess.data_collection.collect_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.convert_component_spins_to_chieff.html">gwinferno.preprocess.data_collection.convert_component_spins_to_chieff</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.preprocess.data_collection.dl_2_prior_on_z</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#gwinferno.preprocess.data_collection.dl_2_prior_on_z"><code class="docutils literal notranslate"><span class="pre">dl_2_prior_on_z()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps.html">gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_catalog_from_metadata.html">gwinferno.preprocess.data_collection.load_catalog_from_metadata</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_samples.html">gwinferno.preprocess.data_collection.load_posterior_samples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior.html">gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.preprocess_data.html">gwinferno.preprocess.data_collection.preprocess_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections.html">gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.evaluate_prior.html">gwinferno.preprocess.data_collection.evaluate_prior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.format_data.html">gwinferno.preprocess.data_collection.format_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_injections.html">gwinferno.preprocess.data_collection.load_injections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_data.html">gwinferno.preprocess.data_collection.load_posterior_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_samples_and_injections.html">gwinferno.preprocess.data_collection.load_posterior_samples_and_injections</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.priors.html">gwinferno.preprocess.priors</a></li>
@@ -121,7 +120,7 @@
 <h1>gwinferno.preprocess.data_collection.dl_2_prior_on_z<a class="headerlink" href="#gwinferno-preprocess-data-collection-dl-2-prior-on-z" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="gwinferno.preprocess.data_collection.dl_2_prior_on_z">
-<span class="sig-prename descclassname"><span class="pre">gwinferno.preprocess.data_collection.</span></span><span class="sig-name descname"><span class="pre">dl_2_prior_on_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/data_collection.html#dl_2_prior_on_z"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.data_collection.dl_2_prior_on_z" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gwinferno.preprocess.data_collection.</span></span><span class="sig-name descname"><span class="pre">dl_2_prior_on_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">euclidean</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/data_collection.html#dl_2_prior_on_z"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.data_collection.dl_2_prior_on_z" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
@@ -130,8 +129,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwinferno.preprocess.data_collection.convert_component_spins_to_chieff.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.data_collection.convert_component_spins_to_chieff" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.preprocess.data_collection.evaluate_prior.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.data_collection.evaluate_prior" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

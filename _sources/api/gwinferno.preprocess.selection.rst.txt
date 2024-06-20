@@ -17,13 +17,9 @@ gwinferno.preprocess.selection
       :toctree:
    
       
-      convert_component_spin_injections_to_chieff
+      get_o3_cumulative_injection_dict
       
-      get_injection_dict
-      
-      get_semianlytic_injection_dict
-      
-      load_injections
+      get_o4a_cumulative_injection_dict
       
       resample_injections
    

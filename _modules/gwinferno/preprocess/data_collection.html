@@ -100,99 +100,44 @@
 
 <span class="kn">import</span> <span class="nn">json</span>
 
-<span class="kn">import</span> <span class="nn">deepdish</span> <span class="k">as</span> <span class="nn">dd</span>
+<span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 <span class="kn">from</span> <span class="nn">jax.scipy.integrate</span> <span class="kn">import</span> <span class="n">trapezoid</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
 
-<span class="kn">from</span> <span class="nn">..cosmology</span> <span class="kn">import</span> <span class="n">PLANCK_2018_Cosmology</span> <span class="k">as</span> <span class="n">cosmo</span>
-<span class="kn">from</span> <span class="nn">..types.data</span> <span class="kn">import</span> <span class="n">GWInfernoData</span>
+<span class="kn">from</span> <span class="nn">..cosmology</span> <span class="kn">import</span> <span class="n">PLANCK_2015_Cosmology</span> <span class="k">as</span> <span class="n">cosmo</span>
 <span class="kn">from</span> <span class="nn">.conversions</span> <span class="kn">import</span> <span class="n">chieff_from_q_component_spins</span>
 <span class="kn">from</span> <span class="nn">.conversions</span> <span class="kn">import</span> <span class="n">chip_from_q_component_spins</span>
 <span class="kn">from</span> <span class="nn">.priors</span> <span class="kn">import</span> <span class="n">chi_effective_prior_from_isotropic_spins</span>
 <span class="kn">from</span> <span class="nn">.priors</span> <span class="kn">import</span> <span class="n">joint_prior_from_isotropic_spins</span>
-<span class="kn">from</span> <span class="nn">.selection</span> <span class="kn">import</span> <span class="n">convert_component_spin_injections_to_chieff</span>
-<span class="kn">from</span> <span class="nn">.selection</span> <span class="kn">import</span> <span class="n">load_injections</span>
-
-<span class="n">GWTC1</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;GW150914&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW151012&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW151226&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW170104&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW170608&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW170729&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW170809&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW170814&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW170817&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW170818&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW170823&quot;</span><span class="p">,</span>
-<span class="p">]</span>
-<span class="n">EVENTS_WITH_NS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;GW170817&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW190425&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW190814&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW190426_152155&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW190917_114630&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW200105_162426&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;GW200115_042309&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<span class="kn">from</span> <span class="nn">.selection</span> <span class="kn">import</span> <span class="n">get_o3_cumulative_injection_dict</span>
+<span class="kn">from</span> <span class="nn">.selection</span> <span class="kn">import</span> <span class="n">get_o4a_cumulative_injection_dict</span>
 
 
-<div class="viewcode-block" id="dl_2_prior_on_z">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.dl_2_prior_on_z.html#gwinferno.preprocess.data_collection.dl_2_prior_on_z">[docs]</a>
-<span class="k">def</span> <span class="nf">dl_2_prior_on_z</span><span class="p">(</span><span class="n">z</span><span class="p">):</span>
-    <span class="n">dl</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">z2DL</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e3</span>
-    <span class="k">return</span> <span class="n">dl</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dl</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">dDcdz</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">mpc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e3</span><span class="p">)</span></div>
+<div class="viewcode-block" id="collect_data">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.collect_data.html#gwinferno.preprocess.data_collection.collect_data">[docs]</a>
+<span class="k">def</span> <span class="nf">collect_data</span><span class="p">(</span><span class="n">run_map</span><span class="p">):</span>
+    <span class="n">posteriors</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">run_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">run_map</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;file_path&quot;</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">wf</span> <span class="o">=</span> <span class="n">run_map</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;waveform&quot;</span><span class="p">]</span>
+            <span class="n">z_prior</span> <span class="o">=</span> <span class="n">run_map</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;redshift_prior&quot;</span><span class="p">]</span>
+            <span class="n">catalog</span> <span class="o">=</span> <span class="n">run_map</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;catalog&quot;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">catalog</span> <span class="o">==</span> <span class="s2">&quot;GWTC-1&quot;</span><span class="p">:</span>
+                <span class="n">post</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">wf</span><span class="p">][:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">post</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">wf</span><span class="p">][</span><span class="s2">&quot;posterior_samples&quot;</span><span class="p">][:]</span>
+            <span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;posterior&quot;</span><span class="p">:</span> <span class="n">post</span><span class="p">,</span> <span class="s2">&quot;redshift_prior&quot;</span><span class="p">:</span> <span class="n">z_prior</span><span class="p">,</span> <span class="s2">&quot;catalog&quot;</span><span class="p">:</span> <span class="n">catalog</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">posteriors</span></div>
 
 
 
-<div class="viewcode-block" id="p_m1src_q_z_lal_pe_prior">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior.html#gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior">[docs]</a>
-<span class="k">def</span> <span class="nf">p_m1src_q_z_lal_pe_prior</span><span class="p">(</span><span class="n">posts</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">z_max</span> <span class="o">=</span> <span class="mf">1.9</span>
-    <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">posts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">if</span> <span class="nb">max</span><span class="p">(</span><span class="n">posts</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">z_max</span><span class="p">:</span>
-            <span class="n">z_max</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">posts</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span>
-    <span class="n">zs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">z_max</span> <span class="o">*</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
-    <span class="n">p_z</span> <span class="o">=</span> <span class="n">dl_2_prior_on_z</span><span class="p">(</span><span class="n">zs</span><span class="p">)</span>
-    <span class="n">p_z</span> <span class="o">/=</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_z</span><span class="p">,</span> <span class="n">zs</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">post</span> <span class="ow">in</span> <span class="n">posts</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">posts</span><span class="p">[</span><span class="n">event</span><span class="p">][</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">post</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">]),</span> <span class="n">zs</span><span class="p">,</span> <span class="n">p_z</span><span class="p">)</span> <span class="o">*</span> <span class="n">post</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">post</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span>
-        <span class="k">if</span> <span class="n">spin</span><span class="p">:</span>
-            <span class="n">posts</span><span class="p">[</span><span class="n">event</span><span class="p">][</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">/=</span> <span class="mi">4</span>
-    <span class="k">return</span> <span class="n">posts</span></div>
-
-
-
-<span class="k">def</span> <span class="nf">_standardize_new_post</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">param_mapping</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">new_key</span> <span class="ow">in</span> <span class="n">param_mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
-    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>  <span class="c1"># Catch error if we use this for posterior samples with no spin</span>
-        <span class="n">param_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">mass_1</span><span class="o">=</span><span class="s2">&quot;mass_1_source&quot;</span><span class="p">,</span>
-            <span class="n">mass_2</span><span class="o">=</span><span class="s2">&quot;mass_2_source&quot;</span><span class="p">,</span>
-            <span class="n">mass_ratio</span><span class="o">=</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">,</span>
-            <span class="n">redshift</span><span class="o">=</span><span class="s2">&quot;redshift&quot;</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="n">key</span><span class="p">:</span> <span class="n">df</span><span class="p">[</span><span class="n">new_key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">new_key</span> <span class="ow">in</span> <span class="n">param_map</span><span class="o">.</span><span class="n">items</span><span class="p">()})</span>
-
-
-<span class="k">def</span> <span class="nf">_standardize_GWTC1_post</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
-    <span class="n">post</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span>
-    <span class="n">post</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">DL2z</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;luminosity_distance_Mpc&quot;</span><span class="p">])</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
-        <span class="n">post</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;mass_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;m</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">_detector_frame_Msun&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">post</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span>
-        <span class="n">post</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;a_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;spin</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-        <span class="n">post</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cos_tilt_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;costilt</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-    <span class="n">post</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">post</span><span class="p">[</span><span class="s2">&quot;mass_2&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="n">post</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">post</span>
-
-
-<span class="k">def</span> <span class="nf">_standardize_posterior_fmt</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+<div class="viewcode-block" id="format_data">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.format_data.html#gwinferno.preprocess.data_collection.format_data">[docs]</a>
+<span class="k">def</span> <span class="nf">format_data</span><span class="p">(</span><span class="n">posteriors</span><span class="p">):</span>
     <span class="n">param_mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
         <span class="n">mass_1</span><span class="o">=</span><span class="s2">&quot;mass_1_source&quot;</span><span class="p">,</span>
         <span class="n">mass_2</span><span class="o">=</span><span class="s2">&quot;mass_2_source&quot;</span><span class="p">,</span>
@@ -203,310 +148,328 @@
         <span class="n">cos_tilt_1</span><span class="o">=</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">,</span>
         <span class="n">cos_tilt_2</span><span class="o">=</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">GWTC1</span><span class="p">:</span>
-        <span class="n">post</span> <span class="o">=</span> <span class="n">_standardize_new_post</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">param_mapping</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">GWTC1</span><span class="p">:</span>  <span class="c1"># GWTC1 posterior fmt has detector frame -- we need to convert to source</span>
-        <span class="n">post</span> <span class="o">=</span> <span class="n">_standardize_GWTC1_post</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Event </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> not able to converted to correct parameters...&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">post</span>
 
+    <span class="n">max_samples</span> <span class="o">=</span> <span class="mi">10000</span>
+    <span class="n">event_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">posteriors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">event_names</span><span class="p">:</span>
 
-<div class="viewcode-block" id="downsample_posteriors_to_consistent_nsamps">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps.html#gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps">[docs]</a>
-<span class="k">def</span> <span class="nf">downsample_posteriors_to_consistent_nsamps</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">ev</span><span class="p">,</span> <span class="n">posterior</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">max_samples</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">posterior</span><span class="p">),</span> <span class="n">max_samples</span><span class="p">)</span>
-        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saving </span><span class="si">{</span><span class="n">max_samples</span><span class="si">}</span><span class="s2"> samples for each of the </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span><span class="si">}</span><span class="s2"> events&quot;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">ev</span><span class="p">,</span> <span class="n">posterior</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">data</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">max_samples</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">names</span></div>
+        <span class="k">if</span> <span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;catalog&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;GWTC-1&quot;</span><span class="p">:</span>
+            <span class="n">redshift</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">DL2z</span><span class="p">(</span><span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;posterior&quot;</span><span class="p">][</span><span class="s2">&quot;luminosity_distance_Mpc&quot;</span><span class="p">])</span>
+            <span class="n">mass</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">spin</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">tilt</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+                <span class="n">mass</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;posterior&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;m</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">_detector_frame_Msun&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">redshift</span><span class="p">))</span>
+                <span class="n">spin</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;posterior&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;spin</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+                <span class="n">tilt</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;posterior&quot;</span><span class="p">][</span><span class="sa">f</span><span class="s2">&quot;costilt</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span>
+            <span class="n">mass_ratio</span> <span class="o">=</span> <span class="n">mass</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">mass</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">mass</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mass</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mass_ratio</span><span class="p">,</span> <span class="n">redshift</span><span class="p">,</span> <span class="n">spin</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spin</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tilt</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">tilt</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
 
-
-
-<div class="viewcode-block" id="preprocess_data">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.preprocess_data.html#gwinferno.preprocess.data_collection.preprocess_data">[docs]</a>
-<span class="k">def</span> <span class="nf">preprocess_data</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">run_map</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="p">[],</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">no_downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">posteriors</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">wf</span> <span class="ow">in</span> <span class="n">run_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">ignore</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;loading </span><span class="si">{</span><span class="n">wf</span><span class="si">}</span><span class="s2"> for </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">wf</span> <span class="o">==</span> <span class="s2">&quot;MDC&quot;</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s2">.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-                <span class="n">post</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">ff</span><span class="p">[</span><span class="n">wf</span><span class="p">][</span><span class="s2">&quot;posterior_samples&quot;</span><span class="p">]))</span>
-                <span class="n">posteriors</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="o">=</span> <span class="n">post</span>
-        <span class="k">elif</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">GWTC1</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s2">.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-                <span class="n">post</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ff</span><span class="p">[</span><span class="n">wf</span><span class="p">][</span><span class="s2">&quot;posterior_samples&quot;</span><span class="p">][:])</span>
-                <span class="n">posteriors</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="o">=</span> <span class="n">post</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s2">.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-                <span class="n">post</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ff</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wf</span><span class="si">}</span><span class="s2">_posterior&quot;</span><span class="p">])</span>
-                <span class="n">posteriors</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="o">=</span> <span class="n">post</span>
-    <span class="n">posteriors</span> <span class="o">=</span> <span class="n">p_m1src_q_z_lal_pe_prior</span><span class="p">(</span>
-        <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_standardize_posterior_fmt</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-        <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">posteriors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> Single Event Posteriors&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">no_downsample</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">posteriors</span><span class="p">,</span> <span class="p">[</span><span class="n">ev</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
-    <span class="n">posteriors</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">downsample_posteriors_to_consistent_nsamps</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="n">max_samples</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">posteriors</span><span class="p">,</span> <span class="n">names</span></div>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;posterior&quot;</span><span class="p">][</span><span class="n">param_mapping</span><span class="p">[</span><span class="n">param</span><span class="p">]]</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">param_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">())])</span>
+        <span class="n">max_samples</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">max_samples</span><span class="p">)</span>
+        <span class="n">data_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">data</span><span class="p">,</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">],</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">param_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])},</span>
+            <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;redshift_prior&quot;</span><span class="p">:</span> <span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;redshift_prior&quot;</span><span class="p">],</span> <span class="s2">&quot;catalog&quot;</span><span class="p">:</span> <span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;catalog&quot;</span><span class="p">]},</span>
+        <span class="p">)</span>
+        <span class="n">dataset</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span> <span class="o">=</span> <span class="n">data_array</span>
+
+    <span class="n">downsampled_data</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+        <span class="n">downsamp</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span><span class="o">.</span><span class="n">sel</span><span class="p">({</span><span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">dataset</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">max_samples</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)})</span>
+        <span class="n">downsampled_data</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span> <span class="o">=</span> <span class="n">downsamp</span><span class="o">.</span><span class="n">assign_coords</span><span class="p">(</span><span class="n">samples</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">max_samples</span><span class="p">))</span>
+
+    <span class="n">catalog_dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">data_vars</span><span class="o">=</span><span class="n">downsampled_data</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">param_mapping</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_samples</span><span class="p">)})</span>
+    <span class="k">return</span> <span class="n">catalog_dataset</span></div>
 
 
 
-<div class="viewcode-block" id="apply_priors">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.apply_priors.html#gwinferno.preprocess.data_collection.apply_priors">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_priors</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">downsample</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">):</span>
-    <span class="n">posteriors</span> <span class="o">=</span> <span class="n">p_m1src_q_z_lal_pe_prior</span><span class="p">(</span>
-        <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">_standardize_posterior_fmt</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">items</span><span class="p">()},</span>
-        <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">posteriors</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2"> Single Event Posteriors&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">downsample</span><span class="p">:</span>
-        <span class="n">posteriors</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">downsample_posteriors_to_consistent_nsamps</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="n">max_samples</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">posteriors</span><span class="p">,</span> <span class="p">[</span><span class="n">ev</span> <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span></div>
-
-
-
-<span class="k">def</span> <span class="nf">_load_single_posterior</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">ev</span><span class="p">,</span> <span class="n">wf</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">wf</span> <span class="o">==</span> <span class="s2">&quot;MDC&quot;</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-            <span class="n">post</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">ff</span><span class="p">[</span><span class="n">wf</span><span class="p">][</span><span class="s2">&quot;posterior_samples&quot;</span><span class="p">]))</span>
-    <span class="k">elif</span> <span class="n">ev</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">GWTC1</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-            <span class="n">post</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">ff</span><span class="p">[</span><span class="n">wf</span><span class="p">][</span><span class="s2">&quot;posterior_samples&quot;</span><span class="p">][:])</span>
+<div class="viewcode-block" id="dl_2_prior_on_z">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.dl_2_prior_on_z.html#gwinferno.preprocess.data_collection.dl_2_prior_on_z">[docs]</a>
+<span class="k">def</span> <span class="nf">dl_2_prior_on_z</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">euclidean</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">euclidean</span><span class="p">:</span>
+        <span class="n">dl</span> <span class="o">=</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">z2DL</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e3</span>
+        <span class="k">return</span> <span class="n">dl</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">dl</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">dDcdz</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e3</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-            <span class="n">post</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ff</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">wf</span><span class="si">}</span><span class="s2">_posterior&quot;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">post</span>
-
-
-<div class="viewcode-block" id="load_catalog_from_metadata">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.load_catalog_from_metadata.html#gwinferno.preprocess.data_collection.load_catalog_from_metadata">[docs]</a>
-<span class="k">def</span> <span class="nf">load_catalog_from_metadata</span><span class="p">(</span><span class="n">catalog_summary_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">catalog_summary_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">catsum</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="n">posteriors</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="n">catsum</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">ev</span> <span class="o">==</span> <span class="s2">&quot;Injections&quot;</span> <span class="ow">or</span> <span class="n">ev</span> <span class="o">==</span> <span class="s2">&quot;metadata_directory&quot;</span> <span class="ow">or</span> <span class="n">ev</span> <span class="o">==</span> <span class="s2">&quot;FAR_threshold&quot;</span><span class="p">:</span>
-            <span class="k">continue</span>
-        <span class="n">posteriors</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span> <span class="o">=</span> <span class="n">_load_single_posterior</span><span class="p">(</span><span class="n">catsum</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;path&quot;</span><span class="p">],</span> <span class="n">ev</span><span class="p">,</span> <span class="n">catsum</span><span class="p">[</span><span class="n">ev</span><span class="p">][</span><span class="s2">&quot;waveform&quot;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">apply_priors</span><span class="p">(</span><span class="n">posteriors</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span> <span class="n">catsum</span><span class="p">[</span><span class="s2">&quot;Injections&quot;</span><span class="p">],</span> <span class="n">catsum</span><span class="p">[</span><span class="s2">&quot;FAR_threshold&quot;</span><span class="p">],</span> <span class="n">catsum</span><span class="p">[</span><span class="s2">&quot;metadata_directory&quot;</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="n">cosmo</span><span class="o">.</span><span class="n">dVcdz</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">z</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="load_posterior_samples">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.load_posterior_samples.html#gwinferno.preprocess.data_collection.load_posterior_samples">[docs]</a>
-<span class="k">def</span> <span class="nf">load_posterior_samples</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">run_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keyfile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bbh</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span> <span class="n">no_downsample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="evaluate_prior">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.evaluate_prior.html#gwinferno.preprocess.data_collection.evaluate_prior">[docs]</a>
+<span class="k">def</span> <span class="nf">evaluate_prior</span><span class="p">(</span><span class="n">full_catalog</span><span class="p">,</span> <span class="n">param_names</span><span class="p">):</span>
+    <span class="k">if</span> <span class="s2">&quot;redshift&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+        <span class="n">z_max</span> <span class="o">=</span> <span class="mf">1.9</span>
+        <span class="n">cat_z_max</span> <span class="o">=</span> <span class="n">full_catalog</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;redshift&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">to_dataarray</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">z_max</span> <span class="o">=</span> <span class="n">cat_z_max</span> <span class="k">if</span> <span class="n">cat_z_max</span> <span class="o">&gt;</span> <span class="n">z_max</span> <span class="k">else</span> <span class="n">z_max</span>
+        <span class="n">cat_z_max</span>
+        <span class="n">zs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">z_max</span> <span class="o">*</span> <span class="mf">1.01</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span>
+        <span class="n">p_z_euclid</span> <span class="o">=</span> <span class="n">dl_2_prior_on_z</span><span class="p">(</span><span class="n">zs</span><span class="p">,</span> <span class="n">euclidean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">p_z_comoving</span> <span class="o">=</span> <span class="n">dl_2_prior_on_z</span><span class="p">(</span><span class="n">zs</span><span class="p">)</span>
+        <span class="n">p_z_euclid</span> <span class="o">/=</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_z_euclid</span><span class="p">,</span> <span class="n">zs</span><span class="p">)</span>
+        <span class="n">p_z_comoving</span> <span class="o">/=</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_z_comoving</span><span class="p">,</span> <span class="n">zs</span><span class="p">)</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">full_catalog</span><span class="o">.</span><span class="n">data_vars</span><span class="p">)</span>
+    <span class="n">num_events</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+    <span class="n">num_samples</span> <span class="o">=</span> <span class="n">full_catalog</span><span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">priors</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_events</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">num_samples</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">events</span><span class="p">):</span>
+        <span class="n">prior</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_samples</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;redshift&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+            <span class="n">p_z</span> <span class="o">=</span> <span class="n">p_z_euclid</span> <span class="k">if</span> <span class="n">full_catalog</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;redshift_prior&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;euclidean&quot;</span> <span class="k">else</span> <span class="n">p_z_comoving</span>
+            <span class="n">prior</span> <span class="o">*=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">full_catalog</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;redshift&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">zs</span><span class="p">,</span> <span class="n">p_z</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;mass_1&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+            <span class="n">prior</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">full_catalog</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;mass_1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>  <span class="c1"># flat detector components</span>
+        <span class="k">if</span> <span class="s2">&quot;mass_raito&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+            <span class="n">prior</span> <span class="o">*=</span> <span class="n">full_catalog</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;mass_1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+        <span class="k">if</span> <span class="s2">&quot;a_1&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+            <span class="n">prior</span> <span class="o">*=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">4</span>
+        <span class="n">priors</span> <span class="o">=</span> <span class="n">priors</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span>
+
+    <span class="n">prior_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">priors</span><span class="p">,</span> <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">],</span> <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">],</span> <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">num_samples</span><span class="p">),</span> <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="n">events</span><span class="p">}</span>
+    <span class="p">)</span>
+    <span class="n">catalog_array</span> <span class="o">=</span> <span class="n">full_catalog</span><span class="o">.</span><span class="n">to_dataarray</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="s2">&quot;event&quot;</span><span class="p">)</span>
+
+    <span class="n">new_full_catalog</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">catalog_array</span><span class="p">,</span> <span class="n">prior_array</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;param&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_full_catalog</span></div>
+
+
+
+<div class="viewcode-block" id="load_posterior_data">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.load_posterior_data.html#gwinferno.preprocess.data_collection.load_posterior_data">[docs]</a>
+<span class="k">def</span> <span class="nf">load_posterior_data</span><span class="p">(</span><span class="n">run_map</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">key_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">,</span> <span class="s2">&quot;mass_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;redshift&quot;</span><span class="p">]):</span>
     <span class="k">if</span> <span class="n">run_map</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">keyfile</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">keyfile</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">data_dir</span><span class="si">}</span><span class="s2">/keys_to_read.json&quot;</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">keyfile</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">key_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">run_map</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ignore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ignore</span> <span class="o">=</span> <span class="n">EVENTS_WITH_NS</span> <span class="k">if</span> <span class="n">bbh</span> <span class="k">else</span> <span class="p">[]</span>
-    <span class="n">posteriors</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">preprocess_data</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">run_map</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="n">ignore</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span> <span class="n">max_samples</span><span class="o">=</span><span class="n">max_samples</span><span class="p">,</span> <span class="n">no_downsample</span><span class="o">=</span><span class="n">no_downsample</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">posteriors</span><span class="p">,</span> <span class="n">names</span></div>
+        <span class="k">if</span> <span class="n">key_file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;run_map or key_file must be specified&quot;</span><span class="p">)</span>
 
+    <span class="n">posterior_dict</span> <span class="o">=</span> <span class="n">collect_data</span><span class="p">(</span><span class="n">run_map</span><span class="p">)</span>
+    <span class="n">catalog</span> <span class="o">=</span> <span class="n">format_data</span><span class="p">(</span><span class="n">posterior_dict</span><span class="p">)</span>
+    <span class="n">full_catalog</span> <span class="o">=</span> <span class="n">evaluate_prior</span><span class="p">(</span><span class="n">catalog</span><span class="p">,</span> <span class="n">param_names</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="s2">&quot;chi_eff&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+        <span class="n">new_pe</span> <span class="o">=</span> <span class="n">convert_component_spins_to_chieff</span><span class="p">(</span><span class="n">full_catalog</span><span class="p">,</span> <span class="n">param_names</span><span class="p">)</span>
+        <span class="n">remove</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">,</span> <span class="s2">&quot;a_2&quot;</span><span class="p">,</span> <span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">,</span> <span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="setup_posterior_samples_and_injections">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections.html#gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections">[docs]</a>
-<span class="k">def</span> <span class="nf">setup_posterior_samples_and_injections</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">inj_file</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chi_eff</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chi_p</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">jax_device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Sets up posterior sample and injections to be used during inference or saves them to a file</span>
-
-<span class="sd">        Parameters:</span>
-<span class="sd">            data_dir (strs): path to directory where posterior samples are stored</span>
-<span class="sd">            inj_file (strs): path to injection file</span>
-<span class="sd">            param_names (list of strs): list of desired parameters to be saved in new file</span>
-<span class="sd">            chi_eff (bool): True converts spin magnitude parameters to chi_eff.</span>
-<span class="sd">            chi_p (bool): True converts spin magnitude parameters to chi_p</span>
-<span class="sd">            save (bool): True saves the desired output to a .h5 datafile</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            pedata (jax.numpy array): posterior samples for the parameters specified in param_names</span>
-<span class="sd">            injdata (jax.numpy array): injection data for the parameters specified in param_names</span>
-<span class="sd">            param_map (dict): dictionary that associates an index to each name in param_names</span>
-<span class="sd">            inj_attributes (dict): dictionary that includes total number of generated injections</span>
-<span class="sd">                                    analysis time</span>
-<span class="sd">            names (list of strs): list with the names of each GW event</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">param_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">param_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">,</span> <span class="s2">&quot;mass_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;redshift&quot;</span><span class="p">,</span> <span class="s2">&quot;prior&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="s2">&quot;a_1&quot;</span> <span class="ow">in</span> <span class="n">param_names</span> <span class="ow">or</span> <span class="s2">&quot;cos_tilt_1&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
-        <span class="n">spin</span> <span class="o">=</span> <span class="kc">True</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">spin</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">injections</span> <span class="o">=</span> <span class="n">load_injections</span><span class="p">(</span><span class="n">inj_file</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
-    <span class="n">pe_samples</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="n">load_posterior_samples</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">)</span>
-    <span class="n">param_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">param_names</span><span class="p">)}</span>
-    <span class="n">inj_attributes</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;total_generated&quot;</span><span class="p">:</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">],</span>
-        <span class="s2">&quot;analysis_time&quot;</span><span class="p">:</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">],</span>
-    <span class="p">}</span>
-    <span class="k">if</span> <span class="n">chi_eff</span> <span class="ow">and</span> <span class="n">spin</span><span class="p">:</span>
-        <span class="n">pedata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">pe_samples</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">])</span>
-        <span class="n">injdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">injections</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
-
-            <span class="n">pe_coords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;pe_event&quot;</span><span class="p">,</span> <span class="s2">&quot;draw&quot;</span><span class="p">]</span>
-            <span class="n">inj_coords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;inj_event&quot;</span><span class="p">]</span>
-
-            <span class="n">pexr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
-                <span class="n">data_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">pe_coords</span><span class="p">,</span> <span class="n">pedata</span><span class="p">),</span>
-                <span class="p">),</span>
-                <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">param</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
-                    <span class="n">pe_event</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-                    <span class="n">draw</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
-                <span class="p">),</span>
-                <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">num_events</span><span class="o">=</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">),</span>
-            <span class="p">)</span>
-
-            <span class="n">injxr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
-                <span class="n">data_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">inj_coords</span><span class="p">,</span> <span class="n">injdata</span><span class="p">),</span>
-                <span class="p">),</span>
-                <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">param</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
-                    <span class="n">inj_event</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">injdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-                <span class="p">),</span>
-                <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">total_generated_injections</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">],</span>
-                    <span class="n">injection_analysis_time</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">],</span>
-                    <span class="n">num_events</span><span class="o">=</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
-
-            <span class="n">GWInfernoData</span><span class="p">(</span><span class="n">ligo_posterior_samples</span><span class="o">=</span><span class="n">pexr</span><span class="p">,</span> <span class="n">ligo_injections</span><span class="o">=</span><span class="n">injxr</span><span class="p">)</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">&quot;posterior_samples_and_injections_spin_magnitude.h5&quot;</span><span class="p">)</span>
-
-        <span class="n">pedata</span><span class="p">,</span> <span class="n">new_pmap</span><span class="p">,</span> <span class="n">new_pnames</span> <span class="o">=</span> <span class="n">convert_component_spin_posteriors_to_chieff</span><span class="p">(</span><span class="n">pedata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">chip</span><span class="o">=</span><span class="n">chi_p</span><span class="p">)</span>
-        <span class="n">injdata</span><span class="p">,</span> <span class="n">new_pmap</span> <span class="o">=</span> <span class="n">convert_component_spin_injections_to_chieff</span><span class="p">(</span><span class="n">injdata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">chip</span><span class="o">=</span><span class="n">chi_p</span><span class="p">)</span>
-        <span class="n">param_map</span> <span class="o">=</span> <span class="n">new_pmap</span>
-        <span class="n">param_names</span> <span class="o">=</span> <span class="n">new_pnames</span>
-        <span class="n">pedata</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pedata</span><span class="p">)</span>
-        <span class="n">injdata</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pedata</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
-
-            <span class="n">pe_coords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;pe_event&quot;</span><span class="p">,</span> <span class="s2">&quot;draw&quot;</span><span class="p">]</span>
-            <span class="n">inj_coords</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;inj_event&quot;</span><span class="p">]</span>
-
-            <span class="n">pexr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
-                <span class="n">data_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">pe_coords</span><span class="p">,</span> <span class="n">pedata</span><span class="p">),</span>
-                <span class="p">),</span>
-                <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">param</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
-                    <span class="n">pe_event</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-                    <span class="n">draw</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
-                <span class="p">),</span>
-                <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">num_events</span><span class="o">=</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span> <span class="n">param_nums</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">param_names</span><span class="p">)]),</span>
-            <span class="p">)</span>
-
-            <span class="n">injxr</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
-                <span class="n">data_vars</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="n">inj_coords</span><span class="p">,</span> <span class="n">injdata</span><span class="p">),</span>
-                <span class="p">),</span>
-                <span class="n">coords</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">param</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
-                    <span class="n">inj_event</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="n">injdata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
-                <span class="p">),</span>
-                <span class="n">attrs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
-                    <span class="n">total_generated_injections</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">],</span>
-                    <span class="n">injection_analysis_time</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">],</span>
-                    <span class="n">num_events</span><span class="o">=</span><span class="n">pedata</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="n">names</span><span class="o">=</span><span class="n">names</span><span class="p">,</span>
-                    <span class="n">param_nums</span><span class="o">=</span><span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">param_names</span><span class="p">)],</span>
-                <span class="p">),</span>
-            <span class="p">)</span>
-
-            <span class="n">GWInfernoData</span><span class="p">(</span><span class="n">ligo_posterior_samples</span><span class="o">=</span><span class="n">pexr</span><span class="p">,</span> <span class="n">ligo_injections</span><span class="o">=</span><span class="n">injxr</span><span class="p">)</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">&quot;posterior_samples_and_injections_chi_effective.h5&quot;</span><span class="p">)</span>
+        <span class="n">remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;mass_2&quot;</span> <span class="ow">in</span> <span class="n">param_names</span> <span class="k">else</span> <span class="n">remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;mass_2&quot;</span><span class="p">)</span>
+        <span class="n">new_pe</span> <span class="o">=</span> <span class="n">new_pe</span><span class="o">.</span><span class="n">drop_sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="n">remove</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_pe</span>
 
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">pedata</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">pe_samples</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">])</span>
-        <span class="n">injdata</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">injections</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">])</span>
-        <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
-            <span class="n">mag_data</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="s2">&quot;injdata&quot;</span><span class="p">:</span> <span class="n">injdata</span><span class="p">,</span>
-                <span class="s2">&quot;pedata&quot;</span><span class="p">:</span> <span class="n">pedata</span><span class="p">,</span>
-                <span class="s2">&quot;param_map&quot;</span><span class="p">:</span> <span class="n">param_map</span><span class="p">,</span>
-                <span class="s2">&quot;total_generated&quot;</span><span class="p">:</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;analysis_time&quot;</span><span class="p">:</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">],</span>
-            <span class="p">}</span>
-            <span class="n">dd</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">&quot;posterior_samples_and_injections_spin_magnitude.h5&quot;</span><span class="p">,</span> <span class="n">mag_data</span><span class="p">)</span>
+        <span class="n">remove</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">setxor1d</span><span class="p">(</span><span class="n">full_catalog</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">param_names</span><span class="p">)))</span>
+        <span class="n">remove</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;prior&quot;</span><span class="p">)</span>
+        <span class="n">full_catalog</span> <span class="o">=</span> <span class="n">full_catalog</span><span class="o">.</span><span class="n">drop_sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="n">remove</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">pedata</span><span class="p">,</span> <span class="n">injdata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">inj_attributes</span><span class="p">,</span> <span class="n">names</span></div>
+        <span class="k">return</span> <span class="n">full_catalog</span></div>
 
 
 
-<div class="viewcode-block" id="convert_component_spin_posteriors_to_chieff">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff.html#gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_component_spin_posteriors_to_chieff</span><span class="p">(</span><span class="n">pedata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">chip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">new_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">,</span> <span class="s2">&quot;mass_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;redshift&quot;</span><span class="p">,</span> <span class="s2">&quot;chi_eff&quot;</span><span class="p">,</span> <span class="s2">&quot;prior&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
-        <span class="n">new_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;chi_p&quot;</span><span class="p">)</span>
-    <span class="n">old_pe_shape</span> <span class="o">=</span> <span class="n">pedata</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">new_pe_shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_params</span><span class="p">),</span> <span class="n">old_pe_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">old_pe_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-    <span class="n">new_pe_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_pe_shape</span><span class="p">)</span>
-    <span class="n">new_pmap</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">new_params</span><span class="p">)}</span>
+<div class="viewcode-block" id="load_injections">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.load_injections.html#gwinferno.preprocess.data_collection.load_injections">[docs]</a>
+<span class="k">def</span> <span class="nf">load_injections</span><span class="p">(</span><span class="n">injfile</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">through_o4a</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">through_o3</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ifar_threshold</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr_threshold</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">through_o4a</span><span class="p">:</span>
+        <span class="n">injs</span> <span class="o">=</span> <span class="n">get_o4a_cumulative_injection_dict</span><span class="p">(</span>
+            <span class="n">injfile</span><span class="p">,</span>
+            <span class="n">param_names</span><span class="o">=</span><span class="n">param_names</span><span class="p">,</span>
+            <span class="n">ifar</span><span class="o">=</span><span class="n">ifar_threshold</span><span class="p">,</span>
+            <span class="n">snr</span><span class="o">=</span><span class="n">snr_threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">through_o3</span><span class="p">:</span>
+
+        <span class="n">injs</span> <span class="o">=</span> <span class="n">get_o3_cumulative_injection_dict</span><span class="p">(</span><span class="n">injfile</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">ifar</span><span class="o">=</span><span class="n">ifar_threshold</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="n">snr_threshold</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="n">additional_cuts</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;One kwarg `through_o3` or `through_o4a` must be true. Please specify which injection file you are using.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s2">&quot;chi_eff&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+        <span class="n">new_injs</span> <span class="o">=</span> <span class="n">convert_component_spins_to_chieff</span><span class="p">(</span><span class="n">injs</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">injections</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">remove</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">,</span> <span class="s2">&quot;a_2&quot;</span><span class="p">,</span> <span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">,</span> <span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">]</span>
+
+        <span class="n">remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="s2">&quot;mass_2&quot;</span> <span class="ow">in</span> <span class="n">param_names</span> <span class="k">else</span> <span class="n">remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;mass_2&quot;</span><span class="p">)</span>
+        <span class="n">new_injs</span> <span class="o">=</span> <span class="n">new_injs</span><span class="o">.</span><span class="n">drop_sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="n">remove</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_injs</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">remove</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">setxor1d</span><span class="p">(</span><span class="n">injs</span><span class="o">.</span><span class="n">param</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">param_names</span><span class="p">)))</span>
+        <span class="n">remove</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s2">&quot;prior&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">injs</span><span class="o">.</span><span class="n">drop_sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="n">remove</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="load_posterior_samples_and_injections">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.load_posterior_samples_and_injections.html#gwinferno.preprocess.data_collection.load_posterior_samples_and_injections">[docs]</a>
+<span class="k">def</span> <span class="nf">load_posterior_samples_and_injections</span><span class="p">(</span><span class="n">key_file</span><span class="p">,</span> <span class="n">injfile</span><span class="p">,</span> <span class="n">parameter_names</span><span class="p">,</span> <span class="n">outdir</span><span class="p">,</span> <span class="n">ifar_threshold</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr_threshold</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">pe_array</span> <span class="o">=</span> <span class="n">load_posterior_data</span><span class="p">(</span><span class="n">key_file</span><span class="o">=</span><span class="n">key_file</span><span class="p">,</span> <span class="n">param_names</span><span class="o">=</span><span class="n">parameter_names</span><span class="p">)</span><span class="o">.</span><span class="n">to_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;posteriors&quot;</span><span class="p">)</span>
+    <span class="n">inj_array</span> <span class="o">=</span> <span class="n">load_injections</span><span class="p">(</span><span class="n">injfile</span><span class="p">,</span> <span class="n">parameter_names</span><span class="p">,</span> <span class="n">ifar_threshold</span><span class="o">=</span><span class="n">ifar_threshold</span><span class="p">,</span> <span class="n">snr_threshold</span><span class="o">=</span><span class="n">snr_threshold</span><span class="p">)</span><span class="o">.</span><span class="n">to_dataset</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;injections&quot;</span><span class="p">)</span>
+
+    <span class="n">idata</span> <span class="o">=</span> <span class="n">az</span><span class="o">.</span><span class="n">InferenceData</span><span class="p">(</span><span class="n">pe_data</span><span class="o">=</span><span class="n">pe_array</span><span class="p">,</span> <span class="n">inj_data</span><span class="o">=</span><span class="n">inj_array</span><span class="p">)</span>
+
+    <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">parameter_names</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">label</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">if</span> <span class="n">save</span><span class="p">:</span>
+        <span class="n">idata</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="n">outdir</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;/xarray_through-o4a_posterior_samples_and_injections</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">.h5&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">idata</span></div>
+
+
+
+<div class="viewcode-block" id="convert_component_spins_to_chieff">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.data_collection.convert_component_spins_to_chieff.html#gwinferno.preprocess.data_collection.convert_component_spins_to_chieff">[docs]</a>
+<span class="k">def</span> <span class="nf">convert_component_spins_to_chieff</span><span class="p">(</span><span class="n">dat_array</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">injections</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="n">chip</span> <span class="o">=</span> <span class="kc">True</span> <span class="k">if</span> <span class="s2">&quot;chi_p&quot;</span> <span class="ow">in</span> <span class="n">param_names</span> <span class="k">else</span> <span class="kc">False</span>
+
+    <span class="n">q</span> <span class="o">=</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">a_1</span> <span class="o">=</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;a_1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">a_2</span> <span class="o">=</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;a_2&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">tilt_1</span> <span class="o">=</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">tilt_2</span> <span class="o">=</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">prior</span> <span class="o">=</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;prior&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+
     <span class="n">chi_eff</span> <span class="o">=</span> <span class="n">chieff_from_q_component_spins</span><span class="p">(</span>
-        <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">]],</span>
-        <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">]],</span>
-        <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">]],</span>
-        <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">]],</span>
-        <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">]],</span>
+        <span class="n">q</span><span class="p">,</span>
+        <span class="n">a_1</span><span class="p">,</span>
+        <span class="n">a_2</span><span class="p">,</span>
+        <span class="n">tilt_1</span><span class="p">,</span>
+        <span class="n">tilt_2</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
         <span class="n">chi_p</span> <span class="o">=</span> <span class="n">chip_from_q_component_spins</span><span class="p">(</span>
-            <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">]],</span>
-            <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">]],</span>
-            <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">]],</span>
-            <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">]],</span>
-            <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">]],</span>
+            <span class="n">q</span><span class="p">,</span>
+            <span class="n">a_1</span><span class="p">,</span>
+            <span class="n">a_2</span><span class="p">,</span>
+            <span class="n">tilt_1</span><span class="p">,</span>
+            <span class="n">tilt_2</span><span class="p">,</span>
         <span class="p">)</span>
-    <span class="n">new_prior</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]])</span>
-    <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">new_prior</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_prior</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+
+    <span class="k">if</span> <span class="n">injections</span><span class="p">:</span>
+
+        <span class="n">new_prior</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">new_prior</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
             <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
-                <span class="n">new_prior</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">],</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">]</span>
-                    <span class="o">*</span> <span class="mi">4</span>
-                    <span class="o">*</span> <span class="n">joint_prior_from_isotropic_spins</span><span class="p">(</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">],</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">]),</span>
-                        <span class="mf">1.0</span><span class="p">,</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">]),</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_p</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">]),</span>
+                <span class="n">new_prior</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">prior</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+                    <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_1</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_2</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+                    <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                        <span class="n">joint_prior_from_isotropic_spins</span><span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                            <span class="mf">1.0</span><span class="p">,</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_p</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                        <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">new_prior</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                    <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">],</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">]</span>
-                    <span class="o">*</span> <span class="mi">4</span>
-                    <span class="o">*</span> <span class="n">chi_effective_prior_from_isotropic_spins</span><span class="p">(</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">],</span> <span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">]),</span>
-                        <span class="mf">1.0</span><span class="p">,</span>
-                        <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">jj</span><span class="p">,</span> <span class="n">ii</span><span class="p">]),</span>
-                    <span class="p">)</span>
+
+                <span class="n">new_prior</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">prior</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span>
+                    <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_1</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_2</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+                    <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                        <span class="n">chi_effective_prior_from_isotropic_spins</span><span class="p">(</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                            <span class="mf">1.0</span><span class="p">,</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                        <span class="p">)</span>
+                    <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="p">)</span>
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">new_params</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">,</span> <span class="s2">&quot;chi_eff&quot;</span><span class="p">,</span> <span class="s2">&quot;chi_p&quot;</span><span class="p">]:</span>
-            <span class="n">new_pe_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">pedata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span>
-        <span class="k">elif</span> <span class="n">p</span> <span class="o">==</span> <span class="s2">&quot;prior&quot;</span><span class="p">:</span>
-            <span class="n">new_pe_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">new_prior</span>
-        <span class="k">elif</span> <span class="n">p</span> <span class="o">==</span> <span class="s2">&quot;chi_eff&quot;</span><span class="p">:</span>
-            <span class="n">new_pe_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chi_eff</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_pe_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chi_p</span>
-    <span class="k">return</span> <span class="n">new_pe_data</span><span class="p">,</span> <span class="n">new_pmap</span><span class="p">,</span> <span class="n">new_params</span></div>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">new_prior</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">prior</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">new_prior</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">jj</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">new_prior</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
+                    <span class="n">new_prior</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">prior</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span>
+                        <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_1</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_2</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+                        <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                            <span class="n">joint_prior_from_isotropic_spins</span><span class="p">(</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]),</span>
+                                <span class="mf">1.0</span><span class="p">,</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]),</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_p</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]),</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_prior</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">prior</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span>
+                        <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_1</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_2</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+                        <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                            <span class="n">chi_effective_prior_from_isotropic_spins</span><span class="p">(</span>
+                                <span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">],</span>
+                                <span class="mf">1.0</span><span class="p">,</span>
+                                <span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">],</span>
+                            <span class="p">)</span>
+                        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="p">)</span>
+
+    <span class="n">new_arrays</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">injections</span><span class="p">:</span>
+        <span class="n">chi_eff_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">chi_eff</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">chi_eff</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;injection&quot;</span><span class="p">],</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;chi_eff&quot;</span><span class="p">],</span> <span class="s2">&quot;injection&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dat_array</span><span class="o">.</span><span class="n">injection</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])},</span>
+        <span class="p">)</span>
+        <span class="n">prior_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">new_prior</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">chi_eff</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;injection&quot;</span><span class="p">],</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">],</span> <span class="s2">&quot;injection&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dat_array</span><span class="o">.</span><span class="n">injection</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])},</span>
+        <span class="p">)</span>
+        <span class="n">new_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chi_eff_array</span><span class="p">)</span>
+        <span class="n">new_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prior_array</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
+            <span class="n">chip_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+                <span class="n">chi_p</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">chi_p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;injection&quot;</span><span class="p">],</span>
+                <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;chi_p&quot;</span><span class="p">],</span> <span class="s2">&quot;injection&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">dat_array</span><span class="o">.</span><span class="n">injection</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])},</span>
+            <span class="p">)</span>
+            <span class="n">new_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chip_array</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chi_eff_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">chi_eff</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">chi_eff</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">chi_eff</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">[</span>
+                <span class="s2">&quot;event&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;param&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;samples&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">event</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;chi_eff&quot;</span><span class="p">],</span> <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">samples</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">prior_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+            <span class="n">new_prior</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">prior</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="n">prior</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+            <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">],</span>
+            <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">event</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">],</span> <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">samples</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">new_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chi_eff_array</span><span class="p">)</span>
+        <span class="n">new_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">prior_array</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
+            <span class="n">chip_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+                <span class="n">chi_p</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">chi_p</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
+                <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;event&quot;</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;samples&quot;</span><span class="p">],</span>
+                <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">event</span><span class="p">,</span> <span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;chi_p&quot;</span><span class="p">],</span> <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">samples</span><span class="p">},</span>
+            <span class="p">)</span>
+            <span class="n">new_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chip_array</span><span class="p">)</span>
+
+    <span class="n">new_dat_array</span> <span class="o">=</span> <span class="n">dat_array</span><span class="o">.</span><span class="n">drop_sel</span><span class="p">(</span><span class="n">param</span><span class="o">=</span><span class="s2">&quot;prior&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">arr</span> <span class="ow">in</span> <span class="n">new_arrays</span><span class="p">:</span>
+        <span class="n">new_dat_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">new_dat_array</span><span class="p">,</span> <span class="n">arr</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="s2">&quot;param&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">new_dat_array</span></div>
 
 </pre></div>
 

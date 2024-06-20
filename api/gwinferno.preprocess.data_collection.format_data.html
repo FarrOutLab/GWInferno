@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwinferno.preprocess.data_collection.preprocess_data &mdash; gwinferno 0.0 documentation</title>
+  <title>gwinferno.preprocess.data_collection.format_data &mdash; gwinferno 0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
@@ -23,8 +23,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections" href="gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections.html" />
-    <link rel="prev" title="gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior" href="gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior.html" /> 
+    <link rel="next" title="gwinferno.preprocess.data_collection.load_injections" href="gwinferno.preprocess.data_collection.load_injections.html" />
+    <link rel="prev" title="gwinferno.preprocess.data_collection.evaluate_prior" href="gwinferno.preprocess.data_collection.evaluate_prior.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,18 +71,17 @@
 <li class="toctree-l1 current"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.conversions.html">gwinferno.preprocess.conversions</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.apply_priors.html">gwinferno.preprocess.data_collection.apply_priors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff.html">gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.collect_data.html">gwinferno.preprocess.data_collection.collect_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.convert_component_spins_to_chieff.html">gwinferno.preprocess.data_collection.convert_component_spins_to_chieff</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.dl_2_prior_on_z.html">gwinferno.preprocess.data_collection.dl_2_prior_on_z</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps.html">gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_catalog_from_metadata.html">gwinferno.preprocess.data_collection.load_catalog_from_metadata</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_samples.html">gwinferno.preprocess.data_collection.load_posterior_samples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior.html">gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.preprocess.data_collection.preprocess_data</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwinferno.preprocess.data_collection.preprocess_data"><code class="docutils literal notranslate"><span class="pre">preprocess_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.evaluate_prior.html">gwinferno.preprocess.data_collection.evaluate_prior</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.preprocess.data_collection.format_data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.preprocess.data_collection.format_data"><code class="docutils literal notranslate"><span class="pre">format_data()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections.html">gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_injections.html">gwinferno.preprocess.data_collection.load_injections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_data.html">gwinferno.preprocess.data_collection.load_posterior_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_samples_and_injections.html">gwinferno.preprocess.data_collection.load_posterior_samples_and_injections</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.priors.html">gwinferno.preprocess.priors</a></li>
@@ -107,9 +106,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
           <li class="breadcrumb-item"><a href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a></li>
-      <li class="breadcrumb-item active">gwinferno.preprocess.data_collection.preprocess_data</li>
+      <li class="breadcrumb-item active">gwinferno.preprocess.data_collection.format_data</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api/gwinferno.preprocess.data_collection.preprocess_data.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/gwinferno.preprocess.data_collection.format_data.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -117,11 +116,11 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwinferno-preprocess-data-collection-preprocess-data">
-<h1>gwinferno.preprocess.data_collection.preprocess_data<a class="headerlink" href="#gwinferno-preprocess-data-collection-preprocess-data" title="Link to this heading"></a></h1>
+  <section id="gwinferno-preprocess-data-collection-format-data">
+<h1>gwinferno.preprocess.data_collection.format_data<a class="headerlink" href="#gwinferno-preprocess-data-collection-format-data" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="gwinferno.preprocess.data_collection.preprocess_data">
-<span class="sig-prename descclassname"><span class="pre">gwinferno.preprocess.data_collection.</span></span><span class="sig-name descname"><span class="pre">preprocess_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_map</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_downsample</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/data_collection.html#preprocess_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.data_collection.preprocess_data" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="gwinferno.preprocess.data_collection.format_data">
+<span class="sig-prename descclassname"><span class="pre">gwinferno.preprocess.data_collection.</span></span><span class="sig-name descname"><span class="pre">format_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">posteriors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/data_collection.html#format_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.data_collection.format_data" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
@@ -130,8 +129,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwinferno.preprocess.data_collection.evaluate_prior.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.data_collection.evaluate_prior" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.preprocess.data_collection.load_injections.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.data_collection.load_injections" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

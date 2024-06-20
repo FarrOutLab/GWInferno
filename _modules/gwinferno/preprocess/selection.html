@@ -101,18 +101,80 @@
 <span class="kn">import</span> <span class="nn">h5py</span>
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 <span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
-
-<span class="kn">from</span> <span class="nn">.conversions</span> <span class="kn">import</span> <span class="n">chieff_from_q_component_spins</span>
-<span class="kn">from</span> <span class="nn">.conversions</span> <span class="kn">import</span> <span class="n">chip_from_q_component_spins</span>
-<span class="kn">from</span> <span class="nn">.priors</span> <span class="kn">import</span> <span class="n">chi_effective_prior_from_isotropic_spins</span>
-<span class="kn">from</span> <span class="nn">.priors</span> <span class="kn">import</span> <span class="n">joint_prior_from_isotropic_spins</span>
 
 
-<div class="viewcode-block" id="get_injection_dict">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.selection.get_injection_dict.html#gwinferno.preprocess.selection.get_injection_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">get_injection_dict</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">ifar</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="get_o4a_cumulative_injection_dict">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict.html#gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">get_o4a_cumulative_injection_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">ifar</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates injection dataset with desired parameters and proper prior density calculated.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        file (str): path to injection file</span>
+<span class="sd">        param_names (list of strs): list of parameter names to work in. This should not include &#39;prior&#39;, as it will be generated automatically.</span>
+<span class="sd">            Valid parameter options are: &#39;mass_1&#39;, &#39;mass_2&#39;, &#39;mass_ratio&#39;, &#39;redshift&#39;, &#39;a_1&#39;, &#39;a_2&#39;, &#39;cos_tilt_1&#39;, &#39;cos_tilt_2&#39;.</span>
+<span class="sd">            NOTE: &#39;chi_eff&#39; and &#39;chi_p&#39; cannot be accounted for here.</span>
+<span class="sd">            Please use `gwinferno.preprocess.data_collection.load_injections` if you wish to work in &#39;chi_eff&#39; and &#39;chi_p&#39;.</span>
+<span class="sd">        ifar (int, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.</span>
+<span class="sd">        snr (int, optional): signal to noise ratio threshold for found injections. Defaults to 10.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataArray: xarray DataArray of injection data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
+        <span class="n">total_generated</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">]</span>
+        <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">]</span>
+        <span class="n">injections</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ff</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">][:])</span>
+
+    <span class="n">found</span> <span class="o">=</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;semianalytic_observed_phase_maximized_snr_net&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">snr</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">injections</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;far&quot;</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+            <span class="n">found</span> <span class="o">|=</span> <span class="n">injections</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">ifar</span>
+
+    <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">injections</span><span class="p">[</span><span class="n">found</span><span class="p">][</span><span class="s2">&quot;weights&quot;</span><span class="p">]</span>
+
+    <span class="n">injs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">mass_1</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">],</span>
+        <span class="n">mass_2</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;mass2_source&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">],</span>
+        <span class="n">mass_ratio</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;mass2_source&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">]</span> <span class="o">/</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">],</span>
+        <span class="n">redshift</span><span class="o">=</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">],</span>
+    <span class="p">)</span>
+
+    <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">inj_weights</span>
+    <span class="n">total_generated</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_generated</span><span class="p">)</span>
+    <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">analysis_time</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span>
+
+    <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">])</span> <span class="o">/</span> <span class="n">inj_weights</span>
+
+    <span class="k">if</span> <span class="s2">&quot;mass_ratio&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+        <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;a_1&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="s2">&quot;chi_eff&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+            <span class="n">injs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;a_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">injections</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;spin</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">injections</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;spin</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">y&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">injections</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;spin</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">z&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+            <span class="n">injs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cos_tilt_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">injections</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;spin</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">z&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">]</span> <span class="o">/</span> <span class="n">injs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;a_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">injdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">injs</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">injs</span><span class="o">.</span><span class="n">keys</span><span class="p">())])</span>
+
+    <span class="n">inj_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">injdata</span><span class="p">,</span>
+        <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;injection&quot;</span><span class="p">],</span>
+        <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">injs</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="s2">&quot;injection&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">found</span><span class="p">))},</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;total_generated&quot;</span><span class="p">:</span> <span class="n">total_generated</span><span class="p">,</span> <span class="s2">&quot;analysis_time&quot;</span><span class="p">:</span> <span class="n">analysis_time</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">inj_array</span></div>
+
+
+
+<div class="viewcode-block" id="get_o3_cumulative_injection_dict">
+<a class="viewcode-back" href="../../../api/gwinferno.preprocess.selection.get_o3_cumulative_injection_dict.html#gwinferno.preprocess.selection.get_o3_cumulative_injection_dict">[docs]</a>
+<span class="k">def</span> <span class="nf">get_o3_cumulative_injection_dict</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">ifar</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Based from the function load_injection_data() at:</span>
 <span class="sd">    https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66</span>
@@ -135,10 +197,14 @@
             <span class="n">mass_2</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass2_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
             <span class="n">mass_ratio</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass2_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
             <span class="n">redshift</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
-            <span class="n">total_generated</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">][()]),</span>
-            <span class="n">analysis_time</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;analysis_time_s&quot;</span><span class="p">][()]</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">if</span> <span class="n">spin</span><span class="p">:</span>
+
+        <span class="n">total_generated</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">][()])</span>
+        <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;analysis_time_s&quot;</span><span class="p">][()]</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span>
+
+        <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sampling_pdf&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;a_1&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="s2">&quot;chi_eff&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">):</span>
             <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
                 <span class="n">injs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;a_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;spin</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">x&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_found</span><span class="p">))[()][</span><span class="n">found</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
@@ -146,118 +212,21 @@
                     <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;spin</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">z&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
                 <span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
                 <span class="n">injs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;cos_tilt_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;spin</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">z&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span> <span class="o">/</span> <span class="n">injs</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;a_</span><span class="si">{</span><span class="n">ii</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
-        <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sampling_pdf&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">spin</span><span class="p">:</span>
+
             <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">injs</span></div>
 
+        <span class="k">if</span> <span class="s2">&quot;mass_ratio&quot;</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
+            <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">*=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span>
 
-
-<div class="viewcode-block" id="get_semianlytic_injection_dict">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.selection.get_semianlytic_injection_dict.html#gwinferno.preprocess.selection.get_semianlytic_injection_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">get_semianlytic_injection_dict</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">o4</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">o4</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">ff</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="n">ff</span><span class="p">[</span><span class="s2">&quot;injections&quot;</span><span class="p">]</span>
-        <span class="n">found</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">o4</span><span class="p">:</span>
-            <span class="n">found</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;snr_L&quot;</span><span class="p">][()]</span> <span class="o">&gt;</span> <span class="n">snr</span>
-            <span class="n">z</span> <span class="o">=</span> <span class="s2">&quot;z&quot;</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">found</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;optimal_snr_l&quot;</span><span class="p">][()]</span> <span class="o">&gt;</span> <span class="n">snr</span>
-            <span class="n">z</span> <span class="o">=</span> <span class="s2">&quot;redshift&quot;</span>
-        <span class="k">if</span> <span class="n">additional_cuts</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">additional_cuts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">found</span> <span class="o">=</span> <span class="n">found</span> <span class="o">|</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">][()]</span> <span class="o">&gt;</span> <span class="n">additional_cuts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-        <span class="n">injs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">mass_1</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
-            <span class="n">mass_2</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass2_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
-            <span class="n">mass_ratio</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass2_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
-            <span class="n">redshift</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="n">z</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
-            <span class="n">total_generated</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">][()]),</span>
-            <span class="n">analysis_time</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;analysis_time_s&quot;</span><span class="p">][()]</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sampling_pdf&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span> <span class="o">*</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;mass1_source&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">injs</span></div>
-
-
-
-<div class="viewcode-block" id="load_injections">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.selection.load_injections.html#gwinferno.preprocess.selection.load_injections">[docs]</a>
-<span class="k">def</span> <span class="nf">load_injections</span><span class="p">(</span><span class="n">injfile</span><span class="p">,</span> <span class="n">ifar_threshold</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr_threshold</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">spin</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">semianalytic</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">o4</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">semianalytic</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">get_semianlytic_injection_dict</span><span class="p">(</span><span class="n">injfile</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="n">additional_cuts</span><span class="p">,</span> <span class="n">o4</span><span class="o">=</span><span class="n">o4</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">get_injection_dict</span><span class="p">(</span>
-            <span class="n">injfile</span><span class="p">,</span>
-            <span class="n">spin</span><span class="o">=</span><span class="n">spin</span><span class="p">,</span>
-            <span class="n">ifar</span><span class="o">=</span><span class="n">ifar_threshold</span><span class="p">,</span>
-            <span class="n">snr</span><span class="o">=</span><span class="n">snr_threshold</span><span class="p">,</span>
-            <span class="n">additional_cuts</span><span class="o">=</span><span class="n">additional_cuts</span><span class="p">,</span>
-        <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="convert_component_spin_injections_to_chieff">
-<a class="viewcode-back" href="../../../api/gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff.html#gwinferno.preprocess.selection.convert_component_spin_injections_to_chieff">[docs]</a>
-<span class="k">def</span> <span class="nf">convert_component_spin_injections_to_chieff</span><span class="p">(</span><span class="n">injdata</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="n">chip</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="n">new_params</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">,</span> <span class="s2">&quot;mass_ratio&quot;</span><span class="p">,</span> <span class="s2">&quot;redshift&quot;</span><span class="p">,</span> <span class="s2">&quot;chi_eff&quot;</span><span class="p">,</span> <span class="s2">&quot;prior&quot;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
-        <span class="n">new_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;chi_p&quot;</span><span class="p">)</span>
-    <span class="n">old_inj_shape</span> <span class="o">=</span> <span class="n">injdata</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">new_inj_shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">new_params</span><span class="p">),</span> <span class="n">old_inj_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">new_inj_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">new_inj_shape</span><span class="p">)</span>
-    <span class="n">new_pmap</span> <span class="o">=</span> <span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">new_params</span><span class="p">)}</span>
-    <span class="n">chi_eff</span> <span class="o">=</span> <span class="n">chieff_from_q_component_spins</span><span class="p">(</span>
-        <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">]],</span>
-        <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">]],</span>
-        <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">]],</span>
-        <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">]],</span>
-        <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">]],</span>
+    <span class="n">injdata</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="n">param</span><span class="p">])</span> <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">injs</span><span class="o">.</span><span class="n">keys</span><span class="p">())])</span>
+    <span class="n">inj_array</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">DataArray</span><span class="p">(</span>
+        <span class="n">injdata</span><span class="p">,</span>
+        <span class="n">dims</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="s2">&quot;injection&quot;</span><span class="p">],</span>
+        <span class="n">coords</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">injs</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span> <span class="s2">&quot;injection&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">found</span><span class="p">))},</span>
+        <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;total_generated&quot;</span><span class="p">:</span> <span class="n">total_generated</span><span class="p">,</span> <span class="s2">&quot;analysis_time&quot;</span><span class="p">:</span> <span class="n">analysis_time</span><span class="p">},</span>
     <span class="p">)</span>
-    <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
-        <span class="n">chi_p</span> <span class="o">=</span> <span class="n">chip_from_q_component_spins</span><span class="p">(</span>
-            <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">]],</span>
-            <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">]],</span>
-            <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">]],</span>
-            <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">]],</span>
-            <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">]],</span>
-        <span class="p">)</span>
-    <span class="n">new_prior</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]])</span>
-    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">new_prior</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
-        <span class="k">if</span> <span class="n">chip</span><span class="p">:</span>
-            <span class="n">new_prior</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">],</span> <span class="n">ii</span><span class="p">]</span>
-                <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
-                <span class="o">*</span> <span class="n">joint_prior_from_isotropic_spins</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">],</span> <span class="n">ii</span><span class="p">]),</span>
-                    <span class="mf">1.0</span><span class="p">,</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_p</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_prior</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">],</span> <span class="n">ii</span><span class="p">]</span>
-                <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
-                <span class="o">*</span> <span class="n">chi_effective_prior_from_isotropic_spins</span><span class="p">(</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">],</span> <span class="n">ii</span><span class="p">]),</span>
-                    <span class="mf">1.0</span><span class="p">,</span>
-                    <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
-    <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">new_params</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">p</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">,</span> <span class="s2">&quot;chi_eff&quot;</span><span class="p">,</span> <span class="s2">&quot;chi_p&quot;</span><span class="p">]:</span>
-            <span class="n">new_inj_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span>
-        <span class="k">elif</span> <span class="n">p</span> <span class="o">==</span> <span class="s2">&quot;prior&quot;</span><span class="p">:</span>
-            <span class="n">new_inj_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">new_prior</span>
-        <span class="k">elif</span> <span class="n">p</span> <span class="o">==</span> <span class="s2">&quot;chi_eff&quot;</span><span class="p">:</span>
-            <span class="n">new_inj_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chi_eff</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">new_inj_data</span><span class="p">[</span><span class="n">new_pmap</span><span class="p">[</span><span class="n">p</span><span class="p">]]</span> <span class="o">=</span> <span class="n">chi_p</span>
-    <span class="k">return</span> <span class="n">new_inj_data</span><span class="p">,</span> <span class="n">new_pmap</span></div>
+
+    <span class="k">return</span> <span class="n">inj_array</span></div>
 
 
 

@@ -1,6 +1,0 @@
-gwinferno.preprocess.data\_collection.load\_catalog\_from\_metadata
-===================================================================
-
-.. currentmodule:: gwinferno.preprocess.data_collection
-
-.. autofunction:: load_catalog_from_metadata

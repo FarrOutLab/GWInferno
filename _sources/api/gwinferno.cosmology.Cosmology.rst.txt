@@ -23,6 +23,7 @@ gwinferno.cosmology.Cosmology
       ~Cosmology.dVcdz
       ~Cosmology.extend
       ~Cosmology.logdVcdz
+      ~Cosmology.update
       ~Cosmology.z2DL
       ~Cosmology.z2Dc
       ~Cosmology.z2E

@@ -1,6 +1,0 @@
-gwinferno.preprocess.data\_collection.setup\_posterior\_samples\_and\_injections
-================================================================================
-
-.. currentmodule:: gwinferno.preprocess.data_collection
-
-.. autofunction:: setup_posterior_samples_and_injections

@@ -1,0 +1,6 @@
+gwinferno.preprocess.selection.get\_o4a\_cumulative\_injection\_dict
+====================================================================
+
+.. currentmodule:: gwinferno.preprocess.selection
+
+.. autofunction:: get_o4a_cumulative_injection_dict

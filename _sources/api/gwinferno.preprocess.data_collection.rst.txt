@@ -17,23 +17,21 @@ gwinferno.preprocess.data\_collection
       :toctree:
    
       
-      apply_priors
+      collect_data
       
-      convert_component_spin_posteriors_to_chieff
+      convert_component_spins_to_chieff
       
       dl_2_prior_on_z
       
-      downsample_posteriors_to_consistent_nsamps
+      evaluate_prior
       
-      load_catalog_from_metadata
+      format_data
       
-      load_posterior_samples
+      load_injections
       
-      p_m1src_q_z_lal_pe_prior
+      load_posterior_data
       
-      preprocess_data
-      
-      setup_posterior_samples_and_injections
+      load_posterior_samples_and_injections
    
    
 

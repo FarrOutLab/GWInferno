@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections &mdash; gwinferno 0.0 documentation</title>
+  <title>gwinferno.preprocess.data_collection.load_posterior_data &mdash; gwinferno 0.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
       <link rel="stylesheet" type="text/css" href="../_static/tabs.css?v=a5c4661c" />
@@ -23,8 +23,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.preprocess.priors" href="gwinferno.preprocess.priors.html" />
-    <link rel="prev" title="gwinferno.preprocess.data_collection.preprocess_data" href="gwinferno.preprocess.data_collection.preprocess_data.html" /> 
+    <link rel="next" title="gwinferno.preprocess.data_collection.load_posterior_samples_and_injections" href="gwinferno.preprocess.data_collection.load_posterior_samples_and_injections.html" />
+    <link rel="prev" title="gwinferno.preprocess.data_collection.load_injections" href="gwinferno.preprocess.data_collection.load_injections.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -71,18 +71,17 @@
 <li class="toctree-l1 current"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.conversions.html">gwinferno.preprocess.conversions</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.apply_priors.html">gwinferno.preprocess.data_collection.apply_priors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff.html">gwinferno.preprocess.data_collection.convert_component_spin_posteriors_to_chieff</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.collect_data.html">gwinferno.preprocess.data_collection.collect_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.convert_component_spins_to_chieff.html">gwinferno.preprocess.data_collection.convert_component_spins_to_chieff</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.dl_2_prior_on_z.html">gwinferno.preprocess.data_collection.dl_2_prior_on_z</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps.html">gwinferno.preprocess.data_collection.downsample_posteriors_to_consistent_nsamps</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_catalog_from_metadata.html">gwinferno.preprocess.data_collection.load_catalog_from_metadata</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_samples.html">gwinferno.preprocess.data_collection.load_posterior_samples</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior.html">gwinferno.preprocess.data_collection.p_m1src_q_z_lal_pe_prior</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.preprocess_data.html">gwinferno.preprocess.data_collection.preprocess_data</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections"><code class="docutils literal notranslate"><span class="pre">setup_posterior_samples_and_injections()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.evaluate_prior.html">gwinferno.preprocess.data_collection.evaluate_prior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.format_data.html">gwinferno.preprocess.data_collection.format_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_injections.html">gwinferno.preprocess.data_collection.load_injections</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.preprocess.data_collection.load_posterior_data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gwinferno.preprocess.data_collection.load_posterior_data"><code class="docutils literal notranslate"><span class="pre">load_posterior_data()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_samples_and_injections.html">gwinferno.preprocess.data_collection.load_posterior_samples_and_injections</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.preprocess.priors.html">gwinferno.preprocess.priors</a></li>
@@ -107,9 +106,9 @@
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="gwinferno.preprocess.html">gwinferno.preprocess</a></li>
           <li class="breadcrumb-item"><a href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a></li>
-      <li class="breadcrumb-item active">gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections</li>
+      <li class="breadcrumb-item active">gwinferno.preprocess.data_collection.load_posterior_data</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/api/gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/api/gwinferno.preprocess.data_collection.load_posterior_data.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -117,33 +116,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="gwinferno-preprocess-data-collection-setup-posterior-samples-and-injections">
-<h1>gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections<a class="headerlink" href="#gwinferno-preprocess-data-collection-setup-posterior-samples-and-injections" title="Link to this heading"></a></h1>
+  <section id="gwinferno-preprocess-data-collection-load-posterior-data">
+<h1>gwinferno.preprocess.data_collection.load_posterior_data<a class="headerlink" href="#gwinferno-preprocess-data-collection-load-posterior-data" title="Link to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections">
-<span class="sig-prename descclassname"><span class="pre">gwinferno.preprocess.data_collection.</span></span><span class="sig-name descname"><span class="pre">setup_posterior_samples_and_injections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inj_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_eff</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">jax_device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/data_collection.html#setup_posterior_samples_and_injections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.data_collection.setup_posterior_samples_and_injections" title="Link to this definition"></a></dt>
-<dd><p>Sets up posterior sample and injections to be used during inference or saves them to a file</p>
-<blockquote>
-<div><dl>
-<dt>Parameters:</dt><dd><p>data_dir (strs): path to directory where posterior samples are stored
-inj_file (strs): path to injection file
-param_names (list of strs): list of desired parameters to be saved in new file
-chi_eff (bool): True converts spin magnitude parameters to chi_eff.
-chi_p (bool): True converts spin magnitude parameters to chi_p
-save (bool): True saves the desired output to a .h5 datafile</p>
-</dd>
-<dt>Returns:</dt><dd><p>pedata (jax.numpy array): posterior samples for the parameters specified in param_names
-injdata (jax.numpy array): injection data for the parameters specified in param_names
-param_map (dict): dictionary that associates an index to each name in param_names
-inj_attributes (dict): dictionary that includes total number of generated injections</p>
-<blockquote>
-<div><p>analysis time</p>
-</div></blockquote>
-<p>names (list of strs): list with the names of each GW event</p>
-</dd>
-</dl>
-</div></blockquote>
-</dd></dl>
+<dt class="sig sig-object py" id="gwinferno.preprocess.data_collection.load_posterior_data">
+<span class="sig-prename descclassname"><span class="pre">gwinferno.preprocess.data_collection.</span></span><span class="sig-name descname"><span class="pre">load_posterior_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">run_map</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['mass_1',</span> <span class="pre">'mass_ratio',</span> <span class="pre">'redshift']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/data_collection.html#load_posterior_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.data_collection.load_posterior_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 </section>
 
@@ -151,8 +129,8 @@ inj_attributes (dict): dictionary that includes total number of generated inject
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="gwinferno.preprocess.data_collection.preprocess_data.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.data_collection.preprocess_data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwinferno.preprocess.priors.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.priors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwinferno.preprocess.data_collection.load_injections.html" class="btn btn-neutral float-left" title="gwinferno.preprocess.data_collection.load_injections" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="gwinferno.preprocess.data_collection.load_posterior_samples_and_injections.html" class="btn btn-neutral float-right" title="gwinferno.preprocess.data_collection.load_posterior_samples_and_injections" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

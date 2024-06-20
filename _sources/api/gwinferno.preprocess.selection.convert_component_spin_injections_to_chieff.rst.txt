@@ -1,6 +1,0 @@
-gwinferno.preprocess.selection.convert\_component\_spin\_injections\_to\_chieff
-===============================================================================
-
-.. currentmodule:: gwinferno.preprocess.selection
-
-.. autofunction:: convert_component_spin_injections_to_chieff

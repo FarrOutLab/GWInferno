@@ -1,6 +1,6 @@
-gwinferno.preprocess.data\_collection.apply\_priors
+gwinferno.preprocess.data\_collection.collect\_data
 ===================================================
 
 .. currentmodule:: gwinferno.preprocess.data_collection
 
-.. autofunction:: apply_priors
+.. autofunction:: collect_data

@@ -118,13 +118,13 @@
 <h1>gwinferno.cosmology.Cosmology<a class="headerlink" href="#gwinferno-cosmology-cosmology" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwinferno.cosmology.Cosmology">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.cosmology.</span></span><span class="sig-name descname"><span class="pre">Cosmology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_matter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_radiation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_lambda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_z_integ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/cosmology.html#Cosmology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.cosmology.Cosmology" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.cosmology.</span></span><span class="sig-name descname"><span class="pre">Cosmology</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_matter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_radiation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_lambda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/cosmology.html#Cosmology"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.cosmology.Cosmology" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>a class that implements specific cosmological computations.
-<strong>NOTE</strong>, we work in CGS units throughout, so Ho must be specified in s**-1 and distances are specified in cm</p>
+<strong>NOTE</strong>, we work in SI units throughout, though distances are specified in Mpc.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.cosmology.Cosmology.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_matter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_radiation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_lambda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mpc'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_z_integ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2.3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/cosmology.html#Cosmology.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.cosmology.Cosmology.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Ho</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_matter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_radiation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">omega_lambda</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/cosmology.html#Cosmology.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.cosmology.Cosmology.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -142,25 +142,28 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.__init__" title="gwinferno.cosmology.Cosmology.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(Ho, omega_matter, omega_radiation, ...)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.dDcdz" title="gwinferno.cosmology.Cosmology.dDcdz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dDcdz</span></code></a>(z[, mpc])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.dDcdz" title="gwinferno.cosmology.Cosmology.dDcdz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dDcdz</span></code></a>(z)</p></td>
 <td><p>returns (c/Ho)/E(z)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.dVcdz" title="gwinferno.cosmology.Cosmology.dVcdz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dVcdz</span></code></a>(z[, Dc, dz])</p></td>
 <td><p>return dVc/dz</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.extend" title="gwinferno.cosmology.Cosmology.extend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extend</span></code></a>([max_DL, max_Dc, max_z, max_Vc, dz])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.extend" title="gwinferno.cosmology.Cosmology.extend"><code class="xref py py-obj docutils literal notranslate"><span class="pre">extend</span></code></a>(max_z[, dz])</p></td>
 <td><p>integrate to solve for distance measures.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.logdVcdz" title="gwinferno.cosmology.Cosmology.logdVcdz"><code class="xref py py-obj docutils literal notranslate"><span class="pre">logdVcdz</span></code></a>(z[, Dc, dz])</p></td>
 <td><p>return ln(dVc/dz), useful when constructing probability distributions without overflow errors</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.z2DL" title="gwinferno.cosmology.Cosmology.z2DL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">z2DL</span></code></a>(z[, dz])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>(i, x)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.z2DL" title="gwinferno.cosmology.Cosmology.z2DL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">z2DL</span></code></a>(z[, dz])</p></td>
 <td><p>returns luminosity distance at the specified redshifts</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.z2Dc" title="gwinferno.cosmology.Cosmology.z2Dc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">z2Dc</span></code></a>(z[, dz])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.z2Dc" title="gwinferno.cosmology.Cosmology.z2Dc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">z2Dc</span></code></a>(z[, dz])</p></td>
 <td><p>return Dc for each z specified</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.z2E" title="gwinferno.cosmology.Cosmology.z2E"><code class="xref py py-obj docutils literal notranslate"><span class="pre">z2E</span></code></a>(z)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.cosmology.Cosmology.z2E" title="gwinferno.cosmology.Cosmology.z2E"><code class="xref py py-obj docutils literal notranslate"><span class="pre">z2E</span></code></a>(z)</p></td>
 <td><p>returns E(z) = sqrt(OmegaLambda + OmegaKappa*(1+z)**2 + OmegaMatter*(1+z)**3 + OmegaRadiation*(1+z)**4)</p></td>
 </tr>
 </tbody>
@@ -181,7 +184,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.cosmology.Cosmology.dDcdz">
-<span class="sig-name descname"><span class="pre">dDcdz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mpc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/cosmology.html#Cosmology.dDcdz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.cosmology.Cosmology.dDcdz" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">dDcdz</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/cosmology.html#Cosmology.dDcdz"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.cosmology.Cosmology.dDcdz" title="Link to this definition"></a></dt>
 <dd><p>returns (c/Ho)/E(z)</p>
 </dd></dl>
 
@@ -193,7 +196,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.cosmology.Cosmology.extend">
-<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_DL</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_Dc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_Vc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-inf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/cosmology.html#Cosmology.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.cosmology.Cosmology.extend" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/cosmology.html#Cosmology.extend"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.cosmology.Cosmology.extend" title="Link to this definition"></a></dt>
 <dd><p>integrate to solve for distance measures.</p>
 </dd></dl>
 

@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.convert\_component\_spins\_to\_chieff
+===========================================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: convert_component_spins_to_chieff

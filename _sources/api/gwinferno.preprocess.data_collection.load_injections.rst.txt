@@ -1,6 +1,6 @@
-gwinferno.preprocess.data\_collection.preprocess\_data
+gwinferno.preprocess.data\_collection.load\_injections
 ======================================================
 
 .. currentmodule:: gwinferno.preprocess.data_collection
 
-.. autofunction:: preprocess_data
+.. autofunction:: load_injections
