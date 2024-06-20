@@ -1,4 +1,4 @@
-from numpy.testing import assert_allclose, assert_array_equal
+from numpy.testing import assert_allclose
 import gwinferno.distributions as dist
 import jax.numpy as jnp
 from scipy.special import expit
