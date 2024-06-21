@@ -4,7 +4,7 @@ a module for basic distribution pdf calculations with jax
 
 import jax.numpy as jnp
 from jax.scipy.special import erf
-from jax.scipy.special import gammaln
+from jax.scipy.special import betaln
 
 """
 =============================================
@@ -100,6 +100,8 @@ def powerlaw_pdf(xx, alpha, low, high, floor=0.0):
 def truncnorm_pdf(xx, mu, sig, low, high, log=False):
     """
     $$ p(x) \propto \mathcal{N}(x | \mu, \sigma)\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$
+
+    `log=True` makes this a log-normal distribution!
     """
 
     if log:
@@ -119,23 +121,9 @@ def truncnorm_pdf(xx, mu, sig, low, high, log=False):
     return jnp.where(jnp.greater(xx, high) | jnp.less(xx, low), 0, prob * norm)
 
 
-def ln_beta_fct(alpha, beta):
-    """
-    ln_beta_fct evaluate log beta fct (see: )
-
-    Args:
-        alpha (float): alpha shape parameter
-        beta (float): beta shape parameter
-
-    Returns:
-        float: log Beta fct
-    """
-    return gammaln(alpha) + gammaln(beta) - gammaln(alpha + beta)
-
-
 def betadist(xx, alpha, beta, scale=1.0, floor=0.0):
     """
-    betadist pdf of Beta distribution evaluated at xx with optional max vale of scale:
+    betadist pdf of Beta distribution evaluated at xx with optional max value of scale:
 
     Args:
         xx (array_like): points to evaluate pdf at
@@ -148,5 +136,5 @@ def betadist(xx, alpha, beta, scale=1.0, floor=0.0):
         array_like: pdf evaluated at xx
     """
     ln_beta = (alpha - 1) * jnp.log(xx) + (beta - 1) * jnp.log(scale - xx) - (alpha + beta - 1) * jnp.log(scale)
-    ln_beta = ln_beta - ln_beta_fct(alpha, beta)
+    ln_beta = ln_beta - betaln(alpha, beta)
     return jnp.where(jnp.less_equal(xx, scale) & jnp.greater_equal(xx, 0), jnp.exp(ln_beta), floor)
