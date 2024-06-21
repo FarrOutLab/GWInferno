@@ -69,6 +69,8 @@ def powerlaw_logit_pdf(xx, alpha, high, fall_off):
     powerlaw_logit_pdf pdf of high mass soft truncation powerlaw:
         $$ p(x) \propto x^{\alpha}\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$
 
+    WARNING: this is not a normalized pdf!
+
     Args:
         xx (array_like): points to evaluate pdf at
         alpha (float): power law index
@@ -94,6 +96,13 @@ def powerlaw_pdf(xx, alpha, low, high, floor=0.0):
         floor (float, optional): lower bound of pdf (Defaults to 0.0)
     """
     prob = jnp.power(xx, alpha)
+    norm = jnp.where(
+        alpha == -1,
+        1 / jnp.log(high / low),
+        (1 + alpha) / (high ** (1 + alpha) - low ** (1 + alpha)),
+    )
+    prob *= norm
+
     return jnp.where(jnp.less(xx, low) | jnp.greater(xx, high), floor, prob)
 
 
