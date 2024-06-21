@@ -42,7 +42,10 @@ def plpeak_primary_ratio_pdf(m1, q, alpha, beta, mmin, mmax, mpp, sigpp, lam):
 
 
 def plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam):
-    return (1 - lam) * powerlaw_pdf(m1, -alpha, mmin, mmax) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax)
+
+    # we need to normalize powerlaw_pdf for the mixture model. truncnorm_pdf is already normalized
+    pl_norm = (1 - alpha) / (jnp.power(mmax, 1 - alpha)  - jnp.power(mmin, 1 - alpha))
+    return (1 - lam) * powerlaw_pdf(m1, -alpha, mmin, mmax) * (pl_norm) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax)
 
 
 """
@@ -50,6 +53,10 @@ def plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam):
 SPIN MODELS
 ***************************************
 """
+
+
+def chi_eff_truncnorm(chi_eff, mu_x=0, log_sig_x=0.5):
+    return truncnorm_pdf(chi_eff, mu_x, jnp.exp(log_sig_x), -1, 1)
 
 
 def beta_spin_magnitude(a, alpha, beta, amax=1):
