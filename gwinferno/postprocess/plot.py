@@ -74,7 +74,7 @@ def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save = T
         plt.savefig(result_dir + f"/cos_tilt{comp}_pdf_{label}.png", dpi=100)
     plt.close()
 
-def plot_redshift_pdfs(z_pdfs, z, label, result_dir, save = True):
+def plot_rate_of_z_pdfs(z_pdfs, z, label, result_dir, save = True):
 
     plt.figure(figsize = (10,7))
     plot_pdf(z, z_pdfs, 'redshift')

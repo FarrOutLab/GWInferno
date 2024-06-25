@@ -1,11 +1,18 @@
 from gwinferno.models.bsplines.separable import BSplinePrimaryBSplineRatio, BSplineIIDSpinTilts, BSplineIIDSpinMagnitudes, BSplineIndependentSpinMagnitudes, BSplineIndependentSpinTilts
 from gwinferno.interpolation import LogXLogYBSpline, LogYBSpline, LogXBSpline
+from gwinferno.models.spline_perturbation import PowerlawSplineRedshiftModel
+from gwinferno.models.bsplines.smoothing import apply_difference_prior
 
+import numpyro
+import numpyro.distributions as dist
+import jax.numpy as jnp
+
+import xarray as xr
 from argparse import ArgumentParser
 
 def load_base_parser():
     parser = ArgumentParser()
-    parser.add_argument("--pe-inj-file", type = str)
+    parser.add_argument("--pe-inj-file", type = str, default = '/home/jaxeng/farr_lab/FarrOutLab/GWInferno/work/data/xarray_through-o4a_posterior_samples_and_injections-mass_1-mass_ratio-redshift-a_1-a_2-cos_tilt_1-cos_tilt_2.h5')
     parser.add_argument("--run-label", type=str)
     parser.add_argument("--result-dir", type=str)
     parser.add_argument('--m-nsplines', type=str, default=50)
@@ -96,7 +103,7 @@ def setup_bspline_spin_models(pedict, injdict, a_nsplines, ct_nsplines, IID = Fa
     return mag_model, tilt_model
 
 
-    def setup_powerlaw_spline_redshift_model(pedict, injdict, z_nsplines):
+def setup_powerlaw_spline_redshift_model(pedict, injdict, z_nsplines):
     print('initializing redshift model')
     return PowerlawSplineRedshiftModel(
             z_nsplines,
@@ -110,7 +117,7 @@ def setup_bspline_spin_models(pedict, injdict, a_nsplines, ct_nsplines, IID = Fa
 Setup B-Spline Priors
 """
 
-def bspline_mass_prior(m_nsplines = None, q_nsplines = None, m_tau = 1, q_tau = 1, name = None, m_cs_mu = 0, m_cs_sig=15, q_cs_mu = 0, q_cs_sig = 5, m_deg = 1, q_deg = 1):
+def bspline_mass_prior(m_nsplines = None, q_nsplines = None, m_tau = 1, q_tau = 1, name = None, m_cs_sig=15, q_cs_sig = 5, m_deg = 1, q_deg = 1):
 
     name = '_' + name if name != None else ''
 
@@ -133,7 +140,7 @@ def bspline_mass_prior(m_nsplines = None, q_nsplines = None, m_tau = 1, q_tau = 
 
 
 
-def bspline_spin_prior(a_nsplines = None, ct_nsplines = None, a_tau = None, ct_tau = None, name = None, IID = False, a_cs_sig = 5, ct_cs_sig = 5, a_deg = 2, ctdeg = 2):
+def bspline_spin_prior(a_nsplines = None, ct_nsplines = None, a_tau = None, ct_tau = None, name = None, IID = False, a_cs_sig = 5, ct_cs_sig = 5, a_deg = 2, ct_deg = 2):
 
     name = '_' + name if name != None else ''
 
