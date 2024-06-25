@@ -53,12 +53,12 @@ def setup_bspline_mass_models(pedict, injdict, m_nsplines, q_nsplines, mmin, mma
     )
 
 
-def setup_bspline_spin_models(pedict, injdict, a_nsplines, ct_nsplines, IID = False):
+def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID = False, a2_nsplines = None, ct2_nsplines = None):
     print('initializing spline spin design matrices')
 
     if IID:
         tilt_model = BSplineIIDSpinTilts(
-        ct_nsplines,
+        ct1_nsplines,
         pedict['cos_tilt_1'],
         pedict['cos_tilt_2'],
         injdict['cos_tilt_1'],
@@ -68,7 +68,7 @@ def setup_bspline_spin_models(pedict, injdict, a_nsplines, ct_nsplines, IID = Fa
         )
 
         mag_model = BSplineIIDSpinMagnitudes(
-            a_nsplines,
+            a1_nsplines,
             pedict['a_1'],
             pedict['a_2'],
             injdict['a_1'],
@@ -79,8 +79,8 @@ def setup_bspline_spin_models(pedict, injdict, a_nsplines, ct_nsplines, IID = Fa
 
     else:
         tilt_model = BSplineIndependentSpinTilts(
-        ct_nsplines,
-        ct_nsplines,
+        ct1_nsplines,
+        ct2_nsplines,
         pedict['cos_tilt_1'],
         pedict['cos_tilt_2'],
         injdict['cos_tilt_1'],
@@ -90,8 +90,8 @@ def setup_bspline_spin_models(pedict, injdict, a_nsplines, ct_nsplines, IID = Fa
     )
 
         mag_model = BSplineIndependentSpinMagnitudes(
-            a_nsplines,
-            a_nsplines,
+            a1_nsplines,
+            a2_nsplines,
             pedict['a_1'],
             pedict['a_2'],
             injdict['a_1'],

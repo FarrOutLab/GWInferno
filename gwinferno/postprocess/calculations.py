@@ -188,7 +188,7 @@ def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs = None, til
         
         calc_pdf = jit(calc_pdf)
 
-        for i in trange(apdfs.shape[0]):
+        for i in trange(apdfs_1.shape[0]):
             apdfs_1[i], ctpdfs_1[i], apdfs_2[i], ctpdfs_2[i] = calc_pdf(a1_cs[i], tilt1_cs[i], a2_cs[i], tilt2_cs[i], rate[i], pop_frac[i])
 
         return apdfs_1, apdfs_2, aa, ctpdfs_1, ctpdfs_2, cc
