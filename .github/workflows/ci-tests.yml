@@ -51,6 +51,8 @@ jobs:
         pytest --cov gwinferno -ra --color yes --cov-report=xml --junitxml=pytest.xml
     - name: Publish coverage to Codecov
       uses: codecov/codecov-action@v3
+      env:
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
       with:
         files: coverage.xml
         flags: python${{ matrix.python-version }}
