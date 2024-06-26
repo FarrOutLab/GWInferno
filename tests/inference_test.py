@@ -62,7 +62,7 @@ class TestTruncatedModelInference(unittest.TestCase):
     def load_data(self, max_samps=100):
         loaded_dataset = xr.load_dataset(f"{self.data_dir}/xarray_GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5")
         dataarray = loaded_dataset.to_array()
-        pedata = dataarray.data
+        pedata = jnp.asarray(dataarray.data)
         Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]
         idxs = np.random.choice(Nsamples, size=max_samps, replace=False)
