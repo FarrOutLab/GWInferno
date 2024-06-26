@@ -15,7 +15,8 @@ from numpyro.infer import NUTS
 from gwinferno.models.gwpopulation.gwpopulation import PowerlawRedshiftModel
 from gwinferno.models.gwpopulation.gwpopulation import powerlaw_primary_ratio_pdf
 from gwinferno.pipeline.analysis import construct_hierarchical_model
-from gwinferno.pipeline.analysis import hierarchical_likelihood, hierarchical_likelihood_in_log
+from gwinferno.pipeline.analysis import hierarchical_likelihood
+from gwinferno.pipeline.analysis import hierarchical_likelihood_in_log
 from gwinferno.pipeline.parser import ConfigReader
 from gwinferno.pipeline.parser import load_model_from_python_file
 from gwinferno.preprocess.data_collection import load_injections
@@ -106,8 +107,8 @@ class TestTruncatedModelInference(unittest.TestCase):
     def setup_redshift_model(self):
         return PowerlawRedshiftModel(z_pe=self.pedict["redshift"], z_inj=self.injdict["redshift"])
 
-    def setup_numpyro_model(self, log_likelihood = False):
-        def model(pedict, injdict, z_model, Nobs, total_inj, obs_time, sample_prior=False, log_likelihood = False):
+    def setup_numpyro_model(self, log_likelihood=False):
+        def model(pedict, injdict, z_model, Nobs, total_inj, obs_time, sample_prior=False, log_likelihood=False):
             alpha = numpyro.sample("alpha", dist.Normal(0, 2))
             beta = numpyro.sample("beta", dist.Normal(0, 2))
             lamb = numpyro.sample("lamb", dist.Normal(0, 2))
@@ -146,7 +147,7 @@ class TestTruncatedModelInference(unittest.TestCase):
                         m2min=mmin,
                         mmax=mmax,
                     )
-                
+
                 else:
                     hierarchical_likelihood_in_log(
                         jnp.log(peweights),
