@@ -60,7 +60,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         del self.truncated_numpyro_model
 
     def load_data(self, max_samps=100):
-        with h5py.File("/home/jaxeng/farr_lab/FarrOutLab/GWInferno/tests/data/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5", "r") as f:
+        with h5py.File(f"{self.data_dir}/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5", "r") as f:
             names = [k for k in f.keys()]
             pedata = jnp.asarray([f[ev]["block0_values"][:] for ev in names])
             param_names = f[names[0]]["block0_items"].asstr()[:]
