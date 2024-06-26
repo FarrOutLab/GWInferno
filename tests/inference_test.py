@@ -60,14 +60,14 @@ class TestTruncatedModelInference(unittest.TestCase):
         del self.truncated_numpyro_model
 
     def load_data(self, max_samps=100):
-        with h5py.File('/home/jaxeng/farr_lab/FarrOutLab/GWInferno/tests/data/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5', "r") as f:
+        with h5py.File("/home/jaxeng/farr_lab/FarrOutLab/GWInferno/tests/data/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5", "r") as f:
             names = [k for k in f.keys()]
-            pedata = jnp.asarray([f[ev]['block0_values'][:] for ev in names])
-            param_names = f[names[0]]['block0_items'].asstr()[:]
+            pedata = jnp.asarray([f[ev]["block0_values"][:] for ev in names])
+            param_names = f[names[0]]["block0_items"].asstr()[:]
         Nobs = pedata.shape[0]
         Nsamples = pedata.shape[1]
         idxs = np.random.choice(Nsamples, size=max_samps, replace=False)
-        pedict = {key: pedata[:,idxs,i] for i, key in enumerate(param_names)}
+        pedict = {key: pedata[:, idxs, i] for i, key in enumerate(param_names)}
         return pedict, Nobs, max_samps
 
     def test_load_pe_samples(self):
