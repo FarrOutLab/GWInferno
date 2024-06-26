@@ -1,0 +1,6 @@
+gwinferno.pipeline.utils.posterior\_dict\_to\_xarray
+====================================================
+
+.. currentmodule:: gwinferno.pipeline.utils
+
+.. autofunction:: posterior_dict_to_xarray

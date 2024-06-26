@@ -1,0 +1,6 @@
+gwinferno.pipeline.utils.pdf\_dict\_to\_xarray
+==============================================
+
+.. currentmodule:: gwinferno.pipeline.utils
+
+.. autofunction:: pdf_dict_to_xarray

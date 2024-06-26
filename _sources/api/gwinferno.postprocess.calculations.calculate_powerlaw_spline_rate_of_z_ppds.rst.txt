@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculations.calculate\_powerlaw\_spline\_rate\_of\_z\_ppds
+=================================================================================
+
+.. currentmodule:: gwinferno.postprocess.calculations
+
+.. autofunction:: calculate_powerlaw_spline_rate_of_z_ppds

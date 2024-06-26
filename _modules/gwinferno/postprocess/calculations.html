@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.postprocess.calculations &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/tabs.js?v=3030b3cb"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwinferno.postprocess.calculations</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwinferno.postprocess.calculations</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">jit</span>
+<span class="kn">from</span> <span class="nn">jax.scipy.integrate</span> <span class="kn">import</span> <span class="n">trapezoid</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
+
+<span class="kn">from</span> <span class="nn">gwinferno.distributions</span> <span class="kn">import</span> <span class="n">truncnorm_pdf</span>
+<span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogXLogYBSpline</span>
+<span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogYBSpline</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIIDSpinMagnitudes</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIIDSpinTilts</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIndependentSpinMagnitudes</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIndependentSpinTilts</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplinePrimaryBSplineRatio</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.single</span> <span class="kn">import</span> <span class="n">BSplineRatio</span>
+
+
+<div class="viewcode-block" id="calculate_bspline_mass_ppds">
+<a class="viewcode-back" href="../../../api/gwinferno.postprocess.calculations.calculate_bspline_mass_ppds.html#gwinferno.postprocess.calculations.calculate_bspline_mass_ppds">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_bspline_mass_ppds</span><span class="p">(</span><span class="n">m_cs</span><span class="p">,</span> <span class="n">q_cs</span><span class="p">,</span> <span class="n">nspline_dict</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pop_frac</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">ms</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+    <span class="n">qs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">mmin</span> <span class="o">/</span> <span class="n">mmax</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">Q</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">ms</span><span class="p">,</span> <span class="n">qs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">m_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">pop_frac</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pop_frac</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">m_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">BSplinePrimaryBSplineRatio</span><span class="p">(</span>
+        <span class="n">nspline_dict</span><span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">],</span>
+        <span class="n">nspline_dict</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">],</span>
+        <span class="n">M</span><span class="p">,</span>
+        <span class="n">ms</span><span class="p">,</span>
+        <span class="n">Q</span><span class="p">,</span>
+        <span class="n">qs</span><span class="p">,</span>
+        <span class="n">basis_m</span><span class="o">=</span><span class="n">LogXLogYBSpline</span><span class="p">,</span>
+        <span class="n">basis_q</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span>
+        <span class="n">m1min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
+        <span class="n">m2min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
+        <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">mpdfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">m_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">ms</span><span class="p">)))</span>
+    <span class="n">qpdfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">q_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">qs</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">calc_pdf</span><span class="p">(</span><span class="n">m_cs</span><span class="p">,</span> <span class="n">q_cs</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">frac</span><span class="p">):</span>
+        <span class="n">p_mq</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">m_cs</span><span class="p">,</span> <span class="n">q_cs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">p_m</span> <span class="o">=</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_mq</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">p_q</span> <span class="o">=</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_mq</span><span class="p">,</span> <span class="n">ms</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">P_m</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">p_m</span> <span class="o">*</span> <span class="n">frac</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_m</span><span class="p">,</span> <span class="n">ms</span><span class="p">)</span>
+        <span class="n">P_q</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">p_q</span> <span class="o">*</span> <span class="n">frac</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_q</span><span class="p">,</span> <span class="n">qs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">P_m</span><span class="p">,</span> <span class="n">P_q</span>
+
+    <span class="n">calc_pdf</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="n">calc_pdf</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">mpdfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">mpdfs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">qpdfs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">calc_pdf</span><span class="p">(</span><span class="n">m_cs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">q_cs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">rate</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pop_frac</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">mpdfs</span><span class="p">,</span> <span class="n">ms</span><span class="p">,</span> <span class="n">qpdfs</span><span class="p">,</span> <span class="n">qs</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_peak_logm1_bspline_q_ppds">
+<a class="viewcode-back" href="../../../api/gwinferno.postprocess.calculations.calculate_peak_logm1_bspline_q_ppds.html#gwinferno.postprocess.calculations.calculate_peak_logm1_bspline_q_ppds">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_peak_logm1_bspline_q_ppds</span><span class="p">(</span><span class="n">logmp</span><span class="p">,</span> <span class="n">logsigp</span><span class="p">,</span> <span class="n">q_cs</span><span class="p">,</span> <span class="n">nspline_dict</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pop_frac</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">ms</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+    <span class="n">qs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">mmin</span> <span class="o">/</span> <span class="n">mmax</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+    <span class="n">M</span><span class="p">,</span> <span class="n">Q</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">ms</span><span class="p">,</span> <span class="n">qs</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">q_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">pop_frac</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pop_frac</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">q_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">q_model</span> <span class="o">=</span> <span class="n">BSplineRatio</span><span class="p">(</span>
+        <span class="n">nspline_dict</span><span class="p">[</span><span class="s2">&quot;q&quot;</span><span class="p">],</span>
+        <span class="n">Q</span><span class="p">,</span>
+        <span class="n">qs</span><span class="p">,</span>
+        <span class="n">mmin</span> <span class="o">/</span> <span class="n">mmax</span><span class="p">,</span>
+        <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">mpdfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">q_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">ms</span><span class="p">)))</span>
+    <span class="n">qpdfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">q_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">qs</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">calc_pdf</span><span class="p">(</span><span class="n">logmp</span><span class="p">,</span> <span class="n">logsigp</span><span class="p">,</span> <span class="n">q_cs</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">frac</span><span class="p">):</span>
+        <span class="n">p_mq</span> <span class="o">=</span> <span class="n">q_model</span><span class="p">(</span><span class="n">q_cs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="n">truncnorm_pdf</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">logmp</span><span class="p">,</span> <span class="n">logsigp</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">p_mq</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">mmin</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">M</span> <span class="o">*</span> <span class="n">Q</span><span class="p">,</span> <span class="n">mmin</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">p_mq</span><span class="p">)</span>
+        <span class="n">p_m</span> <span class="o">=</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_mq</span><span class="p">,</span> <span class="n">qs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">p_q</span> <span class="o">=</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_mq</span><span class="p">,</span> <span class="n">ms</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">P_m</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">p_m</span> <span class="o">*</span> <span class="n">frac</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_m</span><span class="p">,</span> <span class="n">ms</span><span class="p">)</span>
+        <span class="n">P_q</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">p_q</span> <span class="o">*</span> <span class="n">frac</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_q</span><span class="p">,</span> <span class="n">qs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">P_m</span><span class="p">,</span> <span class="n">P_q</span>
+
+    <span class="n">calc_pdf</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="n">calc_pdf</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">mpdfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">mpdfs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">qpdfs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">calc_pdf</span><span class="p">(</span><span class="n">logmp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">logsigp</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">q_cs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">rate</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pop_frac</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+    <span class="k">return</span> <span class="n">mpdfs</span><span class="p">,</span> <span class="n">ms</span><span class="p">,</span> <span class="n">qpdfs</span><span class="p">,</span> <span class="n">qs</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_bspline_spin_ppds">
+<a class="viewcode-back" href="../../../api/gwinferno.postprocess.calculations.calculate_bspline_spin_ppds.html#gwinferno.postprocess.calculations.calculate_bspline_spin_ppds">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_bspline_spin_ppds</span><span class="p">(</span><span class="n">a1_cs</span><span class="p">,</span> <span class="n">tilt1_cs</span><span class="p">,</span> <span class="n">nspline_dict</span><span class="p">,</span> <span class="n">a2_cs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tilt2_cs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pop_frac</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="n">aa</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+    <span class="n">cc</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">rate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">a1_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">pop_frac</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pop_frac</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">a1_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">a2_cs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">mag_model</span> <span class="o">=</span> <span class="n">BSplineIIDSpinMagnitudes</span><span class="p">(</span><span class="n">nspline_dict</span><span class="p">[</span><span class="s2">&quot;a1&quot;</span><span class="p">],</span> <span class="n">aa</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">tilt_model</span> <span class="o">=</span> <span class="n">BSplineIIDSpinTilts</span><span class="p">(</span><span class="n">nspline_dict</span><span class="p">[</span><span class="s2">&quot;tilt1&quot;</span><span class="p">],</span> <span class="n">cc</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">apdfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">a1_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">aa</span><span class="p">)))</span>
+        <span class="n">ctpdfs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">tilt1_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">cc</span><span class="p">)))</span>
+
+        <span class="k">def</span> <span class="nf">calc_pdf</span><span class="p">(</span><span class="n">a_cs</span><span class="p">,</span> <span class="n">ct_cs</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+            <span class="n">p_a</span> <span class="o">=</span> <span class="n">mag_model</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">a_cs</span><span class="p">)</span>
+            <span class="n">p_ct</span> <span class="o">=</span> <span class="n">tilt_model</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">ct_cs</span><span class="p">)</span>
+            <span class="n">P_a</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">f</span> <span class="o">*</span> <span class="n">p_a</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_a</span><span class="p">,</span> <span class="n">aa</span><span class="p">)</span>
+            <span class="n">P_ct</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">f</span> <span class="o">*</span> <span class="n">p_ct</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_ct</span><span class="p">,</span> <span class="n">cc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">P_a</span><span class="p">,</span> <span class="n">P_ct</span>
+
+        <span class="n">calc_pdf</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="n">calc_pdf</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">apdfs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">apdfs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ctpdfs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">calc_pdf</span><span class="p">(</span><span class="n">a1_cs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tilt1_cs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">rate</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pop_frac</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">apdfs</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">ctpdfs</span><span class="p">,</span> <span class="n">cc</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mag_model</span> <span class="o">=</span> <span class="n">BSplineIndependentSpinMagnitudes</span><span class="p">(</span><span class="n">nspline_dict</span><span class="p">[</span><span class="s2">&quot;a1&quot;</span><span class="p">],</span> <span class="n">nspline_dict</span><span class="p">[</span><span class="s2">&quot;a2&quot;</span><span class="p">],</span> <span class="n">aa</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">tilt_model</span> <span class="o">=</span> <span class="n">BSplineIndependentSpinTilts</span><span class="p">(</span><span class="n">nspline_dict</span><span class="p">[</span><span class="s2">&quot;tilt1&quot;</span><span class="p">],</span> <span class="n">nspline_dict</span><span class="p">[</span><span class="s2">&quot;tilt2&quot;</span><span class="p">],</span> <span class="n">cc</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">cc</span><span class="p">,</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">apdfs_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">a1_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">aa</span><span class="p">)))</span>
+        <span class="n">ctpdfs_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">tilt1_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">cc</span><span class="p">)))</span>
+        <span class="n">apdfs_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">a2_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">aa</span><span class="p">)))</span>
+        <span class="n">ctpdfs_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">tilt2_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">cc</span><span class="p">)))</span>
+
+        <span class="k">def</span> <span class="nf">calc_pdf</span><span class="p">(</span><span class="n">a_cs_1</span><span class="p">,</span> <span class="n">ct_cs_1</span><span class="p">,</span> <span class="n">a_cs_2</span><span class="p">,</span> <span class="n">ct_cs_2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+            <span class="n">p_a1</span> <span class="o">=</span> <span class="n">mag_model</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">a_cs_1</span><span class="p">)</span>
+            <span class="n">p_ct1</span> <span class="o">=</span> <span class="n">tilt_model</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">ct_cs_1</span><span class="p">)</span>
+            <span class="n">p_a2</span> <span class="o">=</span> <span class="n">mag_model</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">a_cs_2</span><span class="p">)</span>
+            <span class="n">p_ct2</span> <span class="o">=</span> <span class="n">tilt_model</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">ct_cs_2</span><span class="p">)</span>
+
+            <span class="n">P_a1</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">f</span> <span class="o">*</span> <span class="n">p_a1</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_a1</span><span class="p">,</span> <span class="n">aa</span><span class="p">)</span>
+            <span class="n">P_ct1</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">f</span> <span class="o">*</span> <span class="n">p_ct1</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_ct1</span><span class="p">,</span> <span class="n">cc</span><span class="p">)</span>
+            <span class="n">P_a2</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">f</span> <span class="o">*</span> <span class="n">p_a2</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_a2</span><span class="p">,</span> <span class="n">aa</span><span class="p">)</span>
+            <span class="n">P_ct2</span> <span class="o">=</span> <span class="n">r</span> <span class="o">*</span> <span class="n">f</span> <span class="o">*</span> <span class="n">p_ct2</span> <span class="o">/</span> <span class="n">trapezoid</span><span class="p">(</span><span class="n">p_ct2</span><span class="p">,</span> <span class="n">cc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">P_a1</span><span class="p">,</span> <span class="n">P_ct1</span><span class="p">,</span> <span class="n">P_a2</span><span class="p">,</span> <span class="n">P_ct2</span>
+
+        <span class="n">calc_pdf</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="n">calc_pdf</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">apdfs_1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="n">apdfs_1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ctpdfs_1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">apdfs_2</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ctpdfs_2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">calc_pdf</span><span class="p">(</span><span class="n">a1_cs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tilt1_cs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">a2_cs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tilt2_cs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">rate</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">pop_frac</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">apdfs_1</span><span class="p">,</span> <span class="n">apdfs_2</span><span class="p">,</span> <span class="n">aa</span><span class="p">,</span> <span class="n">ctpdfs_1</span><span class="p">,</span> <span class="n">ctpdfs_2</span><span class="p">,</span> <span class="n">cc</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_powerlaw_spline_rate_of_z_ppds">
+<a class="viewcode-back" href="../../../api/gwinferno.postprocess.calculations.calculate_powerlaw_spline_rate_of_z_ppds.html#gwinferno.postprocess.calculations.calculate_powerlaw_spline_rate_of_z_ppds">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_powerlaw_spline_rate_of_z_ppds</span><span class="p">(</span><span class="n">lamb</span><span class="p">,</span> <span class="n">z_cs</span><span class="p">,</span> <span class="n">rate</span><span class="p">,</span> <span class="n">z_model</span><span class="p">,</span> <span class="n">pop_frac</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">pop_frac</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pop_frac</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">z_cs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">zs</span> <span class="o">=</span> <span class="n">z_model</span><span class="o">.</span><span class="n">zs</span>
+    <span class="n">rs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">lamb</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">zs</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">calc_rz</span><span class="p">(</span><span class="n">cs</span><span class="p">,</span> <span class="n">la</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>
+        <span class="n">cs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">]),</span> <span class="n">cs</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">f</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">zs</span><span class="p">,</span> <span class="n">la</span><span class="p">)</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">z_model</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">z_model</span><span class="o">.</span><span class="n">norm_design_matrix</span><span class="p">,</span> <span class="n">cs</span><span class="p">))</span>
+
+    <span class="n">calc_rz</span> <span class="o">=</span> <span class="n">jit</span><span class="p">(</span><span class="n">calc_rz</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">trange</span><span class="p">(</span><span class="n">lamb</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+        <span class="n">rs</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">=</span> <span class="n">calc_rz</span><span class="p">(</span><span class="n">z_cs</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">lamb</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">rate</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">pop_frac</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">rs</span><span class="p">,</span> <span class="n">zs</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

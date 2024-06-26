@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculations.calculate\_bspline\_mass\_ppds
+=================================================================
+
+.. currentmodule:: gwinferno.postprocess.calculations
+
+.. autofunction:: calculate_bspline_mass_ppds

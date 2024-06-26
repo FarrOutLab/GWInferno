@@ -1,0 +1,6 @@
+gwinferno.postprocess.plot.plot\_rate\_of\_z\_pdfs
+==================================================
+
+.. currentmodule:: gwinferno.postprocess.plot
+
+.. autofunction:: plot_rate_of_z_pdfs

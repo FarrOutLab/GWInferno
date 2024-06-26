@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwinferno.pipeline.utils &mdash; gwinferno 0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/tabs.css?v=a5c4661c" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../_static/documentation_options.js?v=837179f8"></script>
+        <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script src="../../../_static/tabs.js?v=3030b3cb"></script>
+        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            gwinferno
+          </a>
+              <div class="version">
+                0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../example_usage.html">Quick Start</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.cosmology.html">gwinferno.cosmology</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.distributions.html">gwinferno.distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.interpolation.html">gwinferno.interpolation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.models.html">gwinferno.models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.pipeline.html">gwinferno.pipeline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.postprocess.html">gwinferno.postprocess</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/gwinferno.preprocess.html">gwinferno.preprocess</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">gwinferno</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwinferno.pipeline.utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwinferno.pipeline.utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+
+<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
+<span class="kn">import</span> <span class="nn">numpyro</span>
+<span class="kn">import</span> <span class="nn">numpyro.distributions</span> <span class="k">as</span> <span class="nn">dist</span>
+<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+
+<span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogXBSpline</span>
+<span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogXLogYBSpline</span>
+<span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogYBSpline</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIIDSpinMagnitudes</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIIDSpinTilts</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIndependentSpinMagnitudes</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIndependentSpinTilts</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplinePrimaryBSplineRatio</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.smoothing</span> <span class="kn">import</span> <span class="n">apply_difference_prior</span>
+<span class="kn">from</span> <span class="nn">gwinferno.models.spline_perturbation</span> <span class="kn">import</span> <span class="n">PowerlawSplineRedshiftModel</span>
+
+
+<div class="viewcode-block" id="load_base_parser">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.utils.load_base_parser.html#gwinferno.pipeline.utils.load_base_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">load_base_parser</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;--pe-inj-file&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="s2">&quot;/home/jaxeng/farr_lab/FarrOutLab/GWInferno/work/data/xarray_through-o4a_posterior_samples_and_injections-mass_1-mass_ratio-redshift-a_1-a_2-cos_tilt_1-cos_tilt_2.h5&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--run-label&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--result-dir&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--m-nsplines&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--q-nsplines&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--a-nsplines&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--tilt-nsplines&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--z-nsplines&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--mmin&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">3.0</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--mmax&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">100.0</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--chains&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--samples&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1500</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--thinning&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--warmup&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--skip-inference&quot;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--rngkey&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s2">&quot;--save-plots&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">bool</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Setup B-Spline models</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="setup_bspline_mass_models">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.utils.setup_bspline_mass_models.html#gwinferno.pipeline.utils.setup_bspline_mass_models">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_bspline_mass_models</span><span class="p">(</span><span class="n">pedict</span><span class="p">,</span> <span class="n">injdict</span><span class="p">,</span> <span class="n">m_nsplines</span><span class="p">,</span> <span class="n">q_nsplines</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initializing spline mass design matrices&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">BSplinePrimaryBSplineRatio</span><span class="p">(</span>
+        <span class="n">m_nsplines</span><span class="p">,</span>
+        <span class="n">q_nsplines</span><span class="p">,</span>
+        <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">],</span>
+        <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">],</span>
+        <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">],</span>
+        <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">],</span>
+        <span class="n">basis_m</span><span class="o">=</span><span class="n">LogXLogYBSpline</span><span class="p">,</span>
+        <span class="n">basis_q</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span>
+        <span class="n">m1min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
+        <span class="n">m2min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
+        <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="setup_bspline_spin_models">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.utils.setup_bspline_spin_models.html#gwinferno.pipeline.utils.setup_bspline_spin_models">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_bspline_spin_models</span><span class="p">(</span><span class="n">pedict</span><span class="p">,</span> <span class="n">injdict</span><span class="p">,</span> <span class="n">a1_nsplines</span><span class="p">,</span> <span class="n">ct1_nsplines</span><span class="p">,</span> <span class="n">IID</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">a2_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ct2_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initializing spline spin design matrices&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">IID</span><span class="p">:</span>
+        <span class="n">tilt_model</span> <span class="o">=</span> <span class="n">BSplineIIDSpinTilts</span><span class="p">(</span>
+            <span class="n">ct1_nsplines</span><span class="p">,</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">],</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="n">mag_model</span> <span class="o">=</span> <span class="n">BSplineIIDSpinMagnitudes</span><span class="p">(</span>
+            <span class="n">a1_nsplines</span><span class="p">,</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tilt_model</span> <span class="o">=</span> <span class="n">BSplineIndependentSpinTilts</span><span class="p">(</span>
+            <span class="n">ct1_nsplines</span><span class="p">,</span>
+            <span class="n">ct2_nsplines</span><span class="p">,</span>
+            <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">],</span>
+            <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span>
+            <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">],</span>
+            <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span>
+            <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span>
+            <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">mag_model</span> <span class="o">=</span> <span class="n">BSplineIndependentSpinMagnitudes</span><span class="p">(</span>
+            <span class="n">a1_nsplines</span><span class="p">,</span> <span class="n">a2_nsplines</span><span class="p">,</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">mag_model</span><span class="p">,</span> <span class="n">tilt_model</span></div>
+
+
+
+<div class="viewcode-block" id="setup_powerlaw_spline_redshift_model">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.utils.setup_powerlaw_spline_redshift_model.html#gwinferno.pipeline.utils.setup_powerlaw_spline_redshift_model">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_powerlaw_spline_redshift_model</span><span class="p">(</span><span class="n">pedict</span><span class="p">,</span> <span class="n">injdict</span><span class="p">,</span> <span class="n">z_nsplines</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initializing redshift model&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">PowerlawSplineRedshiftModel</span><span class="p">(</span>
+        <span class="n">z_nsplines</span><span class="p">,</span>
+        <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">],</span>
+        <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">],</span>
+        <span class="n">basis</span><span class="o">=</span><span class="n">LogXBSpline</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Setup B-Spline Priors</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="bspline_mass_prior">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.utils.bspline_mass_prior.html#gwinferno.pipeline.utils.bspline_mass_prior">[docs]</a>
+<span class="k">def</span> <span class="nf">bspline_mass_prior</span><span class="p">(</span><span class="n">m_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">m_tau</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">q_tau</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">m_cs_sig</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">q_cs_sig</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">m_deg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">q_deg</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">m_nsplines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mass_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mass_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">m_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">m_nsplines</span><span class="p">,))</span>
+        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;mass_smoothing_prior&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">mass_cs</span><span class="p">,</span> <span class="n">m_tau</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">m_deg</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">q_nsplines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">q_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;q_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">q_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">q_nsplines</span><span class="p">,))</span>
+        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;q_smoothing_prior&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">q_cs</span><span class="p">,</span> <span class="n">q_tau</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">q_deg</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">m_nsplines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q_nsplines</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mass_cs</span>
+    <span class="k">if</span> <span class="n">m_nsplines</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q_nsplines</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">q_cs</span>
+    <span class="k">if</span> <span class="n">m_nsplines</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">q_nsplines</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="s2">&quot;number of mass splines or q splines must be specified.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">mass_cs</span><span class="p">,</span> <span class="n">q_cs</span></div>
+
+
+
+<div class="viewcode-block" id="bspline_spin_prior">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.utils.bspline_spin_prior.html#gwinferno.pipeline.utils.bspline_spin_prior">[docs]</a>
+<span class="k">def</span> <span class="nf">bspline_spin_prior</span><span class="p">(</span><span class="n">a_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ct_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">a_tau</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ct_tau</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IID</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">a_cs_sig</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">ct_cs_sig</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">a_deg</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ct_deg</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">IID</span><span class="p">:</span>
+        <span class="n">a_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;a_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">a_nsplines</span><span class="p">,))</span>
+        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;a_smoothing_prior&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">a_cs</span><span class="p">,</span> <span class="n">a_tau</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">a_deg</span><span class="p">))</span>
+
+        <span class="n">ct_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;tilt_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ct_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">ct_nsplines</span><span class="p">,))</span>
+        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;ct_smoothing_prior&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">ct_cs</span><span class="p">,</span> <span class="n">ct_tau</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">ct_deg</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">a_cs</span><span class="p">,</span> <span class="n">ct_cs</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">a1_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;a1_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">a_nsplines</span><span class="p">,))</span>
+        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;a1_smoothing_prior&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">a1_cs</span><span class="p">,</span> <span class="n">a_tau</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">a_deg</span><span class="p">))</span>
+        <span class="n">a2_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;a2_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">a_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">a_nsplines</span><span class="p">,))</span>
+        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;a2_smoothing_prior&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">a2_cs</span><span class="p">,</span> <span class="n">a_tau</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">a_deg</span><span class="p">))</span>
+
+        <span class="n">ct1_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;tilt1_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ct_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">ct_nsplines</span><span class="p">,))</span>
+        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;ct1_smoothing_prior&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">ct1_cs</span><span class="p">,</span> <span class="n">ct_tau</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">ct_deg</span><span class="p">))</span>
+        <span class="n">ct2_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;tilt2_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ct_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">ct_nsplines</span><span class="p">,))</span>
+        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;ct2_smoothing_prior&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">ct2_cs</span><span class="p">,</span> <span class="n">ct_tau</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">ct_deg</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">a1_cs</span><span class="p">,</span> <span class="n">ct1_cs</span><span class="p">,</span> <span class="n">a2_cs</span><span class="p">,</span> <span class="n">ct2_cs</span></div>
+
+
+
+<div class="viewcode-block" id="bspline_redshift_prior">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.utils.bspline_redshift_prior.html#gwinferno.pipeline.utils.bspline_redshift_prior">[docs]</a>
+<span class="k">def</span> <span class="nf">bspline_redshift_prior</span><span class="p">(</span><span class="n">z_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_tau</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_cs_sig</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z_deg</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">z_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;z_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">z_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">z_nsplines</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,))</span>
+    <span class="n">z_cs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">z_cs</span><span class="p">])</span>
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;z_smoothing_prior&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">apply_difference_prior</span><span class="p">(</span><span class="n">z_cs</span><span class="p">,</span> <span class="n">z_tau</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="n">z_deg</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">z_cs</span></div>
+
+
+
+<div class="viewcode-block" id="posterior_dict_to_xarray">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.utils.posterior_dict_to_xarray.html#gwinferno.pipeline.utils.posterior_dict_to_xarray">[docs]</a>
+<span class="k">def</span> <span class="nf">posterior_dict_to_xarray</span><span class="p">(</span><span class="n">posteriors</span><span class="p">):</span>
+
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">n_samples</span> <span class="o">=</span> <span class="n">posteriors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">posteriors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;dims&quot;</span><span class="p">:</span> <span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">posteriors</span><span class="p">[</span><span class="n">key</span><span class="p">]}</span>
+
+        <span class="k">if</span> <span class="n">posteriors</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n_samples</span><span class="p">,):</span>
+            <span class="n">new_dims</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_dim</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">posteriors</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;data&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)]</span>
+            <span class="n">posteriors</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;dims&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_dims</span>
+
+    <span class="k">return</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">posteriors</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="pdf_dict_to_xarray">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.utils.pdf_dict_to_xarray.html#gwinferno.pipeline.utils.pdf_dict_to_xarray">[docs]</a>
+<span class="k">def</span> <span class="nf">pdf_dict_to_xarray</span><span class="p">(</span><span class="n">pdf_dict</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">subpop_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">xr_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">subpop_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pdfs</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_pdfs&quot;</span><span class="p">:</span> <span class="p">([</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">],</span> <span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">pdf_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">xr_dict</span> <span class="o">=</span> <span class="n">xr_dict</span> <span class="o">|</span> <span class="n">pdfs</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">nm</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">subpop_names</span><span class="p">):</span>
+            <span class="n">single</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">nm</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_pdfs&quot;</span><span class="p">:</span> <span class="p">([</span><span class="s2">&quot;sample&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">],</span> <span class="n">item</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">pdf_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+            <span class="n">xr_dict</span> <span class="o">=</span> <span class="n">xr_dict</span> <span class="o">|</span> <span class="n">single</span>
+
+    <span class="n">coords</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="p">([</span><span class="n">key</span><span class="p">],</span> <span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">param_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">coords</span> <span class="o">|</span> <span class="p">{</span><span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="p">([</span><span class="s2">&quot;samples&quot;</span><span class="p">],</span> <span class="n">jnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_samples</span><span class="p">))}</span>
+
+    <span class="n">pdf_dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span><span class="n">xr_dict</span><span class="p">,</span> <span class="n">coords</span><span class="o">=</span><span class="n">coords</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">pdf_dataset</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+gwinferno.postprocess.plot.plot\_pdf
+====================================
+
+.. currentmodule:: gwinferno.postprocess.plot
+
+.. autofunction:: plot_pdf

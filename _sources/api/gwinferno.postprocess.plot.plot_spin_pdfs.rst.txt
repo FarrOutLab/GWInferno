@@ -1,0 +1,6 @@
+gwinferno.postprocess.plot.plot\_spin\_pdfs
+===========================================
+
+.. currentmodule:: gwinferno.postprocess.plot
+
+.. autofunction:: plot_spin_pdfs

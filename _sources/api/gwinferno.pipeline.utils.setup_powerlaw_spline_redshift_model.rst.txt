@@ -1,0 +1,6 @@
+gwinferno.pipeline.utils.setup\_powerlaw\_spline\_redshift\_model
+=================================================================
+
+.. currentmodule:: gwinferno.pipeline.utils
+
+.. autofunction:: setup_powerlaw_spline_redshift_model

@@ -1,0 +1,6 @@
+gwinferno.pipeline.utils.bspline\_spin\_prior
+=============================================
+
+.. currentmodule:: gwinferno.pipeline.utils
+
+.. autofunction:: bspline_spin_prior

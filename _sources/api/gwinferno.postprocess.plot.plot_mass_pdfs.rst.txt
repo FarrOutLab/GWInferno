@@ -1,0 +1,6 @@
+gwinferno.postprocess.plot.plot\_mass\_pdfs
+===========================================
+
+.. currentmodule:: gwinferno.postprocess.plot
+
+.. autofunction:: plot_mass_pdfs

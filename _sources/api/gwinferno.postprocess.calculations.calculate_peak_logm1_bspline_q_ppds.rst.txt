@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculations.calculate\_peak\_logm1\_bspline\_q\_ppds
+===========================================================================
+
+.. currentmodule:: gwinferno.postprocess.calculations
+
+.. autofunction:: calculate_peak_logm1_bspline_q_ppds

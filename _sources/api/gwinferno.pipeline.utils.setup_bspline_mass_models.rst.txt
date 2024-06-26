@@ -1,0 +1,6 @@
+gwinferno.pipeline.utils.setup\_bspline\_mass\_models
+=====================================================
+
+.. currentmodule:: gwinferno.pipeline.utils
+
+.. autofunction:: setup_bspline_mass_models
