@@ -187,21 +187,21 @@ def posterior_dict_to_xarray(posteriors):
     return xr.Dataset.from_dict(posteriors)
 
 
-def pdf_dict_to_xarray(pdf_dict, param_dict, subpop_names = None):
+def pdf_dict_to_xarray(pdf_dict, param_dict, n_samples, subpop_names = None):
     xr_dict = {}
     if subpop_names is None:
-        pdfs = {f'{key}_pdfs': (['samples', key], item) for key, item in pdf_dict.items()}
+        pdfs = {f'{key}_pdfs': (['sample', key], item) for key, item in pdf_dict.items()}
         xr_dict = xr_dict | pdfs
     else:
         for i, nm in enumerate(subpop_names):
-            single = {f'{nm}_{key}_pdfs': (['samples', key], item[i]) for key, item in pdf_dict.items()}
+            single = {f'{nm}_{key}_pdfs': (['sample', key], item[i]) for key, item in pdf_dict.items()}
             xr_dict = xr_dict | single
-
-    coords = {{key: ([key], item) for key, item in param_dict.items()}}
-    coords = coords | {'samples': (['samples'], np.arange(args.samples))}
-
+    
+    coords = {key: ([key], item) for key, item in param_dict.items()}
+    coords = coords | {'samples': (['samples'], jnp.arange(n_samples))}
+    
     pdf_dataset = xr.Dataset(
-        pdf_dict, 
+        xr_dict, 
         coords = coords
     )
 
