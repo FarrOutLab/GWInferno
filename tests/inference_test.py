@@ -2,11 +2,11 @@ import glob
 import os
 import unittest
 
-import xarray as xr
 import jax.numpy as jnp
 import numpy as np
 import numpyro
 import numpyro.distributions as dist
+import xarray as xr
 from jax import random
 from jax.scipy.integrate import trapezoid
 from numpyro.infer import MCMC
@@ -63,10 +63,10 @@ class TestTruncatedModelInference(unittest.TestCase):
         loaded_dataset = xr.load_dataset(f"{self.data_dir}/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5")
         dataarray = loaded_dataset.to_array()
         pedata = dataarray.data
-        idxs = np.random.choice(Nsamples, size=max_samps, replace=False)
-        pedict = {k: pedata[:, i, idxs] for i, k in enumerate(dataarray.param.values)}
         Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]
+        idxs = np.random.choice(Nsamples, size=max_samps, replace=False)
+        pedict = {k: pedata[:, i, idxs] for i, k in enumerate(dataarray.param.values)}
         return pedict, Nobs, max_samps
 
     def test_load_pe_samples(self):
