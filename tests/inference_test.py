@@ -2,7 +2,7 @@ import glob
 import os
 import unittest
 
-import h5py
+import xarray as xr
 import jax.numpy as jnp
 import numpy as np
 import numpyro
@@ -60,14 +60,13 @@ class TestTruncatedModelInference(unittest.TestCase):
         del self.truncated_numpyro_model
 
     def load_data(self, max_samps=100):
-        with h5py.File(f"{self.data_dir}/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5", "r") as f:
-            names = [k for k in f.keys()]
-            pedata = jnp.asarray([f[ev]["block0_values"][:] for ev in names])
-            param_names = f[names[0]]["block0_items"].asstr()[:]
-        Nobs = pedata.shape[0]
-        Nsamples = pedata.shape[1]
+        loaded_dataset = xr.load_dataset(f"{self.data_dir}/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5")
+        dataarray = loaded_dataset.to_array()
+        pedata = dataarray.data
         idxs = np.random.choice(Nsamples, size=max_samps, replace=False)
-        pedict = {key: pedata[:, idxs, i] for i, key in enumerate(param_names)}
+        pedict = {k: pedata[:, i, idxs] for i, k in enumerate(dataarray.param.values)}
+        Nobs = pedata.shape[0]
+        Nsamples = pedata.shape[-1]
         return pedict, Nobs, max_samps
 
     def test_load_pe_samples(self):
