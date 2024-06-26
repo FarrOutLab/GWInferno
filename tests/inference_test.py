@@ -60,7 +60,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         del self.truncated_numpyro_model
 
     def load_data(self, max_samps=100):
-        loaded_dataset = xr.load_dataset(f"{self.data_dir}/GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5")
+        loaded_dataset = xr.load_dataset(f"{self.data_dir}/xarray_GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5")
         dataarray = loaded_dataset.to_array()
         pedata = dataarray.data
         Nobs = pedata.shape[0]
