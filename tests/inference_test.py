@@ -15,7 +15,7 @@ from numpyro.infer import NUTS
 from gwinferno.models.gwpopulation.gwpopulation import PowerlawRedshiftModel
 from gwinferno.models.gwpopulation.gwpopulation import powerlaw_primary_ratio_pdf
 from gwinferno.pipeline.analysis import construct_hierarchical_model
-from gwinferno.pipeline.analysis import hierarchical_likelihood
+from gwinferno.pipeline.analysis import hierarchical_likelihood, hierarchical_likelihood_in_log
 from gwinferno.pipeline.parser import ConfigReader
 from gwinferno.pipeline.parser import load_model_from_python_file
 from gwinferno.preprocess.data_collection import load_injections
@@ -106,8 +106,8 @@ class TestTruncatedModelInference(unittest.TestCase):
     def setup_redshift_model(self):
         return PowerlawRedshiftModel(z_pe=self.pedict["redshift"], z_inj=self.injdict["redshift"])
 
-    def setup_numpyro_model(self):
-        def model(pedict, injdict, z_model, Nobs, total_inj, obs_time, sample_prior=False):
+    def setup_numpyro_model(self, log_likelihood = False):
+        def model(pedict, injdict, z_model, Nobs, total_inj, obs_time, sample_prior=False, log_likelihood = False):
             alpha = numpyro.sample("alpha", dist.Normal(0, 2))
             beta = numpyro.sample("beta", dist.Normal(0, 2))
             lamb = numpyro.sample("lamb", dist.Normal(0, 2))
@@ -123,28 +123,54 @@ class TestTruncatedModelInference(unittest.TestCase):
 
                 peweights = get_weights(pedict["mass_1"], pedict["mass_ratio"], pedict["redshift"], pedict["prior"])
                 injweights = get_weights(injdict["mass_1"], injdict["mass_ratio"], injdict["redshift"], injdict["prior"])
-                hierarchical_likelihood(
-                    peweights,
-                    injweights,
-                    total_inj=total_inj,
-                    Nobs=Nobs,
-                    Tobs=obs_time,
-                    surv_hypervolume_fct=z_model.normalization,
-                    vtfct_kwargs=dict(lamb=lamb),
-                    marginalize_selection=False,
-                    min_neff_cut=False,
-                    posterior_predictive_check=True,
-                    pedata=pedict,
-                    injdata=injdict,
-                    param_names=[
-                        "mass_1",
-                        "mass_ratio",
-                        "redshift",
-                    ],
-                    m1min=mmin,
-                    m2min=mmin,
-                    mmax=mmax,
-                )
+                if not log_likelihood:
+                    hierarchical_likelihood(
+                        peweights,
+                        injweights,
+                        total_inj=total_inj,
+                        Nobs=Nobs,
+                        Tobs=obs_time,
+                        surv_hypervolume_fct=z_model.normalization,
+                        vtfct_kwargs=dict(lamb=lamb),
+                        marginalize_selection=False,
+                        min_neff_cut=False,
+                        posterior_predictive_check=True,
+                        pedata=pedict,
+                        injdata=injdict,
+                        param_names=[
+                            "mass_1",
+                            "mass_ratio",
+                            "redshift",
+                        ],
+                        m1min=mmin,
+                        m2min=mmin,
+                        mmax=mmax,
+                    )
+                
+                else:
+                    hierarchical_likelihood_in_log(
+                        jnp.log(peweights),
+                        jnp.log(injweights),
+                        total_inj=total_inj,
+                        Nobs=Nobs,
+                        Tobs=obs_time,
+                        surv_hypervolume_fct=z_model.normalization,
+                        vtfct_kwargs=dict(lamb=lamb),
+                        marginalize_selection=False,
+                        min_neff_cut=False,
+                        posterior_predictive_check=True,
+                        pedata=pedict,
+                        injdata=injdict,
+                        param_names=[
+                            "mass_1",
+                            "mass_ratio",
+                            "redshift",
+                        ],
+                        m1min=mmin,
+                        m2min=mmin,
+                        mmax=mmax,
+                    )
+
             else:
                 mmin = numpyro.sample("mmin", dist.Uniform(3, 10))
                 mmax = numpyro.sample("mmax", dist.Uniform(50, 100))
@@ -166,6 +192,26 @@ class TestTruncatedModelInference(unittest.TestCase):
         kernel = NUTS(self.truncated_numpyro_model, max_tree_depth=2, adapt_mass_matrix=False)
         mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
         mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=False)
+        samples = mcmc.get_samples()
+        self.assertEqual(samples["alpha"].shape, (5,))
+        self.assertEqual(samples["beta"].shape, (5,))
+        self.assertEqual(samples["lamb"].shape, (5,))
+
+    def test_truncated_prior_sample_in_log(self):
+        RNG = random.PRNGKey(3)
+        kernel = NUTS(self.truncated_numpyro_model, max_tree_depth=2, adapt_mass_matrix=False)
+        mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
+        mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=True, log_likelihood=True)
+        samples = mcmc.get_samples()
+        self.assertEqual(samples["alpha"].shape, (5,))
+        self.assertEqual(samples["beta"].shape, (5,))
+        self.assertEqual(samples["lamb"].shape, (5,))
+
+    def test_truncated_posterior_sample_in_log(self):
+        RNG = random.PRNGKey(4)
+        kernel = NUTS(self.truncated_numpyro_model, max_tree_depth=2, adapt_mass_matrix=False)
+        mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
+        mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=False, log_likelihood=True)
         samples = mcmc.get_samples()
         self.assertEqual(samples["alpha"].shape, (5,))
         self.assertEqual(samples["beta"].shape, (5,))
