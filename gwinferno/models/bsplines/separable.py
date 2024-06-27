@@ -353,8 +353,6 @@ class PLPeakPrimaryBSplineRatio(object):
         n_splines,
         q,
         q_inj,
-        m1,
-        m1_inj,
         knots=None,
         degree=3,
     ):
@@ -362,8 +360,6 @@ class PLPeakPrimaryBSplineRatio(object):
             n_splines,
             q,
             q_inj,
-            m1,
-            m1_inj,
             knots=knots,
             degree=degree,
         )
@@ -595,7 +591,9 @@ class BSplineIndependentComponentMasses(object):
             degree=degree2,
         )
 
-    def __call__(self, m1, m2, pcoefs, scoefs, beta, pe_samples=True):
+        self.qs = [m2_inj / m1_inj, m2 / m1]
+
+    def __call__(self, pcoefs, scoefs, beta, pe_samples=True):
         """will evalute the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
@@ -613,7 +611,8 @@ class BSplineIndependentComponentMasses(object):
         """
         p_m1 = self.primary_model(pcoefs, pe_samples=pe_samples)
         p_m2 = self.secondary_model(scoefs, pe_samples=pe_samples)
-        return p_m1 * p_m2 * (m1 / m2) ** beta
+        dim = 1 if pe_samples else 0
+        return p_m1 * p_m2 * self.qs[dim] ** beta
 
 
 class BSplineEffectiveSpinDims(object):
