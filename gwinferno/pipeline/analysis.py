@@ -369,14 +369,13 @@ def hierarchical_likelihood_in_log(
 
     # TODO: Clean this up, make min_neff a function kwarg
     if min_neff_cut:
-        numpyro.factor(
-            "log_likelihood",
-            jnp.where(
-                jnp.isnan(log_l) | jnp.less_equal(jnp.exp(jnp.min(logn_effs)), Nobs),
-                jnp.nan_to_num(-jnp.inf),
-                jnp.nan_to_num(log_l),
-            ),
+
+        mins = jnp.min(jnp.nan_to_num(logn_effs))
+        cut_log_l = numpyro.deterministic(
+            "neff_less_4obs", jnp.where(jnp.less_equal(jnp.exp(mins), Nobs), jnp.nan_to_num(-jnp.inf), jnp.nan_to_num(log_l))
         )
+
+        numpyro.factor("log_likelihood", cut_log_l)
     else:
         numpyro.factor(
             "log_likelihood",

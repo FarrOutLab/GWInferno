@@ -96,7 +96,7 @@ def dl_2_prior_on_z(z, euclidean=False):
 def evaluate_prior(full_catalog, param_names):
     if "redshift" in param_names:
         z_max = 1.9
-        cat_z_max = full_catalog.sel(param="redshift").max().to_dataarray().max().values
+        cat_z_max = full_catalog.sel(param="redshift").max().to_array().max().values
         z_max = cat_z_max if cat_z_max > z_max else z_max
         cat_z_max
         zs = jnp.linspace(0, z_max * 1.01, 1000)
@@ -126,7 +126,7 @@ def evaluate_prior(full_catalog, param_names):
     prior_array = xr.DataArray(
         priors, dims=["event", "param", "samples"], coords={"param": ["prior"], "samples": np.arange(num_samples), "event": events}
     )
-    catalog_array = full_catalog.to_dataarray(dim="event")
+    catalog_array = full_catalog.to_array(dim="event")
 
     new_full_catalog = xr.concat([catalog_array, prior_array], dim="param")
 

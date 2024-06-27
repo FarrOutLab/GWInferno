@@ -33,6 +33,7 @@ jobs:
         pip install --upgrade pip
         pip install numpyro 
         pip install -r pip_requirements.txt
+        pip install xarray==2023.6.0 
         pip install arviz==0.15.1
         pip install scipy==1.11.1
         pre-commit install
