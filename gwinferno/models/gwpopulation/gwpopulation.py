@@ -1,7 +1,8 @@
 import jax.numpy as jnp
 import numpy as np
-from gwinferno.cosmology import PLANCK_2015_Cosmology as Planck15
 from jax.scipy.integrate import trapezoid
+
+from gwinferno.cosmology import PLANCK_2015_Cosmology as Planck15
 
 from ...distributions import betadist
 from ...distributions import powerlaw_logit_pdf
