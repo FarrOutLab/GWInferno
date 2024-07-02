@@ -48,8 +48,14 @@ class TestPowerlawRedshift(unittest.TestCase):
         pe_pdf = self.z_powerlaw(self.pe_z, self.lamb)
         inj_pdf = self.z_powerlaw(self.inj_z, self.lamb)
 
+        pe_log_pdf = self.z_powerlaw.log_prob(self.pe_z, self.lamb)
+        inj_log_pdf = self.z_powerlaw.log_prob(self.inj_z, self.lamb)
+
         self.assertEqual(self.pe_z.shape, pe_pdf.shape, msg="PE sample shape different than PE PDF shape")
         self.assertEqual(self.inj_z.shape, inj_pdf.shape, msg="Inj sample shape different than Inj PDF shape")
+        
+        self.assertEqual(self.pe_z.shape, pe_log_pdf.shape, msg="PE sample shape different than PE Log PDF shape")
+        self.assertEqual(self.inj_z.shape, inj_log_pdf.shape, msg="Inj sample shape different than Inj Log PDF shape")
 
     def test_bounds(self):
 
