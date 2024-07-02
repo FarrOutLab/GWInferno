@@ -360,10 +360,12 @@ def hierarchical_likelihood_in_log(
             log_vt_factor - (3 + Nobs) / (2 * jnp.exp(logn_eff_inj)),
             jnp.inf,
         )
+
     sel = numpyro.deterministic(
         "selection_factor",
-        jnp.where(jnp.isinf(log_vt_factor), jnp.nan_to_num(-jnp.inf), -Nobs * log_vt_factor),
+        jnp.where(jnp.isinf(vt_factor), jnp.nan_to_num(-jnp.inf), -Nobs * log_vt_factor),
     )
+
     sumlogBFs = numpyro.deterministic("sum_logBFs", jnp.sum(logBFs))
     log_l = numpyro.deterministic("log_l", sel + sumlogBFs)
 
