@@ -53,7 +53,7 @@ class TestPowerlawRedshift(unittest.TestCase):
 
         self.assertEqual(self.pe_z.shape, pe_pdf.shape, msg="PE sample shape different than PE PDF shape")
         self.assertEqual(self.inj_z.shape, inj_pdf.shape, msg="Inj sample shape different than Inj PDF shape")
-        
+
         self.assertEqual(self.pe_z.shape, pe_log_pdf.shape, msg="PE sample shape different than PE Log PDF shape")
         self.assertEqual(self.inj_z.shape, inj_log_pdf.shape, msg="Inj sample shape different than Inj Log PDF shape")
 
