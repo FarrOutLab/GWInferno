@@ -23,9 +23,6 @@ from gwinferno.pipeline.parser import load_model_from_python_file
 from gwinferno.preprocess.data_collection import load_injections
 from gwinferno.preprocess.data_collection import load_posterior_data
 
-pytestmark = pytest.mark.skip("skipping now for speed")
-
-
 def norm_mass_model(alpha, beta, mmin, mmax):
     ms = jnp.linspace(3, 100, 500)
     qs = jnp.linspace(0.01, 1, 300)
