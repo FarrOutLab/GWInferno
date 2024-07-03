@@ -226,7 +226,7 @@ def hierarchical_likelihood(
     numpyro.deterministic("log_nEff_inj", jnp.log(n_eff_inj))
     numpyro.deterministic("log_nEffs", logn_effs)
     numpyro.deterministic("logBFs", logBFs)
-    numpyro.deterministic("detection_efficency", vt_factor)
+    numpyro.deterministic("detection_efficiency", vt_factor)
     if reconstruct_rate:
         total_vt = numpyro.deterministic("surveyed_hypervolume", surv_hypervolume_fct(**vtfct_kwargs) / 1.0e9 * Tobs)
         unscaled_rate = numpyro.sample("unscaled_rate", dist.Gamma(Nobs))
@@ -349,7 +349,7 @@ def hierarchical_likelihood_in_log(
     numpyro.deterministic("log_nEff_inj", logn_eff_inj)
     numpyro.deterministic("log_nEffs", logn_effs)
     numpyro.deterministic("logBFs", logBFs)
-    vt_factor = numpyro.deterministic("detection_efficency", jnp.exp(log_vt_factor))
+    vt_factor = numpyro.deterministic("detection_efficiency", jnp.exp(log_vt_factor))
     if reconstruct_rate:
         total_vt = numpyro.deterministic("surveyed_hypervolume", surv_hypervolume_fct(**vtfct_kwargs) / 1.0e9 * Tobs)
         unscaled_rate = numpyro.sample("unscaled_rate", dist.Gamma(Nobs))
