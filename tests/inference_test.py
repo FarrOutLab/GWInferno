@@ -158,7 +158,7 @@ class TestTruncatedModelInference(unittest.TestCase):
                         surv_hypervolume_fct=z_model.normalization,
                         vtfct_kwargs=dict(lamb=lamb),
                         marginalize_selection=False,
-                        min_neff_cut=True,
+                        min_neff_cut=False,
                         posterior_predictive_check=True,
                         pedata=pedict,
                         injdata=injdict,
@@ -202,21 +202,21 @@ class TestTruncatedModelInference(unittest.TestCase):
         RNG = random.PRNGKey(5)
         kernel = NUTS(self.truncated_numpyro_model, max_tree_depth=2, adapt_mass_matrix=False)
         mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
-        mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=True)
+        mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=True, log_likelihood=True)
         samples = mcmc.get_samples()
         self.assertEqual(samples["alpha"].shape, (5,))
         self.assertEqual(samples["beta"].shape, (5,))
         self.assertEqual(samples["lamb"].shape, (5,))
 
-    # def test_truncated_posterior_sample_in_log(self):
-    #     RNG = random.PRNGKey(6)
-    #     kernel = NUTS(self.truncated_numpyro_model, max_tree_depth=2, adapt_mass_matrix=False)
-    #     mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
-    #     mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=False, log_likelihood=True)
-    #     samples = mcmc.get_samples()
-    #     self.assertEqual(samples["alpha"].shape, (5,))
-    #     self.assertEqual(samples["beta"].shape, (5,))
-    #     self.assertEqual(samples["lamb"].shape, (5,))
+    def test_truncated_posterior_sample_in_log(self):
+        RNG = random.PRNGKey(6)
+        kernel = NUTS(self.truncated_numpyro_model, max_tree_depth=2, adapt_mass_matrix=False)
+        mcmc = MCMC(kernel, num_warmup=5, num_samples=5)
+        mcmc.run(RNG, self.pedict, self.injdict, self.z_model, self.Nobs, self.total_inj, self.obs_time, sample_prior=False, log_likelihood=True)
+        samples = mcmc.get_samples()
+        self.assertEqual(samples["alpha"].shape, (5,))
+        self.assertEqual(samples["beta"].shape, (5,))
+        self.assertEqual(samples["lamb"].shape, (5,))
 
     def test_config_reader(self):
         config_reader = ConfigReader()
