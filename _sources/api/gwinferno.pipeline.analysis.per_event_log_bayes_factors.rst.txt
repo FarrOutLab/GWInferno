@@ -1,6 +1,6 @@
-gwinferno.pipeline.analysis.logmu\_logneff\_injections\_log
+gwinferno.pipeline.analysis.per\_event\_log\_bayes\_factors
 ===========================================================
 
 .. currentmodule:: gwinferno.pipeline.analysis
 
-.. autofunction:: logmu_logneff_injections_log
+.. autofunction:: per_event_log_bayes_factors

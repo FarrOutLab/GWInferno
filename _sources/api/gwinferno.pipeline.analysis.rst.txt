@@ -19,19 +19,13 @@ gwinferno.pipeline.analysis
       
       construct_hierarchical_model
       
+      detection_efficiency
+      
       find_map
       
       hierarchical_likelihood
       
-      hierarchical_likelihood_in_log
-      
-      logmu_logneff_injections_log
-      
-      mu_neff_injections
-      
-      per_event_log_bayes_factor_log_neffs
-      
-      per_event_log_bayes_factor_log_neffs_log
+      per_event_log_bayes_factors
    
    
 

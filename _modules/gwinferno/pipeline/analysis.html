@@ -98,6 +98,8 @@
 <span class="sd">a module that stores the meat of the calculations for hierarchical population inference</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">numpyro</span>
@@ -121,17 +123,23 @@
 <div class="viewcode-block" id="find_map">
 <a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.find_map.html#gwinferno.pipeline.analysis.find_map">[docs]</a>
 <span class="k">def</span> <span class="nf">find_map</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="n">numpyro_model</span><span class="p">,</span> <span class="o">*</span><span class="n">model_args</span><span class="p">,</span> <span class="n">Niter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    find_map Find the MAP estimate for a given NumPyro model using SVI with Adam optimizing the ELBO</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the MAP estimate for a given NumPyro model using SVI with Adam optimizing the ELBO</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        rng_key (jax.random.PRNGKey): RNG Key to be passed to SVI.run().</span>
-<span class="sd">        numpyro_model (callable): Python callable containing `numpyro.primitives`/</span>
-<span class="sd">        Niter (int, optional): Number of iterations to run variational inference. Defaults to 100.</span>
-<span class="sd">        lr (float, optional): learning rate used for Adam optimizer. Defaults to 0.01.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">        rng_key : jax.random.PRNGKey</span>
+<span class="sd">            RNG Key to be passed to SVI.run().</span>
+<span class="sd">        numpyro_model : callable</span>
+<span class="sd">            Python callable containing `numpyro.primitives`.</span>
+<span class="sd">        Niter : int, optional</span>
+<span class="sd">            Number of iterations to run variational inference. Defaults to 100.</span>
+<span class="sd">        lr : float, optional</span>
+<span class="sd">            learning rate used for Adam optimizer. Defaults to 0.01.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        SVIRunResult.params: parameters of the result of MAP optimization</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">        SVIRunResult.params : dict</span>
+<span class="sd">            parameters of the result of MAP optimization</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">guide</span> <span class="o">=</span> <span class="n">autoguide</span><span class="o">.</span><span class="n">AutoDelta</span><span class="p">(</span><span class="n">numpyro_model</span><span class="p">)</span>
     <span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">lr</span><span class="p">)</span>
@@ -141,90 +149,92 @@
 
 
 
-<div class="viewcode-block" id="per_event_log_bayes_factor_log_neffs">
-<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs.html#gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs">[docs]</a>
-<span class="nd">@jit</span>
-<span class="k">def</span> <span class="nf">per_event_log_bayes_factor_log_neffs</span><span class="p">(</span><span class="n">weights</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    per_event_log_bayes_factor_log_neffs calculate per event log BFs via Monte Carlo integrating.</span>
-<span class="sd">    Also return effective samples size for convergence checks.</span>
+<div class="viewcode-block" id="per_event_log_bayes_factors">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.per_event_log_bayes_factors.html#gwinferno.pipeline.analysis.per_event_log_bayes_factors">[docs]</a>
+<span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnames</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;log&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">per_event_log_bayes_factors</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculates per-event log Bayes factors via importance sampling</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        weights (jax.DeviceArray): JAX array of weights to integrate over. Expected size of (N_events,N_samples)</span>
+<span class="sd">    .. math::</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        (jax.DeviceArray,jax.DeviceArray): array of per event logBF, array of per event N_eff from Monte Carlo Integral</span>
+<span class="sd">        \mathrm{BF}_i = \int p(d_i|\theta)p(\theta|\Lambda) d\theta \approx</span>
+<span class="sd">        \frac{1}{N_s}\sum_{j=1}^{N_s} \frac{p(\theta|\Lambda)}{p(\theta|\Lambda_\emptyset)}</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    weights : jax.DeviceArray</span>
+<span class="sd">        JAX array of weights to integrate over. Expected size of `(N_events,N_samples)`.</span>
+<span class="sd">    log : bool, optional</span>
+<span class="sd">        Flag to perform calculations in log probability. Interprets weights as log weights.</span>
+<span class="sd">        This is slower but more numerically stable. Defaults to False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    jax.DeviceArray</span>
+<span class="sd">        Array of per-event log bayes factors.</span>
+<span class="sd">    jax.DeviceArray</span>
+<span class="sd">        Array of per-event log effective samples sizes from Monte Carlo integrals.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">BFs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">n_effs</span> <span class="o">=</span> <span class="n">BFs</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">BFs</span> <span class="o">/=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">BFs</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_effs</span><span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="mu_neff_injections">
-<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.mu_neff_injections.html#gwinferno.pipeline.analysis.mu_neff_injections">[docs]</a>
-<span class="nd">@jit</span>
-<span class="k">def</span> <span class="nf">mu_neff_injections</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    mu_neff_injections calculates detection efficiency (mu) with Monte Carlo integration over found</span>
-<span class="sd">    injections along with the integrals effective sample size</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        weights (jax.DeviceArray): JAX array of weights to integrate over. Expected size of (N_found_injections,)</span>
-<span class="sd">        Ninj (int): total number of injections</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        (jax.DeviceArray,jax.DeviceArray):  array of detection efficiency, array of N_eff from Monte Carlo Integral</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">mu</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">/</span> <span class="n">Ninj</span>
-    <span class="n">var</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">Ninj</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">Ninj</span>
-    <span class="n">n_eff</span> <span class="o">=</span> <span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">var</span>
-    <span class="k">return</span> <span class="n">mu</span><span class="p">,</span> <span class="n">n_eff</span></div>
-
-
-
-<div class="viewcode-block" id="per_event_log_bayes_factor_log_neffs_log">
-<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs_log.html#gwinferno.pipeline.analysis.per_event_log_bayes_factor_log_neffs_log">[docs]</a>
-<span class="nd">@jit</span>
-<span class="k">def</span> <span class="nf">per_event_log_bayes_factor_log_neffs_log</span><span class="p">(</span><span class="n">logweights</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    per_event_log_bayes_factor_log_neffs_log calculate per event log BFs via Monte Carlo integrating.</span>
-<span class="sd">    Also return effective samples size for convergence checks. Performs calculation in log prob.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        logweights (jax.DeviceArray): JAX array of logweights to integrate over. Expected size of (N_events,N_samples)</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        (jax.DeviceArray,jax.DeviceArray): array of per event logBF, array of per event N_eff from Monte Carlo Integral</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logBFs</span> <span class="o">=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="n">logweights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">logn_effs</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">logBFs</span> <span class="o">-</span> <span class="n">logsumexp</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">logweights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">logBFs</span> <span class="o">-=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">logweights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="n">logweights</span> <span class="o">=</span> <span class="n">weights</span>
+        <span class="n">logBFs</span> <span class="o">=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="n">logweights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">logn_effs</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">logBFs</span> <span class="o">-</span> <span class="n">logsumexp</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">logweights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">logBFs</span> <span class="o">-=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">logweights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">BFs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">n_effs</span> <span class="o">=</span> <span class="n">BFs</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">BFs</span> <span class="o">/=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">logBFs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">BFs</span><span class="p">)</span>
+        <span class="n">logn_effs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_effs</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">logBFs</span><span class="p">,</span> <span class="n">logn_effs</span></div>
 
 
 
-<div class="viewcode-block" id="logmu_logneff_injections_log">
-<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.logmu_logneff_injections_log.html#gwinferno.pipeline.analysis.logmu_logneff_injections_log">[docs]</a>
-<span class="nd">@jit</span>
-<span class="k">def</span> <span class="nf">logmu_logneff_injections_log</span><span class="p">(</span><span class="n">logweights</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    logmu_logneff_injections_log calculates log detection efficiency (log_mu) with monte carlo</span>
-<span class="sd">    integration over found injections along with the integrals effective sample size.</span>
-<span class="sd">    Performs calculation in log prob.</span>
+<div class="viewcode-block" id="detection_efficiency">
+<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.detection_efficiency.html#gwinferno.pipeline.analysis.detection_efficiency">[docs]</a>
+<span class="nd">@partial</span><span class="p">(</span><span class="n">jit</span><span class="p">,</span> <span class="n">static_argnames</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;log&quot;</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">detection_efficiency</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculates the detection efficiency -- the expected fraction of sources detected from a population</span>
+<span class="sd">    parameterized by :math:`\Lambda` -- estimated by importance sampling over the found injections from</span>
+<span class="sd">    a fiducial population parameterized by :math:`\Lambda_\emptyset`:</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        logweights (jax.DeviceArray): JAX array of log weights to integrate over. Expected size of (N_found_injections,)</span>
-<span class="sd">        Ninj (int): total number of injections</span>
+<span class="sd">    .. math::</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        (jax.DeviceArray,jax.DeviceArray):  array of log detection efficiency, array of log N_eff from Monte Carlo Integral</span>
+<span class="sd">        \mu = \int P(\mathrm{det}|\theta)p(\theta|\Lambda) d\theta \approx</span>
+<span class="sd">        \frac{1}{N_\mathrm{found}}\sum_{i=1}^{N_\mathrm{found}} \frac{p(\theta_i|\Lambda)}{p(\theta_i | \Lambda_\emptyset)}</span>
+
+<span class="sd">    with Monte Carlo integration over found</span>
+<span class="sd">    injections, along with the effective sample size of the Monte Carlo integral.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    weights : jax.DeviceArray</span>
+<span class="sd">        JAX array of weights to integrate over. Expected size of (N_found_injections,).</span>
+<span class="sd">    Ninj : int</span>
+<span class="sd">        Total number of injections.</span>
+<span class="sd">    log : bool, optional</span>
+<span class="sd">        Flag to perform calculations in log probability. Interprets weights as log weights.</span>
+<span class="sd">        This is slower but more numerically stable. Defaults to False.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    jax.DeviceArray</span>
+<span class="sd">        Array of log detection efficiency.</span>
+<span class="sd">    jax.DeviceArray</span>
+<span class="sd">        Array of log N_eff from Monte Carlo Integral.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logmu</span> <span class="o">=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="n">logweights</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Ninj</span><span class="p">)</span>
-    <span class="n">mu</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logmu</span><span class="p">)</span>
-    <span class="n">var</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logweights</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">Ninj</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">Ninj</span>
-    <span class="k">return</span> <span class="n">logmu</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">var</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+        <span class="n">logweights</span> <span class="o">=</span> <span class="n">weights</span>
+        <span class="n">logmu</span> <span class="o">=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="n">logweights</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">Ninj</span><span class="p">)</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logmu</span><span class="p">)</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logweights</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">Ninj</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">Ninj</span>
+        <span class="n">logn_eff</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">logmu</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span> <span class="o">/</span> <span class="n">Ninj</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">Ninj</span><span class="o">**</span><span class="mi">2</span> <span class="o">-</span> <span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">Ninj</span>
+        <span class="n">logmu</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">mu</span><span class="p">)</span>
+        <span class="n">logn_eff</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">logmu</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">logmu</span><span class="p">,</span> <span class="n">logn_eff</span></div>
 
 
 
@@ -250,15 +260,17 @@
 <div class="viewcode-block" id="TotalVTCalculator.__call__">
 <a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.TotalVTCalculator.html#gwinferno.pipeline.analysis.TotalVTCalculator.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lamb</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        __call__ perform trapezoidal integration to get total hypervolume</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform trapezoidal integration to get total hypervolume</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            lamb (int, optional): exponent of power-law rate evolution.</span>
-<span class="sd">            Defaults to 0 (uniform with co-moving volume).</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        lamb : int, optional</span>
+<span class="sd">            Exponent of power-law rate evolution. Defaults to `0` (uniform with co-moving volume).</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            (float): total hypervolume out to z=zmax. In units of Gpc^3*yr</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Total hypervolume out to `z=zmax`. In units of `Gpc^3*yr`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">trapezoid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dVdcs</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">,</span> <span class="n">lamb</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">zs</span><span class="p">)</span></div>
 </div>
@@ -290,44 +302,79 @@
     <span class="n">m2min</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
     <span class="n">m1min</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
     <span class="n">mmax</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+    <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    hierarchical_likelihood performs the hierarchical likelihood calculation be</span>
-<span class="sd">        resampling over injections and pe samples from each event&#39;s individually done analyses. f</span>
-<span class="sd">        or reference see:</span>
-<span class="sd">    Args:</span>
-<span class="sd">        pe_weights (jax.DeviceArray): JAX array of weights evaluated at pe samples to integrate over.</span>
-<span class="sd">            Expected size of (N_events,N_samples)</span>
-<span class="sd">        inj_weights (jax.DeviceArray): JAX array of weights evaluated at found injections to integrate over.</span>
-<span class="sd">            Expected size of (N_found_injections,)</span>
-<span class="sd">        total_inj (int): total number of generated injections before cutting on found.</span>
-<span class="sd">        Nobs (int): Total number of observed events analyzing</span>
-<span class="sd">        Tobs (float): Time spent observing to produce catalog (in yrs)</span>
-<span class="sd">        categorical (bool, optional): set to True if using categorical model. Defaults to False.</span>
-<span class="sd">        marginal_qs (bool, optional):</span>
-<span class="sd">        indv_weights (jax.DeviceArray):</span>
-<span class="sd">        rngkey (jax.random.PRNGKey, optional): RNG Key to be passed to sample categorical variable.</span>
-<span class="sd">            Needed if categorical=True. Defaults to None.</span>
-<span class="sd">        pop_frac (tuple of floats, optional): Tuple of true astrophysical population fractions.</span>
-<span class="sd">            Shape is number of categorical subpopulatons and needs to sum to 1 and is needed if categorical=True.</span>
-<span class="sd">            Defaults to None.</span>
-<span class="sd">        surv_hypervolume_fct (callable, optional): callable function to calculate total VT</span>
-<span class="sd">            (normalization of the redshift model). Defaults to TotalVTCalculator().</span>
-<span class="sd">        vtfct_kwargs (dict, optional): diction of args needed to call surv_hypervolume_fct().</span>
-<span class="sd">            Defaults to {&quot;lamb&quot;: 0}.</span>
-<span class="sd">        marginalize_selection (bool, optional): Flag to marginalize over uncertainty in</span>
-<span class="sd">            selection monte carlo integral. Defaults to True.</span>
-<span class="sd">        reconstruct_rate (bool, optional): Flag to reconstruct marginalize merger rate. Defaults to True.</span>
-<span class="sd">        min_neff_cut (bool, optional): flag to use the min_neff cut on the likelihood</span>
-<span class="sd">            ensuring monte carlo integrals converge. Defaults to True.</span>
-<span class="sd">        posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data to</span>
-<span class="sd">            perform posterior predictive check. Defaults to False.</span>
-<span class="sd">        param_names (iterable, optional): parameters to sample for PPCs. Defaults to None.</span>
-<span class="sd">        pedata (dict, optional): diction of PE data needed to perform PPCs. Defaults to None.</span>
-<span class="sd">        injdata (dict, optional): diction of found injection data needed to perform PPCs. Defaults to None.</span>
-<span class="sd">        m2min (float, optional): minimum mass for secondary components (solar masses). Defaults to 3.0.</span>
-<span class="sd">        m1min (float, optional): minimum mass for primary components (solar masses). Defaults to 6.5.</span>
-<span class="sd">        mmax (float, optional): maximum mass for primary components (solar masses). Defaults to 100.0.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Performs the hierarchical likelihood calculation using importance sampling</span>
+<span class="sd">    over injections and PE samples from each event&#39;s posterior samples assuming</span>
+<span class="sd">    a fiducial prior density.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pe_weights : jax.DeviceArray</span>
+<span class="sd">        Array of weights evaluated at PE samples to integrate over.</span>
+<span class="sd">        If `log=True` this is expected to be the **log** of the weights.</span>
+<span class="sd">        Expected size of `(N_events,N_samples)`.</span>
+<span class="sd">    inj_weights : jax.DeviceArray</span>
+<span class="sd">        Array of weights evaluated at found injections to integrate over.</span>
+<span class="sd">        If `log=True` this is expected to be the **log** of the weights.</span>
+<span class="sd">        Expected size of `(N_found_injections,)`.</span>
+<span class="sd">    total_inj : int</span>
+<span class="sd">        Total number of generated injections before cutting on found.</span>
+<span class="sd">    Nobs : int</span>
+<span class="sd">        Total number of observed events analyzing.</span>
+<span class="sd">    Tobs : float</span>
+<span class="sd">        Time spent observing to produce catalog (in yrs).</span>
+<span class="sd">    categorical : bool, optional</span>
+<span class="sd">        If `True` use latent categorical parameters to assign</span>
+<span class="sd">        each event to one of many subpopulations. Defaults to `False`.</span>
+<span class="sd">    marginal_qs : bool, optional</span>
+<span class="sd">        TODO: add description!</span>
+<span class="sd">    indv_weights : jax.DeviceArray</span>
+<span class="sd">        TODO: add description!</span>
+<span class="sd">    rngkey : jax.random.PRNGKey, optional</span>
+<span class="sd">        RNG Key to be passed to sample categorical variable.</span>
+<span class="sd">        Needed if `categorical=True`. Defaults to `None`.</span>
+<span class="sd">    pop_frac : tuple of floats, optional</span>
+<span class="sd">        Tuple of true astrophysical population fractions.</span>
+<span class="sd">        Shape is number of categorical subpopulations, needs to sum to 1, and is</span>
+<span class="sd">        needed if `categorical=True`. Defaults to `None`.</span>
+<span class="sd">    surv_hypervolume_fct : callable, optional</span>
+<span class="sd">        Callable function to calculate total VT (normalization of the redshift model).</span>
+<span class="sd">        Defaults to `TotalVTCalculator()`.</span>
+<span class="sd">    vtfct_kwargs : dict, optional</span>
+<span class="sd">        Diction of args needed to call `surv_hypervolume_fct()`.</span>
+<span class="sd">        Defaults to `{&quot;lamb&quot;: 0}`.</span>
+<span class="sd">    marginalize_selection : bool, optional</span>
+<span class="sd">        Flag to marginalize over uncertainty in selection monte carlo integral.</span>
+<span class="sd">        Defaults to `True`.</span>
+<span class="sd">    reconstruct_rate : bool, optional</span>
+<span class="sd">        Flag to reconstruct marginalize merger rate. Defaults to `True`.</span>
+<span class="sd">    min_neff_cut : bool, optional</span>
+<span class="sd">        Flag to use the `min_neff` cut on the likelihood ensuring Monte Carlo</span>
+<span class="sd">        integrals converge. Defaults to `True`.</span>
+<span class="sd">    posterior_predictive_check : bool, optional</span>
+<span class="sd">        Flag to sample from the PE/injection data to perform posterior predictive check.</span>
+<span class="sd">        Defaults to `False`.</span>
+<span class="sd">    param_names : iterable, optional</span>
+<span class="sd">        Parameters to sample for PPCs. Defaults to `None`.</span>
+<span class="sd">    pedata : dict, optional</span>
+<span class="sd">        Dictionary of PE data needed to perform PPCs. Defaults to `None`.</span>
+<span class="sd">    injdata : dict, optional</span>
+<span class="sd">        Dictionary of found injection data needed to perform PPCs. Defaults to `None`.</span>
+<span class="sd">    m2min : float, optional</span>
+<span class="sd">        Minimum mass for secondary components (solar masses). Defaults to `3.0`.</span>
+<span class="sd">    m1min : float, optional</span>
+<span class="sd">        Minimum mass for primary components (solar masses). Defaults to `5.0`.</span>
+<span class="sd">    mmax : float, optional</span>
+<span class="sd">        Maximum mass for primary components (solar masses). Defaults to `100.0`.</span>
+<span class="sd">    log : bool, optional</span>
+<span class="sd">        Flag to perform calculations in log space. Interprets weights as log weights.</span>
+<span class="sd">        This is slower but more numerically stable. Defaults to `False`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Marginalized merger rate in units of `Gpc^-3 yr^-1`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rate</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">categorical</span><span class="p">:</span>
@@ -339,50 +386,63 @@
             <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
             <span class="n">selector</span> <span class="o">=</span> <span class="p">[</span><span class="n">jnp</span><span class="o">.</span><span class="n">equal</span><span class="p">(</span><span class="n">Qs</span><span class="p">,</span> <span class="n">ii</span><span class="p">)</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pop_frac</span><span class="p">))]</span>
             <span class="n">mix_pe_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">selector</span><span class="p">,</span> <span class="n">pe_weights</span><span class="p">)</span>
-            <span class="n">logBFs</span><span class="p">,</span> <span class="n">logn_effs</span> <span class="o">=</span> <span class="n">per_event_log_bayes_factor_log_neffs</span><span class="p">(</span><span class="n">mix_pe_weights</span><span class="p">)</span>
-            <span class="n">pe_weights</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span><span class="n">p</span> <span class="o">*</span> <span class="n">pew</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">pew</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">pop_frac</span><span class="p">,</span> <span class="n">pe_weights</span><span class="p">)])</span>
+            <span class="n">logBFs</span><span class="p">,</span> <span class="n">logn_effs</span> <span class="o">=</span> <span class="n">per_event_log_bayes_factors</span><span class="p">(</span><span class="n">mix_pe_weights</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+                <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">logsumexp</span><span class="p">(</span><span class="n">pe_weights</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="n">pop_frac</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pop_frac</span> <span class="o">*</span> <span class="n">pe_weights</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">logBFs</span><span class="p">,</span> <span class="n">logn_effs</span> <span class="o">=</span> <span class="n">per_event_log_bayes_factor_log_neffs</span><span class="p">(</span><span class="n">pe_weights</span><span class="p">)</span>
+        <span class="n">logBFs</span><span class="p">,</span> <span class="n">logn_effs</span> <span class="o">=</span> <span class="n">per_event_log_bayes_factors</span><span class="p">(</span><span class="n">pe_weights</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
 
-    <span class="n">vt_factor</span><span class="p">,</span> <span class="n">n_eff_inj</span> <span class="o">=</span> <span class="n">mu_neff_injections</span><span class="p">(</span><span class="n">inj_weights</span><span class="p">,</span> <span class="n">total_inj</span><span class="p">)</span>
-    <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;log_nEff_inj&quot;</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n_eff_inj</span><span class="p">))</span>
+    <span class="n">log_det_eff</span><span class="p">,</span> <span class="n">logn_eff_inj</span> <span class="o">=</span> <span class="n">detection_efficiency</span><span class="p">(</span><span class="n">inj_weights</span><span class="p">,</span> <span class="n">total_inj</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;log_nEff_inj&quot;</span><span class="p">,</span> <span class="n">logn_eff_inj</span><span class="p">)</span>
     <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;log_nEffs&quot;</span><span class="p">,</span> <span class="n">logn_effs</span><span class="p">)</span>
     <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;logBFs&quot;</span><span class="p">,</span> <span class="n">logBFs</span><span class="p">)</span>
-    <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;detection_efficency&quot;</span><span class="p">,</span> <span class="n">vt_factor</span><span class="p">)</span>
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;detection_efficiency&quot;</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_det_eff</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">reconstruct_rate</span><span class="p">:</span>
         <span class="n">total_vt</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;surveyed_hypervolume&quot;</span><span class="p">,</span> <span class="n">surv_hypervolume_fct</span><span class="p">(</span><span class="o">**</span><span class="n">vtfct_kwargs</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.0e9</span> <span class="o">*</span> <span class="n">Tobs</span><span class="p">)</span>
         <span class="n">unscaled_rate</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;unscaled_rate&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="n">Nobs</span><span class="p">))</span>
-        <span class="n">rate</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;rate&quot;</span><span class="p">,</span> <span class="n">unscaled_rate</span> <span class="o">/</span> <span class="n">vt_factor</span> <span class="o">/</span> <span class="n">total_vt</span><span class="p">)</span>
+        <span class="n">rate</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;rate&quot;</span><span class="p">,</span> <span class="n">unscaled_rate</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_det_eff</span><span class="p">)</span> <span class="o">/</span> <span class="n">total_vt</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">marginalize_selection</span><span class="p">:</span>
-        <span class="n">vt_factor</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-            <span class="n">jnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">n_eff_inj</span><span class="p">,</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">Nobs</span><span class="p">),</span>
-            <span class="n">vt_factor</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">((</span><span class="mi">3</span> <span class="o">+</span> <span class="n">Nobs</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">n_eff_inj</span><span class="p">),</span>
+        <span class="n">log_det_eff</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">logn_eff_inj</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">Nobs</span><span class="p">)),</span>
+            <span class="n">log_det_eff</span> <span class="o">-</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="n">Nobs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logn_eff_inj</span><span class="p">)),</span>
             <span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
         <span class="p">)</span>
     <span class="n">sel</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span>
         <span class="s2">&quot;selection_factor&quot;</span><span class="p">,</span>
-        <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">vt_factor</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="o">-</span><span class="n">Nobs</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">vt_factor</span><span class="p">)),</span>
+        <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">log_det_eff</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="o">-</span><span class="n">Nobs</span> <span class="o">*</span> <span class="n">log_det_eff</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="n">sumlogBFs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;sum_logBFs&quot;</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">logBFs</span><span class="p">))</span>
-    <span class="n">log_l</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;log_l&quot;</span><span class="p">,</span> <span class="n">sel</span> <span class="o">+</span> <span class="n">sumlogBFs</span><span class="p">)</span>
+    <span class="n">log_l</span> <span class="o">=</span> <span class="n">sel</span> <span class="o">+</span> <span class="n">sumlogBFs</span>
+    <span class="n">log_l</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span>
+        <span class="s2">&quot;log_l&quot;</span><span class="p">,</span>
+        <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">log_l</span><span class="p">),</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">log_l</span><span class="p">),</span>
+        <span class="p">),</span>
+    <span class="p">)</span>
 
-    <span class="c1"># TODO: clean this up, make value of min_neff a fucntion kwarg</span>
+    <span class="c1"># TODO: clean this up, make value of min_neff a function kwarg</span>
     <span class="k">if</span> <span class="n">min_neff_cut</span><span class="p">:</span>
-
-        <span class="n">mins</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">logn_effs</span><span class="p">))</span>
-        <span class="n">cut_log_l</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span>
-            <span class="s2">&quot;neff_less_4obs&quot;</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">mins</span><span class="p">),</span> <span class="n">Nobs</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">log_l</span><span class="p">))</span>
+        <span class="n">min_n_effs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">logn_effs</span><span class="p">)))</span>
+        <span class="n">log_l</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span>
+            <span class="s2">&quot;neff_less_Nobs&quot;</span><span class="p">,</span>
+            <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
+                <span class="n">jnp</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">min_n_effs</span><span class="p">,</span> <span class="n">Nobs</span><span class="p">),</span>
+                <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
+                <span class="n">log_l</span><span class="p">,</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;log_likelihood&quot;</span><span class="p">,</span> <span class="n">cut_log_l</span><span class="p">)</span>
+    <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span><span class="s2">&quot;log_likelihood&quot;</span><span class="p">,</span> <span class="n">log_l</span><span class="p">)</span>
 
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span>
-            <span class="s2">&quot;log_likelihood&quot;</span><span class="p">,</span>
-            <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">log_l</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">log_l</span><span class="p">)),</span>
-        <span class="p">)</span>
     <span class="k">if</span> <span class="n">posterior_predictive_check</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">param_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">injdata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pedata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+                <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">pe_weights</span><span class="p">)</span>
+                <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">inj_weights</span><span class="p">)</span>
             <span class="n">cond</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">pedata</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">],</span> <span class="n">m1min</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">pedata</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">],</span> <span class="n">mmax</span><span class="p">)</span>
             <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
                 <span class="n">cond</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">pedata</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">pedata</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">],</span> <span class="n">m2min</span><span class="p">),</span>
@@ -414,129 +474,6 @@
                     <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">_obs_event_</span><span class="si">{</span><span class="n">ev</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pedata</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">ev</span><span class="p">,</span> <span class="n">obs_idx</span><span class="p">])</span>
                     <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">_pred_event_</span><span class="si">{</span><span class="n">ev</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">injdata</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">pred_idx</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">rate</span></div>
-
-
-
-<div class="viewcode-block" id="hierarchical_likelihood_in_log">
-<a class="viewcode-back" href="../../../api/gwinferno.pipeline.analysis.hierarchical_likelihood_in_log.html#gwinferno.pipeline.analysis.hierarchical_likelihood_in_log">[docs]</a>
-<span class="k">def</span> <span class="nf">hierarchical_likelihood_in_log</span><span class="p">(</span>
-    <span class="n">logpe_weights</span><span class="p">,</span>
-    <span class="n">loginj_weights</span><span class="p">,</span>
-    <span class="n">total_inj</span><span class="p">,</span>
-    <span class="n">Nobs</span><span class="p">,</span>
-    <span class="n">Tobs</span><span class="p">,</span>
-    <span class="n">surv_hypervolume_fct</span><span class="o">=</span><span class="n">TotalVTCalculator</span><span class="p">(),</span>
-    <span class="n">vtfct_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lamb&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">},</span>
-    <span class="n">marginalize_selection</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">reconstruct_rate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">min_neff_cut</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">posterior_predictive_check</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">param_names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">pedata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">injdata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">m2min</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
-    <span class="n">m1min</span><span class="o">=</span><span class="mf">6.5</span><span class="p">,</span>
-    <span class="n">mmax</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    hierarchical_likelihood_log performs the hierarchical likeihood calculation in log probability</span>
-<span class="sd">        by resampling over injections and pe samples from each event&#39;s indiviudally done analayses.</span>
-<span class="sd">        for reference see:</span>
-<span class="sd">    Args:</span>
-<span class="sd">        logpe_weights (jax.DeviceArray): JAX array of log weights evaluated at pe samples to integrate over.</span>
-<span class="sd">            Expected size of (N_events,N_samples)</span>
-<span class="sd">        loginj_weights (jax.DeviceArray): JAX array of log weights evaluated at found injections to</span>
-<span class="sd">            integrate over. Expected size of (N_found_injections,)</span>
-<span class="sd">        total_inj (int): total number of generated injections before cutting on found.</span>
-<span class="sd">        Nobs (int): Total number of observed events analyzing</span>
-<span class="sd">        Tobs (float): Time spent observing to produce catalog (in yrs)</span>
-<span class="sd">        surv_hypervolume_fct (callable, optional): callable function to calculate total</span>
-<span class="sd">            VT (normalization of the redshift model). Defaults to TotalVTCalculator().</span>
-<span class="sd">        vtfct_kwargs (dict, optional): diction of args needed to call</span>
-<span class="sd">            surv_hypervolume_fct(). Defaults to {&quot;lamb&quot;: 0}.</span>
-<span class="sd">        marginalize_selection (bool, optional): Flag to marginalize over uncertainty in</span>
-<span class="sd">            selection monte carlo integral. Defaults to True.</span>
-<span class="sd">        reconstruct_rate (bool, optional): Flag to reconstruct marginalize</span>
-<span class="sd">            merger rate. Defaults to True.</span>
-<span class="sd">        min_neff_cut (bool, optional): flag to use the min_neff cut on the likelihood</span>
-<span class="sd">            ensuring monte carlo integrals converge. Defaults to True.</span>
-<span class="sd">        posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data</span>
-<span class="sd">            to perform posterior predictive check. Defaults to False.</span>
-<span class="sd">        param_names (iterable, optional): parameters to sample for PPCs. Defaults to None.</span>
-<span class="sd">        pedata (dict, optional): diction of PE data needed to perform PPCs. Defaults to None.</span>
-<span class="sd">        injdata (dict, optional): diction of found injection data needed to perform PPCs. Defaults to None.</span>
-<span class="sd">        m2min (float, optional): mininmum mass for secondary components (solar masses). Defaults to 3.0.</span>
-<span class="sd">        m1min (float, optional): mininmum mass for primary components (solar masses). Defaults to 6.5.</span>
-<span class="sd">        mmax (float, optional): maximum mass for primary components (solar masses). Defaults to 100.0.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logBFs</span><span class="p">,</span> <span class="n">logn_effs</span> <span class="o">=</span> <span class="n">per_event_log_bayes_factor_log_neffs_log</span><span class="p">(</span><span class="n">logpe_weights</span><span class="p">)</span>
-    <span class="n">log_vt_factor</span><span class="p">,</span> <span class="n">logn_eff_inj</span> <span class="o">=</span> <span class="n">logmu_logneff_injections_log</span><span class="p">(</span><span class="n">loginj_weights</span><span class="p">,</span> <span class="n">total_inj</span><span class="p">)</span>
-    <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;log_nEff_inj&quot;</span><span class="p">,</span> <span class="n">logn_eff_inj</span><span class="p">)</span>
-    <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;log_nEffs&quot;</span><span class="p">,</span> <span class="n">logn_effs</span><span class="p">)</span>
-    <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;logBFs&quot;</span><span class="p">,</span> <span class="n">logBFs</span><span class="p">)</span>
-    <span class="n">vt_factor</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;detection_efficency&quot;</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">log_vt_factor</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">reconstruct_rate</span><span class="p">:</span>
-        <span class="n">total_vt</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;surveyed_hypervolume&quot;</span><span class="p">,</span> <span class="n">surv_hypervolume_fct</span><span class="p">(</span><span class="o">**</span><span class="n">vtfct_kwargs</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1.0e9</span> <span class="o">*</span> <span class="n">Tobs</span><span class="p">)</span>
-        <span class="n">unscaled_rate</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;unscaled_rate&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="n">Nobs</span><span class="p">))</span>
-        <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;rate&quot;</span><span class="p">,</span> <span class="n">unscaled_rate</span> <span class="o">/</span> <span class="n">vt_factor</span> <span class="o">/</span> <span class="n">total_vt</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">marginalize_selection</span><span class="p">:</span>
-        <span class="n">log_vt_factor</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-            <span class="n">jnp</span><span class="o">.</span><span class="n">greater_equal</span><span class="p">(</span><span class="n">logn_eff_inj</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">Nobs</span><span class="p">)),</span>
-            <span class="n">log_vt_factor</span> <span class="o">-</span> <span class="p">(</span><span class="mi">3</span> <span class="o">+</span> <span class="n">Nobs</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logn_eff_inj</span><span class="p">)),</span>
-            <span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="n">sel</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span>
-        <span class="s2">&quot;selection_factor&quot;</span><span class="p">,</span>
-        <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">log_vt_factor</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="o">-</span><span class="n">Nobs</span> <span class="o">*</span> <span class="n">log_vt_factor</span><span class="p">),</span>
-    <span class="p">)</span>
-    <span class="n">sumlogBFs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;sum_logBFs&quot;</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">logBFs</span><span class="p">))</span>
-    <span class="n">log_l</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="s2">&quot;log_l&quot;</span><span class="p">,</span> <span class="n">sel</span> <span class="o">+</span> <span class="n">sumlogBFs</span><span class="p">)</span>
-
-    <span class="c1"># TODO: Clean this up, make min_neff a function kwarg</span>
-    <span class="k">if</span> <span class="n">min_neff_cut</span><span class="p">:</span>
-        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span>
-            <span class="s2">&quot;log_likelihood&quot;</span><span class="p">,</span>
-            <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-                <span class="n">jnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">log_l</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less_equal</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">logn_effs</span><span class="p">)),</span> <span class="n">Nobs</span><span class="p">),</span>
-                <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span>
-                <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">log_l</span><span class="p">),</span>
-            <span class="p">),</span>
-        <span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">numpyro</span><span class="o">.</span><span class="n">factor</span><span class="p">(</span>
-            <span class="s2">&quot;log_likelihood&quot;</span><span class="p">,</span>
-            <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">log_l</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="o">-</span><span class="n">jnp</span><span class="o">.</span><span class="n">inf</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">log_l</span><span class="p">)),</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">posterior_predictive_check</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">param_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">injdata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pedata</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logpe_weights</span><span class="p">)</span>
-            <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">loginj_weights</span><span class="p">)</span>
-            <span class="n">cond</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">pedata</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">],</span> <span class="n">m1min</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">pedata</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">],</span> <span class="n">mmax</span><span class="p">)</span>
-            <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-                <span class="n">cond</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">pedata</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">pedata</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">],</span> <span class="n">m2min</span><span class="p">),</span>
-                <span class="mi">0</span><span class="p">,</span>
-                <span class="n">pe_weights</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span>
-                <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">injdata</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">],</span> <span class="n">m1min</span><span class="p">)</span>
-                <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">injdata</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">],</span> <span class="n">mmax</span><span class="p">)</span>
-                <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">injdata</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">injdata</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">],</span> <span class="n">m2min</span><span class="p">),</span>
-                <span class="mi">0</span><span class="p">,</span>
-                <span class="n">inj_weights</span><span class="p">,</span>
-            <span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">Nobs</span><span class="p">):</span>
-                <span class="n">k</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">PRNGKey</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
-                <span class="n">k1</span><span class="p">,</span> <span class="n">k2</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">k</span><span class="p">)</span>
-                <span class="n">obs_idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span>
-                    <span class="n">k1</span><span class="p">,</span>
-                    <span class="n">pe_weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                    <span class="n">p</span><span class="o">=</span><span class="n">pe_weights</span><span class="p">[</span><span class="n">ev</span><span class="p">,</span> <span class="p">:]</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">pe_weights</span><span class="p">[</span><span class="n">ev</span><span class="p">,</span> <span class="p">:]),</span>
-                <span class="p">)</span>
-                <span class="n">pred_idx</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">k2</span><span class="p">,</span> <span class="n">inj_weights</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">=</span><span class="n">inj_weights</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">inj_weights</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">param_names</span><span class="p">:</span>
-                    <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">_obs_event_</span><span class="si">{</span><span class="n">ev</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pedata</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">ev</span><span class="p">,</span> <span class="n">obs_idx</span><span class="p">])</span>
-                    <span class="n">numpyro</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">_pred_event_</span><span class="si">{</span><span class="n">ev</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">injdata</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="n">pred_idx</span><span class="p">])</span></div>
 
 
 
@@ -580,7 +517,7 @@
         <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pop_models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">source_param_names</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">])</span>
         <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">pop_models</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">source_param_names</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">])</span>
 
-        <span class="n">hierarchical_likelihood_in_log</span><span class="p">(</span>
+        <span class="n">hierarchical_likelihood</span><span class="p">(</span>
             <span class="n">pe_weights</span><span class="p">,</span>
             <span class="n">inj_weights</span><span class="p">,</span>
             <span class="n">total_inj</span><span class="o">=</span><span class="n">Ninj</span><span class="p">,</span>
@@ -597,6 +534,7 @@
             <span class="n">m1min</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
             <span class="n">m2min</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">model</span></div>

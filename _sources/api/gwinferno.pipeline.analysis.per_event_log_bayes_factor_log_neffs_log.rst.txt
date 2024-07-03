@@ -1,6 +1,0 @@
-gwinferno.pipeline.analysis.per\_event\_log\_bayes\_factor\_log\_neffs\_log
-===========================================================================
-
-.. currentmodule:: gwinferno.pipeline.analysis
-
-.. autofunction:: per_event_log_bayes_factor_log_neffs_log

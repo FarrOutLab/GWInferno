@@ -157,10 +157,10 @@ population parameters to share a model when assuming they are IID (i.e. spin mag
 </pre></div>
 </div>
 <p>The requirements for this model definition within the python file include:
-- Must at least take in PEsamples, Found injections, Number of Observations, Total number of injections, and total observing time (in yrs) as the initial 5 positional arguments of the model.
-- Define hyper-parameters and priors along with population distributions then interface with GWInferno’s likleihood calculation with <cite>gwinferno.pipeline.analysis.hierarchical_likelihood_in_log</cite>
-- Main input to this likelihood function is the weights calcaulated at all of the PE samples and Found injections
-- Input weights need to have shapes of (Nobs, N_PEsamples) for PE samples weights where Nobs is the number of events in catalog and N_PEsamples is the nubmber of posteror samples each event contains
+- Must at least take in PE samples, Found injections, Number of Observations, Total number of injections, and total observing time (in yrs) as the initial 5 positional arguments of the model.
+- Define hyper-parameters and priors along with population distributions then interface with GWInferno’s likelihood calculation with <cite>gwinferno.pipeline.analysis.hierarchical_likelihood</cite>
+- Main input to this likelihood function is the weights calculated at all the PE samples and Found injections
+- Input weights need to have shapes of (Nobs, N_PEsamples) for PE samples weights where Nobs is the number of events in catalog and N_PEsamples is the number of posterior samples each event contains
 - Input weights for found injections need to be of shape (N_found,) where N_found is the total number of found injections remaining.</p>
 <p>For example here is how one would define a numpyro probabilistic model in a python file to be passed to GWInferno’s infrastructure</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
@@ -169,7 +169,7 @@ population parameters to share a model when assuming they are IID (i.e. spin mag
 
 <span class="kn">from</span> <span class="nn">gwinferno.numpyro_distributions</span> <span class="kn">import</span> <span class="n">Powerlaw</span>
 <span class="kn">from</span> <span class="nn">gwinferno.numpyro_distributions</span> <span class="kn">import</span> <span class="n">PowerlawRedshift</span>
-<span class="kn">from</span> <span class="nn">gwinferno.pipeline.analysis</span> <span class="kn">import</span> <span class="n">hierarchical_likelihood_in_log</span>
+<span class="kn">from</span> <span class="nn">gwinferno.pipeline.analysis</span> <span class="kn">import</span> <span class="n">hierarchical_likelihood</span>
 
 
 <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">samps</span><span class="p">,</span> <span class="n">injs</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">,</span> <span class="n">Nobs</span><span class="p">,</span> <span class="n">Tobs</span><span class="p">):</span>
@@ -186,7 +186,7 @@ population parameters to share a model when assuming they are IID (i.e. spin mag
     <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">m1dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">qdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">zdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">])</span>
     <span class="n">pe_weights</span> <span class="o">=</span> <span class="n">m1dist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;mass_1&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">qdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;mass_ratio&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="n">zdist</span><span class="o">.</span><span class="n">log_prob</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">])</span> <span class="o">-</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">samps</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">])</span>
 
-    <span class="n">hierarchical_likelihood_in_log</span><span class="p">(</span>
+    <span class="n">hierarchical_likelihood</span><span class="p">(</span>
         <span class="n">pe_weights</span><span class="p">,</span>
         <span class="n">inj_weights</span><span class="p">,</span>
         <span class="n">total_inj</span><span class="o">=</span><span class="n">Ninj</span><span class="p">,</span>
@@ -207,6 +207,7 @@ population parameters to share a model when assuming they are IID (i.e. spin mag
         <span class="n">m1min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
         <span class="n">m2min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
         <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
+        <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
 </div>

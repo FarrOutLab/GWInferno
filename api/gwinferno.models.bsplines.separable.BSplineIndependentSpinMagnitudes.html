@@ -128,24 +128,24 @@
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">BSplineIndependentSpinMagnitudes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splines2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a1_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIndependentSpinMagnitudes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to construct a spin magnitude B-Spline model for both binary components, assuming they are indipendently distributed.</p>
+<p>Class to construct a spin magnitude B-Spline model for both binary components, assuming they are independently distributed.</p>
 <dl>
 <dt>Args:</dt><dd><p>n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component
 n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component
-a1 (array_like): primary component spin magntiude pe samples to evaluate the basis spline at
-a2 (array_like): secondary component spin magntiude pe samples to evaluate the basis spline at
-a1_inj (array_like): primary component spin magnitude injection samples to evalute the basis spline at
-a2_inj (array_like): secondary component spin magnitude injection samples to evalute the basis spline at
+a1 (array_like): primary component spin magnitude pe samples to evaluate the basis spline at
+a2 (array_like): secondary component spin magnitude pe samples to evaluate the basis spline at
+a1_inj (array_like): primary component spin magnitude injection samples to evaluate the basis spline at
+a2_inj (array_like): secondary component spin magnitude injection samples to evaluate the basis spline at
 knots1 (array_like, optional): array of knots for the primary component, if non-uniform knot placing is preferred.</p>
 <blockquote>
 <div><p>Defaults to None.</p>
 </div></blockquote>
-<p>degree1 (int, optional): degree of primary component spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+<p>degree1 (int, optional): degree of primary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
 knots2 (array_like, optional): array of knots for the secondary component, if non-uniform knot placing is preferred.</p>
 <blockquote>
 <div><p>Defaults to None.</p>
 </div></blockquote>
-<p>degree2 (int, optional): degree of secondary component spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</p>
+<p>degree2 (int, optional): degree of secondary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</p>
 </dd>
 </dl>
 <dl class="py method">

@@ -128,24 +128,24 @@
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">BSplineIndependentSpinTilts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splines2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct1_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ct2_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIndependentSpinTilts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are indipendently distributed.</p>
+<p>Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are independently distributed.</p>
 <dl>
 <dt>Args:</dt><dd><p>n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component
 n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component
 ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at
 ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at
-ct1_inj (array_like): primary component cosine tilt injection samples to evalute the basis spline at
-ct2_inj (array_like): secondary component cosine tilt injection samples to evalute the basis spline at
+ct1_inj (array_like): primary component cosine tilt injection samples to evaluate the basis spline at
+ct2_inj (array_like): secondary component cosine tilt injection samples to evaluate the basis spline at
 knots1 (array_like, optional): array of knots for the primary binary component, if non-uniform knot placing is preferred.</p>
 <blockquote>
 <div><p>Defaults to None.</p>
 </div></blockquote>
-<p>degree1 (int, optional): degree of the spline for the primary binary component, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+<p>degree1 (int, optional): degree of the spline for the primary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
 knots2 (array_like, optional): array of knots for the secondary binary component, if non-uniform knot placing is preferred.</p>
 <blockquote>
 <div><p>Defaults to None.</p>
 </div></blockquote>
-<p>degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</p>
+<p>degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -156,7 +156,7 @@ knots2 (array_like, optional): array of knots for the secondary binary component
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIndependentSpinTilts.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__call__" title="Link to this definition"></a></dt>
-<dd><p>will evalute the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
+<dd><p>will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
 Use flag <cite>pe_samples</cite> to specify which type of samples are being evaluated (pe or injection).</p>
 <dl>
 <dt>Args:</dt><dd><p>pcoefs (array_like): primary component cosine tilt basis spline coefficients

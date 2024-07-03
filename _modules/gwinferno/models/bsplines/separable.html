@@ -95,7 +95,7 @@
              
   <h1>Source code for gwinferno.models.bsplines.separable</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">a module that stores 2D seperable (i.e. independent) population models constructed from bsplines</span>
+<span class="sd">a module that stores 2D separable (i.e. independent) population models constructed from basis splines</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
@@ -119,13 +119,13 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
-<span class="sd">        a1 (array_like): primary component spin magntiude pe samples to evaluate the basis spline at</span>
-<span class="sd">        a2 (array_like): secondary component spin magntiude pe samples to evaluate the basis spline at</span>
-<span class="sd">        a1_inj (array_like): primary component spin magnitude injection samples to evalute the basis spline at</span>
-<span class="sd">        a2_inj (array_like): secondary component spin magnitude injection samples to evalute the basis spline at</span>
+<span class="sd">        a1 (array_like): primary component spin magnitude pe samples to evaluate the basis spline at</span>
+<span class="sd">        a2 (array_like): secondary component spin magnitude pe samples to evaluate the basis spline at</span>
+<span class="sd">        a1_inj (array_like): primary component spin magnitude injection samples to evaluate the basis spline at</span>
+<span class="sd">        a2_inj (array_like): secondary component spin magnitude injection samples to evaluate the basis spline at</span>
 <span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIIDSpinMagnitudes.__init__">
@@ -184,21 +184,21 @@
 <div class="viewcode-block" id="BSplineIndependentSpinMagnitudes">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineIndependentSpinMagnitudes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a spin magnitude B-Spline model for both binary components, assuming they are indipendently distributed.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a spin magnitude B-Spline model for both binary components, assuming they are independently distributed.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component</span>
 <span class="sd">        n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component</span>
-<span class="sd">        a1 (array_like): primary component spin magntiude pe samples to evaluate the basis spline at</span>
-<span class="sd">        a2 (array_like): secondary component spin magntiude pe samples to evaluate the basis spline at</span>
-<span class="sd">        a1_inj (array_like): primary component spin magnitude injection samples to evalute the basis spline at</span>
-<span class="sd">        a2_inj (array_like): secondary component spin magnitude injection samples to evalute the basis spline at</span>
+<span class="sd">        a1 (array_like): primary component spin magnitude pe samples to evaluate the basis spline at</span>
+<span class="sd">        a2 (array_like): secondary component spin magnitude pe samples to evaluate the basis spline at</span>
+<span class="sd">        a1_inj (array_like): primary component spin magnitude injection samples to evaluate the basis spline at</span>
+<span class="sd">        a2_inj (array_like): secondary component spin magnitude injection samples to evaluate the basis spline at</span>
 <span class="sd">        knots1 (array_like, optional): array of knots for the primary component, if non-uniform knot placing is preferred.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">        degree1 (int, optional): degree of primary component spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree1 (int, optional): degree of primary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">        knots2 (array_like, optional): array of knots for the secondary component, if non-uniform knot placing is preferred.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">        degree2 (int, optional): degree of secondary component spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree2 (int, optional): degree of secondary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIndependentSpinMagnitudes.__init__">
@@ -263,17 +263,17 @@
 <span class="k">class</span> <span class="nc">BSplineIIDSpinTilts</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components,</span>
-<span class="sd">    assuming they are indipendently and identically distributed (IID).</span>
+<span class="sd">    assuming they are independently and identically distributed (IID).</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines</span>
 <span class="sd">        ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at</span>
 <span class="sd">        ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at</span>
-<span class="sd">        ct1_inj (array_like): primary component cosine tilt injection samples to evalute the basis spline at</span>
-<span class="sd">        ct2_inj (array_like): secondary component cosine tilt injection samples to evalute the basis spline at</span>
+<span class="sd">        ct1_inj (array_like): primary component cosine tilt injection samples to evaluate the basis spline at</span>
+<span class="sd">        ct2_inj (array_like): secondary component cosine tilt injection samples to evaluate the basis spline at</span>
 <span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIIDSpinTilts.__init__">
@@ -310,7 +310,7 @@
 <div class="viewcode-block" id="BSplineIIDSpinTilts.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>
@@ -331,21 +331,21 @@
 <div class="viewcode-block" id="BSplineIndependentSpinTilts">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineIndependentSpinTilts</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are indipendently distributed.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are independently distributed.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component</span>
 <span class="sd">        n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component</span>
 <span class="sd">        ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at</span>
 <span class="sd">        ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at</span>
-<span class="sd">        ct1_inj (array_like): primary component cosine tilt injection samples to evalute the basis spline at</span>
-<span class="sd">        ct2_inj (array_like): secondary component cosine tilt injection samples to evalute the basis spline at</span>
+<span class="sd">        ct1_inj (array_like): primary component cosine tilt injection samples to evaluate the basis spline at</span>
+<span class="sd">        ct2_inj (array_like): secondary component cosine tilt injection samples to evaluate the basis spline at</span>
 <span class="sd">        knots1 (array_like, optional): array of knots for the primary binary component, if non-uniform knot placing is preferred.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">        degree1 (int, optional): degree of the spline for the primary binary component, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree1 (int, optional): degree of the spline for the primary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">        knots2 (array_like, optional): array of knots for the secondary binary component, if non-uniform knot placing is preferred.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">        degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIndependentSpinTilts.__init__">
@@ -385,7 +385,7 @@
 <div class="viewcode-block" id="BSplineIndependentSpinTilts.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>
@@ -417,8 +417,8 @@
 <span class="sd">        mmax (float, optional): maximum mass value. Spline is truncated above this maximum mass. Defaults to 100.</span>
 <span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
-<span class="sd">        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to Bspline.</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to BSpline.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplinePrimaryPowerlawRatio.__init__">
@@ -451,7 +451,7 @@
 <div class="viewcode-block" id="BSplinePrimaryPowerlawRatio.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>
@@ -488,7 +488,7 @@
 <span class="sd">        m1_inj (float, optional): primary mass injection samples</span>
 <span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PLPeakPrimaryBSplineRatio.__init__">
@@ -517,7 +517,7 @@
 <div class="viewcode-block" id="PLPeakPrimaryBSplineRatio.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>
@@ -554,13 +554,13 @@
 <span class="sd">                Defaults to None.</span>
 <span class="sd">        knots_q (array_like, optional): mass ratio array of knots, if non-uniform knot placing is preferred.</span>
 <span class="sd">                Defaults to None.</span>
-<span class="sd">        degree_m (int, optional): degree of the primary mass spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline)</span>
-<span class="sd">        degree_q (int, optional): degree of the mass ratio spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline)</span>
+<span class="sd">        degree_m (int, optional): degree of the primary mass spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)</span>
+<span class="sd">        degree_q (int, optional): degree of the mass ratio spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)</span>
 <span class="sd">        m1min (float, optional): minimum primary mass value. Primary mass spline is truncated below this minimum mass. Defaults to 3.</span>
 <span class="sd">        m2min (float, optional): minimum secondary mass value. Mass ratio spline is truncated below m2min/mmax. Defaults to 3.</span>
 <span class="sd">        mmax (float, optional): maximum mass value. Primary mass spline is truncated above this maximum mass. Defaults to 100.</span>
-<span class="sd">        basis_m (class, optional): type of basis to use (ex. LogYBSpline) for primary mass spline. Defaults to Bspline.</span>
-<span class="sd">        basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to Bspline.</span>
+<span class="sd">        basis_m (class, optional): type of basis to use (ex. LogYBSpline) for primary mass spline. Defaults to BSpline.</span>
+<span class="sd">        basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to BSpline.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplinePrimaryBSplineRatio.__init__">
@@ -610,7 +610,7 @@
 <div class="viewcode-block" id="BSplinePrimaryBSplineRatio.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcoefs</span><span class="p">,</span> <span class="n">qcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>
@@ -683,7 +683,7 @@
 <div class="viewcode-block" id="BSplineIIDComponentMasses.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>
@@ -710,7 +710,7 @@
 <div class="viewcode-block" id="BSplineIndependentComponentMasses">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineIndependentComponentMasses</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in primary mass and secondary mass, assuming the two binary mass components are idependently distributed.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in primary mass and secondary mass, assuming the two binary mass components are independently distributed.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines</span>
@@ -725,8 +725,8 @@
 <span class="sd">        mmax1 (float, optional): maximum primary mass value. Spline is truncated above this maximum mass. Defaults to 100.</span>
 <span class="sd">        mmin2 (float, optional): minimum secondary mass value. Spline is truncated below this minimum mass. Defaults to 2.</span>
 <span class="sd">        mmax2 (float, optional): maximum secondary mass value. Spline is truncated above this maximum mass. Defaults to 100.</span>
-<span class="sd">        degree1 (int, optional): degree of the spline for the primary mass, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
-<span class="sd">        degree2 (int, optional): degree of the spline for the secondary mass, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree1 (int, optional): degree of the spline for the primary mass, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree2 (int, optional): degree of the spline for the secondary mass, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIndependentComponentMasses.__init__">
@@ -771,7 +771,7 @@
 <div class="viewcode-block" id="BSplineIndependentComponentMasses.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>
@@ -801,14 +801,14 @@
 <span class="sd">    Args:</span>
 <span class="sd">        n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines</span>
 <span class="sd">        n_splines2 (int): number of degrees of freedom of secondary mass basis, i.e. number of basis splines</span>
-<span class="sd">        chieff(array_like): chi effective pe samples to evalute the basis spline at</span>
-<span class="sd">        chip (array_like): chi_p pe samples to evalute the basis spline at</span>
-<span class="sd">        chieff_inj (array_like): chi effective injection samples to evalute the basis spline at</span>
-<span class="sd">        chip_inj (array_like): chi_p injection samples to evalute the basis spline at</span>
+<span class="sd">        chieff(array_like): chi effective pe samples to evaluate the basis spline at</span>
+<span class="sd">        chip (array_like): chi_p pe samples to evaluate the basis spline at</span>
+<span class="sd">        chieff_inj (array_like): chi effective injection samples to evaluate the basis spline at</span>
+<span class="sd">        chip_inj (array_like): chi_p injection samples to evaluate the basis spline at</span>
 <span class="sd">        knotse (array_like, optional): array of chi effective knots, if non-uniform knot placing is preferred. Defaults to None.</span>
 <span class="sd">        knotsp (array_like, optional): array of chi_p knots, if non-uniform knot placing is preferred. Defaults to None.</span>
-<span class="sd">        degree_e (int, optional): degree of the spline for chi effective, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
-<span class="sd">        degree_p (int, optional): degree of the spline for chi_p, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree_e (int, optional): degree of the spline for chi effective, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">        degree_p (int, optional): degree of the spline for chi_p, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineEffectiveSpinDims.__init__">
@@ -846,7 +846,7 @@
 <div class="viewcode-block" id="BSplineEffectiveSpinDims.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ecoefs</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evalute the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>

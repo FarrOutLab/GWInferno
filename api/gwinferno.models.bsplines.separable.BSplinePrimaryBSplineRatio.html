@@ -144,13 +144,13 @@ knots_m (array_like, optional): primary mass array of knots, if non-uniform knot
 <dt>knots_q (array_like, optional): mass ratio array of knots, if non-uniform knot placing is preferred.</dt><dd><p>Defaults to None.</p>
 </dd>
 </dl>
-<p>degree_m (int, optional): degree of the primary mass spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline)
-degree_q (int, optional): degree of the mass ratio spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline)
+<p>degree_m (int, optional): degree of the primary mass spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)
+degree_q (int, optional): degree of the mass ratio spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)
 m1min (float, optional): minimum primary mass value. Primary mass spline is truncated below this minimum mass. Defaults to 3.
 m2min (float, optional): minimum secondary mass value. Mass ratio spline is truncated below m2min/mmax. Defaults to 3.
 mmax (float, optional): maximum mass value. Primary mass spline is truncated above this maximum mass. Defaults to 100.
-basis_m (class, optional): type of basis to use (ex. LogYBSpline) for primary mass spline. Defaults to Bspline.
-basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to Bspline.</p>
+basis_m (class, optional): type of basis to use (ex. LogYBSpline) for primary mass spline. Defaults to BSpline.
+basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to BSpline.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -161,7 +161,7 @@ basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mcoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qcoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplinePrimaryBSplineRatio.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.__call__" title="Link to this definition"></a></dt>
-<dd><p>will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
+<dd><p>will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
 Use flag <cite>pe_samples</cite> to specify which type of samples are being evaluated (pe or injection).</p>
 <dl>
 <dt>Args:</dt><dd><p>mcoefs (array_like): primary component mass basis spline coefficients

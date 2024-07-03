@@ -132,14 +132,14 @@
 <dl class="simple">
 <dt>Args:</dt><dd><p>n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines
 n_splines2 (int): number of degrees of freedom of secondary mass basis, i.e. number of basis splines
-chieff(array_like): chi effective pe samples to evalute the basis spline at
-chip (array_like): chi_p pe samples to evalute the basis spline at
-chieff_inj (array_like): chi effective injection samples to evalute the basis spline at
-chip_inj (array_like): chi_p injection samples to evalute the basis spline at
+chieff(array_like): chi effective pe samples to evaluate the basis spline at
+chip (array_like): chi_p pe samples to evaluate the basis spline at
+chieff_inj (array_like): chi effective injection samples to evaluate the basis spline at
+chip_inj (array_like): chi_p injection samples to evaluate the basis spline at
 knotse (array_like, optional): array of chi effective knots, if non-uniform knot placing is preferred. Defaults to None.
 knotsp (array_like, optional): array of chi_p knots, if non-uniform knot placing is preferred. Defaults to None.
-degree_e (int, optional): degree of the spline for chi effective, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
-degree_p (int, optional): degree of the spline for chi_p, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).</p>
+degree_e (int, optional): degree of the spline for chi effective, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+degree_p (int, optional): degree of the spline for chi_p, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -150,7 +150,7 @@ degree_p (int, optional): degree of the spline for chi_p, i.e. cubcic splines = 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ecoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pcoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineEffectiveSpinDims.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__call__" title="Link to this definition"></a></dt>
-<dd><p>will evalute the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.
+<dd><p>will evaluate the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.
 Use flag <cite>pe_samples</cite> to specify which type of samples are being evaluated (pe or injection).</p>
 <dl>
 <dt>Args:</dt><dd><p>m1 (array_like): primary component mass pe samples to evaluate the basis spline at

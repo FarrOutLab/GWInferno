@@ -1,0 +1,6 @@
+gwinferno.pipeline.analysis.detection\_efficiency
+=================================================
+
+.. currentmodule:: gwinferno.pipeline.analysis
+
+.. autofunction:: detection_efficiency
