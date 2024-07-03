@@ -2,6 +2,8 @@
 a module that stores the meat of the calculations for hierarchical population inference
 """
 
+from functools import partial
+
 import jax.numpy as jnp
 import numpy as np
 import numpyro
@@ -23,17 +25,23 @@ NP_KERNEL_MAP = {"NUTS": numpyro.infer.NUTS, "HMC": numpyro.infer.HMC}
 
 
 def find_map(rng_key, numpyro_model, *model_args, Niter=100, lr=0.01):
-    """
-    find_map Find the MAP estimate for a given NumPyro model using SVI with Adam optimizing the ELBO
+    """Find the MAP estimate for a given NumPyro model using SVI with Adam optimizing the ELBO
 
-    Args:
-        rng_key (jax.random.PRNGKey): RNG Key to be passed to SVI.run().
-        numpyro_model (callable): Python callable containing `numpyro.primitives`/
-        Niter (int, optional): Number of iterations to run variational inference. Defaults to 100.
-        lr (float, optional): learning rate used for Adam optimizer. Defaults to 0.01.
+    Parameters
+    ----------
+        rng_key : jax.random.PRNGKey
+            RNG Key to be passed to SVI.run().
+        numpyro_model : callable
+            Python callable containing `numpyro.primitives`.
+        Niter : int, optional
+            Number of iterations to run variational inference. Defaults to 100.
+        lr : float, optional
+            learning rate used for Adam optimizer. Defaults to 0.01.
 
-    Returns:
-        SVIRunResult.params: parameters of the result of MAP optimization
+    Returns
+    -------
+        SVIRunResult.params : dict
+            parameters of the result of MAP optimization
     """
     guide = autoguide.AutoDelta(numpyro_model)
     optimizer = Adam(lr)
@@ -42,79 +50,87 @@ def find_map(rng_key, numpyro_model, *model_args, Niter=100, lr=0.01):
     return svi_results.params
 
 
-@jit
-def per_event_log_bayes_factor_log_neffs(weights):
+@partial(jit, static_argnames=["log"])
+def per_event_log_bayes_factors(weights, log=False):
+    r"""Calculates per-event log Bayes factors via importance sampling
+
+    .. math::
+
+        \mathrm{BF}_i = \int p(d_i|\theta)p(\theta|\Lambda) d\theta \approx
+        \frac{1}{N_s}\sum_{j=1}^{N_s} \frac{p(\theta|\Lambda)}{p(\theta|\Lambda_\emptyset)}
+
+    Parameters
+    ----------
+    weights : jax.DeviceArray
+        JAX array of weights to integrate over. Expected size of `(N_events,N_samples)`.
+    log : bool, optional
+        Flag to perform calculations in log probability. Interprets weights as log weights.
+        This is slower but more numerically stable. Defaults to False.
+
+    Returns
+    -------
+    jax.DeviceArray
+        Array of per-event log bayes factors.
+    jax.DeviceArray
+        Array of per-event log effective samples sizes from Monte Carlo integrals.
     """
-    per_event_log_bayes_factor_log_neffs calculate per event log BFs via Monte Carlo integrating.
-    Also return effective samples size for convergence checks.
-
-    Args:
-        weights (jax.DeviceArray): JAX array of weights to integrate over. Expected size of (N_events,N_samples)
-
-    Returns:
-        (jax.DeviceArray,jax.DeviceArray): array of per event logBF, array of per event N_eff from Monte Carlo Integral
-    """
-    BFs = jnp.sum(weights, axis=1)
-    n_effs = BFs**2 / jnp.sum(weights**2, axis=1)
-    BFs /= weights.shape[1]
-    return jnp.log(BFs), jnp.log(n_effs)
-
-
-@jit
-def mu_neff_injections(weights, Ninj):
-    """
-    mu_neff_injections calculates detection efficiency (mu) with Monte Carlo integration over found
-    injections along with the integrals effective sample size
-
-    Args:
-        weights (jax.DeviceArray): JAX array of weights to integrate over. Expected size of (N_found_injections,)
-        Ninj (int): total number of injections
-
-    Returns:
-        (jax.DeviceArray,jax.DeviceArray):  array of detection efficiency, array of N_eff from Monte Carlo Integral
-    """
-    mu = jnp.sum(weights) / Ninj
-    var = jnp.sum(weights**2) / Ninj**2 - mu**2 / Ninj
-    n_eff = mu**2 / var
-    return mu, n_eff
-
-
-@jit
-def per_event_log_bayes_factor_log_neffs_log(logweights):
-    """
-    per_event_log_bayes_factor_log_neffs_log calculate per event log BFs via Monte Carlo integrating.
-    Also return effective samples size for convergence checks. Performs calculation in log prob.
-
-    Args:
-        logweights (jax.DeviceArray): JAX array of logweights to integrate over. Expected size of (N_events,N_samples)
-
-    Returns:
-        (jax.DeviceArray,jax.DeviceArray): array of per event logBF, array of per event N_eff from Monte Carlo Integral
-    """
-    logBFs = logsumexp(logweights, axis=1)
-    logn_effs = 2 * logBFs - logsumexp(2 * logweights, axis=1)
-    logBFs -= jnp.log(logweights.shape[1])
+    if log:
+        logweights = weights
+        logBFs = logsumexp(logweights, axis=1)
+        logn_effs = 2 * logBFs - logsumexp(2 * logweights, axis=1)
+        logBFs -= jnp.log(logweights.shape[1])
+    else:
+        BFs = jnp.sum(weights, axis=1)
+        n_effs = BFs**2 / jnp.sum(weights**2, axis=1)
+        BFs /= weights.shape[1]
+        logBFs = jnp.log(BFs)
+        logn_effs = jnp.log(n_effs)
     return logBFs, logn_effs
 
 
-@jit
-def logmu_logneff_injections_log(logweights, Ninj):
-    """
-    logmu_logneff_injections_log calculates log detection efficiency (log_mu) with monte carlo
-    integration over found injections along with the integrals effective sample size.
-    Performs calculation in log prob.
+@partial(jit, static_argnames=["log"])
+def detection_efficiency(weights, Ninj, log=False):
+    r"""Calculates the detection efficiency -- the expected fraction of sources detected from a population
+    parameterized by :math:`\Lambda` -- estimated by importance sampling over the found injections from
+    a fiducial population parameterized by :math:`\Lambda_\emptyset`:
 
-    Args:
-        logweights (jax.DeviceArray): JAX array of log weights to integrate over. Expected size of (N_found_injections,)
-        Ninj (int): total number of injections
+    .. math::
 
-    Returns:
-        (jax.DeviceArray,jax.DeviceArray):  array of log detection efficiency, array of log N_eff from Monte Carlo Integral
+        \mu = \int P(\mathrm{det}|\theta)p(\theta|\Lambda) d\theta \approx
+        \frac{1}{N_\mathrm{found}}\sum_{i=1}^{N_\mathrm{found}} \frac{p(\theta_i|\Lambda)}{p(\theta_i | \Lambda_\emptyset)}
+
+    with Monte Carlo integration over found
+    injections, along with the effective sample size of the Monte Carlo integral.
+
+    Parameters
+    ----------
+    weights : jax.DeviceArray
+        JAX array of weights to integrate over. Expected size of (N_found_injections,).
+    Ninj : int
+        Total number of injections.
+    log : bool, optional
+        Flag to perform calculations in log probability. Interprets weights as log weights.
+        This is slower but more numerically stable. Defaults to False.
+
+    Returns
+    -------
+    jax.DeviceArray
+        Array of log detection efficiency.
+    jax.DeviceArray
+        Array of log N_eff from Monte Carlo Integral.
     """
-    logmu = logsumexp(logweights) - jnp.log(Ninj)
-    mu = jnp.exp(logmu)
-    var = jnp.sum(jnp.exp(logweights) ** 2) / Ninj**2 - mu**2 / Ninj
-    return logmu, jnp.log(mu**2 / var)
+    if log:
+        logweights = weights
+        logmu = logsumexp(logweights) - jnp.log(Ninj)
+        mu = jnp.exp(logmu)
+        var = jnp.sum(jnp.exp(logweights) ** 2) / Ninj**2 - mu**2 / Ninj
+        logn_eff = 2 * logmu - jnp.log(var)
+    else:
+        mu = jnp.sum(weights) / Ninj
+        var = jnp.sum(weights**2) / Ninj**2 - mu**2 / Ninj
+        logmu = jnp.log(mu)
+        logn_eff = 2 * logmu - jnp.log(var)
+    return logmu, logn_eff
 
 
 class TotalVTCalculator(object):
@@ -132,15 +148,17 @@ class TotalVTCalculator(object):
         self.dVdcs = jnp.array(Planck15.differential_comoving_volume(np.array(self.zs)).value * 4.0 * np.pi)
 
     def __call__(self, lamb=0):
-        """
-        __call__ perform trapezoidal integration to get total hypervolume
+        """Perform trapezoidal integration to get total hypervolume
 
-        Args:
-            lamb (int, optional): exponent of power-law rate evolution.
-            Defaults to 0 (uniform with co-moving volume).
+        Parameters
+        ----------
+        lamb : int, optional
+            Exponent of power-law rate evolution. Defaults to `0` (uniform with co-moving volume).
 
-        Returns:
-            (float): total hypervolume out to z=zmax. In units of Gpc^3*yr
+        Returns
+        -------
+        float
+            Total hypervolume out to `z=zmax`. In units of `Gpc^3*yr`.
         """
         return trapezoid(self.dVdcs * jnp.power(1 + self.zs, lamb - 1), self.zs)
 
@@ -168,44 +186,79 @@ def hierarchical_likelihood(
     m2min=3.0,
     m1min=5.0,
     mmax=100.0,
+    log=False,
 ):
-    """
-    hierarchical_likelihood performs the hierarchical likelihood calculation be
-        resampling over injections and pe samples from each event's individually done analyses. f
-        or reference see:
-    Args:
-        pe_weights (jax.DeviceArray): JAX array of weights evaluated at pe samples to integrate over.
-            Expected size of (N_events,N_samples)
-        inj_weights (jax.DeviceArray): JAX array of weights evaluated at found injections to integrate over.
-            Expected size of (N_found_injections,)
-        total_inj (int): total number of generated injections before cutting on found.
-        Nobs (int): Total number of observed events analyzing
-        Tobs (float): Time spent observing to produce catalog (in yrs)
-        categorical (bool, optional): set to True if using categorical model. Defaults to False.
-        marginal_qs (bool, optional):
-        indv_weights (jax.DeviceArray):
-        rngkey (jax.random.PRNGKey, optional): RNG Key to be passed to sample categorical variable.
-            Needed if categorical=True. Defaults to None.
-        pop_frac (tuple of floats, optional): Tuple of true astrophysical population fractions.
-            Shape is number of categorical subpopulatons and needs to sum to 1 and is needed if categorical=True.
-            Defaults to None.
-        surv_hypervolume_fct (callable, optional): callable function to calculate total VT
-            (normalization of the redshift model). Defaults to TotalVTCalculator().
-        vtfct_kwargs (dict, optional): diction of args needed to call surv_hypervolume_fct().
-            Defaults to {"lamb": 0}.
-        marginalize_selection (bool, optional): Flag to marginalize over uncertainty in
-            selection monte carlo integral. Defaults to True.
-        reconstruct_rate (bool, optional): Flag to reconstruct marginalize merger rate. Defaults to True.
-        min_neff_cut (bool, optional): flag to use the min_neff cut on the likelihood
-            ensuring monte carlo integrals converge. Defaults to True.
-        posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data to
-            perform posterior predictive check. Defaults to False.
-        param_names (iterable, optional): parameters to sample for PPCs. Defaults to None.
-        pedata (dict, optional): diction of PE data needed to perform PPCs. Defaults to None.
-        injdata (dict, optional): diction of found injection data needed to perform PPCs. Defaults to None.
-        m2min (float, optional): minimum mass for secondary components (solar masses). Defaults to 3.0.
-        m1min (float, optional): minimum mass for primary components (solar masses). Defaults to 6.5.
-        mmax (float, optional): maximum mass for primary components (solar masses). Defaults to 100.0.
+    """Performs the hierarchical likelihood calculation using importance sampling
+    over injections and PE samples from each event's posterior samples assuming
+    a fiducial prior density.
+
+    Parameters
+    ----------
+    pe_weights : jax.DeviceArray
+        Array of weights evaluated at PE samples to integrate over.
+        If `log=True` this is expected to be the **log** of the weights.
+        Expected size of `(N_events,N_samples)`.
+    inj_weights : jax.DeviceArray
+        Array of weights evaluated at found injections to integrate over.
+        If `log=True` this is expected to be the **log** of the weights.
+        Expected size of `(N_found_injections,)`.
+    total_inj : int
+        Total number of generated injections before cutting on found.
+    Nobs : int
+        Total number of observed events analyzing.
+    Tobs : float
+        Time spent observing to produce catalog (in yrs).
+    categorical : bool, optional
+        If `True` use latent categorical parameters to assign
+        each event to one of many subpopulations. Defaults to `False`.
+    marginal_qs : bool, optional
+        TODO: add description!
+    indv_weights : jax.DeviceArray
+        TODO: add description!
+    rngkey : jax.random.PRNGKey, optional
+        RNG Key to be passed to sample categorical variable.
+        Needed if `categorical=True`. Defaults to `None`.
+    pop_frac : tuple of floats, optional
+        Tuple of true astrophysical population fractions.
+        Shape is number of categorical subpopulations, needs to sum to 1, and is
+        needed if `categorical=True`. Defaults to `None`.
+    surv_hypervolume_fct : callable, optional
+        Callable function to calculate total VT (normalization of the redshift model).
+        Defaults to `TotalVTCalculator()`.
+    vtfct_kwargs : dict, optional
+        Diction of args needed to call `surv_hypervolume_fct()`.
+        Defaults to `{"lamb": 0}`.
+    marginalize_selection : bool, optional
+        Flag to marginalize over uncertainty in selection monte carlo integral.
+        Defaults to `True`.
+    reconstruct_rate : bool, optional
+        Flag to reconstruct marginalize merger rate. Defaults to `True`.
+    min_neff_cut : bool, optional
+        Flag to use the `min_neff` cut on the likelihood ensuring Monte Carlo
+        integrals converge. Defaults to `True`.
+    posterior_predictive_check : bool, optional
+        Flag to sample from the PE/injection data to perform posterior predictive check.
+        Defaults to `False`.
+    param_names : iterable, optional
+        Parameters to sample for PPCs. Defaults to `None`.
+    pedata : dict, optional
+        Dictionary of PE data needed to perform PPCs. Defaults to `None`.
+    injdata : dict, optional
+        Dictionary of found injection data needed to perform PPCs. Defaults to `None`.
+    m2min : float, optional
+        Minimum mass for secondary components (solar masses). Defaults to `3.0`.
+    m1min : float, optional
+        Minimum mass for primary components (solar masses). Defaults to `5.0`.
+    mmax : float, optional
+        Maximum mass for primary components (solar masses). Defaults to `100.0`.
+    log : bool, optional
+        Flag to perform calculations in log space. Interprets weights as log weights.
+        This is slower but more numerically stable. Defaults to `False`.
+
+    Returns
+    -------
+    float
+        Marginalized merger rate in units of `Gpc^-3 yr^-1`.
     """
     rate = None
     if categorical:
@@ -217,50 +270,64 @@ def hierarchical_likelihood(
             ).reshape((-1, 1))
             selector = [jnp.equal(Qs, ii) for ii in range(len(pop_frac))]
             mix_pe_weights = jnp.select(selector, pe_weights)
-            logBFs, logn_effs = per_event_log_bayes_factor_log_neffs(mix_pe_weights)
-            pe_weights = sum([p * pew for p, pew in zip(pop_frac, pe_weights)])
+            logBFs, logn_effs = per_event_log_bayes_factors(mix_pe_weights, log=log)
+            if log:
+                pe_weights = logsumexp(pe_weights, b=pop_frac, axis=0)
+            else:
+                pe_weights = sum([p * pew for p, pew in zip(pop_frac, pe_weights)])  # TODO: @jaxen: can we replace with the following:
+                # pe_weights = jnp.sum(pop_frac * pe_weights, axis=0)
     else:
-        logBFs, logn_effs = per_event_log_bayes_factor_log_neffs(pe_weights)
+        logBFs, logn_effs = per_event_log_bayes_factors(pe_weights, log=log)
 
-    vt_factor, n_eff_inj = mu_neff_injections(inj_weights, total_inj)
-    numpyro.deterministic("log_nEff_inj", jnp.log(n_eff_inj))
+    log_det_eff, logn_eff_inj = detection_efficiency(inj_weights, total_inj, log=log)
+    numpyro.deterministic("log_nEff_inj", logn_eff_inj)
     numpyro.deterministic("log_nEffs", logn_effs)
     numpyro.deterministic("logBFs", logBFs)
-    numpyro.deterministic("detection_efficency", vt_factor)
+    numpyro.deterministic("detection_efficiency", jnp.exp(log_det_eff))
     if reconstruct_rate:
         total_vt = numpyro.deterministic("surveyed_hypervolume", surv_hypervolume_fct(**vtfct_kwargs) / 1.0e9 * Tobs)
         unscaled_rate = numpyro.sample("unscaled_rate", dist.Gamma(Nobs))
-        rate = numpyro.deterministic("rate", unscaled_rate / vt_factor / total_vt)
+        rate = numpyro.deterministic("rate", unscaled_rate / jnp.exp(log_det_eff) / total_vt)
     if marginalize_selection:
-        vt_factor = jnp.where(
-            jnp.greater_equal(n_eff_inj, 4 * Nobs),
-            vt_factor / jnp.exp((3 + Nobs) / 2 / n_eff_inj),
+        log_det_eff = jnp.where(
+            jnp.greater_equal(logn_eff_inj, jnp.log(4 * Nobs)),
+            log_det_eff - (3 + Nobs) / (2 * jnp.exp(logn_eff_inj)),
             jnp.inf,
         )
     sel = numpyro.deterministic(
         "selection_factor",
-        jnp.where(jnp.isinf(vt_factor), jnp.nan_to_num(-jnp.inf), -Nobs * jnp.log(vt_factor)),
+        jnp.where(jnp.isinf(log_det_eff), jnp.nan_to_num(-jnp.inf), -Nobs * log_det_eff),
     )
     sumlogBFs = numpyro.deterministic("sum_logBFs", jnp.sum(logBFs))
-    log_l = numpyro.deterministic("log_l", sel + sumlogBFs)
+    log_l = sel + sumlogBFs
+    log_l = numpyro.deterministic(
+        "log_l",
+        jnp.where(
+            jnp.isnan(log_l),
+            jnp.nan_to_num(-jnp.inf),
+            jnp.nan_to_num(log_l),
+        ),
+    )
 
-    # TODO: clean this up, make value of min_neff a fucntion kwarg
+    # TODO: clean this up, make value of min_neff a function kwarg
     if min_neff_cut:
-
-        mins = jnp.min(jnp.nan_to_num(logn_effs))
-        cut_log_l = numpyro.deterministic(
-            "neff_less_4obs", jnp.where(jnp.less_equal(jnp.exp(mins), Nobs), jnp.nan_to_num(-jnp.inf), jnp.nan_to_num(log_l))
+        min_n_effs = jnp.exp(jnp.min(jnp.nan_to_num(logn_effs)))
+        log_l = numpyro.deterministic(
+            "neff_less_Nobs",
+            jnp.where(
+                jnp.less_equal(min_n_effs, Nobs),
+                jnp.nan_to_num(-jnp.inf),
+                log_l,
+            ),
         )
 
-        numpyro.factor("log_likelihood", cut_log_l)
+    numpyro.factor("log_likelihood", log_l)
 
-    else:
-        numpyro.factor(
-            "log_likelihood",
-            jnp.where(jnp.isnan(log_l), jnp.nan_to_num(-jnp.inf), jnp.nan_to_num(log_l)),
-        )
     if posterior_predictive_check:
         if param_names is not None and injdata is not None and pedata is not None:
+            if log:
+                pe_weights = jnp.exp(pe_weights)
+                inj_weights = jnp.exp(inj_weights)
             cond = jnp.less(pedata["mass_1"], m1min) | jnp.greater(pedata["mass_1"], mmax)
             pe_weights = jnp.where(
                 cond | jnp.less(pedata["mass_1"] * pedata["mass_ratio"], m2min),
@@ -292,126 +359,6 @@ def hierarchical_likelihood(
                     numpyro.deterministic(f"{p}_obs_event_{ev}", pedata[p][ev, obs_idx])
                     numpyro.deterministic(f"{p}_pred_event_{ev}", injdata[p][pred_idx])
     return rate
-
-
-def hierarchical_likelihood_in_log(
-    logpe_weights,
-    loginj_weights,
-    total_inj,
-    Nobs,
-    Tobs,
-    surv_hypervolume_fct=TotalVTCalculator(),
-    vtfct_kwargs={"lamb": 0},
-    marginalize_selection=True,
-    reconstruct_rate=True,
-    min_neff_cut=True,
-    posterior_predictive_check=False,
-    param_names=None,
-    pedata=None,
-    injdata=None,
-    m2min=3.0,
-    m1min=6.5,
-    mmax=100.0,
-):
-    """
-    hierarchical_likelihood_log performs the hierarchical likeihood calculation in log probability
-        by resampling over injections and pe samples from each event's indiviudally done analayses.
-        for reference see:
-    Args:
-        logpe_weights (jax.DeviceArray): JAX array of log weights evaluated at pe samples to integrate over.
-            Expected size of (N_events,N_samples)
-        loginj_weights (jax.DeviceArray): JAX array of log weights evaluated at found injections to
-            integrate over. Expected size of (N_found_injections,)
-        total_inj (int): total number of generated injections before cutting on found.
-        Nobs (int): Total number of observed events analyzing
-        Tobs (float): Time spent observing to produce catalog (in yrs)
-        surv_hypervolume_fct (callable, optional): callable function to calculate total
-            VT (normalization of the redshift model). Defaults to TotalVTCalculator().
-        vtfct_kwargs (dict, optional): diction of args needed to call
-            surv_hypervolume_fct(). Defaults to {"lamb": 0}.
-        marginalize_selection (bool, optional): Flag to marginalize over uncertainty in
-            selection monte carlo integral. Defaults to True.
-        reconstruct_rate (bool, optional): Flag to reconstruct marginalize
-            merger rate. Defaults to True.
-        min_neff_cut (bool, optional): flag to use the min_neff cut on the likelihood
-            ensuring monte carlo integrals converge. Defaults to True.
-        posterior_predictive_check (bool, optional): Flag to sample from the PE/injection data
-            to perform posterior predictive check. Defaults to False.
-        param_names (iterable, optional): parameters to sample for PPCs. Defaults to None.
-        pedata (dict, optional): diction of PE data needed to perform PPCs. Defaults to None.
-        injdata (dict, optional): diction of found injection data needed to perform PPCs. Defaults to None.
-        m2min (float, optional): mininmum mass for secondary components (solar masses). Defaults to 3.0.
-        m1min (float, optional): mininmum mass for primary components (solar masses). Defaults to 6.5.
-        mmax (float, optional): maximum mass for primary components (solar masses). Defaults to 100.0.
-    """
-    logBFs, logn_effs = per_event_log_bayes_factor_log_neffs_log(logpe_weights)
-    log_vt_factor, logn_eff_inj = logmu_logneff_injections_log(loginj_weights, total_inj)
-    numpyro.deterministic("log_nEff_inj", logn_eff_inj)
-    numpyro.deterministic("log_nEffs", logn_effs)
-    numpyro.deterministic("logBFs", logBFs)
-    vt_factor = numpyro.deterministic("detection_efficency", jnp.exp(log_vt_factor))
-    if reconstruct_rate:
-        total_vt = numpyro.deterministic("surveyed_hypervolume", surv_hypervolume_fct(**vtfct_kwargs) / 1.0e9 * Tobs)
-        unscaled_rate = numpyro.sample("unscaled_rate", dist.Gamma(Nobs))
-        numpyro.deterministic("rate", unscaled_rate / vt_factor / total_vt)
-    if marginalize_selection:
-        log_vt_factor = jnp.where(
-            jnp.greater_equal(logn_eff_inj, jnp.log(4 * Nobs)),
-            log_vt_factor - (3 + Nobs) / (2 * jnp.exp(logn_eff_inj)),
-            jnp.inf,
-        )
-    sel = numpyro.deterministic(
-        "selection_factor",
-        jnp.where(jnp.isinf(log_vt_factor), jnp.nan_to_num(-jnp.inf), -Nobs * log_vt_factor),
-    )
-    sumlogBFs = numpyro.deterministic("sum_logBFs", jnp.sum(logBFs))
-    log_l = numpyro.deterministic("log_l", sel + sumlogBFs)
-
-    # TODO: Clean this up, make min_neff a function kwarg
-    if min_neff_cut:
-        numpyro.factor(
-            "log_likelihood",
-            jnp.where(
-                jnp.isnan(log_l) | jnp.less_equal(jnp.exp(jnp.min(logn_effs)), Nobs),
-                jnp.nan_to_num(-jnp.inf),
-                jnp.nan_to_num(log_l),
-            ),
-        )
-    else:
-        numpyro.factor(
-            "log_likelihood",
-            jnp.where(jnp.isnan(log_l), jnp.nan_to_num(-jnp.inf), jnp.nan_to_num(log_l)),
-        )
-    if posterior_predictive_check:
-        if param_names is not None and injdata is not None and pedata is not None:
-            pe_weights = jnp.exp(logpe_weights)
-            inj_weights = jnp.exp(loginj_weights)
-            cond = jnp.less(pedata["mass_1"], m1min) | jnp.greater(pedata["mass_1"], mmax)
-            pe_weights = jnp.where(
-                cond | jnp.less(pedata["mass_1"] * pedata["mass_ratio"], m2min),
-                0,
-                pe_weights,
-            )
-            inj_weights = jnp.where(
-                jnp.less(injdata["mass_1"], m1min)
-                | jnp.greater(injdata["mass_1"], mmax)
-                | jnp.less(injdata["mass_1"] * injdata["mass_ratio"], m2min),
-                0,
-                inj_weights,
-            )
-
-            for ev in range(Nobs):
-                k = random.PRNGKey(ev)
-                k1, k2 = random.split(k)
-                obs_idx = random.choice(
-                    k1,
-                    pe_weights.shape[1],
-                    p=pe_weights[ev, :] / jnp.sum(pe_weights[ev, :]),
-                )
-                pred_idx = random.choice(k2, inj_weights.shape[0], p=inj_weights / jnp.sum(inj_weights))
-                for p in param_names:
-                    numpyro.deterministic(f"{p}_obs_event_{ev}", pedata[p][ev, obs_idx])
-                    numpyro.deterministic(f"{p}_pred_event_{ev}", injdata[p][pred_idx])
 
 
 def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marginalize_selection=False, posterior_predictive_check=True):
@@ -452,7 +399,7 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
         inj_weights = jnp.sum(jnp.array([pop_models[k].log_prob(injs[k]) for k in source_param_names]), axis=0) - jnp.log(injs["prior"])
         pe_weights = jnp.sum(jnp.array([pop_models[k].log_prob(samps[k]) for k in source_param_names]), axis=0) - jnp.log(samps["prior"])
 
-        hierarchical_likelihood_in_log(
+        hierarchical_likelihood(
             pe_weights,
             inj_weights,
             total_inj=Ninj,
@@ -469,6 +416,7 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
             m1min=2.0,
             m2min=2.0,
             mmax=100.0,
+            log=True,
         )
 
     return model
