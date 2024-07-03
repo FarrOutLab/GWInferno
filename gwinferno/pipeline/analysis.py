@@ -274,8 +274,7 @@ def hierarchical_likelihood(
             if log:
                 pe_weights = logsumexp(pe_weights, b=pop_frac, axis=0)
             else:
-                pe_weights = sum([p * pew for p, pew in zip(pop_frac, pe_weights)])  # TODO: @jaxen: can we replace with the following:
-                # pe_weights = jnp.sum(pop_frac * pe_weights, axis=0)
+                pe_weights = jnp.sum(pop_frac * pe_weights, axis=0)
     else:
         logBFs, logn_effs = per_event_log_bayes_factors(pe_weights, log=log)
 
