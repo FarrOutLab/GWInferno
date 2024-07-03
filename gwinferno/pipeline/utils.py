@@ -174,7 +174,7 @@ def posterior_dict_to_xarray(posteriors):
         posteriors[key] = {"dims": "sample", "data": posteriors[key]}
 
         if posteriors[key]["data"].shape != (n_samples,):
-            new_dims = ["samples"] + [f"{key}_dim{i+2}" for i in range(len(posteriors[key]["data"].shape) - 1)]
+            new_dims = ["samples"] + [f"{key}_dim{i + 2}" for i in range(len(posteriors[key]["data"].shape) - 1)]
             posteriors[key]["dims"] = new_dims
 
     return xr.Dataset.from_dict(posteriors)
