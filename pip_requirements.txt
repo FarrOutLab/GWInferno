@@ -1,6 +1,6 @@
 astropy
 tqdm
-xarray
+xarray==2023.6.0
 deepdish
 arviz
 funsor
