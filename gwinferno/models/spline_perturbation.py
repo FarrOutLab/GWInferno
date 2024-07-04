@@ -9,7 +9,7 @@ from jax.scipy.integrate import trapezoid
 from ..distributions import powerlaw_pdf
 from ..interpolation import BSpline
 from ..interpolation import LogXBSpline
-from .gwpopulation.gwpopulation import PowerlawRedshiftModel
+from .parametric.parametric import PowerlawRedshiftModel
 
 
 class PowerlawBasisSplinePrimaryPowerlawRatio(object):

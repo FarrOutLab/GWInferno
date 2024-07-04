@@ -12,8 +12,8 @@ from jax.scipy.integrate import trapezoid
 from numpyro.infer import MCMC
 from numpyro.infer import NUTS
 
-from gwinferno.models.gwpopulation.gwpopulation import PowerlawRedshiftModel
-from gwinferno.models.gwpopulation.gwpopulation import powerlaw_primary_ratio_pdf
+from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
+from gwinferno.models.parametric.parametric import powerlaw_primary_ratio_pdf
 from gwinferno.pipeline.analysis import construct_hierarchical_model
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.pipeline.parser import ConfigReader
