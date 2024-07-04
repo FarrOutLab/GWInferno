@@ -39,10 +39,9 @@ class TestTruncatedModelInference(unittest.TestCase):
             pref = "tests/data"
         self.data_dir = pref
         self.inj_file = f"{pref}/injections.h5"
-        self.param_names = ["mass_1", "mass_ratio", "redshift", "prior"]
-        self.param_map = {p: i for i, p in enumerate(self.param_names)}
+        self.param_names = ["mass_1", "mass_ratio", "redshift", "prior", 'chi_eff']
         self.pedict, self.Nobs, self.Nsamples = self.load_data()
-        self.injdict, self.total_inj, self.obs_time = self.load_injections(through_o4a=False, through_o3=True)
+        self.injdict, self.total_inj, self.obs_time = self.load_injs(through_o4a=False, through_o3=True)
         self.z_model = self.setup_redshift_model()
         self.truncated_numpyro_model = self.setup_numpyro_model()
 
@@ -55,7 +54,6 @@ class TestTruncatedModelInference(unittest.TestCase):
         del self.obs_time
         del self.Nobs
         del self.Nsamples
-        del self.param_map
         del self.param_names
         del self.z_model
         del self.truncated_numpyro_model
@@ -91,7 +89,7 @@ class TestTruncatedModelInference(unittest.TestCase):
         for param in self.pedict.keys():
             self.assertEqual(self.pedict[param].shape, (self.Nobs, self.Nsamples))
 
-    def load_injections(self, **kwargs):
+    def load_injs(self, **kwargs):
         p_names = self.param_names.copy()
         p_names.remove("prior")
         injections = load_injections(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
