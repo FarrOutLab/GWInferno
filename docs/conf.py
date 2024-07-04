@@ -19,7 +19,6 @@ extensions = [
     "sphinx.ext.mathjax",
     "numpydoc",
     "nbsphinx",
-    "sphinx.ext.autosummary",
     "sphinx.ext.autosectionlabel",
     "sphinx_tabs.tabs",
     "sphinx.ext.viewcode",

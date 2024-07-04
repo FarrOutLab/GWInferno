@@ -1,5 +1,5 @@
 """
-a module that stores 2D seperable (i.e. independent) population models constructed from bsplines
+a module that stores 2D separable (i.e. independent) population models constructed from basis splines
 """
 
 import jax.numpy as jnp
@@ -21,13 +21,13 @@ class BSplineIIDSpinMagnitudes(object):
 
     Args:
         n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        a1 (array_like): primary component spin magntiude pe samples to evaluate the basis spline at
-        a2 (array_like): secondary component spin magntiude pe samples to evaluate the basis spline at
-        a1_inj (array_like): primary component spin magnitude injection samples to evalute the basis spline at
-        a2_inj (array_like): secondary component spin magnitude injection samples to evalute the basis spline at
+        a1 (array_like): primary component spin magnitude pe samples to evaluate the basis spline at
+        a2 (array_like): secondary component spin magnitude pe samples to evaluate the basis spline at
+        a1_inj (array_like): primary component spin magnitude injection samples to evaluate the basis spline at
+        a2_inj (array_like): secondary component spin magnitude injection samples to evaluate the basis spline at
         knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
                 Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
     """
 
     def __init__(
@@ -77,21 +77,21 @@ class BSplineIIDSpinMagnitudes(object):
 
 
 class BSplineIndependentSpinMagnitudes(object):
-    """Class to construct a spin magnitude B-Spline model for both binary components, assuming they are indipendently distributed.
+    """Class to construct a spin magnitude B-Spline model for both binary components, assuming they are independently distributed.
 
     Args:
         n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component
         n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component
-        a1 (array_like): primary component spin magntiude pe samples to evaluate the basis spline at
-        a2 (array_like): secondary component spin magntiude pe samples to evaluate the basis spline at
-        a1_inj (array_like): primary component spin magnitude injection samples to evalute the basis spline at
-        a2_inj (array_like): secondary component spin magnitude injection samples to evalute the basis spline at
+        a1 (array_like): primary component spin magnitude pe samples to evaluate the basis spline at
+        a2 (array_like): secondary component spin magnitude pe samples to evaluate the basis spline at
+        a1_inj (array_like): primary component spin magnitude injection samples to evaluate the basis spline at
+        a2_inj (array_like): secondary component spin magnitude injection samples to evaluate the basis spline at
         knots1 (array_like, optional): array of knots for the primary component, if non-uniform knot placing is preferred.
                 Defaults to None.
-        degree1 (int, optional): degree of primary component spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+        degree1 (int, optional): degree of primary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
         knots2 (array_like, optional): array of knots for the secondary component, if non-uniform knot placing is preferred.
                 Defaults to None.
-        degree2 (int, optional): degree of secondary component spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+        degree2 (int, optional): degree of secondary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
     """
 
     def __init__(
@@ -147,17 +147,17 @@ class BSplineIndependentSpinMagnitudes(object):
 class BSplineIIDSpinTilts(object):
     """
     Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components,
-    assuming they are indipendently and identically distributed (IID).
+    assuming they are independently and identically distributed (IID).
 
     Args:
         n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines
         ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at
         ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at
-        ct1_inj (array_like): primary component cosine tilt injection samples to evalute the basis spline at
-        ct2_inj (array_like): secondary component cosine tilt injection samples to evalute the basis spline at
+        ct1_inj (array_like): primary component cosine tilt injection samples to evaluate the basis spline at
+        ct2_inj (array_like): secondary component cosine tilt injection samples to evaluate the basis spline at
         knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
                 Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
     """
 
     def __init__(
@@ -189,7 +189,7 @@ class BSplineIIDSpinTilts(object):
         )
 
     def __call__(self, coefs, pe_samples=True):
-        """will evalute the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
+        """will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -206,21 +206,21 @@ class BSplineIIDSpinTilts(object):
 
 
 class BSplineIndependentSpinTilts(object):
-    """Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are indipendently distributed.
+    """Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are independently distributed.
 
     Args:
         n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component
         n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component
         ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at
         ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at
-        ct1_inj (array_like): primary component cosine tilt injection samples to evalute the basis spline at
-        ct2_inj (array_like): secondary component cosine tilt injection samples to evalute the basis spline at
+        ct1_inj (array_like): primary component cosine tilt injection samples to evaluate the basis spline at
+        ct2_inj (array_like): secondary component cosine tilt injection samples to evaluate the basis spline at
         knots1 (array_like, optional): array of knots for the primary binary component, if non-uniform knot placing is preferred.
                 Defaults to None.
-        degree1 (int, optional): degree of the spline for the primary binary component, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+        degree1 (int, optional): degree of the spline for the primary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
         knots2 (array_like, optional): array of knots for the secondary binary component, if non-uniform knot placing is preferred.
                 Defaults to None.
-        degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+        degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
     """
 
     def __init__(
@@ -255,7 +255,7 @@ class BSplineIndependentSpinTilts(object):
         )
 
     def __call__(self, pcoefs, scoefs, pe_samples=True):
-        """will evalute the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
+        """will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -283,8 +283,8 @@ class BSplinePrimaryPowerlawRatio(object):
         mmax (float, optional): maximum mass value. Spline is truncated above this maximum mass. Defaults to 100.
         knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
                 Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
-        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to Bspline.
+        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to BSpline.
     """
 
     def __init__(
@@ -312,7 +312,7 @@ class BSplinePrimaryPowerlawRatio(object):
         )
 
     def __call__(self, m1, q, beta, mmin, coefs, pe_samples=True):
-        """will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
+        """will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -345,7 +345,7 @@ class PLPeakPrimaryBSplineRatio(object):
         m1_inj (float, optional): primary mass injection samples
         knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
                 Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
     """
 
     def __init__(
@@ -365,7 +365,7 @@ class PLPeakPrimaryBSplineRatio(object):
         )
 
     def __call__(self, m1, coefs, pe_samples=True, **kwargs):
-        """will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
+        """will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -398,13 +398,13 @@ class BSplinePrimaryBSplineRatio(object):
                 Defaults to None.
         knots_q (array_like, optional): mass ratio array of knots, if non-uniform knot placing is preferred.
                 Defaults to None.
-        degree_m (int, optional): degree of the primary mass spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline)
-        degree_q (int, optional): degree of the mass ratio spline, i.e. cubcic splines = 3. Defaults to 3 (cubic spline)
+        degree_m (int, optional): degree of the primary mass spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)
+        degree_q (int, optional): degree of the mass ratio spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)
         m1min (float, optional): minimum primary mass value. Primary mass spline is truncated below this minimum mass. Defaults to 3.
         m2min (float, optional): minimum secondary mass value. Mass ratio spline is truncated below m2min/mmax. Defaults to 3.
         mmax (float, optional): maximum mass value. Primary mass spline is truncated above this maximum mass. Defaults to 100.
-        basis_m (class, optional): type of basis to use (ex. LogYBSpline) for primary mass spline. Defaults to Bspline.
-        basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to Bspline.
+        basis_m (class, optional): type of basis to use (ex. LogYBSpline) for primary mass spline. Defaults to BSpline.
+        basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to BSpline.
     """
 
     def __init__(
@@ -449,7 +449,7 @@ class BSplinePrimaryBSplineRatio(object):
         )
 
     def __call__(self, mcoefs, qcoefs, pe_samples=True):
-        """will evalute the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
+        """will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -513,7 +513,7 @@ class BSplineIIDComponentMasses(object):
         self.qs = [m2_inj / m1_inj, m2 / m1]
 
     def __call__(self, coefs, beta=0, pe_samples=True):
-        """will evalute the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.
+        """will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -536,7 +536,7 @@ class BSplineIIDComponentMasses(object):
 
 
 class BSplineIndependentComponentMasses(object):
-    """Class to construct a B-Spline model in primary mass and secondary mass, assuming the two binary mass components are idependently distributed.
+    """Class to construct a B-Spline model in primary mass and secondary mass, assuming the two binary mass components are independently distributed.
 
     Args:
         n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines
@@ -551,8 +551,8 @@ class BSplineIndependentComponentMasses(object):
         mmax1 (float, optional): maximum primary mass value. Spline is truncated above this maximum mass. Defaults to 100.
         mmin2 (float, optional): minimum secondary mass value. Spline is truncated below this minimum mass. Defaults to 2.
         mmax2 (float, optional): maximum secondary mass value. Spline is truncated above this maximum mass. Defaults to 100.
-        degree1 (int, optional): degree of the spline for the primary mass, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
-        degree2 (int, optional): degree of the spline for the secondary mass, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+        degree1 (int, optional): degree of the spline for the primary mass, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+        degree2 (int, optional): degree of the spline for the secondary mass, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
     """
 
     def __init__(
@@ -590,11 +590,10 @@ class BSplineIndependentComponentMasses(object):
             mmax=mmax2,
             degree=degree2,
         )
-
         self.qs = [m2_inj / m1_inj, m2 / m1]
 
     def __call__(self, pcoefs, scoefs, beta, pe_samples=True):
-        """will evalute the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.
+        """will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -621,14 +620,14 @@ class BSplineEffectiveSpinDims(object):
     Args:
         n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines
         n_splines2 (int): number of degrees of freedom of secondary mass basis, i.e. number of basis splines
-        chieff(array_like): chi effective pe samples to evalute the basis spline at
-        chip (array_like): chi_p pe samples to evalute the basis spline at
-        chieff_inj (array_like): chi effective injection samples to evalute the basis spline at
-        chip_inj (array_like): chi_p injection samples to evalute the basis spline at
+        chieff(array_like): chi effective pe samples to evaluate the basis spline at
+        chip (array_like): chi_p pe samples to evaluate the basis spline at
+        chieff_inj (array_like): chi effective injection samples to evaluate the basis spline at
+        chip_inj (array_like): chi_p injection samples to evaluate the basis spline at
         knotse (array_like, optional): array of chi effective knots, if non-uniform knot placing is preferred. Defaults to None.
         knotsp (array_like, optional): array of chi_p knots, if non-uniform knot placing is preferred. Defaults to None.
-        degree_e (int, optional): degree of the spline for chi effective, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
-        degree_p (int, optional): degree of the spline for chi_p, i.e. cubcic splines = 3. Defaults to 3 (cubic spline).
+        degree_e (int, optional): degree of the spline for chi effective, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+        degree_p (int, optional): degree of the spline for chi_p, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
     """
 
     def __init__(
@@ -661,7 +660,7 @@ class BSplineEffectiveSpinDims(object):
         )
 
     def __call__(self, ecoefs, pcoefs, pe_samples=True):
-        """will evalute the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.
+        """will evaluate the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:

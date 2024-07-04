@@ -55,7 +55,7 @@ With this file written and ready to go run to perform inference with a single co
 
 
 Now defining models in this way may not be able to handle complex model declarations, that have correlated population distributions or mixtures 
-models over components of different parameters. 
+models over components of different parameters.
 
 Currently, All 1D model distributions either single or mixture models (in one parameter, i.e. Powerlaw+Peak) are supported along with defining two 
 population parameters to share a model when assuming they are IID (i.e. spin magnitudes or tilts usually assumed to be IID between binary components).
@@ -74,10 +74,10 @@ For example one defines a python file declared model in the `config.yml` file as
             python_file: gwinferno/pipeline/config_files/example_python_model.py
 
 The requirements for this model definition within the python file include:
-- Must at least take in PEsamples, Found injections, Number of Observations, Total number of injections, and total observing time (in yrs) as the initial 5 positional arguments of the model. 
-- Define hyper-parameters and priors along with population distributions then interface with GWInferno's likleihood calculation with `gwinferno.pipeline.analysis.hierarchical_likelihood_in_log`
-- Main input to this likelihood function is the weights calcaulated at all of the PE samples and Found injections
-- Input weights need to have shapes of (Nobs, N_PEsamples) for PE samples weights where Nobs is the number of events in catalog and N_PEsamples is the nubmber of posteror samples each event contains
+- Must at least take in PE samples, Found injections, Number of Observations, Total number of injections, and total observing time (in yrs) as the initial 5 positional arguments of the model.
+- Define hyper-parameters and priors along with population distributions then interface with GWInferno's likelihood calculation with `gwinferno.pipeline.analysis.hierarchical_likelihood`
+- Main input to this likelihood function is the weights calculated at all the PE samples and Found injections
+- Input weights need to have shapes of (Nobs, N_PEsamples) for PE samples weights where Nobs is the number of events in catalog and N_PEsamples is the number of posterior samples each event contains
 - Input weights for found injections need to be of shape (N_found,) where N_found is the total number of found injections remaining.
 
 For example here is how one would define a numpyro probabilistic model in a python file to be passed to GWInferno's infrastructure
@@ -90,7 +90,7 @@ For example here is how one would define a numpyro probabilistic model in a pyth
 
         from gwinferno.numpyro_distributions import Powerlaw
         from gwinferno.numpyro_distributions import PowerlawRedshift
-        from gwinferno.pipeline.analysis import hierarchical_likelihood_in_log
+        from gwinferno.pipeline.analysis import hierarchical_likelihood
 
 
         def model(samps, injs, Ninj, Nobs, Tobs):
@@ -107,7 +107,7 @@ For example here is how one would define a numpyro probabilistic model in a pyth
             inj_weights = m1dist.log_prob(injs["mass_1"]) + qdist.log_prob(injs["mass_ratio"]) + zdist.log_prob(injs["redshift"]) - jnp.log(injs["prior"])
             pe_weights = m1dist.log_prob(samps["mass_1"]) + qdist.log_prob(samps["mass_ratio"]) + zdist.log_prob(samps["redshift"]) - jnp.log(samps["prior"])
 
-            hierarchical_likelihood_in_log(
+            hierarchical_likelihood(
                 pe_weights,
                 inj_weights,
                 total_inj=Ninj,
@@ -128,4 +128,5 @@ For example here is how one would define a numpyro probabilistic model in a pyth
                 m1min=mmin,
                 m2min=mmin,
                 mmax=mmax,
+                log=True,
             )
