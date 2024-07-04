@@ -31,8 +31,6 @@ gwinferno.models.bsplines
    :recursive:
 
    
-   joint
-   
    separable
    
    single

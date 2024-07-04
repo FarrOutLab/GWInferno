@@ -1,6 +1,0 @@
-gwinferno.postprocess.calculate\_ppds.calculate\_iid\_spin\_bspline\_weights
-============================================================================
-
-.. currentmodule:: gwinferno.postprocess.calculate_ppds
-
-.. autofunction:: calculate_iid_spin_bspline_weights

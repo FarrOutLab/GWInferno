@@ -1,6 +1,0 @@
-gwinferno.models.mass\_gap.powerlaw\_gap\_primary\_ratio\_pdf
-=============================================================
-
-.. currentmodule:: gwinferno.models.mass_gap
-
-.. autofunction:: powerlaw_gap_primary_ratio_pdf

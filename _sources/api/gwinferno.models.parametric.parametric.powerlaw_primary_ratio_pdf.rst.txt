@@ -1,0 +1,6 @@
+gwinferno.models.parametric.parametric.powerlaw\_primary\_ratio\_pdf
+====================================================================
+
+.. currentmodule:: gwinferno.models.parametric.parametric
+
+.. autofunction:: powerlaw_primary_ratio_pdf

@@ -23,7 +23,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.models.bsplines.smoothing.adaptive_difference_prior" href="gwinferno.models.bsplines.smoothing.adaptive_difference_prior.html" />
+    <link rel="next" title="gwinferno.models.bsplines.smoothing.apply_difference_prior" href="gwinferno.models.bsplines.smoothing.apply_difference_prior.html" />
     <link rel="prev" title="gwinferno.models.bsplines.single.Base1DBSplineModel" href="gwinferno.models.bsplines.single.Base1DBSplineModel.html" /> 
 </head>
 
@@ -66,21 +66,15 @@
 <li class="toctree-l1"><a class="reference internal" href="gwinferno.interpolation.html">gwinferno.interpolation</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="gwinferno.models.bsplines.html">gwinferno.models.bsplines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.joint.html">gwinferno.models.bsplines.joint</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.separable.html">gwinferno.models.bsplines.separable</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.models.bsplines.single.html">gwinferno.models.bsplines.single</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">gwinferno.models.bsplines.smoothing</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.adaptive_difference_prior.html">gwinferno.models.bsplines.smoothing.adaptive_difference_prior</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.apply_difference_prior.html">gwinferno.models.bsplines.smoothing.apply_difference_prior</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.apply_twod_difference_prior.html">gwinferno.models.bsplines.smoothing.apply_twod_difference_prior</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.get_adaptive_Lambda.html">gwinferno.models.bsplines.smoothing.get_adaptive_Lambda</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.smoothing.mixture_smoothing_parameter.html">gwinferno.models.bsplines.smoothing.mixture_smoothing_parameter</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.gwpopulation.html">gwinferno.models.gwpopulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.mass_gap.html">gwinferno.models.mass_gap</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gwinferno.models.parametric.html">gwinferno.models.parametric</a></li>
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.models.spline_perturbation.html">gwinferno.models.spline_perturbation</a></li>
 </ul>
 </li>
@@ -122,20 +116,8 @@
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.smoothing.adaptive_difference_prior.html#gwinferno.models.bsplines.smoothing.adaptive_difference_prior" title="gwinferno.models.bsplines.smoothing.adaptive_difference_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">adaptive_difference_prior</span></code></a>(coefs, inv_var, delta)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.smoothing.apply_difference_prior.html#gwinferno.models.bsplines.smoothing.apply_difference_prior" title="gwinferno.models.bsplines.smoothing.apply_difference_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_difference_prior</span></code></a>(coefs, inv_var[, degree])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.smoothing.apply_difference_prior.html#gwinferno.models.bsplines.smoothing.apply_difference_prior" title="gwinferno.models.bsplines.smoothing.apply_difference_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_difference_prior</span></code></a>(coefs, inv_var[, degree])</p></td>
 <td><p>computes the difference penalty for b-spline</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.smoothing.apply_twod_difference_prior.html#gwinferno.models.bsplines.smoothing.apply_twod_difference_prior" title="gwinferno.models.bsplines.smoothing.apply_twod_difference_prior"><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply_twod_difference_prior</span></code></a>(coefs, ...[, ...])</p></td>
-<td><p>Computes the difference penalty for a 2d B-spline.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.smoothing.get_adaptive_Lambda.html#gwinferno.models.bsplines.smoothing.get_adaptive_Lambda" title="gwinferno.models.bsplines.smoothing.get_adaptive_Lambda"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_adaptive_Lambda</span></code></a>(label, nknots, degree[, ...])</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.smoothing.mixture_smoothing_parameter.html#gwinferno.models.bsplines.smoothing.mixture_smoothing_parameter" title="gwinferno.models.bsplines.smoothing.mixture_smoothing_parameter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mixture_smoothing_parameter</span></code></a>(label[, n_mix, ...])</p></td>
-<td><p></p></td>
 </tr>
 </tbody>
 </table>
@@ -146,7 +128,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="gwinferno.models.bsplines.single.Base1DBSplineModel.html" class="btn btn-neutral float-left" title="gwinferno.models.bsplines.single.Base1DBSplineModel" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="gwinferno.models.bsplines.smoothing.adaptive_difference_prior.html" class="btn btn-neutral float-right" title="gwinferno.models.bsplines.smoothing.adaptive_difference_prior" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gwinferno.models.bsplines.smoothing.apply_difference_prior.html" class="btn btn-neutral float-right" title="gwinferno.models.bsplines.smoothing.apply_difference_prior" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

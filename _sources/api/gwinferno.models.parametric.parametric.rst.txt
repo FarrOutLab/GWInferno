@@ -1,0 +1,60 @@
+gwinferno.models.parametric.parametric
+======================================
+
+.. currentmodule:: gwinferno.models.parametric.parametric
+
+.. automodule:: gwinferno.models.parametric.parametric
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+   
+      
+      beta_spin_magnitude
+      
+      iid_spin_magnitude
+      
+      iid_spin_tilt
+      
+      independent_spin_magnitude
+      
+      independent_spin_tilt
+      
+      mixture_isoalign_spin_tilt
+      
+      plpeak_primary_pdf
+      
+      plpeak_primary_ratio_pdf
+      
+      powerlaw_primary_ratio_falloff_pdf
+      
+      powerlaw_primary_ratio_pdf
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+   
+      
+      PowerlawRedshiftModel
+   
+   
+
+   
+   
+   
+
+
+

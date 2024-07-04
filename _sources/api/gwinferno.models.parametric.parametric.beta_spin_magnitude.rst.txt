@@ -1,0 +1,6 @@
+gwinferno.models.parametric.parametric.beta\_spin\_magnitude
+============================================================
+
+.. currentmodule:: gwinferno.models.parametric.parametric
+
+.. autofunction:: beta_spin_magnitude

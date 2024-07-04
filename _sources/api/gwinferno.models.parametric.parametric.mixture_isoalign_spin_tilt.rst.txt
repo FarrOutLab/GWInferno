@@ -1,0 +1,6 @@
+gwinferno.models.parametric.parametric.mixture\_isoalign\_spin\_tilt
+====================================================================
+
+.. currentmodule:: gwinferno.models.parametric.parametric
+
+.. autofunction:: mixture_isoalign_spin_tilt

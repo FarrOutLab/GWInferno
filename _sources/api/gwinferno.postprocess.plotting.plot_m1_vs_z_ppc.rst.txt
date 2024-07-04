@@ -1,6 +1,0 @@
-gwinferno.postprocess.plotting.plot\_m1\_vs\_z\_ppc
-===================================================
-
-.. currentmodule:: gwinferno.postprocess.plotting
-
-.. autofunction:: plot_m1_vs_z_ppc

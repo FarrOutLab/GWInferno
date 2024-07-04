@@ -1,0 +1,6 @@
+gwinferno.models.parametric.parametric.iid\_spin\_magnitude
+===========================================================
+
+.. currentmodule:: gwinferno.models.parametric.parametric
+
+.. autofunction:: iid_spin_magnitude

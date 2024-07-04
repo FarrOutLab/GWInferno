@@ -1,6 +1,0 @@
-gwinferno.models.gwpopulation.gwpopulation.powerlaw\_primary\_ratio\_falloff\_pdf
-=================================================================================
-
-.. currentmodule:: gwinferno.models.gwpopulation.gwpopulation
-
-.. autofunction:: powerlaw_primary_ratio_falloff_pdf

@@ -1,6 +1,0 @@
-gwinferno.postprocess.calculate\_ppds.calculate\_ind\_spin\_bspline\_ppds
-=========================================================================
-
-.. currentmodule:: gwinferno.postprocess.calculate_ppds
-
-.. autofunction:: calculate_ind_spin_bspline_ppds

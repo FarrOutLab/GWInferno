@@ -1,0 +1,6 @@
+gwinferno.models.parametric.parametric.independent\_spin\_magnitude
+===================================================================
+
+.. currentmodule:: gwinferno.models.parametric.parametric
+
+.. autofunction:: independent_spin_magnitude

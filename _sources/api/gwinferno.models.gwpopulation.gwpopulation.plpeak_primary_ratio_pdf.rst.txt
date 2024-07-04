@@ -1,6 +1,0 @@
-gwinferno.models.gwpopulation.gwpopulation.plpeak\_primary\_ratio\_pdf
-======================================================================
-
-.. currentmodule:: gwinferno.models.gwpopulation.gwpopulation
-
-.. autofunction:: plpeak_primary_ratio_pdf

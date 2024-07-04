@@ -33,9 +33,7 @@
    
    bsplines
    
-   gwpopulation
-   
-   mass_gap
+   parametric
    
    spline_perturbation
 

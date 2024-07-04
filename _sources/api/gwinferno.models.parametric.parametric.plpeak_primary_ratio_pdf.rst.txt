@@ -1,0 +1,6 @@
+gwinferno.models.parametric.parametric.plpeak\_primary\_ratio\_pdf
+==================================================================
+
+.. currentmodule:: gwinferno.models.parametric.parametric
+
+.. autofunction:: plpeak_primary_ratio_pdf

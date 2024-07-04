@@ -1,6 +1,0 @@
-gwinferno.models.gwpopulation.gwpopulation.mixture\_isoalign\_spin\_tilt
-========================================================================
-
-.. currentmodule:: gwinferno.models.gwpopulation.gwpopulation
-
-.. autofunction:: mixture_isoalign_spin_tilt

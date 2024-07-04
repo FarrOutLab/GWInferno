@@ -99,8 +99,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">import</span> <span class="nn">numpyro</span>
-<span class="kn">from</span> <span class="nn">numpyro</span> <span class="kn">import</span> <span class="n">distributions</span> <span class="k">as</span> <span class="n">dist</span>
 
 
 <div class="viewcode-block" id="apply_difference_prior">
@@ -119,72 +117,6 @@
     <span class="n">delta_c</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">degree</span><span class="p">)</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">inv_var</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">delta_c</span><span class="p">,</span> <span class="n">delta_c</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">prior</span></div>
-
-
-
-<div class="viewcode-block" id="adaptive_difference_prior">
-<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.smoothing.adaptive_difference_prior.html#gwinferno.models.bsplines.smoothing.adaptive_difference_prior">[docs]</a>
-<span class="k">def</span> <span class="nf">adaptive_difference_prior</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">inv_var</span><span class="p">,</span> <span class="n">delta</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-    <span class="n">m</span> <span class="o">=</span> <span class="n">coefs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">mat</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">degree</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta</span>
-    <span class="n">off</span> <span class="o">=</span> <span class="n">mat</span><span class="o">.</span><span class="n">T</span> <span class="o">+</span> <span class="n">mat</span>
-    <span class="n">pen_matrix</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">off</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">jnp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">-</span> <span class="n">off</span>
-    <span class="n">prior</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">inv_var</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">coefs</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">pen_matrix</span><span class="p">,</span> <span class="n">coefs</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">prior</span></div>
-
-
-
-<div class="viewcode-block" id="apply_twod_difference_prior">
-<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.smoothing.apply_twod_difference_prior.html#gwinferno.models.bsplines.smoothing.apply_twod_difference_prior">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_twod_difference_prior</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">inv_var_row</span><span class="p">,</span> <span class="n">inv_var_col</span><span class="p">,</span> <span class="n">degree_row</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree_col</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Computes the difference penalty for a 2d B-spline.</span>
-<span class="sd">    Uses equation 4.19 from Practical Smoothing by Eilers and Marx.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    coefs: array_like</span>
-<span class="sd">        2d array of B-spline coefficients</span>
-<span class="sd">    inv_var_row: float or int</span>
-<span class="sd">        inverse variance along axis 0 (row)</span>
-<span class="sd">    inv_var_col: float or int</span>
-<span class="sd">        inverse variance along axis 1 (column)</span>
-<span class="sd">    degree_row: int, optional</span>
-<span class="sd">        difference order along axis 0 (row)</span>
-<span class="sd">    degree_col: int, optional</span>
-<span class="sd">        difference order along axis 1 (column)</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    float</span>
-<span class="sd">        log of the difference prior</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">delta_row</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">degree_row</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-    <span class="n">delta_col</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">degree_col</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-    <span class="n">pen_row</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">inv_var_row</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">delta_row</span><span class="p">))</span>
-    <span class="n">pen_col</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">inv_var_col</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">delta_col</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">pen_row</span> <span class="o">+</span> <span class="n">pen_col</span></div>
-
-
-
-<div class="viewcode-block" id="get_adaptive_Lambda">
-<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.smoothing.get_adaptive_Lambda.html#gwinferno.models.bsplines.smoothing.get_adaptive_Lambda">[docs]</a>
-<span class="k">def</span> <span class="nf">get_adaptive_Lambda</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">nknots</span><span class="p">,</span> <span class="n">degree</span><span class="p">,</span> <span class="n">omega</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
-    <span class="n">lam</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;lambda_</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="n">omega</span><span class="p">,</span> <span class="n">omega</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">nknots</span> <span class="o">-</span> <span class="n">degree</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,))</span>
-    <span class="n">li</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">]</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">la</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lam</span><span class="p">):</span>
-        <span class="n">li</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">li</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">la</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">li</span><span class="p">))</span></div>
-
-
-
-<div class="viewcode-block" id="mixture_smoothing_parameter">
-<a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.smoothing.mixture_smoothing_parameter.html#gwinferno.models.bsplines.smoothing.mixture_smoothing_parameter">[docs]</a>
-<span class="k">def</span> <span class="nf">mixture_smoothing_parameter</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">n_mix</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">log10bmin</span><span class="o">=-</span><span class="mi">5</span><span class="p">,</span> <span class="n">log10bmax</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
-    <span class="n">bs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">logspace</span><span class="p">(</span><span class="n">log10bmin</span><span class="p">,</span> <span class="n">log10bmax</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">n_mix</span><span class="p">)</span>
-    <span class="n">ps</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">_ps&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Dirichlet</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n_mix</span><span class="p">)))</span>
-    <span class="n">gs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">_gs&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Gamma</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">bs</span><span class="p">),</span> <span class="n">bs</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ps</span> <span class="o">*</span> <span class="n">gs</span><span class="p">)</span></div>
 
 </pre></div>
 
