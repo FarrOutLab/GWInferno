@@ -12,7 +12,7 @@ from numpyro.infer import MCMC
 from numpyro.infer import NUTS
 from tqdm import trange
 
-from gwinferno.models.gwpopulation import PowerlawRedshiftModel
+from gwinferno.models.parametric import PowerlawRedshiftModel
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.pipeline.parser import load_base_parser
 from gwinferno.postprocess.plotting import plot_mass_dist
