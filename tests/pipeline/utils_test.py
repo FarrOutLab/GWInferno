@@ -21,6 +21,9 @@ from gwinferno.pipeline.utils import setup_powerlaw_spline_redshift_model
 from gwinferno.postprocess.calculations import calculate_bspline_mass_ppds
 from gwinferno.postprocess.calculations import calculate_bspline_spin_ppds
 from gwinferno.postprocess.calculations import calculate_powerlaw_spline_rate_of_z_ppds
+from gwinferno.postprocess.plot import plot_mass_pdfs
+from gwinferno.postprocess.plot import plot_rate_of_z_pdfs
+from gwinferno.postprocess.plot import plot_spin_pdfs
 from gwinferno.preprocess.data_collection import load_injections
 
 
@@ -90,6 +93,10 @@ class TestTruncatedModelInference(unittest.TestCase):
         )
 
         rs, zs = calculate_powerlaw_spline_rate_of_z_ppds(samples["lamb"], samples["z_cs_test_z"], jnp.ones_like(samples["lamb"]), zmodel)
+
+        plot_mass_pdfs([m_pdfs], [q_pdfs], ms, qs, ["test"], "test", "tests", save=False)
+        plot_spin_pdfs([apdfs], [ctpdfs], aa, cc, ["test"], "test", "tests", save=False)
+        plot_rate_of_z_pdfs(rs, zs, "test", "tests", save=False)
 
         posterior_dict_to_xarray(samples)
 

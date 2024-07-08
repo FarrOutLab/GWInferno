@@ -6,6 +6,7 @@ import jax.numpy as jnp
 import numpy as np
 import numpyro
 import numpyro.distributions as dist
+import pytest
 import xarray as xr
 from jax import random
 from jax.scipy.integrate import trapezoid
@@ -21,7 +22,6 @@ from gwinferno.pipeline.parser import load_model_from_python_file
 from gwinferno.preprocess.data_collection import load_injections
 from gwinferno.preprocess.data_collection import load_posterior_data
 
-import pytest
 pytestmark = pytest.mark.skip("skipping now for speed")
 
 
