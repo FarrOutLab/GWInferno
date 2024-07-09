@@ -269,7 +269,8 @@ class BSplineDistribution(Distribution):
         batch_shape = lax.broadcast_shapes(jnp.shape(maximum), jnp.shape(minimum), jnp.shape(cs))
         super(BSplineDistribution, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
         self.grid = grid
-        self.lpdfs = jnp.einsum("i,i...->...", self.cs, grid_dmat)
+        # grid_dmat will contain nan's where the grid is outside the support
+        self.lpdfs = jnp.nan_to_num(jnp.einsum("i,i...->...", self.cs, grid_dmat), nan=-jnp.inf)
         self.pdfs = jnp.exp(self.lpdfs)
         self.norm = trapezoid(self.pdfs, self.grid)
         self.pdfs /= self.norm

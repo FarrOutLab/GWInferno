@@ -107,7 +107,7 @@ class TestNPDistributions(unittest.TestCase):
         self.assertTrue(jnp.all((samps >= 0.0) & (samps <= 1.0)))
 
     def test_logy_bspline_distribution(self):
-        grid_dmat = LogYBSpline(20, normalize=True).bases(self.gr)
+        grid_dmat = LogYBSpline(20, normalize=True).bases(self.gr, oob_val=-jnp.nan)
         d = BSplineDistribution(minimum=0.0, maximum=1.0, cs=self.cs_pn, grid=self.gr, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.gr)
         norm = trapezoid(jnp.exp(lpdfs), self.gr)
@@ -116,7 +116,7 @@ class TestNPDistributions(unittest.TestCase):
         self.assertTrue(jnp.all((samps >= 0.0) & (samps <= 1.0)))
 
     def test_logx_bspline_distribution(self):
-        grid_dmat = LogXBSpline(20, normalize=True).bases(self.grid)
+        grid_dmat = LogXBSpline(20, normalize=True).bases(self.grid, oob_val=0.)
         d = BSplineDistribution(minimum=0.001, maximum=1.0, cs=self.cs, grid=self.grid, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.grid)
         norm = trapezoid(jnp.exp(lpdfs), self.grid)
@@ -125,7 +125,7 @@ class TestNPDistributions(unittest.TestCase):
         self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
 
     def test_logxy_bspline_distribution(self):
-        grid_dmat = LogXLogYBSpline(20, normalize=True).bases(self.grid)
+        grid_dmat = LogXLogYBSpline(20, normalize=True).bases(self.grid, oob_val=-jnp.nan)
         d = BSplineDistribution(minimum=0.001, maximum=1.0, cs=self.cs_pn, grid=self.grid, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.grid)
         norm = trapezoid(jnp.exp(lpdfs), self.grid)

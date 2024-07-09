@@ -15,7 +15,7 @@ from .gwpopulation.gwpopulation import PowerlawRedshiftModel
 class PowerlawBasisSplinePrimaryPowerlawRatio(object):
     def __init__(
         self,
-        nknots: int,
+        n_splines_m: int,
         m1pe: dict,
         m1inj: dict,
         mmin: float = 3.0,
@@ -29,7 +29,7 @@ class PowerlawBasisSplinePrimaryPowerlawRatio(object):
         __init__
 
         Args:
-            nknots (int): Number of knots used to create the B-Splines.
+            n_splines_m (int): Number of basis functions used to create the B-Spline in primary mass.
             m1pe (dict): Dictionary with m1's parameter estimation.
             m1inj (dict): Dictionary with m1's injection samples.
             mmin (float, optional): Minimum primary mass distribution cutoff. Defaults to 3.
@@ -39,12 +39,12 @@ class PowerlawBasisSplinePrimaryPowerlawRatio(object):
             basis (object, optional): The type of basis class you wish to use. Defaults to BSpline.
         """
         self.m2min = m2min
-        self.nknots = nknots
+        self.n_splines_m = n_splines_m
         self.mmin = mmin
         self.mmax = mmax
         self.ms = jnp.linspace(mmin, mmax, 1000)
-        self.nknots = nknots
-        interior_knots = np.linspace(np.log(mmin), np.log(mmax), nknots - k + 2)
+        self.n_splines = n_splines_m
+        interior_knots = np.linspace(np.log(mmin), np.log(mmax), n_splines_m - k + 2)
         dx = interior_knots[1] - interior_knots[0]
         knots = np.concatenate(
             [
@@ -54,7 +54,7 @@ class PowerlawBasisSplinePrimaryPowerlawRatio(object):
             ]
         )
         self.knots = knots
-        self.interpolator = basis(nknots, knots=knots, interior_knots=interior_knots, xrange=(np.log(mmin), np.log(mmax)), k=4, **kwargs)
+        self.interpolator = basis(n_splines_m, knots=knots, interior_knots=interior_knots, xrange=(np.log(mmin), np.log(mmax)), k=4, **kwargs)
         self.pe_design_matrix = jnp.array(self.interpolator.bases(np.log(m1pe)))
         self.inj_design_matrix = jnp.array(self.interpolator.bases(np.log(m1inj)))
         self.dmats = [self.inj_design_matrix, self.pe_design_matrix]
@@ -151,13 +151,15 @@ class PowerlawBasisSplinePrimaryPowerlawRatio(object):
 
 
 class PowerlawBasisSplinePrimaryRatio(object):
-    def __init__(self, nknots: int, qknots: int, m1pe: dict, qpe: dict, m1inj: dict, qinj: dict, mmin: float = 2.0, mmax: float = 100.0, k: int = 4):
+    def __init__(
+        self, n_splines_m: int, n_splines_q: int, m1pe: dict, qpe: dict, m1inj: dict, qinj: dict, mmin: float = 2.0, mmax: float = 100.0, k: int = 4
+    ):
         """
         __init__
 
         Args:
-            nknots (int): Number of knots used to create the B-Splines.
-            qknots (int): Number of knots used to create the B-Spline for the mass ratio.
+            n_splines_m (int): Number of basis functions used to create the B-Spline in primary mass.
+            n_splines_q (int): Number of basis functions used to create the B-Spline for the mass ratio.
             m1pe (dict): Dictionary with m1's parameter estimation.
             qpe (dict): Dictionary with mass ratio parameter estimation.
             m1inj (dict): Dictionary with m1's injection samples.
@@ -166,25 +168,25 @@ class PowerlawBasisSplinePrimaryRatio(object):
             mmax (float, optional): Maximum primary mass cutoff. Defaults to 100.
             k (int, optional): Power of the polynomials used in the B-Spline. Defaults to 4.
         """
-        self.nknots = nknots
+        self.n_splines_m = n_splines_m
+        self.n_splines_q = n_splines_q
+
         self.mmin = mmin
         self.mmax = mmax
         self.ms = jnp.linspace(mmin, mmax, 1000)
         self.qs = jnp.linspace(mmin / mmax, 1, 500)
-        self.nknots = nknots
-        self.qknots = qknots
         self.mm, self.qq = jnp.meshgrid(self.ms, self.qs)
-        interior_knots = np.linspace(np.log(mmin), np.log(mmax), nknots - k + 2)
-        dx = interior_knots[1] - interior_knots[0]
-        knots = np.concatenate(
+        interior_mknots = np.linspace(np.log(mmin), np.log(mmax), n_splines_m - k + 2)
+        dx = interior_mknots[1] - interior_mknots[0]
+        knotsm = np.concatenate(
             [
                 np.log(mmin) - dx * np.arange(1, k)[::-1],
-                interior_knots,
+                interior_mknots,
                 np.log(mmax) + dx * np.arange(1, k),
             ]
         )
-        self.knots = knots
-        interior_qknots = np.linspace(0, 1, qknots - k + 2)
+        self.knotsm = knotsm
+        interior_qknots = np.linspace(0, 1, n_splines_q - k + 2)
         dxq = interior_qknots[1] - interior_qknots[0]
         knotsq = np.concatenate(
             [
@@ -196,9 +198,9 @@ class PowerlawBasisSplinePrimaryRatio(object):
         self.knotsq = knotsq
 
         self.interpolator = BSpline(
-            nknots,
-            knots=knots,
-            interior_knots=interior_knots,
+            n_splines_m,
+            knots=knotsm,
+            interior_knots=interior_mknots,
             xrange=(np.log(mmin), np.log(mmax)),
             k=4,
         )
@@ -206,7 +208,7 @@ class PowerlawBasisSplinePrimaryRatio(object):
         self.inj_design_matrix = jnp.array(self.interpolator.bases(np.log(m1inj)))
         self.dmats = [self.inj_design_matrix, self.pe_design_matrix]
         self.qinterpolator = BSpline(
-            qknots,
+            n_splines_q,
             knots=knotsq,
             interior_knots=interior_qknots,
             xrange=(0, 1),
@@ -300,19 +302,19 @@ class PowerlawBasisSplinePrimaryRatio(object):
 
 
 class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
-    def __init__(self, nknots: int, z_pe: dict, z_inj: dict, basis: LogXBSpline = LogXBSpline):
+    def __init__(self, n_splines: int, z_pe: dict, z_inj: dict, basis: LogXBSpline = LogXBSpline):
         """
         __init__
 
         Args:
-            nknots (int): Number of knots used to create B-Spline
+            n_splines (int): Number of basis functions used to create B-Spline
             z_pe (dict): Redshift parameter estimation
             z_inj (dict): Redshift injections
             basis (LogXBSpline, optional): Bases to be used in the spline perturbation. Defaults to LogXBSpline.
         """
         super().__init__(z_pe=z_pe, z_inj=z_inj)
-        self.nknots = nknots
-        self.interpolator = basis(nknots, xrange=(self.zmin, self.zmax), k=4, normalize=False)
+        self.n_splines = n_splines
+        self.interpolator = basis(n_splines, xrange=(self.zmin, self.zmax), k=4, normalize=False)
         self.pe_design_matrix = jnp.array(self.interpolator.bases(z_pe))
         self.inj_design_matrix = jnp.array(self.interpolator.bases(z_inj))
         self.dmats = [self.inj_design_matrix, self.pe_design_matrix]

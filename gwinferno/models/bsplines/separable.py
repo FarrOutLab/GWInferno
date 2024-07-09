@@ -189,7 +189,7 @@ class BSplineIIDSpinTilts(object):
         )
 
     def __call__(self, coefs, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
+        """Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -255,7 +255,7 @@ class BSplineIndependentSpinTilts(object):
         )
 
     def __call__(self, pcoefs, scoefs, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
+        """Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -422,9 +422,8 @@ class BSplinePrimaryBSplineRatio(object):
         m1min=3.0,
         m2min=3.0,
         mmax=100.0,
-        basis_m=BSpline,
-        basis_q=BSpline,
-        **kwargs,
+        m1_kwargs={},
+        q_kwargs={},
     ):
         self.primary_model = BSplineMass(
             n_splines_m,
@@ -434,8 +433,7 @@ class BSplinePrimaryBSplineRatio(object):
             mmin=m1min,
             mmax=mmax,
             degree=degree_m,
-            basis=basis_m,
-            **kwargs,
+            **m1_kwargs,
         )
         self.ratio_model = BSplineRatio(
             n_splines_q,
@@ -444,8 +442,7 @@ class BSplinePrimaryBSplineRatio(object):
             qmin=m2min / mmax,
             knots=knots_q,
             degree=degree_q,
-            basis=basis_q,
-            **kwargs,
+            **q_kwargs,
         )
 
     def __call__(self, mcoefs, qcoefs, pe_samples=True):
@@ -490,7 +487,8 @@ class BSplineIIDComponentMasses(object):
         knots=None,
         mmin=2,
         mmax=100,
-        **kwargs,
+        m1_kwargs={},
+        m2_kwargs={},
     ):
         self.primary_model = BSplineMass(
             n_splines=n_splines,
@@ -499,7 +497,7 @@ class BSplineIIDComponentMasses(object):
             knots=knots,
             mmin=mmin,
             mmax=mmax,
-            **kwargs,
+            **m1_kwargs,
         )
         self.secondary_model = BSplineMass(
             n_splines=n_splines,
@@ -508,7 +506,7 @@ class BSplineIIDComponentMasses(object):
             knots=knots,
             mmin=mmin,
             mmax=mmax,
-            **kwargs,
+            **m2_kwargs,
         )
         self.qs = [m2_inj / m1_inj, m2 / m1]
 
@@ -571,6 +569,8 @@ class BSplineIndependentComponentMasses(object):
         mmax2=100,
         degree1=3,
         degree2=3,
+        m1_kwargs={},
+        m2_kwargs={},
     ):
         self.primary_model = BSplineMass(
             n_splines=n_splines1,
@@ -580,6 +580,7 @@ class BSplineIndependentComponentMasses(object):
             mmin=mmin1,
             mmax=mmax1,
             degree=degree1,
+            **m1_kwargs,
         )
         self.secondary_model = BSplineMass(
             n_splines=n_splines2,
@@ -589,6 +590,7 @@ class BSplineIndependentComponentMasses(object):
             mmin=mmin2,
             mmax=mmax2,
             degree=degree2,
+            **m2_kwargs,
         )
         self.qs = [m2_inj / m1_inj, m2 / m1]
 
