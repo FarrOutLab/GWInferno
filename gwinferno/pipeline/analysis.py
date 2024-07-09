@@ -65,7 +65,7 @@ def per_event_log_bayes_factors(weights, log=False):
         JAX array of weights to integrate over. Expected size of `(N_events,N_samples)`.
     log : bool, optional
         Flag to perform calculations in log probability. Interprets weights as log weights.
-        This is slower but more numerically stable. Defaults to False.
+        This should be more numerically stable in general but can break autograd with truncated models.
 
     Returns
     -------
