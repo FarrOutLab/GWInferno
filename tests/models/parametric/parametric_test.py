@@ -5,7 +5,7 @@ import jax.numpy as jnp
 import xarray as xr
 from jax.scipy.integrate import trapezoid
 
-from gwinferno.models.gwpopulation.gwpopulation import PowerlawRedshiftModel
+from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
 from gwinferno.preprocess.data_collection import load_injections
 
 

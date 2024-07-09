@@ -29,8 +29,6 @@ from gwinferno.pipeline.parser import load_model_from_python_file
 from gwinferno.preprocess.data_collection import load_injections
 from gwinferno.preprocess.data_collection import load_posterior_data
 
-pytestmark = pytest.mark.skip("skipping now for speed")
-
 
 def norm_mass_model(alpha, beta, mmin, mmax):
     ms = jnp.linspace(3, 100, 500)
@@ -370,6 +368,7 @@ class TestModelInference(unittest.TestCase):
     #     self.assertTrue(jnp.isfinite(pe), msg="Potential energy is not finite for test case")
     #     self.assertTrue(jnp.all(jnp.isfinite(z_grad_flat)), msg="Gradient is not finite; don't expect to find valid initial parameters")
 
+    @pytest.mark.skip(reason="slow...")
     def test_parametric_prior_sample(self):
         RNG = random.PRNGKey(3)
         kernel = NUTS(self.parametric_model, max_tree_depth=2, adapt_mass_matrix=False)
@@ -380,6 +379,7 @@ class TestModelInference(unittest.TestCase):
         self.assertEqual(samples["beta"].shape, (5,))
         self.assertEqual(samples["lamb"].shape, (5,))
 
+    @pytest.mark.skip(reason="slow...")
     def test_bspline_prior_sample(self):
         RNG = random.PRNGKey(4)
         kernel = NUTS(self.bspline_model, max_tree_depth=2, adapt_mass_matrix=False)
@@ -391,6 +391,7 @@ class TestModelInference(unittest.TestCase):
         self.assertEqual(samples["z_coefs"].shape, (5, self.z_nbases))
         self.assertEqual(samples["lamb"].shape, (5,))
 
+    @pytest.mark.skip(reason="slow...")
     def test_parametric_posterior_sample(self):
         RNG = random.PRNGKey(5)
         kernel = NUTS(self.parametric_model, max_tree_depth=2, adapt_mass_matrix=False)
@@ -401,6 +402,7 @@ class TestModelInference(unittest.TestCase):
         self.assertEqual(samples["beta"].shape, (5,))
         self.assertEqual(samples["lamb"].shape, (5,))
 
+    @pytest.mark.skip(reason="slow...")
     def test_bspline_posterior_sample(self):
         RNG = random.PRNGKey(6)
         kernel = NUTS(self.bspline_model, max_tree_depth=2, adapt_mass_matrix=False)
