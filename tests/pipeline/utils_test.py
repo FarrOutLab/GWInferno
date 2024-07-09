@@ -27,7 +27,7 @@ from gwinferno.postprocess.plot import plot_spin_pdfs
 from gwinferno.preprocess.data_collection import load_injections
 
 
-class TestTruncatedModelInference(unittest.TestCase):
+class TestModelUtils(unittest.TestCase):
     def setUp(self) -> None:
         self.inj_file = "tests/data/injections.h5"
         self.param_names = ["mass_1", "mass_ratio", "redshift", "prior", "a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
