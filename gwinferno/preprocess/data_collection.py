@@ -117,7 +117,7 @@ def evaluate_prior(full_catalog, param_names):
             prior *= jnp.interp(full_catalog[ev].sel(param="redshift").values, zs, p_z)
         if "mass_1" in param_names:
             prior *= (1 + full_catalog[ev].sel(param="mass_1").values) ** 2  # flat detector components
-        if "mass_raito" in param_names:
+        if "mass_ratio" in param_names:
             prior *= full_catalog[ev].sel(param="mass_1").values
         if "a_1" in param_names:
             prior *= 1 / 4
