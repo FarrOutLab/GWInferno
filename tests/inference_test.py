@@ -53,7 +53,7 @@ class TestModelInference(unittest.TestCase):
         self.inj_file = f"{pref}/injections.h5"
         self.param_names = ["mass_1", "mass_ratio", "redshift", "prior", "chi_eff"]
         self.pedict, self.Nobs, self.Nsamples = self.load_data()
-        self.injdict, self.total_inj, self.obs_time = self.load_injections(through_o4a=False, through_o3=True)
+        self.injdict, self.total_inj, self.obs_time = self.load_injs(through_o4a=False, through_o3=True)
         self.parametric_model = self.setup_parametric_model()
         self.bspline_model = self.setup_bspline_model()
 
