@@ -116,7 +116,7 @@ class TestNPDistributions(unittest.TestCase):
         self.assertTrue(jnp.all((samps >= 0.0) & (samps <= 1.0)))
 
     def test_logx_bspline_distribution(self):
-        grid_dmat = LogXBSpline(20, normalize=True).bases(self.grid, oob_val=0.)
+        grid_dmat = LogXBSpline(20, normalize=True).bases(self.grid, oob_val=0.0)
         d = BSplineDistribution(minimum=0.001, maximum=1.0, cs=self.cs, grid=self.grid, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.grid)
         norm = trapezoid(jnp.exp(lpdfs), self.grid)

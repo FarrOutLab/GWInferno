@@ -5,7 +5,6 @@ from jax.scipy.integrate import trapezoid
 from tqdm import trange
 
 from gwinferno.distributions import truncnorm_pdf
-from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
 from gwinferno.models.bsplines.separable import BSplineIIDSpinMagnitudes
 from gwinferno.models.bsplines.separable import BSplineIIDSpinTilts

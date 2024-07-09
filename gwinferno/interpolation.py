@@ -342,7 +342,7 @@ class LogXBSpline(BSpline):
             self.grid = jnp.linspace(*np.exp(xrange), 1000)
             self.grid_bases = jnp.array(self.bases(self.grid))
 
-    def bases(self, xs, oob_val=0.):
+    def bases(self, xs, oob_val=0.0):
         """
         bases form the basis spline design matrix evaluated at xs (in log space)
 
