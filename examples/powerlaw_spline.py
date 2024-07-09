@@ -14,7 +14,7 @@ from numpyro.infer import NUTS
 
 from gwinferno.interpolation import LogXBSpline
 from gwinferno.models.bsplines.smoothing import apply_difference_prior
-from gwinferno.models.gwpopulation.gwpopulation import PowerlawRedshiftModel
+from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
 from gwinferno.models.spline_perturbation import PowerlawBasisSplinePrimaryPowerlawRatio
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.postprocess.calculate_ppds import calculate_m1q_ppds_plbspline_model

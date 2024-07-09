@@ -6,7 +6,7 @@ import jax.numpy as jnp
 
 from ...distributions import powerlaw_pdf
 from ...interpolation import BSpline
-from ...models.gwpopulation.gwpopulation import plpeak_primary_pdf
+from ..parametric.parametric import plpeak_primary_pdf
 from .single import BSplineChiEffective
 from .single import BSplineChiPrecess
 from .single import BSplineMass

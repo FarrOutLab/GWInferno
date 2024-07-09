@@ -19,8 +19,8 @@ from numpyro.infer.util import potential_energy
 from numpyro.infer.util import unconstrain_fn
 
 from gwinferno.models.bsplines.separable import BSplinePrimaryBSplineRatio
-from gwinferno.models.gwpopulation.gwpopulation import PowerlawRedshiftModel
-from gwinferno.models.gwpopulation.gwpopulation import powerlaw_primary_ratio_pdf
+from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
+from gwinferno.models.parametric.parametric import powerlaw_primary_ratio_pdf
 from gwinferno.models.spline_perturbation import PowerlawSplineRedshiftModel
 from gwinferno.pipeline.analysis import construct_hierarchical_model
 from gwinferno.pipeline.analysis import hierarchical_likelihood
