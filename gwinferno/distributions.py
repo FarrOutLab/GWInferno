@@ -64,7 +64,7 @@ def log_logistic_unit(x, x0, sgn=1, sc=4):
     )
 
 
-def powerlaw_logit_pdf(xx, alpha, high, fall_off):
+def powerlaw_logit_pdf(xx, alpha, low=None, high=None, low_fall_off=4.0, high_fall_off=4.0):
     """
     powerlaw_logit_pdf pdf of high mass soft truncation powerlaw:
         $$ p(x) \propto x^{\alpha}\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$
@@ -74,13 +74,18 @@ def powerlaw_logit_pdf(xx, alpha, high, fall_off):
     Args:
         xx (array_like): points to evaluate pdf at
         alpha (float): power law index
+        low (float): low end truncation bound
         high (float): high end truncation bound
         fall_off (float): scale of logistic unit to truncate distribution
 
     Returns:
         array_like: pdf evaluated at xx
     """
-    prob = jnp.power(xx, alpha) * logistic_unit(xx, high, sign=1.0, a=fall_off)
+    prob = jnp.power(xx, alpha)
+    if low is not None:
+        prob *= logistic_unit(xx, low, sgn=-1.0, sc=low_fall_off)
+    if high is not None:
+        logistic_unit(xx, high, sgn=1.0, sc=high_fall_off)
     return prob
 
 
