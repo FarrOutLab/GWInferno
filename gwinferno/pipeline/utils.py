@@ -57,11 +57,11 @@ def setup_bspline_mass_models(pedict, injdict, m_nsplines, q_nsplines, mmin, mma
         injdict["mass_1"],
         pedict["mass_ratio"],
         injdict["mass_ratio"],
-        basis_m=LogXLogYBSpline,
-        basis_q=LogYBSpline,
         m1min=mmin,
         m2min=mmin,
         mmax=mmax,
+        m1_kwargs={"basis": LogXLogYBSpline},
+        q_kwargs={"basis": LogYBSpline},
     )
 
 
