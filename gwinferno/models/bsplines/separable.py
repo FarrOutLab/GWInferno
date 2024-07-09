@@ -403,8 +403,6 @@ class BSplinePrimaryBSplineRatio(object):
         m1min (float, optional): minimum primary mass value. Primary mass spline is truncated below this minimum mass. Defaults to 3.
         m2min (float, optional): minimum secondary mass value. Mass ratio spline is truncated below m2min/mmax. Defaults to 3.
         mmax (float, optional): maximum mass value. Primary mass spline is truncated above this maximum mass. Defaults to 100.
-        basis_m (class, optional): type of basis to use (ex. LogYBSpline) for primary mass spline. Defaults to BSpline.
-        basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to BSpline.
     """
 
     def __init__(
