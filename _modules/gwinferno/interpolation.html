@@ -103,6 +103,8 @@
 <span class="kn">from</span> <span class="nn">jax.scipy.integrate</span> <span class="kn">import</span> <span class="n">trapezoid</span>
 <span class="kn">from</span> <span class="nn">jax.tree_util</span> <span class="kn">import</span> <span class="n">register_pytree_node_class</span>
 
+<span class="n">OOB_VAL</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9</span>  <span class="c1"># Value to return for out-of-bounds values.  nan or -inf breaks autograd, so we use this instead.</span>
+
 
 <div class="viewcode-block" id="NaturalCubicUnivariateSpline">
 <a class="viewcode-back" href="../../api/gwinferno.interpolation.NaturalCubicUnivariateSpline.html#gwinferno.interpolation.NaturalCubicUnivariateSpline">[docs]</a>
@@ -196,7 +198,7 @@
 <span class="sd">            interior_knots (array_like, optional): array of interior knots,</span>
 <span class="sd">                if non-uniform knot placing is preferred. Defaults to None.</span>
 <span class="sd">            xrange (tuple, optional): domain of spline. Defaults to (0, 1).</span>
-<span class="sd">            k (int, optional): order of the spline +1, i.e. cubcic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
+<span class="sd">            k (int, optional): order of the spline +1, i.e. cubic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
 <span class="sd">            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">=</span> <span class="n">k</span>
@@ -238,7 +240,7 @@
 
     <span class="k">def</span> <span class="nf">_basis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        _basis protected method that computes the ith basis compoentn of order k recursively using</span>
+<span class="sd">        _basis protected method that computes the ith basis component of order k recursively using</span>
 <span class="sd">            the Cox-de Boor recursion relation</span>
 
 <span class="sd">        Args:</span>
@@ -273,7 +275,7 @@
 
 <div class="viewcode-block" id="BasisSpline.bases">
 <a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.bases">[docs]</a>
-    <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">oob_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        bases form the basis spline design matrix evaluated at xs</span>
 
@@ -283,7 +285,8 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            array_like: the design matrix evaluated at xs. shape (N, *xs.shape)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bases</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="o">*</span><span class="n">xs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
+        <span class="n">design_matrix</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bases</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">,</span> <span class="o">*</span><span class="n">xs</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xrange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">oob_val</span><span class="p">,</span> <span class="n">design_matrix</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BasisSpline.get_coefficients">
@@ -328,7 +331,7 @@
 <a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.eval">[docs]</a>
     <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        eval Evalulate basis spline at xs given coefficients</span>
+<span class="sd">        eval Evaluate basis spline at xs given coefficients</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            xs (array_like): input values to evaluate the basis spline at</span>
@@ -344,7 +347,7 @@
 <a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        __call__ Evalulate basis spline at xs given coefficients</span>
+<span class="sd">        __call__ Evaluate basis spline at xs given coefficients</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            xs (array_like): input values to evaluate the basis spline at</span>
@@ -382,7 +385,7 @@
 <span class="sd">            interior_knots (array_like, optional): array of interior knots,</span>
 <span class="sd">                if non-uniform knot placing is preferred. Defaults to None.</span>
 <span class="sd">            xrange (tuple, optional): domain of spline. Defaults to (0, 1).</span>
-<span class="sd">            k (int, optional): order of the spline +1, i.e. cubcic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
+<span class="sd">            k (int, optional): order of the spline +1, i.e. cubic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
 <span class="sd">            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -470,7 +473,7 @@
 <span class="sd">            interior_knots (array_like, optional): array of interior knots,</span>
 <span class="sd">                if non-uniform knot placing is preferred. Defaults to None.</span>
 <span class="sd">            xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).</span>
-<span class="sd">            k (int, optional): order of the spline +1, i.e. cubcic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
+<span class="sd">            k (int, optional): order of the spline +1, i.e. cubic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
 <span class="sd">            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">knots</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">knots</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">knots</span><span class="p">)</span>
@@ -487,17 +490,19 @@
 
 <div class="viewcode-block" id="LogXBSpline.bases">
 <a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXBSpline.html#gwinferno.interpolation.LogXBSpline.bases">[docs]</a>
-    <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">oob_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        bases form the basis spline design matrix evaluated at xs (in log space)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            xs (array_like): input values to evaluate the basis spline at</span>
+<span class="sd">            oob_val (float, optional): value to return for out-of-bounds values. Defaults to 0.</span>
+<span class="sd">                WARNING: nan or -inf breaks autograd.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            array_like: the design matrix evaluated at xs. shape (N, *xs.shape)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xs</span><span class="p">),</span> <span class="n">oob_val</span><span class="o">=</span><span class="n">oob_val</span><span class="p">)</span></div>
 </div>
 
 
@@ -518,7 +523,7 @@
 <span class="sd">            interior_knots (array_like, optional): array of interior knots,</span>
 <span class="sd">                if non-uniform knot placing is preferred. Defaults to None.</span>
 <span class="sd">            xrange (tuple, optional): domain of spline. Defaults to (0, 1).</span>
-<span class="sd">            k (int, optional): order of the spline +1, i.e. cubcic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
+<span class="sd">            k (int, optional): order of the spline +1, i.e. cubic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
 <span class="sd">            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">n_df</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span> <span class="n">interior_knots</span><span class="o">=</span><span class="n">interior_knots</span><span class="p">,</span> <span class="n">xrange</span><span class="o">=</span><span class="n">xrange</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -528,18 +533,42 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">grid_bases</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">))</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">oob_val</span><span class="o">=</span><span class="n">OOB_VAL</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            bases (array_like): The set of basis components or design matrix to project onto</span>
 <span class="sd">            coefs (array_like): coefficients for the basis components</span>
+<span class="sd">            oob_val (float, optional): value to expect for bases at out-of-bounds values. Defaults to -9.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            array_like: The linear combination of the basis components given the coefficients</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i...,i-&gt;...&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">))</span></div>
+        <span class="n">oob</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">bases</span> <span class="o">==</span> <span class="n">oob_val</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">logvals</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">oob</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i...,i-&gt;...&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">oob</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logvals</span><span class="p">))</span>
+
+<div class="viewcode-block" id="LogYBSpline.bases">
+<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogYBSpline.html#gwinferno.interpolation.LogYBSpline.bases">[docs]</a>
+    <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">oob_val</span><span class="o">=</span><span class="n">OOB_VAL</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluate the basis spline design matrix at xs. We want the probability to ultimately</span>
+<span class="sd">        be zero outside the range of the spline, but since coefficients can be negative, negative</span>
+<span class="sd">        infinities for out-of-range values won&#39;t have the desired effect.  We&#39;ll use nans instead</span>
+<span class="sd">        and use nan_to_num to convert them to zeros upon projection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            xs (array_like): input values to evaluate the basis spline at</span>
+<span class="sd">            oob_val (float, optional): value to return for out-of-bounds values. Defaults to -9.</span>
+<span class="sd">                WARNING: nan or -inf breaks autograd.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            array_like: the design matrix evaluated at xs. shape (N, *xs.shape)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">design_matrix</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xrange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">oob_val</span><span class="p">,</span> <span class="n">design_matrix</span><span class="p">)</span></div>
+</div>
 
 
 
@@ -559,7 +588,7 @@
 <span class="sd">            interior_knots (array_like, optional): array of interior knots,</span>
 <span class="sd">                if non-uniform knot placing is preferred. Defaults to None.</span>
 <span class="sd">            xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).</span>
-<span class="sd">            k (int, optional): order of the spline +1, i.e. cubcic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
+<span class="sd">            k (int, optional): order of the spline +1, i.e. cubic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
 <span class="sd">            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">knots</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">knots</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">knots</span><span class="p">)</span>
@@ -576,17 +605,21 @@
 
 <div class="viewcode-block" id="LogXLogYBSpline.bases">
 <a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXLogYBSpline.html#gwinferno.interpolation.LogXLogYBSpline.bases">[docs]</a>
-    <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">oob_val</span><span class="o">=</span><span class="n">OOB_VAL</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        bases form the basis spline design matrix evaluated at xs (in log space)</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            xs (array_like): input values to evaluate the basis spline at</span>
+<span class="sd">            oob_val (float, optional): value to return for out-of-bounds values. Defaults to -9.</span>
+<span class="sd">                WARNING: nan or -inf breaks autograd.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            array_like: the design matrix evaluated at xs. shape (N, *xs.shape)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xs</span><span class="p">))</span></div>
+        <span class="n">logxs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">xs</span><span class="p">)</span>
+        <span class="n">design_matrix</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">logxs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">logxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xrange</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">logxs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xrange</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">oob_val</span><span class="p">,</span> <span class="n">design_matrix</span><span class="p">)</span></div>
 </div>
 
 
@@ -616,8 +649,8 @@
 <span class="sd">            ydf (int): number of degrees of freedom for the spline in the Y direction</span>
 <span class="sd">            xrange (tuple, optional): domain of X spline. Defaults to (0, 1).</span>
 <span class="sd">            yrange (tuple, optional): domain of Y spline. Defaults to (0, 1).</span>
-<span class="sd">            kx (int, optional): order of the X spline +1, i.e. cubcic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
-<span class="sd">            ky (int, optional): order of the Y spline +1, i.e. cubcic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
+<span class="sd">            kx (int, optional): order of the X spline +1, i.e. cubic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
+<span class="sd">            ky (int, optional): order of the Y spline +1, i.e. cubic splines-&gt;k=4. Defaults to 4 (cubic spline).</span>
 <span class="sd">            xbasis (object, optional): Choice of basis to use for the X spline. Defaults to BSpline.</span>
 <span class="sd">            ybasis (object, optional): Choice of basis to use for the Y spline. Defaults to BSpline.</span>
 <span class="sd">            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.</span>

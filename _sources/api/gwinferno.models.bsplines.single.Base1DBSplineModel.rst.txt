@@ -21,7 +21,6 @@ gwinferno.models.bsplines.single.Base1DBSplineModel
       ~Base1DBSplineModel.eval_spline
       ~Base1DBSplineModel.inj_pdf
       ~Base1DBSplineModel.pe_pdf
-      ~Base1DBSplineModel.truncate_dmat
    
    
 

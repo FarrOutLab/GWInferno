@@ -101,7 +101,6 @@
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">trange</span>
 
 <span class="kn">from</span> <span class="nn">gwinferno.distributions</span> <span class="kn">import</span> <span class="n">truncnorm_pdf</span>
-<span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogXLogYBSpline</span>
 <span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogYBSpline</span>
 <span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIIDSpinMagnitudes</span>
 <span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIIDSpinTilts</span>
@@ -131,8 +130,6 @@
         <span class="n">ms</span><span class="p">,</span>
         <span class="n">Q</span><span class="p">,</span>
         <span class="n">qs</span><span class="p">,</span>
-        <span class="n">basis_m</span><span class="o">=</span><span class="n">LogXLogYBSpline</span><span class="p">,</span>
-        <span class="n">basis_q</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span>
         <span class="n">m1min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
         <span class="n">m2min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
         <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>

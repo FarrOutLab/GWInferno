@@ -22,7 +22,6 @@ gwinferno.models.bsplines.single.BSplineRedshift
       ~BSplineRedshift.inj_pdf
       ~BSplineRedshift.norm
       ~BSplineRedshift.pe_pdf
-      ~BSplineRedshift.truncate_dmat
    
    
 

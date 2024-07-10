@@ -166,7 +166,7 @@
 <span class="sd">        JAX array of weights to integrate over. Expected size of `(N_events,N_samples)`.</span>
 <span class="sd">    log : bool, optional</span>
 <span class="sd">        Flag to perform calculations in log probability. Interprets weights as log weights.</span>
-<span class="sd">        This is slower but more numerically stable. Defaults to False.</span>
+<span class="sd">        This should be more numerically stable in general but can break autograd with truncated models.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

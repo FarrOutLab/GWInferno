@@ -21,7 +21,6 @@ gwinferno.models.bsplines.single.BSplineSpinMagnitude
       ~BSplineSpinMagnitude.eval_spline
       ~BSplineSpinMagnitude.inj_pdf
       ~BSplineSpinMagnitude.pe_pdf
-      ~BSplineSpinMagnitude.truncate_dmat
    
    
 

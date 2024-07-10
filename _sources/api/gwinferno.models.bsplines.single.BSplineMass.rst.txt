@@ -21,7 +21,6 @@ gwinferno.models.bsplines.single.BSplineMass
       ~BSplineMass.eval_spline
       ~BSplineMass.inj_pdf
       ~BSplineMass.pe_pdf
-      ~BSplineMass.truncate_dmat
    
    
 

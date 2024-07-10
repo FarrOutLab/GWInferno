@@ -21,7 +21,6 @@ gwinferno.models.bsplines.single.BSplineSpinTilt
       ~BSplineSpinTilt.eval_spline
       ~BSplineSpinTilt.inj_pdf
       ~BSplineSpinTilt.pe_pdf
-      ~BSplineSpinTilt.truncate_dmat
    
    
 

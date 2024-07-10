@@ -130,7 +130,7 @@
 <dt><strong>weights</strong><span class="classifier">jax.DeviceArray</span></dt><dd><p>JAX array of weights to integrate over. Expected size of <cite>(N_events,N_samples)</cite>.</p>
 </dd>
 <dt><strong>log</strong><span class="classifier">bool, optional</span></dt><dd><p>Flag to perform calculations in log probability. Interprets weights as log weights.
-This is slower but more numerically stable. Defaults to False.</p>
+This should be more numerically stable in general but can break autograd with truncated models.</p>
 </dd>
 </dl>
 </dd>

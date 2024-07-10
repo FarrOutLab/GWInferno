@@ -310,7 +310,7 @@
 <div class="viewcode-block" id="BSplineIIDSpinTilts.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>
@@ -385,7 +385,7 @@
 <div class="viewcode-block" id="BSplineIndependentSpinTilts.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
 <span class="sd">        Args:</span>
@@ -498,8 +498,6 @@
         <span class="n">n_splines</span><span class="p">,</span>
         <span class="n">q</span><span class="p">,</span>
         <span class="n">q_inj</span><span class="p">,</span>
-        <span class="n">m1</span><span class="p">,</span>
-        <span class="n">m1_inj</span><span class="p">,</span>
         <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="p">):</span>
@@ -507,8 +505,6 @@
             <span class="n">n_splines</span><span class="p">,</span>
             <span class="n">q</span><span class="p">,</span>
             <span class="n">q_inj</span><span class="p">,</span>
-            <span class="n">m1</span><span class="p">,</span>
-            <span class="n">m1_inj</span><span class="p">,</span>
             <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
             <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
         <span class="p">)</span></div>
@@ -559,8 +555,6 @@
 <span class="sd">        m1min (float, optional): minimum primary mass value. Primary mass spline is truncated below this minimum mass. Defaults to 3.</span>
 <span class="sd">        m2min (float, optional): minimum secondary mass value. Mass ratio spline is truncated below m2min/mmax. Defaults to 3.</span>
 <span class="sd">        mmax (float, optional): maximum mass value. Primary mass spline is truncated above this maximum mass. Defaults to 100.</span>
-<span class="sd">        basis_m (class, optional): type of basis to use (ex. LogYBSpline) for primary mass spline. Defaults to BSpline.</span>
-<span class="sd">        basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to BSpline.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplinePrimaryBSplineRatio.__init__">
@@ -580,9 +574,8 @@
         <span class="n">m1min</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
         <span class="n">m2min</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
         <span class="n">mmax</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
-        <span class="n">basis_m</span><span class="o">=</span><span class="n">BSpline</span><span class="p">,</span>
-        <span class="n">basis_q</span><span class="o">=</span><span class="n">BSpline</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">m1_kwargs</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">q_kwargs</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines_m</span><span class="p">,</span>
@@ -592,8 +585,7 @@
             <span class="n">mmin</span><span class="o">=</span><span class="n">m1min</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
             <span class="n">degree</span><span class="o">=</span><span class="n">degree_m</span><span class="p">,</span>
-            <span class="n">basis</span><span class="o">=</span><span class="n">basis_m</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">m1_kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ratio_model</span> <span class="o">=</span> <span class="n">BSplineRatio</span><span class="p">(</span>
             <span class="n">n_splines_q</span><span class="p">,</span>
@@ -602,8 +594,7 @@
             <span class="n">qmin</span><span class="o">=</span><span class="n">m2min</span> <span class="o">/</span> <span class="n">mmax</span><span class="p">,</span>
             <span class="n">knots</span><span class="o">=</span><span class="n">knots_q</span><span class="p">,</span>
             <span class="n">degree</span><span class="o">=</span><span class="n">degree_q</span><span class="p">,</span>
-            <span class="n">basis</span><span class="o">=</span><span class="n">basis_q</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">q_kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
@@ -657,7 +648,8 @@
         <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">mmin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="n">mmax</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+        <span class="n">m1_kwargs</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">m2_kwargs</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines</span><span class="p">,</span>
@@ -666,7 +658,7 @@
             <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
             <span class="n">mmin</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">m1_kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines</span><span class="p">,</span>
@@ -675,7 +667,7 @@
             <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
             <span class="n">mmin</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">m2_kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">qs</span> <span class="o">=</span> <span class="p">[</span><span class="n">m2_inj</span> <span class="o">/</span> <span class="n">m1_inj</span><span class="p">,</span> <span class="n">m2</span> <span class="o">/</span> <span class="n">m1</span><span class="p">]</span></div>
 
@@ -747,6 +739,8 @@
         <span class="n">mmax2</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
         <span class="n">degree1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="n">degree2</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">m1_kwargs</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">m2_kwargs</span><span class="o">=</span><span class="p">{},</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines1</span><span class="p">,</span>
@@ -756,6 +750,7 @@
             <span class="n">mmin</span><span class="o">=</span><span class="n">mmin1</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax1</span><span class="p">,</span>
             <span class="n">degree</span><span class="o">=</span><span class="n">degree1</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">m1_kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines2</span><span class="p">,</span>
@@ -765,12 +760,14 @@
             <span class="n">mmin</span><span class="o">=</span><span class="n">mmin2</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax2</span><span class="p">,</span>
             <span class="n">degree</span><span class="o">=</span><span class="n">degree2</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="o">**</span><span class="n">m2_kwargs</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qs</span> <span class="o">=</span> <span class="p">[</span><span class="n">m2_inj</span> <span class="o">/</span> <span class="n">m1_inj</span><span class="p">,</span> <span class="n">m2</span> <span class="o">/</span> <span class="n">m1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="BSplineIndependentComponentMasses.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.</span>
 <span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
 
@@ -788,7 +785,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_m1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_m2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_m2</span> <span class="o">*</span> <span class="p">(</span><span class="n">m1</span> <span class="o">/</span> <span class="n">m2</span><span class="p">)</span> <span class="o">**</span> <span class="n">beta</span></div>
+        <span class="n">dim</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">pe_samples</span> <span class="k">else</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_m2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">qs</span><span class="p">[</span><span class="n">dim</span><span class="p">]</span> <span class="o">**</span> <span class="n">beta</span></div>
 </div>
 
 

@@ -138,7 +138,7 @@ knots (array_like, optional): array of knots, if non-uniform knot placing is pre
 </dd>
 </dl>
 <p>xrange (tuple, optional): domain of spline. Defaults to (0, 1).
-k (int, optional): order of the spline +1, i.e. cubcic splines-&gt;k=4. Defaults to 4 (cubic spline).
+k (int, optional): order of the spline +1, i.e. cubic splines-&gt;k=4. Defaults to 4 (cubic spline).
 normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to False.</p>
 </dd>
 </dl>
@@ -147,7 +147,7 @@ normalize (bool, optional): flag whether or not to numerically normalize the spl
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.__call__" title="Link to this definition"></a></dt>
-<dd><p>__call__ Evalulate basis spline at xs given coefficients</p>
+<dd><p>__call__ Evaluate basis spline at xs given coefficients</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>xs (array_like): input values to evaluate the basis spline at
 coefs (array_like): coefficients for the basis components</p>
@@ -163,11 +163,11 @@ coefs (array_like): coefficients for the basis components</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.__init__" title="gwinferno.interpolation.BSpline.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n_df[, knots, interior_knots, ...])</p></td>
 <td><p>Class to construct a basis spline (B-Spline)</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.bases" title="gwinferno.interpolation.BSpline.bases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bases</span></code></a>(xs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.bases" title="gwinferno.interpolation.BSpline.bases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bases</span></code></a>(xs[, oob_val])</p></td>
 <td><p>bases form the basis spline design matrix evaluated at xs</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.eval" title="gwinferno.interpolation.BSpline.eval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval</span></code></a>(xs, coefs)</p></td>
-<td><p>eval Evalulate basis spline at xs given coefficients</p></td>
+<td><p>eval Evaluate basis spline at xs given coefficients</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.get_coefficients" title="gwinferno.interpolation.BSpline.get_coefficients"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coefficients</span></code></a>(xs, ys)</p></td>
 <td><p>computes the coefficients of the basis components given data 1-D data (xs, ys)</p></td>
@@ -182,7 +182,7 @@ coefs (array_like): coefficients for the basis components</p>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.bases">
-<span class="sig-name descname"><span class="pre">bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.bases" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oob_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.bases" title="Link to this definition"></a></dt>
 <dd><p>bases form the basis spline design matrix evaluated at xs</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>xs (array_like): input values to evaluate the basis spline at</p>
@@ -195,7 +195,7 @@ coefs (array_like): coefficients for the basis components</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.eval">
 <span class="sig-name descname"><span class="pre">eval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.eval" title="Link to this definition"></a></dt>
-<dd><p>eval Evalulate basis spline at xs given coefficients</p>
+<dd><p>eval Evaluate basis spline at xs given coefficients</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>xs (array_like): input values to evaluate the basis spline at
 coefs (array_like): coefficients for the basis components</p>

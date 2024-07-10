@@ -112,7 +112,7 @@
 <h1>gwinferno.distributions.powerlaw_logit_pdf<a class="headerlink" href="#gwinferno-distributions-powerlaw-logit-pdf" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="gwinferno.distributions.powerlaw_logit_pdf">
-<span class="sig-prename descclassname"><span class="pre">gwinferno.distributions.</span></span><span class="sig-name descname"><span class="pre">powerlaw_logit_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fall_off</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/distributions.html#powerlaw_logit_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.distributions.powerlaw_logit_pdf" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">gwinferno.distributions.</span></span><span class="sig-name descname"><span class="pre">powerlaw_logit_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_fall_off</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_fall_off</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/distributions.html#powerlaw_logit_pdf"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.distributions.powerlaw_logit_pdf" title="Link to this definition"></a></dt>
 <dd><dl class="simple">
 <dt>powerlaw_logit_pdf pdf of high mass soft truncation powerlaw:</dt><dd><p>$$ p(x) propto x^{lpha}Theta(<a href="#id1"><span class="problematic" id="id2">x-x_</span></a>mathrm{min})Theta(<a href="#id3"><span class="problematic" id="id4">x_</span></a>mathrm{max}-x) $$</p>
 </dd>
@@ -121,6 +121,7 @@
 <dl class="simple">
 <dt>Args:</dt><dd><p>xx (array_like): points to evaluate pdf at
 alpha (float): power law index
+low (float): low end truncation bound
 high (float): high end truncation bound
 fall_off (float): scale of logistic unit to truncate distribution</p>
 </dd>

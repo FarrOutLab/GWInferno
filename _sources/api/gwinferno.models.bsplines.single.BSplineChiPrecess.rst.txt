@@ -21,7 +21,6 @@ gwinferno.models.bsplines.single.BSplineChiPrecess
       ~BSplineChiPrecess.eval_spline
       ~BSplineChiPrecess.inj_pdf
       ~BSplineChiPrecess.pe_pdf
-      ~BSplineChiPrecess.truncate_dmat
    
    
 

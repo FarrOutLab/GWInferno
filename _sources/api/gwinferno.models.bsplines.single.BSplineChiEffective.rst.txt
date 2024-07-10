@@ -21,7 +21,6 @@ gwinferno.models.bsplines.single.BSplineChiEffective
       ~BSplineChiEffective.eval_spline
       ~BSplineChiEffective.inj_pdf
       ~BSplineChiEffective.pe_pdf
-      ~BSplineChiEffective.truncate_dmat
    
    
 

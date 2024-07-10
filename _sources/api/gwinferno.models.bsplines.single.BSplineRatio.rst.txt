@@ -21,7 +21,6 @@ gwinferno.models.bsplines.single.BSplineRatio
       ~BSplineRatio.eval_spline
       ~BSplineRatio.inj_pdf
       ~BSplineRatio.pe_pdf
-      ~BSplineRatio.truncate_dmat
    
    
 

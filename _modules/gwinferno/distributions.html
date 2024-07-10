@@ -171,7 +171,7 @@
 
 <div class="viewcode-block" id="powerlaw_logit_pdf">
 <a class="viewcode-back" href="../../api/gwinferno.distributions.powerlaw_logit_pdf.html#gwinferno.distributions.powerlaw_logit_pdf">[docs]</a>
-<span class="k">def</span> <span class="nf">powerlaw_logit_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">fall_off</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">powerlaw_logit_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">low_fall_off</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">high_fall_off</span><span class="o">=</span><span class="mf">4.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    powerlaw_logit_pdf pdf of high mass soft truncation powerlaw:</span>
 <span class="sd">        $$ p(x) \propto x^{\alpha}\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$</span>
@@ -181,13 +181,18 @@
 <span class="sd">    Args:</span>
 <span class="sd">        xx (array_like): points to evaluate pdf at</span>
 <span class="sd">        alpha (float): power law index</span>
+<span class="sd">        low (float): low end truncation bound</span>
 <span class="sd">        high (float): high end truncation bound</span>
 <span class="sd">        fall_off (float): scale of logistic unit to truncate distribution</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        array_like: pdf evaluated at xx</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">prob</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">logistic_unit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">sign</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">a</span><span class="o">=</span><span class="n">fall_off</span><span class="p">)</span>
+    <span class="n">prob</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">prob</span> <span class="o">*=</span> <span class="n">logistic_unit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">low_fall_off</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">high</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">logistic_unit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">high_fall_off</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">prob</span></div>
 
 
