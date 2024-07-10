@@ -5,7 +5,6 @@ from jax.scipy.integrate import trapezoid
 from tqdm import trange
 
 from gwinferno.distributions import truncnorm_pdf
-from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
 from gwinferno.models.bsplines.separable import BSplineIIDSpinMagnitudes
 from gwinferno.models.bsplines.separable import BSplineIIDSpinTilts
@@ -33,8 +32,6 @@ def calculate_bspline_mass_ppds(m_cs, q_cs, nspline_dict, mmin, mmax, rate=None,
         ms,
         Q,
         qs,
-        basis_m=LogXLogYBSpline,
-        basis_q=LogYBSpline,
         m1min=mmin,
         m2min=mmin,
         mmax=mmax,

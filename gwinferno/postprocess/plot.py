@@ -15,7 +15,7 @@ def plot_pdf(x, pdf, label, color="blue", loglog=True, alpha=1.0):
     plt.fill_between(x, low, high, color=color, alpha=0.1)
 
 
-def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, parsargs, save=True, colors=["red", "blue", "green"]):
+def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, save=True, colors=["red", "blue", "green"]):
 
     plt.figure(figsize=(15, 5))
     for i in range(len(mpdfs)):
@@ -23,7 +23,7 @@ def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, parsargs, save
     plt.ylim(1e-5, 1e0)
     plt.xlabel("m1")
     plt.legend()
-    plt.xlim(parsargs.mmin, parsargs.mmax)
+    plt.xlim(m1[0], m1[-1])
     plt.show()
     if save:
         plt.savefig(result_dir + f"/mass_pdf_{label}.png", dpi=100)

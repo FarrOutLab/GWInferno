@@ -189,7 +189,7 @@ class BSplineIIDSpinTilts(object):
         )
 
     def __call__(self, coefs, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
+        """Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -255,7 +255,7 @@ class BSplineIndependentSpinTilts(object):
         )
 
     def __call__(self, pcoefs, scoefs, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary and secondary cosine tilt along the posterior or injection samples.
+        """Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
         Args:
@@ -353,8 +353,6 @@ class PLPeakPrimaryBSplineRatio(object):
         n_splines,
         q,
         q_inj,
-        m1,
-        m1_inj,
         knots=None,
         degree=3,
     ):
@@ -362,8 +360,6 @@ class PLPeakPrimaryBSplineRatio(object):
             n_splines,
             q,
             q_inj,
-            m1,
-            m1_inj,
             knots=knots,
             degree=degree,
         )
@@ -407,8 +403,6 @@ class BSplinePrimaryBSplineRatio(object):
         m1min (float, optional): minimum primary mass value. Primary mass spline is truncated below this minimum mass. Defaults to 3.
         m2min (float, optional): minimum secondary mass value. Mass ratio spline is truncated below m2min/mmax. Defaults to 3.
         mmax (float, optional): maximum mass value. Primary mass spline is truncated above this maximum mass. Defaults to 100.
-        basis_m (class, optional): type of basis to use (ex. LogYBSpline) for primary mass spline. Defaults to BSpline.
-        basis_q (class, optional): type of basis to use (ex. LogYBSpline) for mass ratio spline. Defaults to BSpline.
     """
 
     def __init__(
@@ -426,9 +420,8 @@ class BSplinePrimaryBSplineRatio(object):
         m1min=3.0,
         m2min=3.0,
         mmax=100.0,
-        basis_m=BSpline,
-        basis_q=BSpline,
-        **kwargs,
+        m1_kwargs={},
+        q_kwargs={},
     ):
         self.primary_model = BSplineMass(
             n_splines_m,
@@ -438,8 +431,7 @@ class BSplinePrimaryBSplineRatio(object):
             mmin=m1min,
             mmax=mmax,
             degree=degree_m,
-            basis=basis_m,
-            **kwargs,
+            **m1_kwargs,
         )
         self.ratio_model = BSplineRatio(
             n_splines_q,
@@ -448,8 +440,7 @@ class BSplinePrimaryBSplineRatio(object):
             qmin=m2min / mmax,
             knots=knots_q,
             degree=degree_q,
-            basis=basis_q,
-            **kwargs,
+            **q_kwargs,
         )
 
     def __call__(self, mcoefs, qcoefs, pe_samples=True):
@@ -494,7 +485,8 @@ class BSplineIIDComponentMasses(object):
         knots=None,
         mmin=2,
         mmax=100,
-        **kwargs,
+        m1_kwargs={},
+        m2_kwargs={},
     ):
         self.primary_model = BSplineMass(
             n_splines=n_splines,
@@ -503,7 +495,7 @@ class BSplineIIDComponentMasses(object):
             knots=knots,
             mmin=mmin,
             mmax=mmax,
-            **kwargs,
+            **m1_kwargs,
         )
         self.secondary_model = BSplineMass(
             n_splines=n_splines,
@@ -512,7 +504,7 @@ class BSplineIIDComponentMasses(object):
             knots=knots,
             mmin=mmin,
             mmax=mmax,
-            **kwargs,
+            **m2_kwargs,
         )
         self.qs = [m2_inj / m1_inj, m2 / m1]
 
@@ -575,6 +567,8 @@ class BSplineIndependentComponentMasses(object):
         mmax2=100,
         degree1=3,
         degree2=3,
+        m1_kwargs={},
+        m2_kwargs={},
     ):
         self.primary_model = BSplineMass(
             n_splines=n_splines1,
@@ -584,6 +578,7 @@ class BSplineIndependentComponentMasses(object):
             mmin=mmin1,
             mmax=mmax1,
             degree=degree1,
+            **m1_kwargs,
         )
         self.secondary_model = BSplineMass(
             n_splines=n_splines2,
@@ -593,9 +588,11 @@ class BSplineIndependentComponentMasses(object):
             mmin=mmin2,
             mmax=mmax2,
             degree=degree2,
+            **m2_kwargs,
         )
+        self.qs = [m2_inj / m1_inj, m2 / m1]
 
-    def __call__(self, m1, m2, pcoefs, scoefs, beta, pe_samples=True):
+    def __call__(self, pcoefs, scoefs, beta, pe_samples=True):
         """will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.
         Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
 
@@ -613,7 +610,8 @@ class BSplineIndependentComponentMasses(object):
         """
         p_m1 = self.primary_model(pcoefs, pe_samples=pe_samples)
         p_m2 = self.secondary_model(scoefs, pe_samples=pe_samples)
-        return p_m1 * p_m2 * (m1 / m2) ** beta
+        dim = 1 if pe_samples else 0
+        return p_m1 * p_m2 * self.qs[dim] ** beta
 
 
 class BSplineEffectiveSpinDims(object):

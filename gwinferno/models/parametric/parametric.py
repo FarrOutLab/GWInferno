@@ -1,7 +1,8 @@
 import jax.numpy as jnp
 import numpy as np
-from astropy.cosmology import Planck15
 from jax.scipy.integrate import trapezoid
+
+from gwinferno.cosmology import PLANCK_2015_Cosmology as Planck15
 
 from ...distributions import betadist
 from ...distributions import powerlaw_logit_pdf
@@ -97,10 +98,10 @@ class PowerlawRedshiftModel(object):
         self.zmin = jnp.max(jnp.array([jnp.min(z_pe), jnp.min(z_inj)]))
         self.zmax = jnp.min(jnp.array([jnp.max(z_pe), jnp.max(z_inj)]))
         self.zs = jnp.linspace(self.zmin, self.zmax, 1000)
-        self.dVdz_ = jnp.array(Planck15.differential_comoving_volume(np.array(self.zs)).value * 4.0 * np.pi)
+        self.dVdz_ = jnp.array(Planck15.dVcdz(np.array(self.zs)) * 4.0 * np.pi)
         self.dVdzs = [
-            jnp.array(Planck15.differential_comoving_volume(np.array(z_inj)).value * 4.0 * np.pi),
-            jnp.array(Planck15.differential_comoving_volume(np.array(z_pe)).value * 4.0 * np.pi),
+            jnp.array(Planck15.dVcdz(np.array(z_inj)) * 4.0 * np.pi),
+            jnp.array(Planck15.dVcdz(np.array(z_pe)) * 4.0 * np.pi),
         ]
 
     def normalization(self, lamb):

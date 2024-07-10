@@ -7,6 +7,8 @@ import numpy as np
 from jax.scipy.integrate import trapezoid
 from jax.tree_util import register_pytree_node_class
 
+OOB_VAL = -9  # Value to return for out-of-bounds values.  nan or -inf breaks autograd, so we use this instead.
+
 
 @register_pytree_node_class
 class NaturalCubicUnivariateSpline(object):
@@ -87,7 +89,7 @@ class BasisSpline(object):
             interior_knots (array_like, optional): array of interior knots,
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
-            k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+            k (int, optional): order of the spline +1, i.e. cubic splines->k=4. Defaults to 4 (cubic spline).
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         self.order = k
@@ -125,7 +127,7 @@ class BasisSpline(object):
 
     def _basis(self, xs, i, k):
         """
-        _basis protected method that computes the ith basis compoentn of order k recursively using
+        _basis protected method that computes the ith basis component of order k recursively using
             the Cox-de Boor recursion relation
 
         Args:
@@ -158,7 +160,7 @@ class BasisSpline(object):
         """
         return [self._basis(xs, i, k=self.order) for i in range(self.N)]
 
-    def bases(self, xs):
+    def bases(self, xs, oob_val=0.0):
         """
         bases form the basis spline design matrix evaluated at xs
 
@@ -168,7 +170,8 @@ class BasisSpline(object):
         Returns:
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
-        return jnp.concatenate(self._bases(xs)).reshape(self.N, *xs.shape)
+        design_matrix = jnp.concatenate(self._bases(xs)).reshape(self.N, *xs.shape)
+        return jnp.where(jnp.less(xs, self.xrange[0]) | jnp.greater(xs, self.xrange[1]), oob_val, design_matrix)
 
     def get_coefficients(self, xs, ys):
         """
@@ -204,7 +207,7 @@ class BasisSpline(object):
 
     def eval(self, xs, coefs):
         """
-        eval Evalulate basis spline at xs given coefficients
+        eval Evaluate basis spline at xs given coefficients
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
@@ -217,7 +220,7 @@ class BasisSpline(object):
 
     def __call__(self, xs, coefs):
         """
-        __call__ Evalulate basis spline at xs given coefficients
+        __call__ Evaluate basis spline at xs given coefficients
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
@@ -249,7 +252,7 @@ class BSpline(BasisSpline):
             interior_knots (array_like, optional): array of interior knots,
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
-            k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+            k (int, optional): order of the spline +1, i.e. cubic splines->k=4. Defaults to 4 (cubic spline).
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to False.
         """
         super().__init__(
@@ -325,7 +328,7 @@ class LogXBSpline(BSpline):
             interior_knots (array_like, optional): array of interior knots,
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).
-            k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+            k (int, optional): order of the spline +1, i.e. cubic splines->k=4. Defaults to 4 (cubic spline).
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         knots = None if knots is None else np.log(knots)
@@ -339,17 +342,19 @@ class LogXBSpline(BSpline):
             self.grid = jnp.linspace(*np.exp(xrange), 1000)
             self.grid_bases = jnp.array(self.bases(self.grid))
 
-    def bases(self, xs):
+    def bases(self, xs, oob_val=0.0):
         """
         bases form the basis spline design matrix evaluated at xs (in log space)
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
+            oob_val (float, optional): value to return for out-of-bounds values. Defaults to 0.
+                WARNING: nan or -inf breaks autograd.
 
         Returns:
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
-        return super().bases(jnp.log(xs))
+        return super().bases(jnp.log(xs), oob_val=oob_val)
 
 
 class LogYBSpline(BSpline):
@@ -364,7 +369,7 @@ class LogYBSpline(BSpline):
             interior_knots (array_like, optional): array of interior knots,
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
-            k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+            k (int, optional): order of the spline +1, i.e. cubic splines->k=4. Defaults to 4 (cubic spline).
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         super().__init__(n_df, knots=knots, interior_knots=interior_knots, xrange=xrange, **kwargs)
@@ -373,18 +378,39 @@ class LogYBSpline(BSpline):
             self.grid = jnp.linspace(*xrange, 1000)
             self.grid_bases = jnp.array(self.bases(self.grid))
 
-    def _project(self, bases, coefs):
+    def _project(self, bases, coefs, oob_val=OOB_VAL):
         """
         _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline
 
         Args:
             bases (array_like): The set of basis components or design matrix to project onto
             coefs (array_like): coefficients for the basis components
+            oob_val (float, optional): value to expect for bases at out-of-bounds values. Defaults to -9.
 
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
-        return jnp.exp(jnp.einsum("i...,i->...", bases, coefs))
+        oob = jnp.all(bases == oob_val, axis=0)
+        logvals = jnp.where(oob, 0.0, jnp.einsum("i...,i->...", bases, coefs))
+        return jnp.where(oob, 0.0, jnp.exp(logvals))
+
+    def bases(self, xs, oob_val=OOB_VAL):
+        """
+        Evaluate the basis spline design matrix at xs. We want the probability to ultimately
+        be zero outside the range of the spline, but since coefficients can be negative, negative
+        infinities for out-of-range values won't have the desired effect.  We'll use nans instead
+        and use nan_to_num to convert them to zeros upon projection.
+
+        Args:
+            xs (array_like): input values to evaluate the basis spline at
+            oob_val (float, optional): value to return for out-of-bounds values. Defaults to -9.
+                WARNING: nan or -inf breaks autograd.
+
+        Returns:
+            array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
+        """
+        design_matrix = super().bases(xs)
+        return jnp.where(jnp.less(xs, self.xrange[0]) | jnp.greater(xs, self.xrange[1]), oob_val, design_matrix)
 
 
 class LogXLogYBSpline(LogYBSpline):
@@ -399,7 +425,7 @@ class LogXLogYBSpline(LogYBSpline):
             interior_knots (array_like, optional): array of interior knots,
                 if non-uniform knot placing is preferred. Defaults to None.
             xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).
-            k (int, optional): order of the spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+            k (int, optional): order of the spline +1, i.e. cubic splines->k=4. Defaults to 4 (cubic spline).
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
         """
         knots = None if knots is None else np.log(knots)
@@ -413,17 +439,21 @@ class LogXLogYBSpline(LogYBSpline):
             self.grid = jnp.linspace(*jnp.exp(xrange), 1500)
             self.grid_bases = jnp.array(self.bases(self.grid))
 
-    def bases(self, xs):
+    def bases(self, xs, oob_val=OOB_VAL):
         """
         bases form the basis spline design matrix evaluated at xs (in log space)
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
+            oob_val (float, optional): value to return for out-of-bounds values. Defaults to -9.
+                WARNING: nan or -inf breaks autograd.
 
         Returns:
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
-        return super().bases(jnp.log(xs))
+        logxs = jnp.log(xs)
+        design_matrix = super().bases(logxs)
+        return jnp.where(jnp.less(logxs, self.xrange[0]) | jnp.greater(logxs, self.xrange[1]), oob_val, design_matrix)
 
 
 class RectBivariateBasisSpline(object):
@@ -447,8 +477,8 @@ class RectBivariateBasisSpline(object):
             ydf (int): number of degrees of freedom for the spline in the Y direction
             xrange (tuple, optional): domain of X spline. Defaults to (0, 1).
             yrange (tuple, optional): domain of Y spline. Defaults to (0, 1).
-            kx (int, optional): order of the X spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
-            ky (int, optional): order of the Y spline +1, i.e. cubcic splines->k=4. Defaults to 4 (cubic spline).
+            kx (int, optional): order of the X spline +1, i.e. cubic splines->k=4. Defaults to 4 (cubic spline).
+            ky (int, optional): order of the Y spline +1, i.e. cubic splines->k=4. Defaults to 4 (cubic spline).
             xbasis (object, optional): Choice of basis to use for the X spline. Defaults to BSpline.
             ybasis (object, optional): Choice of basis to use for the Y spline. Defaults to BSpline.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
