@@ -1,5 +1,5 @@
-import unittest
 import os
+import unittest
 
 import jax.numpy as jnp
 import numpy as np
@@ -25,8 +25,8 @@ from gwinferno.postprocess.calculations import calculate_powerlaw_spline_rate_of
 from gwinferno.postprocess.plot import plot_mass_pdfs
 from gwinferno.postprocess.plot import plot_rate_of_z_pdfs
 from gwinferno.postprocess.plot import plot_spin_pdfs
-from gwinferno.preprocess.data_collection import load_injections
 from gwinferno.postprocess.postprocess import PopSummaryWriteOut
+from gwinferno.preprocess.data_collection import load_injections
 
 
 class TestModelUtils(unittest.TestCase):
@@ -41,7 +41,7 @@ class TestModelUtils(unittest.TestCase):
     def load_data(self, max_samps=100):
         loaded_dataset = xr.load_dataset("tests/data/xarray_GWTC3_BBH_69evs_downsampled_1000samps_nospin.h5")
         dataarray = loaded_dataset.to_array()
-        events = dataarray.indexes['variable'].tolist()
+        events = dataarray.indexes["variable"].tolist()
         pedata = jnp.asarray(dataarray.data)
         Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]
@@ -79,7 +79,6 @@ class TestModelUtils(unittest.TestCase):
             bspline_redshift_prior(z_nsplines=10, z_tau=1, name="test_z")
             numpyro.sample("lamb", dist.Normal(0, 3))
 
-
         RNG = random.PRNGKey(3)
         kernel = NUTS(model, max_tree_depth=2, adapt_mass_matrix=False)
         mcmc = MCMC(kernel, num_warmup=5, num_samples=self.n_samples)
@@ -103,35 +102,46 @@ class TestModelUtils(unittest.TestCase):
         plot_rate_of_z_pdfs(rs, zs, "test", "tests", save=False)
 
         post_xr = posterior_dict_to_xarray(samples)
-        post_xr.to_netcdf('tests/data/posteriors.h5')
+        post_xr.to_netcdf("tests/data/posteriors.h5")
 
         pdf_dict1 = {"m1": m_pdfs, "q": q_pdfs, "a1": apdfs, "tilt1": ctpdfs, "z": rs}
         param_dict1 = {"m1": ms, "q": qs, "a1": aa, "tilt1": cc, "z": zs}
 
         pdf_xr = pdf_dict_to_xarray(pdf_dict1, param_dict1, self.n_samples)
-        pdf_xr.to_netcdf('tests/data/pdfs.h5')
-
+        pdf_xr.to_netcdf("tests/data/pdfs.h5")
 
         pdf_dict2 = {"m1": m_pdfs, "q": q_pdfs, "a1": apdfs_1, "tilt1": ctpdfs_1, "a2": apdfs_2, "tilt2": ctpdfs_2, "z": rs}
         param_dict2 = {"m1": ms, "q": qs, "a1": aa, "tilt1": cc, "a2": aa, "tilt2": cc, "z": zs}
 
         pdf_dict_to_xarray(pdf_dict2, param_dict2, self.n_samples)
 
-        popfile_path = 'tests/data/popsummary.h5'
+        popfile_path = "tests/data/popsummary.h5"
 
         empty_ev = np.zeros_like(self.events).tolist()
-        hyperparams = ['mass_cs_test_mass', 'q_cs_test_mass', 'a_cs_test_iid', 'tilt_cs_test_iid', 'z_cs_test_z']
+        hyperparams = ["mass_cs_test_mass", "q_cs_test_mass", "a_cs_test_iid", "tilt_cs_test_iid", "z_cs_test_z"]
         empty_hyp = np.zeros_like(hyperparams).tolist()
-        params = ['m1', 'a1', 'tilt1', 'q', 'z']
+        params = ["m1", "a1", "tilt1", "q", "z"]
 
         if os.path.exists(popfile_path):
             os.remove(popfile_path)
-        
-        popfile = PopSummaryWriteOut(popfile_path, events = self.events, event_waveforms = empty_ev, event_sample_IDs = empty_ev, hyperparameter_names=hyperparams, hyperparameter_latex_labels=empty_hyp, event_parameters=params, hyperparameter_descriptions=empty_hyp)
 
-        popfile.save_hypersamples('tests/data/posteriors.h5')
-        # popfile.save_reweighed_event_and_injection_samples('tests/data/posteriors.h5')
-        popfile.save_rates_on_grids('tests/data/pdfs.h5', rate_names = ['m1_pdfs', 'a1_pdfs', 'tilt1_pdfs', 'q_pdfs', 'z_pdfs'], grid_params = params)
+        popfile = PopSummaryWriteOut(
+            popfile_path,
+            events=self.events,
+            event_waveforms=empty_ev,
+            event_sample_IDs=empty_ev,
+            hyperparameter_names=hyperparams,
+            hyperparameter_latex_labels=empty_hyp,
+            event_parameters=params,
+            hyperparameter_descriptions=empty_hyp,
+        )
+
+        popfile.save_hypersamples("tests/data/posteriors.h5")
+        popfile.save_rates_on_grids("tests/data/pdfs.h5", rate_names=["m1_pdfs", "a1_pdfs", "tilt1_pdfs", "q_pdfs", "z_pdfs"], grid_params=params)
+
+        os.remove("tests/data/posteriors.h5")
+        os.remove("tests/data/pdfs.h5")
+        os.remove(popfile_path)
 
     # def test_pdf_dict_to_xarray(self):
 
