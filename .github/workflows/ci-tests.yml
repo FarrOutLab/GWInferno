@@ -37,6 +37,9 @@ jobs:
         pip install arviz==0.15.1
         pip install scipy==1.11.1
         pre-commit install
+        git clone https://git.ligo.org/zoheyr-doctor/popsummary.git
+        cd popsummary
+        pip install .
     - name: Install GWInferno
       run: |
         pip install .
