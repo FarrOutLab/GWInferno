@@ -4,4 +4,4 @@ sphinx_tabs
 numpydoc
 nbsphinx
 autodoc
-sphinx_rtd_theme
+pydata-sphinx-theme

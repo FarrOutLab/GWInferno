@@ -77,7 +77,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -95,15 +95,21 @@ html_theme = "sphinx_rtd_theme"
 #
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-html_sidebars = {
-    "**": [
-        "about.html",
-        "navigation.html",
-        "relations.html",  # needs 'show_related': True theme option to display
-        "searchbox.html",
-        "donate.html",
-    ]
-}
+# html_sidebars = {
+#     "**": [
+#         # "about.html",
+#         # "navigation.html",
+#         "relations.html",  # needs 'show_related': True theme option to display
+#         "searchbox.html",
+#         # "donate.html",
+#     ]
+# }
+html_logo = "_static/logo_github_inferno_transparent.png"
+html_favicon = "_static/bbh_graphic_inferno.png"
+
+html_sidebars = {"**": ["sidebar-nav-bs", "sidebar-ethical-ads"]}
+
+html_theme_options = {}
 
 
 # -- Options for HTMLHelp output ------------------------------------------
