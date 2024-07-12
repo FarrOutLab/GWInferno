@@ -1,11 +1,10 @@
 """
-a module that stores 2D separable (i.e. independent) population models constructed from basis splines
+A collection of 2-D separable (i.e. independent) population models involving basis splines
 """
 
 import jax.numpy as jnp
 
 from ...distributions import powerlaw_pdf
-from ...interpolation import BSpline
 from ..parametric.parametric import plpeak_primary_pdf
 from .single import BSplineChiEffective
 from .single import BSplineChiPrecess
@@ -16,18 +15,24 @@ from .single import BSplineSpinTilt
 
 
 class BSplineIIDSpinMagnitudes(object):
-    """Class to construct a spin magnitude B-Spline model for both binary components, assuming they
-        are independently and identically distributed (IID).
+    r"""A B-Spline model for the spin magnitude of both binary components assuming
+    they are independently and identically distributed (IID),
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        a1 (array_like): primary component spin magnitude pe samples to evaluate the basis spline at
-        a2 (array_like): secondary component spin magnitude pe samples to evaluate the basis spline at
-        a1_inj (array_like): primary component spin magnitude injection samples to evaluate the basis spline at
-        a2_inj (array_like): secondary component spin magnitude injection samples to evaluate the basis spline at
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    .. math::
+        p(a_1, a_2 \mid \mathbf{c}) = p(a_1 \mid \mathbf{c}) p(a_2 \mid \mathbf{c}),
+
+    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients.
+
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    a1, a2 : array_like
+        Primary and secondary component spin magnitude parameter estimation samples for basis evaluation.
+    a1_inj, a2_inj : array_like
+        Primary and secondary component spin magnitude injection samples for basis evaluation.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to the basis spline model.
     """
 
     def __init__(
@@ -37,39 +42,37 @@ class BSplineIIDSpinMagnitudes(object):
         a2,
         a1_inj,
         a2_inj,
-        knots=None,
-        degree=3,
         **kwargs,
     ):
         self.primary_model = BSplineSpinMagnitude(
             n_splines=n_splines,
             a=a1,
             a_inj=a1_inj,
-            knots=knots,
-            degree=degree,
             **kwargs,
         )
         self.secondary_model = BSplineSpinMagnitude(
             n_splines=n_splines,
             a=a2,
             a_inj=a2_inj,
-            knots=knots,
-            degree=degree,
             **kwargs,
         )
 
     def __call__(self, coefs, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary and secondary spin
-        magnitude along the posterior or injection samples. Use flag `pe_samples` to specify which type
-        of samples are being evaluated (pe or injection).
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            coefs (array_like): basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        coefs : array_like
+            Spline coefficients.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary and secondary spin magnitude, p(a1, a2)
+        Returns
+        -------
+        array_like
+            Joint probability density for parameter estimation or injection samples.
         """
         p_a1 = self.primary_model(coefs, pe_samples=pe_samples)
         p_a2 = self.secondary_model(coefs, pe_samples=pe_samples)
@@ -77,21 +80,28 @@ class BSplineIIDSpinMagnitudes(object):
 
 
 class BSplineIndependentSpinMagnitudes(object):
-    """Class to construct a spin magnitude B-Spline model for both binary components, assuming they are independently distributed.
+    r"""A B-Spline model for the spin magnitudes of the primary and secondary components assuming
+    they are independently distributed,
 
-    Args:
-        n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component
-        n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component
-        a1 (array_like): primary component spin magnitude pe samples to evaluate the basis spline at
-        a2 (array_like): secondary component spin magnitude pe samples to evaluate the basis spline at
-        a1_inj (array_like): primary component spin magnitude injection samples to evaluate the basis spline at
-        a2_inj (array_like): secondary component spin magnitude injection samples to evaluate the basis spline at
-        knots1 (array_like, optional): array of knots for the primary component, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree1 (int, optional): degree of primary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
-        knots2 (array_like, optional): array of knots for the secondary component, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree2 (int, optional): degree of secondary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    .. math::
+        p(a_1, a_2 \mid \mathbf{c}_1, \mathbf{c}_2) = p(a_1 \mid \mathbf{c}_1) p(a_2 \mid \mathbf{c}_2),
+
+    where :math:`\mathbf{c}_1, \mathbf{c}_2` are vectors of the ``n_splines1``, ``n_splines2`` basis
+    spline coefficients for the primary and secondary component spin magnitudes, respectively.
+
+    Parameters
+    ----------
+    n_splines1, n_splines2 : int
+        Number of basis functions, i.e., the number of degrees of freedom, of the
+        primary and secondary component spline models.
+    a1, a2 : array_like
+        Primary and secondary component spin magnitude parameter estimation samples for basis evaluation.
+    a1_inj, a2_inj : array_like
+        Primary and secondary component spin magnitude injection samples for basis evaluation.
+    kwargs1, kwargs2 : dict, optional
+        Additional keyword arguments to pass to the basis spline model for the primary and secondary components.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to both basis spline models.
     """
 
     def __init__(
@@ -102,42 +112,41 @@ class BSplineIndependentSpinMagnitudes(object):
         a2,
         a1_inj,
         a2_inj,
-        knots1=None,
-        degree1=3,
-        knots2=None,
-        degree2=3,
+        kwargs1={},
+        kwargs2={},
         **kwargs,
     ):
         self.primary_model = BSplineSpinMagnitude(
             n_splines=n_splines1,
             a=a1,
             a_inj=a1_inj,
-            knots=knots1,
-            degree=degree1,
+            **kwargs1,
             **kwargs,
         )
         self.secondary_model = BSplineSpinMagnitude(
             n_splines=n_splines2,
             a=a2,
             a_inj=a2_inj,
-            knots=knots2,
-            degree=degree2,
+            **kwargs2,
             **kwargs,
         )
 
     def __call__(self, pcoefs, scoefs, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary and secondary spin
-        magnitude along the posterior or injection samples. Use flag `pe_samples` to specify which type
-        of samples are being evaluated (pe or injection).
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            pcoefs (array_like): primary component spin magnitude basis spline coefficients
-            scoefs (array_like): secondary component spin magnitude basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        pcoefs, scoefs : array_like
+            Spline coefficients for the (p)rimary and (s)econdary components.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary and secondary spin magnitude, p(a1, a2)
+        Returns
+        -------
+        array_like
+            Joint probability density for parameter estimation or injection samples.
         """
         p_a1 = self.primary_model(pcoefs, pe_samples=pe_samples)
         p_a2 = self.secondary_model(scoefs, pe_samples=pe_samples)
@@ -145,19 +154,24 @@ class BSplineIndependentSpinMagnitudes(object):
 
 
 class BSplineIIDSpinTilts(object):
-    """
-    Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components,
-    assuming they are independently and identically distributed (IID).
+    """A B-Spline model for the (cosine of) spin tilts of both binary components assuming
+    they are independently and identically distributed (IID),
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines
-        ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at
-        ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at
-        ct1_inj (array_like): primary component cosine tilt injection samples to evaluate the basis spline at
-        ct2_inj (array_like): secondary component cosine tilt injection samples to evaluate the basis spline at
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    .. math::
+        p(\cos{t_1}, \cos{t_2} \mid \mathbf{c}) = p(\cos{t_1} \mid \mathbf{c}) p(\cos{t_2} \mid \mathbf{c}),
+
+    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients.
+
+    Parameters
+    ----------
+    n_splines1 : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    ct1, ct2 : array_like
+        Primary and secondary component spin cosine tilt parameter estimation samples for basis evaluation.
+    ct1_inj, ct2_inj : array_like
+        Primary and secondary component spin cosine tilt injection samples for basis evaluation.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to the basis spline model.
     """
 
     def __init__(
@@ -167,38 +181,37 @@ class BSplineIIDSpinTilts(object):
         ct2,
         ct1_inj,
         ct2_inj,
-        knots=None,
-        degree=3,
         **kwargs,
     ):
         self.primary_model = BSplineSpinTilt(
             n_splines=n_splines,
             ct=ct1,
             ct_inj=ct1_inj,
-            knots=knots,
-            degree=degree,
             **kwargs,
         )
         self.secondary_model = BSplineSpinTilt(
             n_splines=n_splines,
             ct=ct2,
             ct_inj=ct2_inj,
-            knots=knots,
-            degree=degree,
             **kwargs,
         )
 
     def __call__(self, coefs, pe_samples=True):
-        """Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            coefs (array_like): basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        coefs : array_like
+            Spline coefficients.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary and secondary spin magnitude, p(ct1, ct2)
+        Returns
+        -------
+        array_like:
+            Joint probability density for parameter estimation or injection samples.
         """
         p_ct1 = self.primary_model(coefs, pe_samples=pe_samples)
         p_ct2 = self.secondary_model(coefs, pe_samples=pe_samples)
@@ -206,21 +219,28 @@ class BSplineIIDSpinTilts(object):
 
 
 class BSplineIndependentSpinTilts(object):
-    """Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are independently distributed.
+    """A B-Spline model for the (cosine of) spin tilts of the primary and secondary components assuming
+    they are independently distributed,
 
-    Args:
-        n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component
-        n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component
-        ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at
-        ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at
-        ct1_inj (array_like): primary component cosine tilt injection samples to evaluate the basis spline at
-        ct2_inj (array_like): secondary component cosine tilt injection samples to evaluate the basis spline at
-        knots1 (array_like, optional): array of knots for the primary binary component, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree1 (int, optional): degree of the spline for the primary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
-        knots2 (array_like, optional): array of knots for the secondary binary component, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    .. math::
+        p(\cos{t_1}, \cos{t_2} \mid \mathbf{c}_1, \mathbf{c}_2) = p(\cos{t_1} \mid \mathbf{c}_1) p(\cos{t_2} \mid \mathbf{c}_2),
+
+    where :math:`\mathbf{c}_1, \mathbf{c}_2` are vectors of the ``n_splines1``, ``n_splines2`` basis
+    spline coefficients for the primary and secondary component cosine spin tilts, respectively.
+
+    Parameters
+    ----------
+    n_splines1, n_splines2 : int
+        Number of basis functions, i.e., the number of degrees of freedom, of the
+        primary and secondary component spline models.
+    ct1, ct2 : array_like
+        Primary and secondary component spin cosine tilt parameter estimation samples for basis evaluation.
+    ct1_inj, ct2_inj : array_like
+        Primary and secondary component spin cosine tilt injection samples for basis evaluation.
+    kwargs1, kwargs2 : dict, optional
+        Additional keyword arguments to pass to the basis spline model for the primary and secondary components.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to both basis spline models.
     """
 
     def __init__(
@@ -231,41 +251,41 @@ class BSplineIndependentSpinTilts(object):
         ct2,
         ct1_inj,
         ct2_inj,
-        knots1=None,
-        degree1=3,
-        knots2=None,
-        degree2=3,
+        kwargs1={},
+        kwargs2={},
         **kwargs,
     ):
         self.primary_model = BSplineSpinTilt(
             n_splines=n_splines1,
             ct=ct1,
             ct_inj=ct1_inj,
-            knots=knots1,
-            degree=degree1,
+            **kwargs1,
             **kwargs,
         )
         self.secondary_model = BSplineSpinTilt(
             n_splines=n_splines2,
             ct=ct2,
             ct_inj=ct2_inj,
-            knots=knots2,
-            degree=degree2,
+            **kwargs2,
             **kwargs,
         )
 
     def __call__(self, pcoefs, scoefs, pe_samples=True):
-        """Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            pcoefs (array_like): primary component cosine tilt basis spline coefficients
-            scoefs (array_like): secondary component cosine tilt basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        pcoefs, scoefs : array_like
+            Spline coefficients for the (p)rimary and (s)econdary components.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary and secondary cosine tilt, p(ct1, ct2)
+        Returns
+        -------
+        array_like
+            Joint probability density for parameter estimation or injection samples.
         """
         p_ct1 = self.primary_model(pcoefs, pe_samples=pe_samples)
         p_ct2 = self.secondary_model(scoefs, pe_samples=pe_samples)
@@ -273,18 +293,32 @@ class BSplineIndependentSpinTilts(object):
 
 
 class BSplinePrimaryPowerlawRatio(object):
-    """Class to construct a B-Spline model in primary mass and a powerlaw model in mass ratio
+    r"""A B-Spline model in primary mass and a powerlaw model in mass ratio,
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines
-        m1 (array_like): primary component mass pe samples to evaluate the basis spline at
-        m1_inj(array_like): primary component mass injection samples to evaluate the basis spline at
-        mmin (float, optional): minimum mass value. Spline is truncated below this minimum mass. Defaults to 2.
-        mmax (float, optional): maximum mass value. Spline is truncated above this maximum mass. Defaults to 100.
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
-        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to BSpline.
+    .. math::
+        p(m_1, q \mid \mathbf{c}, \beta) = p(m_1 \mid \mathbf{c}) p(q \mid \beta, m_1, m_{\mathrm{min}}),
+
+    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients, and
+    :math:`\beta` is the powerlaw slope of the mass ratio distribution.
+
+    See Also
+    --------
+    gwinferno.distributions.powerlaw_pdf : Powerlaw probability density function.
+
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    m1 : array_like
+        Primary component mass parameter estimation samples for basis evaluation.
+    m1_inj : array_like
+        Primary component mass injection samples for basis evaluation.
+    mmin : float, default=2
+        Minimum component mass, setting lower bounds on the primary mass and mass ratio (:math:`q>m_\mathrm{min}/m_1`).
+    mmax : float, default=100
+        Maximum component mass, setting the upper bound on the primary mass.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to the basis spline model.
     """
 
     def __init__(
@@ -294,58 +328,69 @@ class BSplinePrimaryPowerlawRatio(object):
         m1_inj,
         mmin=2,
         mmax=100,
-        knots=None,
-        degree=3,
-        basis=BSpline,
         **kwargs,
     ):
         self.primary_model = BSplineMass(
             n_splines,
             m1,
             m1_inj,
-            knots=knots,
             mmin=mmin,
             mmax=mmax,
-            degree=degree,
-            basis=basis,
             **kwargs,
         )
 
     def __call__(self, m1, q, beta, mmin, coefs, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            m1 (array_like): primary mass samples to evaluate pdf at
-            q (array_like): mass ratio samples to evaluate pdf at
-            mmin (float): minimum mass. Pdf will be truncated below this value.
-            coefs (array_like): primary component mass basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        m1, q : array_like
+            Primary masses and mass ratios for computing joint probability density.
+        mmin : float
+            Minimum component mass, setting lower bounds on the primary mass and mass ratio (:math:`q>m_\mathrm{min}/m_1`).
+        coefs (array_like):
+            Spline coefficients.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary mass and mass ratio, p(m1, q)
+        Returns
+        -------
+        array_like
+            Joint probability density for parameter estimation or injection samples.
         """
-        # p_m1 = jnp.where(jnp.greater_equal(m1, mmin), self.primary_model(len(m1.shape), coefs), 0)
-        # norm_factor = self.primary_model.norm_mmin_cut(mmin, coefs)
-        # p_m1 = p_m1 / norm_factor
         p_m1 = self.primary_model(coefs, pe_samples=pe_samples)
         p_q = powerlaw_pdf(q, beta, mmin / m1, 1)
         return p_m1 * p_q
 
 
 class PLPeakPrimaryBSplineRatio(object):
-    """Class to construct a powerlaw + gaussian peak primary mass model and B-Spline mass ratio model.
+    r"""A powerlaw + gaussian peak primary mass model and B-Spline model in mass ratio.
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines
-        q (array_like): mass ratio pe samples to evaluate the basis spline at
-        q_inj(array_like): mass ratio injection samples to evaluate the basis spline at
-        m1 (float, optional): primary mass pe samples
-        m1_inj (float, optional): primary mass injection samples
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    .. math::
+        p(m_1, q \mid \mathbf{c}, \alpha, \mu_\mathrm{peak}, \sigma_\mathrm{peak}, f_\mathrm{peak}) =
+        p(m_1 \mid \alpha, \mu_\mathrm{peak}, \sigma_\mathrm{peak}, f_\mathrm{peak}) p(q \mid \mathbf{c}, m_1, m_{\mathrm{min}}),
+
+    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients,
+    :math:`\alpha` is the powerlaw slope of the primary component mass distribution, :math:`\mu_\mathrm{peak}` and
+    :math:`\sigma_\mathrm{peak}` the mean and standard deviation of the peak in mass, and :math:`f_\mathrm{peak}`
+    is the mixing fraction between the powerlaw and peak in mass.
+
+    See Also
+    --------
+    gwinferno.models.parametric.parametric.plpeak_primary_pdf : Powerlaw+Peak primary mass model density.
+
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    q : array_like
+        Mass ratio parameter estimation samples for basis evaluation.
+    q_inj : array_like
+        Mass ratio injection samples for basis evaluation.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to the basis spline model.
     """
 
     def __init__(
@@ -353,56 +398,83 @@ class PLPeakPrimaryBSplineRatio(object):
         n_splines,
         q,
         q_inj,
-        knots=None,
-        degree=3,
+        **kwargs,
     ):
         self.ratio_model = BSplineRatio(
             n_splines,
             q,
             q_inj,
-            knots=knots,
-            degree=degree,
+            **kwargs,
         )
 
-    def __call__(self, m1, coefs, pe_samples=True, **kwargs):
-        """will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+    def __call__(self, m1, alpha, mmin, mmax, peak_mean, peak_sd, peak_frac, coefs, pe_samples=True):
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            m1 (array_like): primary mass samples to evaluate pdf at
-            q (array_like): mass ratio samples to evaluate pdf at
-            mmin (float): minimum mass. Pdf will be truncated below this value.
-            coefs (array_like): primary component mass basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        m1 : array_like
+            Primary masses for computing joint probability density.
+        alpha : float
+            Powerlaw slope of the primary mass distribution.
+        mmin : float
+            Minimum component mass, the lower bound on the primary mass.
+        mmax : float
+            Maximum component mass, the upper bound on the primary mass.
+        peak_mean : float
+            Mean of the peak in mass.
+        peak_sd : float
+            Standard deviation of the peak in mass.
+        peak_frac : float
+            Fraction of binaries in the peak in mass.
+        coefs : array_like
+            Spline coefficients.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary mass and mass ratio, p(m1, q)
+        Returns
+        -------
+        array_like
+            Joint probability density for parameter estimation or injection samples.
         """
         p_q = self.ratio_model(coefs, pe_samples=pe_samples)
-        p_m1 = plpeak_primary_pdf(m1, **kwargs)
+        p_m1 = plpeak_primary_pdf(m1, alpha, mmin, mmax, peak_mean, peak_sd, peak_frac)
         return p_m1 * p_q
 
 
 class BSplinePrimaryBSplineRatio(object):
-    """Class to construct a B-Spline model in primary mass and a B-Spline model in mass ratio
+    r"""B-Spline models for the primary mass and mass ratio,
 
-    Args:
-        n_splines_m (int): number of degrees of freedom of basis, i.e. number of basis splines, for primary mass model
-        n_splines_q (int): number of degrees of freedom of basis, i.e. number of basis splines, for mass ratio model
-        m1 (array_like): primary component mass pe samples to evaluate the basis spline at
-        m1_inj(array_like): primary component mass injection samples to evaluate the basis spline at
-        q1 (array_like): mass ratio pe samples to evaluate the basis spline at
-        q1_inj(array_like): mass ratio injection samples to evaluate the basis spline at
-        knots_m (array_like, optional): primary mass array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        knots_q (array_like, optional): mass ratio array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree_m (int, optional): degree of the primary mass spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)
-        degree_q (int, optional): degree of the mass ratio spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)
-        m1min (float, optional): minimum primary mass value. Primary mass spline is truncated below this minimum mass. Defaults to 3.
-        m2min (float, optional): minimum secondary mass value. Mass ratio spline is truncated below m2min/mmax. Defaults to 3.
-        mmax (float, optional): maximum mass value. Primary mass spline is truncated above this maximum mass. Defaults to 100.
+    .. math::
+        p(m_1, q \mid \mathbf{c}_m, \mathbf{c}_q) = p(m_1 \mid \mathbf{c}_m) p(q \mid \mathbf{c}_q),
+
+    where :math:`\mathbf{c}_m` and :math:`\mathbf{c}_q` are vectors of the ``n_splines_m`` and ``n_splines_q``
+    basis spline coefficients for the primary mass and mass ratio, respectively.
+
+    Parameters
+    ----------
+    n_splines_m, n_splines_q : int
+        Number of basis functions, i.e., the number of degrees of freedom, of the
+        primary component mass and mass ratio spline models.
+    m1 : array_like
+        Primary component mass parameter estimation samples for basis evaluation.
+    m1_inj : array_like
+        Primary component mass injection samples for basis evaluation.
+    q : array_like
+        Mass ratio parameter estimation samples for basis evaluation.
+    q_inj : array_like
+        Mass ratio injection samples for basis evaluation.
+    mmax : float, default=100
+        Maximum component mass.
+    m1min : float, default=3
+        Minimum primary component mass.
+    m2min : float, default=3
+        Minimum secondary component mass, setting lower bound on the mass ratio (:math:`q>m_{2,\mathrm{min}}/m_\mathrm{max}`).
+    kwargs_m, kwargs_q : dict, optional
+        Additional keyword arguments to pass to the basis spline models for the primary component mass and mass ratio.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to both basis spline models.
     """
 
     def __init__(
@@ -413,66 +485,74 @@ class BSplinePrimaryBSplineRatio(object):
         m1_inj,
         q,
         q_inj,
-        knots_m=None,
-        knots_q=None,
-        degree_m=3,
-        degree_q=3,
+        mmax=100.0,
         m1min=3.0,
         m2min=3.0,
-        mmax=100.0,
-        m1_kwargs={},
-        q_kwargs={},
+        kwargs_m={},
+        kwargs_q={},
+        **kwargs,
     ):
         self.primary_model = BSplineMass(
             n_splines_m,
             m1,
             m1_inj,
-            knots=knots_m,
             mmin=m1min,
             mmax=mmax,
-            degree=degree_m,
-            **m1_kwargs,
+            **kwargs_m,
+            **kwargs,
         )
         self.ratio_model = BSplineRatio(
             n_splines_q,
             q,
             q_inj,
             qmin=m2min / mmax,
-            knots=knots_q,
-            degree=degree_q,
-            **q_kwargs,
+            **kwargs_q,
+            **kwargs,
         )
 
     def __call__(self, mcoefs, qcoefs, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            mcoefs (array_like): primary component mass basis spline coefficients
-            qcoefs (array_like): mass ratio basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        mcoefs, qcoefs : array_like
+            Spline coefficients for the primary component mass and mass ratio.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary mass and mass ratio, p(m1, q)
+        Returns
+        -------
+        array_like
+            Joint probability density for parameter estimation or injection samples.
         """
         return self.ratio_model(qcoefs, pe_samples=pe_samples) * self.primary_model(mcoefs, pe_samples=pe_samples)
 
 
 class BSplineIIDComponentMasses(object):
-    """
-    Class to construct a B-Spline model in primary mass and secondary mass,
-    assuming the two binary mass components are independently and identically distributed (IID).
+    r"""B-Spline model for the masses of both binary components assuming they are independently and identically distributed (IID),
+    with an optional pairing term as a powerlaw in mass ratio.
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines, for primary mass model
-        m1 (array_like): primary component mass pe samples to evaluate the basis spline at
-        m2 (array_like): secondary component mass pe samples to evaluate the basis spline at
-        m1_inj(array_like): primary component mass injection samples to evaluate the basis spline at
-        m2_inj(array_like): secondary component mass injection samples to evaluate the basis spline at
-        knots(array_like, optional): array of knots, if non-uniform knot placing is preferred. Defaults to None.
-        mmin (float, optional): minimum mass value. Splines are truncated below this minimum mass. Defaults to 2.
-        mmax (float, optional): maximum mass value. Splines are truncated above this maximum mass. Defaults to 100.
+    .. math::
+        p(m_1, m_2 \mid \mathbf{c}, \beta) = p(m_1 \mid \mathbf{c}) p(m_2 \mid \mathbf{c}) \left(\frac{m_2}{m_1}\right)^\beta,
+
+    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients.
+
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom, of the spline model.
+    m1, m2 : array_like
+        Primary and secondary component mass parameter estimation samples for basis evaluation.
+    m1_inj, m2_inj : array_like
+        Primary and secondary component mass injection samples for basis evaluation.
+    mmin : float, default=2
+        Minimum component mass.
+    mmax : float, default=100
+        Maximum component mass.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to the basis spline model.
     """
 
     def __init__(
@@ -482,44 +562,46 @@ class BSplineIIDComponentMasses(object):
         m2,
         m1_inj,
         m2_inj,
-        knots=None,
         mmin=2,
         mmax=100,
-        m1_kwargs={},
-        m2_kwargs={},
+        **kwargs,
     ):
         self.primary_model = BSplineMass(
             n_splines=n_splines,
             m=m1,
             m_inj=m1_inj,
-            knots=knots,
             mmin=mmin,
             mmax=mmax,
-            **m1_kwargs,
+            **kwargs,
         )
         self.secondary_model = BSplineMass(
             n_splines=n_splines,
             m=m2,
             m_inj=m2_inj,
-            knots=knots,
             mmin=mmin,
             mmax=mmax,
-            **m2_kwargs,
+            **kwargs,
         )
         self.qs = [m2_inj / m1_inj, m2 / m1]
 
     def __call__(self, coefs, beta=0, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            coefs (array_like): mass basis spline coefficients
-            beta (float, optional): mass ratio powerlaw slope. Defaults to 0.
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        coefs : array_like
+            Spline coefficients.
+        beta : float, default=0
+            Mass ratio powerlaw slope.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary and secondary mass and mass ratio, p(m1, m2, q)
+        Returns
+        -------
+        array_like
+            Joint probability density for parameter estimation or injection samples.
         """
         p_m1 = self.primary_model(coefs, pe_samples=pe_samples)
         p_m2 = self.secondary_model(coefs, pe_samples=pe_samples)
@@ -532,23 +614,32 @@ class BSplineIIDComponentMasses(object):
 
 
 class BSplineIndependentComponentMasses(object):
-    """Class to construct a B-Spline model in primary mass and secondary mass, assuming the two binary mass components are independently distributed.
+    r"""A B-Spline model for the masses of the primary and secondary components assuming
+    they are independently distributed, with an optional pairing term as a powerlaw in mass ratio,
 
-    Args:
-        n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines
-        n_splines2 (int): number of degrees of freedom of secondary mass basis, i.e. number of basis splines
-        m1 (array_like): primary component mass pe samples to evaluate the basis spline at
-        m2 (array_like): secondary component mass pe samples to evaluate the basis spline at
-        m1_inj(array_like): primary component mass injection samples to evaluate the basis spline at
-        m2_inj(array_like): secondary component mass injection samples to evaluate the basis spline at
-        knots1 (array_like, optional): array of primary mass knots, if non-uniform knot placing is preferred. Defaults to None.
-        knots2 (array_like, optional): array of secondary mass knots, if non-uniform knot placing is preferred. Defaults to None.
-        mmin1 (float, optional): minimum primary mass value. Spline is truncated below this minimum mass. Defaults to 2.
-        mmax1 (float, optional): maximum primary mass value. Spline is truncated above this maximum mass. Defaults to 100.
-        mmin2 (float, optional): minimum secondary mass value. Spline is truncated below this minimum mass. Defaults to 2.
-        mmax2 (float, optional): maximum secondary mass value. Spline is truncated above this maximum mass. Defaults to 100.
-        degree1 (int, optional): degree of the spline for the primary mass, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
-        degree2 (int, optional): degree of the spline for the secondary mass, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    .. math::
+        p(m_1, m_2 \mid \mathbf{c}_1, \mathbf{c}_2, \beta) = p(m_1 \mid \mathbf{c}_1) p(m_2 \mid \mathbf{c}_2) \left(\frac{m_2}{m_1}\right)^\beta,
+
+    where :math:`\mathbf{c}_1` and :math:`\mathbf{c}_2` are vectors of the ``n_splines1`` and ``n_splines2``
+    basis spline coefficients for the primary and secondary component masses, respectively.
+
+    Parameters
+    ----------
+    n_splines1, n_splines2 : int
+        Number of basis functions, i.e., the number of degrees of freedom, of the
+        primary and secondary component spline models.
+    m1, m2 : array_like
+        Primary and secondary component mass parameter estimation samples for basis evaluation.
+    m1_inj, m2_inj : array_like
+        Primary and secondary component mass injection samples for basis evaluation.
+    mmin1, mmax1 : float, default=2, 100
+        Minimum and maximum primary component mass.
+    mmin2, mmax2 : float, default=2, 100
+        Minimum and maximum secondary component mass.
+    kwargs1, kwargs2 : dict, optional
+        Additional keyword arguments to pass to the basis spline model for the primary and secondary components.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to both basis spline models.
     """
 
     def __init__(
@@ -559,54 +650,52 @@ class BSplineIndependentComponentMasses(object):
         m2,
         m1_inj,
         m2_inj,
-        knots1=None,
-        knots2=None,
         mmin1=2,
         mmax1=100,
         mmin2=2,
         mmax2=100,
-        degree1=3,
-        degree2=3,
-        m1_kwargs={},
-        m2_kwargs={},
+        kwargs1={},
+        kwargs2={},
+        **kwargs,
     ):
         self.primary_model = BSplineMass(
             n_splines=n_splines1,
             m=m1,
             m_inj=m1_inj,
-            knots=knots1,
             mmin=mmin1,
             mmax=mmax1,
-            degree=degree1,
-            **m1_kwargs,
+            **kwargs1,
+            **kwargs,
         )
         self.secondary_model = BSplineMass(
             n_splines=n_splines2,
             m=m2,
             m_inj=m2_inj,
-            knots=knots2,
             mmin=mmin2,
             mmax=mmax2,
-            degree=degree2,
-            **m2_kwargs,
+            **kwargs2,
+            **kwargs,
         )
         self.qs = [m2_inj / m1_inj, m2 / m1]
 
-    def __call__(self, pcoefs, scoefs, beta, pe_samples=True):
-        """will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+    def __call__(self, pcoefs, scoefs, beta=0, pe_samples=True):
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            m1 (array_like): primary component mass pe samples to evaluate the basis spline at
-            m2 (array_like): secondary component mass pe samples to evaluate the basis spline at
-            pcoefs (array_like): primary mass basis spline coefficients
-            scoefs (array_like): secondary mass basis spline coefficients
-            beta (float, optional): mass ratio powerlaw slope.
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        pcoefs, scoefs : array_like
+            Spline coefficients for the (p)rimary and (s)econdary components.
+        beta : float, default=0
+            Mass ratio powerlaw slope.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary and secondary mass and mass ratio, p(m1, m2, q)
+        Returns
+        -------
+        array_like
+            Joint probability density for parameter estimation or injection samples.
         """
         p_m1 = self.primary_model(pcoefs, pe_samples=pe_samples)
         p_m2 = self.secondary_model(scoefs, pe_samples=pe_samples)
@@ -615,19 +704,28 @@ class BSplineIndependentComponentMasses(object):
 
 
 class BSplineEffectiveSpinDims(object):
-    """Class to construct a B-Spline model in the chi effective and effective precession (chi_p) parameters
+    r"""B-Spline models for the effective spin (:math:`\chi_\mathrm{eff}`) and
+    effective precession (:math:`\chi_\mathrm{p}`) of binaries,
 
-    Args:
-        n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines
-        n_splines2 (int): number of degrees of freedom of secondary mass basis, i.e. number of basis splines
-        chieff(array_like): chi effective pe samples to evaluate the basis spline at
-        chip (array_like): chi_p pe samples to evaluate the basis spline at
-        chieff_inj (array_like): chi effective injection samples to evaluate the basis spline at
-        chip_inj (array_like): chi_p injection samples to evaluate the basis spline at
-        knotse (array_like, optional): array of chi effective knots, if non-uniform knot placing is preferred. Defaults to None.
-        knotsp (array_like, optional): array of chi_p knots, if non-uniform knot placing is preferred. Defaults to None.
-        degree_e (int, optional): degree of the spline for chi effective, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
-        degree_p (int, optional): degree of the spline for chi_p, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    .. math::
+        p(\chi_\mathrm{eff}, \chi_\mathrm{p} \mid \mathbf{c}_\mathrm{eff}, \mathbf{c}_\mathrm{p}) = p(\chi_\mathrm{eff} \mid \mathbf{c}_\mathrm{eff}) p(\chi_\mathrm{p} \mid \mathbf{c}_\mathrm{p}),
+
+    where :math:`\mathbf{c}_\mathrm{eff}` and :math:`\mathbf{c}_\mathrm{p}` are vectors of the ``n_splines_e``
+    and ``n_splines_p`` basis spline coefficients for the effective spin and effective precession, respectively.
+
+    Parameters
+    ----------
+    n_splines_e, n_splines_p : int
+        Number of basis functions, i.e., the number of degrees of freedom, of the
+        (e)ffective spin and effective (p)recession spline models.
+    chieff, chip : array_like
+        Effective spin and effective precession parameter estimation samples for basis evaluation.
+    chieff_inj, chip_inj : array_like
+        Effective spin and effective precession injection samples for basis evaluation.
+    kwargs_e, kwargs_p : dict, optional
+        Additional keyword arguments to pass to the basis spline models for the effective spin and effective precession.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to both basis spline models.
     """
 
     def __init__(
@@ -638,41 +736,42 @@ class BSplineEffectiveSpinDims(object):
         chip,
         chieff_inj,
         chip_inj,
-        knotse=None,
-        knotsp=None,
-        degree_e=3,
-        degree_p=3,
+        kwargs_e={},
+        kwargs_p={},
+        **kwargs,
     ):
         self.chi_eff_model = BSplineChiEffective(
             n_splines_e,
             chieff,
             chieff_inj,
-            knots=knotse,
-            degree=degree_e,
+            **kwargs_e,
+            **kwargs,
         )
 
         self.chi_p_model = BSplineChiPrecess(
             n_splines_p,
             chip,
             chip_inj,
-            knots=knotsp,
-            degree=degree_p,
+            **kwargs_p,
+            **kwargs,
         )
 
     def __call__(self, ecoefs, pcoefs, pe_samples=True):
-        """will evaluate the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.
-        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            m1 (array_like): primary component mass pe samples to evaluate the basis spline at
-            m2 (array_like): secondary component mass pe samples to evaluate the basis spline at
-            ecoefs (array_like): chi_eff basis spline coefficients
-            pcoefs (array_like): chi_p basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        ecoefs, pcoefs : array_like
+            Spline coefficients for the effective spin and effective precession.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: the joint probability density distribution for the primary and secondary mass and mass ratio, p(m1, m2, q)
+        Returns
+        -------
+        array_like
+            Joint probability density for parameter estimation or injection samples.
         """
         p_chieff = self.chi_eff_model(ecoefs, pe_samples=pe_samples)
         p_chip = self.chi_p_model(pcoefs, pe_samples=pe_samples)
