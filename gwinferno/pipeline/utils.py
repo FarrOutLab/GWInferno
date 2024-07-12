@@ -5,7 +5,6 @@ import numpyro
 import numpyro.distributions as dist
 import xarray as xr
 
-from gwinferno.interpolation import LogXBSpline
 from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
 from gwinferno.models.bsplines.separable import BSplineIIDSpinMagnitudes
@@ -73,9 +72,7 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
             ct1_nsplines, pedict["cos_tilt_1"], pedict["cos_tilt_2"], injdict["cos_tilt_1"], injdict["cos_tilt_2"], normalize=True
         )
 
-        mag_model = BSplineIIDSpinMagnitudes(
-            a1_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], normalize=True
-        )
+        mag_model = BSplineIIDSpinMagnitudes(a1_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], normalize=True)
 
     else:
         tilt_model = BSplineIndependentSpinTilts(
