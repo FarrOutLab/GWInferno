@@ -20,9 +20,9 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.autosectionlabel",
     "sphinx.ext.viewcode",
-    "sphinx_autodoc_typehints",
     "numpydoc",
     "nbsphinx",
+    "sphinx_autodoc_typehints",
 ]
 autosummary_generate = True
 # autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries

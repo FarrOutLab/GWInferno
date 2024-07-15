@@ -5,3 +5,4 @@ numpydoc
 nbsphinx
 autodoc
 pydata-sphinx-theme
+sphinx-autodoc-typehints
