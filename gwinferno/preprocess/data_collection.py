@@ -160,7 +160,7 @@ def load_posterior_data(run_map=None, key_file=None, param_names=["mass_1", "mas
         return full_catalog
 
 
-def load_injections(injfile, param_names, through_o4a=True, through_o3=False, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
+def load_injections(injfile, param_names, through_o4a=False, through_o3=True, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
 
     if through_o4a:
         injs = get_o4a_cumulative_injection_dict(
@@ -191,9 +191,9 @@ def load_injections(injfile, param_names, through_o4a=True, through_o3=False, if
         return injs.drop_sel(param=remove)
 
 
-def load_posterior_samples_and_injections(key_file, injfile, parameter_names, outdir, ifar_threshold=1, snr_threshold=11, save=False):
+def load_posterior_samples_and_injections(key_file, injfile, parameter_names, outdir, ifar_threshold=1, snr_threshold=11, save=False, o4a = False, o3 = True):
     pe_array = load_posterior_data(key_file=key_file, param_names=parameter_names).to_dataset(name="posteriors")
-    inj_array = load_injections(injfile, parameter_names, ifar_threshold=ifar_threshold, snr_threshold=snr_threshold).to_dataset(name="injections")
+    inj_array = load_injections(injfile, parameter_names, through_o4a = o4a, through_o3 = o3, ifar_threshold=ifar_threshold, snr_threshold=snr_threshold).to_dataset(name="injections")
 
     idata = az.InferenceData(pe_data=pe_array, inj_data=inj_array)
 
@@ -202,7 +202,8 @@ def load_posterior_samples_and_injections(key_file, injfile, parameter_names, ou
         label = label + f"-{i}"
 
     if save:
-        idata.to_netcdf(outdir + f"/xarray_through-o4a_posterior_samples_and_injections{label}.h5")
+        cat == 'o3' if o3 else 'o4a'
+        idata.to_netcdf(outdir + f"/xarray_through-{cat}_posterior_samples_and_injections{label}.h5")
 
     return idata
 
