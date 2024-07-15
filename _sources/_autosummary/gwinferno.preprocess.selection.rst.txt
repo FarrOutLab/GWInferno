@@ -1,0 +1,33 @@
+gwinferno.preprocess.selection
+==============================
+
+.. automodule:: gwinferno.preprocess.selection
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      get_o3_cumulative_injection_dict
+      get_o4a_cumulative_injection_dict
+      resample_injections
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

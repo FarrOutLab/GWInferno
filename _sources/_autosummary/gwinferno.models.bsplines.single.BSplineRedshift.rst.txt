@@ -1,0 +1,27 @@
+gwinferno.models.bsplines.single.BSplineRedshift
+================================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: BSplineRedshift
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~BSplineRedshift.eval_spline
+         ~BSplineRedshift.inj_pdf
+         ~BSplineRedshift.norm
+         ~BSplineRedshift.pe_pdf
+   
+   
+
+   
+   
+   

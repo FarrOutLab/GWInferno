@@ -1,0 +1,41 @@
+gwinferno.models.bsplines.separable
+===================================
+
+.. automodule:: gwinferno.models.bsplines.separable
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      BSplineEffectiveSpinDims
+      BSplineIIDComponentMasses
+      BSplineIIDSpinMagnitudes
+      BSplineIIDSpinTilts
+      BSplineIndependentComponentMasses
+      BSplineIndependentSpinMagnitudes
+      BSplineIndependentSpinTilts
+      BSplinePrimaryBSplineRatio
+      BSplinePrimaryPowerlawRatio
+      PLPeakPrimaryBSplineRatio
+   
+   
+
+   
+   
+   
+
+
+

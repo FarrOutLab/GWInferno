@@ -1,0 +1,29 @@
+gwinferno.pipeline.parser.ConfigReader
+======================================
+
+.. currentmodule:: gwinferno.pipeline.parser
+
+.. autoclass:: ConfigReader
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~ConfigReader.add_iid_model
+         ~ConfigReader.add_mixture_model
+         ~ConfigReader.add_model
+         ~ConfigReader.add_prior
+         ~ConfigReader.construct_model_and_prior_dicts
+         ~ConfigReader.parse
+   
+   
+
+   
+   
+   

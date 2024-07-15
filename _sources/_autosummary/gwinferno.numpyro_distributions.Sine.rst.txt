@@ -1,0 +1,60 @@
+gwinferno.numpyro\_distributions.Sine
+=====================================
+
+.. currentmodule:: gwinferno.numpyro_distributions
+
+.. autoclass:: Sine
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~Sine.cdf
+         ~Sine.entropy
+         ~Sine.enumerate_support
+         ~Sine.expand
+         ~Sine.expand_by
+         ~Sine.gather_pytree_aux_fields
+         ~Sine.gather_pytree_data_fields
+         ~Sine.icdf
+         ~Sine.infer_shapes
+         ~Sine.log_prob
+         ~Sine.mask
+         ~Sine.rsample
+         ~Sine.sample
+         ~Sine.sample_with_intermediates
+         ~Sine.set_default_validate_args
+         ~Sine.shape
+         ~Sine.to_event
+         ~Sine.tree_flatten
+         ~Sine.tree_unflatten
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Sine.arg_constraints
+      ~Sine.batch_shape
+      ~Sine.event_dim
+      ~Sine.event_shape
+      ~Sine.has_enumerate_support
+      ~Sine.has_rsample
+      ~Sine.is_discrete
+      ~Sine.mean
+      ~Sine.pytree_aux_fields
+      ~Sine.pytree_data_fields
+      ~Sine.reparametrized_params
+      ~Sine.support
+      ~Sine.variance
+   
+   

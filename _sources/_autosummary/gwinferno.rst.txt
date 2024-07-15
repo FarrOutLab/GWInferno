@@ -1,0 +1,37 @@
+﻿gwinferno
+=========
+
+.. automodule:: gwinferno
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   gwinferno.cosmology
+   gwinferno.distributions
+   gwinferno.interpolation
+   gwinferno.models
+   gwinferno.numpyro_distributions
+   gwinferno.pipeline
+   gwinferno.postprocess
+   gwinferno.preprocess
+

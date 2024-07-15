@@ -1,0 +1,38 @@
+gwinferno.interpolation
+=======================
+
+.. automodule:: gwinferno.interpolation
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      BSpline
+      BasisSpline
+      LogXBSpline
+      LogXLogYBSpline
+      LogYBSpline
+      NaturalCubicUnivariateSpline
+      RectBivariateBasisSpline
+   
+   
+
+   
+   
+   
+
+
+

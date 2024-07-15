@@ -1,0 +1,27 @@
+gwinferno.models.spline\_perturbation.PowerlawBasisSplinePrimaryPowerlawRatio
+=============================================================================
+
+.. currentmodule:: gwinferno.models.spline_perturbation
+
+.. autoclass:: PowerlawBasisSplinePrimaryPowerlawRatio
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~PowerlawBasisSplinePrimaryPowerlawRatio.norm_p_m1
+         ~PowerlawBasisSplinePrimaryPowerlawRatio.p_m1
+         ~PowerlawBasisSplinePrimaryPowerlawRatio.p_q
+         ~PowerlawBasisSplinePrimaryPowerlawRatio.smoothing
+   
+   
+
+   
+   
+   

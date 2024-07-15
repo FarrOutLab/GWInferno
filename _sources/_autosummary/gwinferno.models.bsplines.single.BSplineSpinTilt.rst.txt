@@ -1,0 +1,26 @@
+gwinferno.models.bsplines.single.BSplineSpinTilt
+================================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: BSplineSpinTilt
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~BSplineSpinTilt.eval_spline
+         ~BSplineSpinTilt.inj_pdf
+         ~BSplineSpinTilt.pe_pdf
+   
+   
+
+   
+   
+   

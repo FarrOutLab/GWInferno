@@ -1,0 +1,23 @@
+gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio
+=============================================================
+
+.. currentmodule:: gwinferno.models.bsplines.separable
+
+.. autoclass:: PLPeakPrimaryBSplineRatio
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+
+   
+   
+   

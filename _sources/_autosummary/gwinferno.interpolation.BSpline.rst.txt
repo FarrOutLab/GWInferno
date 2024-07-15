@@ -1,0 +1,28 @@
+gwinferno.interpolation.BSpline
+===============================
+
+.. currentmodule:: gwinferno.interpolation
+
+.. autoclass:: BSpline
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~BSpline.bases
+         ~BSpline.eval
+         ~BSpline.get_coefficients
+         ~BSpline.norm
+         ~BSpline.project
+   
+   
+
+   
+   
+   

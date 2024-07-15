@@ -1,0 +1,28 @@
+gwinferno.interpolation.BasisSpline
+===================================
+
+.. currentmodule:: gwinferno.interpolation
+
+.. autoclass:: BasisSpline
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~BasisSpline.bases
+         ~BasisSpline.eval
+         ~BasisSpline.get_coefficients
+         ~BasisSpline.norm
+         ~BasisSpline.project
+   
+   
+
+   
+   
+   

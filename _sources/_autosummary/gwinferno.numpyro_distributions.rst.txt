@@ -1,0 +1,46 @@
+gwinferno.numpyro\_distributions
+================================
+
+.. automodule:: gwinferno.numpyro_distributions
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      cumtrapz
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      BSplineDistribution
+      Cosine
+      PSplineCoeficientPrior
+      Powerlaw
+      PowerlawRedshift
+      PowerlawSmoothedPowerlaw
+      Sine
+   
+   
+
+   
+   
+   
+
+
+

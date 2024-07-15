@@ -1,0 +1,23 @@
+gwinferno.pipeline.parser.PopMixtureModel
+=========================================
+
+.. currentmodule:: gwinferno.pipeline.parser
+
+.. autoclass:: PopMixtureModel
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+
+   
+   
+   

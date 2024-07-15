@@ -1,0 +1,23 @@
+gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses
+=====================================================================
+
+.. currentmodule:: gwinferno.models.bsplines.separable
+
+.. autoclass:: BSplineIndependentComponentMasses
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+
+   
+   
+   

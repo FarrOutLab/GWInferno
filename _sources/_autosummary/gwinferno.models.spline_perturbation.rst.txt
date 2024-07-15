@@ -1,0 +1,34 @@
+gwinferno.models.spline\_perturbation
+=====================================
+
+.. automodule:: gwinferno.models.spline_perturbation
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+      :template: custom-class-template.rst
+      :nosignatures:
+   
+      PowerlawBasisSplinePrimaryPowerlawRatio
+      PowerlawBasisSplinePrimaryRatio
+      PowerlawSplineRedshiftModel
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,26 @@
+gwinferno.models.bsplines.single.BSplineChiEffective
+====================================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: BSplineChiEffective
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~BSplineChiEffective.eval_spline
+         ~BSplineChiEffective.inj_pdf
+         ~BSplineChiEffective.pe_pdf
+   
+   
+
+   
+   
+   

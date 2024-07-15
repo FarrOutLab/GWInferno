@@ -1,0 +1,30 @@
+gwinferno.models.parametric
+===========================
+
+.. automodule:: gwinferno.models.parametric
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   gwinferno.models.parametric.parametric
+

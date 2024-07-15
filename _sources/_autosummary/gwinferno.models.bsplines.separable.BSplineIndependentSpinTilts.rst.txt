@@ -1,0 +1,23 @@
+gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts
+===============================================================
+
+.. currentmodule:: gwinferno.models.bsplines.separable
+
+.. autoclass:: BSplineIndependentSpinTilts
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+
+   
+   
+   

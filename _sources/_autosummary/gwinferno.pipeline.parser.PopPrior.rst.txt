@@ -1,0 +1,23 @@
+gwinferno.pipeline.parser.PopPrior
+==================================
+
+.. currentmodule:: gwinferno.pipeline.parser
+
+.. autoclass:: PopPrior
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+
+   
+   
+   

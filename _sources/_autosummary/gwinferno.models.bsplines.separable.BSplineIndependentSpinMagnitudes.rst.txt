@@ -1,0 +1,23 @@
+gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes
+====================================================================
+
+.. currentmodule:: gwinferno.models.bsplines.separable
+
+.. autoclass:: BSplineIndependentSpinMagnitudes
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+   
+   
+
+   
+   
+   

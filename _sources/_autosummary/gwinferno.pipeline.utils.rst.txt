@@ -1,0 +1,39 @@
+gwinferno.pipeline.utils
+========================
+
+.. automodule:: gwinferno.pipeline.utils
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      bspline_mass_prior
+      bspline_redshift_prior
+      bspline_spin_prior
+      load_base_parser
+      pdf_dict_to_xarray
+      posterior_dict_to_xarray
+      setup_bspline_mass_models
+      setup_bspline_spin_models
+      setup_powerlaw_spline_redshift_model
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

@@ -1,0 +1,26 @@
+gwinferno.models.bsplines.single.BSplineRatio
+=============================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: BSplineRatio
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~BSplineRatio.eval_spline
+         ~BSplineRatio.inj_pdf
+         ~BSplineRatio.pe_pdf
+   
+   
+
+   
+   
+   

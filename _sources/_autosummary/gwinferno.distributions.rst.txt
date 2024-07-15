@@ -1,0 +1,37 @@
+gwinferno.distributions
+=======================
+
+.. automodule:: gwinferno.distributions
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      betadist
+      log_logistic_unit
+      logistic_function
+      logistic_unit
+      powerlaw_logit_pdf
+      powerlaw_pdf
+      truncnorm_pdf
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

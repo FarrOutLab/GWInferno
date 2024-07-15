@@ -1,0 +1,28 @@
+gwinferno.interpolation.LogYBSpline
+===================================
+
+.. currentmodule:: gwinferno.interpolation
+
+.. autoclass:: LogYBSpline
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~LogYBSpline.bases
+         ~LogYBSpline.eval
+         ~LogYBSpline.get_coefficients
+         ~LogYBSpline.norm
+         ~LogYBSpline.project
+   
+   
+
+   
+   
+   

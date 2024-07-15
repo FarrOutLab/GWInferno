@@ -1,0 +1,25 @@
+gwinferno.interpolation.NaturalCubicUnivariateSpline
+====================================================
+
+.. currentmodule:: gwinferno.interpolation
+
+.. autoclass:: NaturalCubicUnivariateSpline
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~NaturalCubicUnivariateSpline.tree_flatten
+         ~NaturalCubicUnivariateSpline.tree_unflatten
+   
+   
+
+   
+   
+   

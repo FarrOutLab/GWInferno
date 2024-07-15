@@ -1,0 +1,34 @@
+gwinferno.postprocess.calculations
+==================================
+
+.. automodule:: gwinferno.postprocess.calculations
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      calculate_bspline_mass_ppds
+      calculate_bspline_spin_ppds
+      calculate_peak_logm1_bspline_q_ppds
+      calculate_powerlaw_spline_rate_of_z_ppds
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

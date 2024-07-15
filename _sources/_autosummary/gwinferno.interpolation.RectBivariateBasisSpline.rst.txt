@@ -1,0 +1,26 @@
+gwinferno.interpolation.RectBivariateBasisSpline
+================================================
+
+.. currentmodule:: gwinferno.interpolation
+
+.. autoclass:: RectBivariateBasisSpline
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~RectBivariateBasisSpline.bases
+         ~RectBivariateBasisSpline.norm_2d
+         ~RectBivariateBasisSpline.project
+   
+   
+
+   
+   
+   

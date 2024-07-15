@@ -1,0 +1,32 @@
+gwinferno.models
+================
+
+.. automodule:: gwinferno.models
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   gwinferno.models.bsplines
+   gwinferno.models.parametric
+   gwinferno.models.spline_perturbation
+

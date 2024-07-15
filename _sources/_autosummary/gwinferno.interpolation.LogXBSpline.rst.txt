@@ -1,0 +1,28 @@
+gwinferno.interpolation.LogXBSpline
+===================================
+
+.. currentmodule:: gwinferno.interpolation
+
+.. autoclass:: LogXBSpline
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~LogXBSpline.bases
+         ~LogXBSpline.eval
+         ~LogXBSpline.get_coefficients
+         ~LogXBSpline.norm
+         ~LogXBSpline.project
+   
+   
+
+   
+   
+   

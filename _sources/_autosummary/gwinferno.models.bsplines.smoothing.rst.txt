@@ -1,0 +1,31 @@
+gwinferno.models.bsplines.smoothing
+===================================
+
+.. automodule:: gwinferno.models.bsplines.smoothing
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      apply_difference_prior
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

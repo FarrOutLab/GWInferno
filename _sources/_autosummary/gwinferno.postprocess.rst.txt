@@ -1,0 +1,31 @@
+gwinferno.postprocess
+=====================
+
+.. automodule:: gwinferno.postprocess
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   gwinferno.postprocess.calculations
+   gwinferno.postprocess.plot
+

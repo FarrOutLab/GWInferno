@@ -1,97 +1,389 @@
+
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>gwinferno.interpolation &mdash; gwinferno 0.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
-      <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=a5c4661c" />
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>gwinferno.interpolation &#8212; gwinferno 0.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
+  <link href="../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pydata-custom.css?v=c365f546" />
   
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=837179f8"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
-        <script src="../../_static/tabs.js?v=3030b3cb"></script>
-        <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script src="../../_static/js/theme.js"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../_static/documentation_options.js?v=837179f8"></script>
+    <script src="../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/gwinferno/interpolation';</script>
+    <link rel="icon" href="../../_static/bbh_graphic_inferno.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
-    <link rel="search" title="Search" href="../../search.html" /> 
-</head>
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-          
-          
-          <a href="../../index.html" class="icon icon-home">
-            gwinferno
-          </a>
-              <div class="version">
-                0.0
-              </div>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../example_usage.html">Quick Start</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">API:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.cosmology.html">gwinferno.cosmology</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.distributions.html">gwinferno.distributions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.interpolation.html">gwinferno.interpolation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.models.html">gwinferno.models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.numpyro_distributions.html">gwinferno.numpyro_distributions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.pipeline.html">gwinferno.pipeline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.postprocess.html">gwinferno.postprocess</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api/gwinferno.preprocess.html">gwinferno.preprocess</a></li>
-</ul>
 
-        </div>
-      </div>
-    </nav>
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">gwinferno</a>
-      </nav>
+  
+    
+  
 
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
-      <li class="breadcrumb-item active">gwinferno.interpolation</li>
-      <li class="wy-breadcrumbs-aside">
-      </li>
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo_github_inferno_transparent_light.png" class="logo__image only-light" alt="gwinferno 0.0 documentation - Home"/>
+    <script>document.write(`<img src="../../_static/logo_github_inferno_transparent.png" class="logo__image only-dark" alt="gwinferno 0.0 documentation - Home"/>`);</script>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../example_usage.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../Using%20Basis%20Splines.html">
+    Using Basis Splines in Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../_autosummary/gwinferno.html">
+    API reference
+  </a>
+</li>
+
   </ul>
-  <hr/>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/FarrOutLab/GWInferno" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../example_usage.html">
+    Quick Start
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../Using%20Basis%20Splines.html">
+    Using Basis Splines in Models
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../_autosummary/gwinferno.html">
+    API reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/FarrOutLab/GWInferno" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">gwinferno.in...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <h1>Source code for gwinferno.interpolation</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">a module for interpolation calculations using jax</span>
@@ -106,7 +398,7 @@
 
 
 <div class="viewcode-block" id="NaturalCubicUnivariateSpline">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.NaturalCubicUnivariateSpline.html#gwinferno.interpolation.NaturalCubicUnivariateSpline">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.NaturalCubicUnivariateSpline.html#gwinferno.interpolation.NaturalCubicUnivariateSpline">[docs]</a>
 <span class="nd">@register_pytree_node_class</span>
 <span class="k">class</span> <span class="nc">NaturalCubicUnivariateSpline</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -115,7 +407,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NaturalCubicUnivariateSpline.__init__">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.NaturalCubicUnivariateSpline.html#gwinferno.interpolation.NaturalCubicUnivariateSpline.__init__">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.NaturalCubicUnivariateSpline.html#gwinferno.interpolation.NaturalCubicUnivariateSpline.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">coefficients</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">k</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">jnp</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">),</span> <span class="s2">&quot;Input arrays must be the same length.&quot;</span>
@@ -151,7 +443,7 @@
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="NaturalCubicUnivariateSpline.__call__">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.NaturalCubicUnivariateSpline.html#gwinferno.interpolation.NaturalCubicUnivariateSpline.__call__">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.NaturalCubicUnivariateSpline.html#gwinferno.interpolation.NaturalCubicUnivariateSpline.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
         <span class="n">t</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_coeffs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">t</span> <span class="o">+</span> <span class="n">c</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">d</span> <span class="o">*</span> <span class="n">t</span><span class="o">**</span><span class="mi">3</span></div>
@@ -174,10 +466,10 @@
 
 
 <div class="viewcode-block" id="BasisSpline">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline">[docs]</a>
 <span class="k">class</span> <span class="nc">BasisSpline</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <div class="viewcode-block" id="BasisSpline.__init__">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.__init__">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_df</span><span class="p">,</span>
@@ -222,7 +514,7 @@
 
 
 <div class="viewcode-block" id="BasisSpline.norm">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.norm">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.norm">[docs]</a>
     <span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        norm numerically normalizes the spline</span>
@@ -273,7 +565,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)]</span>
 
 <div class="viewcode-block" id="BasisSpline.bases">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.bases">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.bases">[docs]</a>
     <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">oob_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        bases form the basis spline design matrix evaluated at xs</span>
@@ -289,7 +581,7 @@
 
 
 <div class="viewcode-block" id="BasisSpline.get_coefficients">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.get_coefficients">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.get_coefficients">[docs]</a>
     <span class="k">def</span> <span class="nf">get_coefficients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        computes the coefficients of the basis components given data 1-D data (xs, ys)</span>
@@ -310,7 +602,7 @@
 
 
 <div class="viewcode-block" id="BasisSpline.project">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.project">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.project">[docs]</a>
     <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline</span>
@@ -327,7 +619,7 @@
 
 
 <div class="viewcode-block" id="BasisSpline.eval">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.eval">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.eval">[docs]</a>
     <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        eval Evaluate basis spline at xs given coefficients</span>
@@ -343,7 +635,7 @@
 
 
 <div class="viewcode-block" id="BasisSpline.__call__">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.__call__">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BasisSpline.html#gwinferno.interpolation.BasisSpline.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        __call__ Evaluate basis spline at xs given coefficients</span>
@@ -361,10 +653,10 @@
 
 
 <div class="viewcode-block" id="BSpline">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline">[docs]</a>
 <span class="k">class</span> <span class="nc">BSpline</span><span class="p">(</span><span class="n">BasisSpline</span><span class="p">):</span>
 <div class="viewcode-block" id="BSpline.__init__">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline.__init__">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">n_df</span><span class="p">,</span>
@@ -410,7 +702,7 @@
         <span class="k">return</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">knots</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">knots</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">order</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basis</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">order</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">N</span><span class="p">)]</span>
 
 <div class="viewcode-block" id="BSpline.norm">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline.norm">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline.norm">[docs]</a>
     <span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        norm numerically normalizes the spline</span>
@@ -439,7 +731,7 @@
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;i...,i-&gt;...&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="BSpline.project">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline.project">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.BSpline.html#gwinferno.interpolation.BSpline.project">[docs]</a>
     <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization</span>
@@ -457,10 +749,10 @@
 
 
 <div class="viewcode-block" id="LogXBSpline">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXBSpline.html#gwinferno.interpolation.LogXBSpline">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.LogXBSpline.html#gwinferno.interpolation.LogXBSpline">[docs]</a>
 <span class="k">class</span> <span class="nc">LogXBSpline</span><span class="p">(</span><span class="n">BSpline</span><span class="p">):</span>
 <div class="viewcode-block" id="LogXBSpline.__init__">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXBSpline.html#gwinferno.interpolation.LogXBSpline.__init__">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.LogXBSpline.html#gwinferno.interpolation.LogXBSpline.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_df</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interior_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="mf">0.01</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Class to construct a basis spline (B-Spline) in the log space of the domain (X)</span>
@@ -488,7 +780,7 @@
 
 
 <div class="viewcode-block" id="LogXBSpline.bases">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXBSpline.html#gwinferno.interpolation.LogXBSpline.bases">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.LogXBSpline.html#gwinferno.interpolation.LogXBSpline.bases">[docs]</a>
     <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">oob_val</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        bases form the basis spline design matrix evaluated at xs (in log space)</span>
@@ -507,10 +799,10 @@
 
 
 <div class="viewcode-block" id="LogYBSpline">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogYBSpline.html#gwinferno.interpolation.LogYBSpline">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.LogYBSpline.html#gwinferno.interpolation.LogYBSpline">[docs]</a>
 <span class="k">class</span> <span class="nc">LogYBSpline</span><span class="p">(</span><span class="n">BSpline</span><span class="p">):</span>
 <div class="viewcode-block" id="LogYBSpline.__init__">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogYBSpline.html#gwinferno.interpolation.LogYBSpline.__init__">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.LogYBSpline.html#gwinferno.interpolation.LogYBSpline.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_df</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interior_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Class to construct a basis spline (B-Spline) in the log space of the range (Y)</span>
@@ -549,7 +841,7 @@
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">oob</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">logvals</span><span class="p">))</span>
 
 <div class="viewcode-block" id="LogYBSpline.bases">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogYBSpline.html#gwinferno.interpolation.LogYBSpline.bases">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.LogYBSpline.html#gwinferno.interpolation.LogYBSpline.bases">[docs]</a>
     <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">oob_val</span><span class="o">=</span><span class="n">OOB_VAL</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Evaluate the basis spline design matrix at xs. We want the probability to ultimately</span>
@@ -572,10 +864,10 @@
 
 
 <div class="viewcode-block" id="LogXLogYBSpline">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXLogYBSpline.html#gwinferno.interpolation.LogXLogYBSpline">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.LogXLogYBSpline.html#gwinferno.interpolation.LogXLogYBSpline">[docs]</a>
 <span class="k">class</span> <span class="nc">LogXLogYBSpline</span><span class="p">(</span><span class="n">LogYBSpline</span><span class="p">):</span>
 <div class="viewcode-block" id="LogXLogYBSpline.__init__">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXLogYBSpline.html#gwinferno.interpolation.LogXLogYBSpline.__init__">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.LogXLogYBSpline.html#gwinferno.interpolation.LogXLogYBSpline.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_df</span><span class="p">,</span> <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">interior_knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">xrange</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Class to construct a basis spline (B-Spline) in the log-log space of the domain and range (X and Y)</span>
@@ -603,7 +895,7 @@
 
 
 <div class="viewcode-block" id="LogXLogYBSpline.bases">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.LogXLogYBSpline.html#gwinferno.interpolation.LogXLogYBSpline.bases">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.LogXLogYBSpline.html#gwinferno.interpolation.LogXLogYBSpline.bases">[docs]</a>
     <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">oob_val</span><span class="o">=</span><span class="n">OOB_VAL</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        bases form the basis spline design matrix evaluated at xs (in log space)</span>
@@ -624,10 +916,10 @@
 
 
 <div class="viewcode-block" id="RectBivariateBasisSpline">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline">[docs]</a>
 <span class="k">class</span> <span class="nc">RectBivariateBasisSpline</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <div class="viewcode-block" id="RectBivariateBasisSpline.__init__">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline.__init__">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">xdf</span><span class="p">,</span>
@@ -669,7 +961,7 @@
 
 
 <div class="viewcode-block" id="RectBivariateBasisSpline.norm_2d">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline.norm_2d">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline.norm_2d">[docs]</a>
     <span class="k">def</span> <span class="nf">norm_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        norm_2d numerically normalizes the 2D spline</span>
@@ -689,7 +981,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">y_bases</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="RectBivariateBasisSpline.bases">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline.bases">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline.bases">[docs]</a>
     <span class="k">def</span> <span class="nf">bases</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        bases form the basis spline design matrix evaluated at xs and ys</span>
@@ -724,7 +1016,7 @@
         <span class="k">return</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij...,ij-&gt;...&quot;</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">))</span>
 
 <div class="viewcode-block" id="RectBivariateBasisSpline.project">
-<a class="viewcode-back" href="../../api/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline.project">[docs]</a>
+<a class="viewcode-back" href="../../_autosummary/gwinferno.interpolation.RectBivariateBasisSpline.html#gwinferno.interpolation.RectBivariateBasisSpline.project">[docs]</a>
     <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bases</span><span class="p">,</span> <span class="n">coefs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        project given a design matrix (or bases) and coefficients, project the coefficients onto the spline with normalization</span>
@@ -741,31 +1033,68 @@
 
 </pre></div>
 
-           </div>
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+            
           </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2022, Bruce Edelman.</p>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
   </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
 
-</footer>
-        </div>
-      </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+  <p class="copyright">
+    
+      © Copyright 2022, Bruce Edelman.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
 
-</body>
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.4.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
 </html>

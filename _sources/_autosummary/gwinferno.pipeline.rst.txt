@@ -1,0 +1,32 @@
+gwinferno.pipeline
+==================
+
+.. automodule:: gwinferno.pipeline
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
+.. autosummary::
+   :toctree:
+   :template: custom-module-template.rst
+   :recursive:
+
+   gwinferno.pipeline.analysis
+   gwinferno.pipeline.parser
+   gwinferno.pipeline.utils
+

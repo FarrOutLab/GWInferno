@@ -1,0 +1,26 @@
+gwinferno.models.spline\_perturbation.PowerlawSplineRedshiftModel
+=================================================================
+
+.. currentmodule:: gwinferno.models.spline_perturbation
+
+.. autoclass:: PowerlawSplineRedshiftModel
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~PowerlawSplineRedshiftModel.log_prob
+         ~PowerlawSplineRedshiftModel.normalization
+         ~PowerlawSplineRedshiftModel.prob
+   
+   
+
+   
+   
+   

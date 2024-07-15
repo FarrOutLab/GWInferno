@@ -1,0 +1,26 @@
+gwinferno.models.bsplines.single.BSplineMass
+============================================
+
+.. currentmodule:: gwinferno.models.bsplines.single
+
+.. autoclass:: BSplineMass
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~BSplineMass.eval_spline
+         ~BSplineMass.inj_pdf
+         ~BSplineMass.pe_pdf
+   
+   
+
+   
+   
+   

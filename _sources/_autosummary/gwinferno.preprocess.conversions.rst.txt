@@ -1,0 +1,34 @@
+gwinferno.preprocess.conversions
+================================
+
+.. automodule:: gwinferno.preprocess.conversions
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :nosignatures:
+   
+      alpha_beta_from_mu_var
+      chieff_from_q_component_spins
+      chip_from_q_component_spins
+      mu_var_from_alpha_beta
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

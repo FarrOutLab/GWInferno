@@ -1,0 +1,26 @@
+gwinferno.models.parametric.parametric.PowerlawRedshiftModel
+============================================================
+
+.. currentmodule:: gwinferno.models.parametric.parametric
+
+.. autoclass:: PowerlawRedshiftModel
+   :members:
+   :show-inheritance:
+   :inherited-members:
+   :special-members:
+
+   
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+         ~PowerlawRedshiftModel.log_prob
+         ~PowerlawRedshiftModel.normalization
+         ~PowerlawRedshiftModel.prob
+   
+   
+
+   
+   
+   
