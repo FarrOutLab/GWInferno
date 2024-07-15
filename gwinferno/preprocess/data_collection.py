@@ -244,10 +244,10 @@ def convert_component_spins_to_chieff(dat_array, param_names, injections=False):
                     / ((2 * jnp.pi * a_1[ii] ** 2) * (2 * jnp.pi * a_2[ii] ** 2))
                     * jnp.asarray(
                         joint_prior_from_isotropic_spins(
-                            np.array(q[ii]),
-                            1.0,
-                            np.array(chi_eff[ii]),
                             np.array(chi_p[ii]),
+                            np.array(chi_eff[ii]),
+                            np.array(q[ii]),
+                            a_max=1.0,
                         )
                     )
                 )
@@ -258,9 +258,9 @@ def convert_component_spins_to_chieff(dat_array, param_names, injections=False):
                     / ((2 * jnp.pi * a_1[ii] ** 2) * (2 * jnp.pi * a_2[ii] ** 2))
                     * jnp.asarray(
                         chi_effective_prior_from_isotropic_spins(
-                            np.asarray(q[ii]),
-                            1.0,
                             np.asarray(chi_eff[ii]),
+                            np.asarray(q[ii]),
+                            a_max=1.0,
                         )
                     )[0]
                 )
@@ -275,10 +275,10 @@ def convert_component_spins_to_chieff(dat_array, param_names, injections=False):
                         / ((2 * jnp.pi * a_1[ii][jj] ** 2) * (2 * jnp.pi * a_2[ii][jj] ** 2))
                         * jnp.asarray(
                             joint_prior_from_isotropic_spins(
-                                np.array(q[ii][jj]),
-                                1.0,
-                                np.array(chi_eff[ii][jj]),
                                 np.array(chi_p[ii][jj]),
+                                np.array(chi_eff[ii][jj]),
+                                np.array(q[ii][jj]),
+                                a_max=1.0,
                             )
                         )
                     )
@@ -288,9 +288,9 @@ def convert_component_spins_to_chieff(dat_array, param_names, injections=False):
                         / ((2 * jnp.pi * a_1[ii][jj] ** 2) * (2 * jnp.pi * a_2[ii][jj] ** 2))
                         * jnp.asarray(
                             chi_effective_prior_from_isotropic_spins(
-                                q[ii][jj],
-                                1.0,
                                 chi_eff[ii][jj],
+                                q[ii][jj],
+                                a_max=1.0,
                             )
                         )[0]
                     )
