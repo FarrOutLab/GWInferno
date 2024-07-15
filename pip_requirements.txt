@@ -1,7 +1,6 @@
 astropy
 tqdm
 xarray==2023.6.0
-deepdish
 arviz
 funsor
 pre-commit

@@ -21,7 +21,6 @@ def load_base_parser():
     parser.add_argument(
         "--pe-inj-file",
         type=str,
-        default="/home/jaxeng/farr_lab/FarrOutLab/GWInferno/work/data/xarray_through-o4a_posterior_samples_and_injections-mass_1-mass_ratio-redshift-a_1-a_2-cos_tilt_1-cos_tilt_2.h5",
     )
     parser.add_argument("--run-label", type=str)
     parser.add_argument("--result-dir", type=str)
