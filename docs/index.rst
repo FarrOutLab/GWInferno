@@ -18,26 +18,11 @@ GWInferno: Gravitational-Wave Hierarchical Inference with NumPyro
 
     Using Basis Splines
 
----------------------------------------------------------------------
-API:
----------------------------------------------------------------------
-.. automodule:: gwinferno
-    :members:
+.. toctree::
+    :maxdepth: 2
 
-.. autosummary::
-    :toctree: api
-    :template: custom-module-template.rst
-    :caption: API:
-    :recursive:
+    API reference <_autosummary/gwinferno>
 
-    cosmology
-    distributions
-    interpolation
-    models
-    numpyro_distributions
-    pipeline
-    postprocess
-    preprocess
 
 
 Citation

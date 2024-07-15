@@ -2,10 +2,13 @@
 Quick Start
 =====================================================================
 
+---------------------------------------------------------------------
+Simple Model Configuration
+---------------------------------------------------------------------
 
-Given a catalog of GW Posterior samples in standardized PESummary format, defined by catalog.json file to run population inference with GWInferno one must write a yaml file defining the desired model, hyperparameters, and other auxiliary configuration arguments. 
+Given a catalog of GW Posterior samples in standardized PESummary format, defined by `catalog.json` file to run population inference with GWInferno one must write a `.yaml` file defining the desired model, hyperparameters, and other auxiliary configuration arguments. 
 
-For example a simple config.yml file that defines a Truncated Powerlaw population model over primary masses (i.e. mass_1) we have:
+For example a simple `config.yml` file that defines a Truncated Powerlaw population model over primary masses (i.e., `mass_1`) we have:
 
 .. code-block:: yaml
 
@@ -47,20 +50,24 @@ For example a simple config.yml file that defines a Truncated Powerlaw populatio
         data:
             catalog_summary_json: /path/to/catalog/summary/file/catalog.json
 
+
 With this file written and ready to go run to perform inference with a single command!
 
 .. code-block:: bash
 
         gwinferno_run_from_config.py config.yml
 
+---------------------------------------------------------------------
+Increasing Model Complexity
+---------------------------------------------------------------------
 
-Now defining models in this way may not be able to handle complex model declarations, that have correlated population distributions or mixtures 
-models over components of different parameters.
+Defining models with the method above may not be suitable for more complex model declarations, e.g., with correlated population distributions or mixtures
+models over components.
 
-Currently, All 1D model distributions either single or mixture models (in one parameter, i.e. Powerlaw+Peak) are supported along with defining two 
+Currently all 1D model distributions either single or mixture models (in one parameter, i.e. `Powerlaw+Peak`) are supported along with defining two
 population parameters to share a model when assuming they are IID (i.e. spin magnitudes or tilts usually assumed to be IID between binary components).
 
-If you want to define a more complex model you can pass a path to a python file where this probabilistic numpyro model is defined and can be imported as `model`. 
+If you want to define a more complex model you can pass a path to a python file where this probabilistic numpyro model is defined and can be imported as `model`.
 
 For example one defines a python file declared model in the `config.yml` file as follows:
 
@@ -80,7 +87,11 @@ The requirements for this model definition within the python file include:
 - Input weights need to have shapes of (Nobs, N_PEsamples) for PE samples weights where Nobs is the number of events in catalog and N_PEsamples is the number of posterior samples each event contains
 - Input weights for found injections need to be of shape (N_found,) where N_found is the total number of found injections remaining.
 
-For example here is how one would define a numpyro probabilistic model in a python file to be passed to GWInferno's infrastructure
+---------------------------------------------------------------------
+Example Scripted Model
+---------------------------------------------------------------------
+
+Here is how one would define a numpyro probabilistic model in a python file to be passed to GWInferno's infrastructure
 
 .. code-block:: python
 

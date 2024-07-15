@@ -3,7 +3,7 @@ import sys
 
 import gwinferno
 
-sys.path.insert(0, os.path.abspath("../"))
+sys.path.insert(0, os.path.abspath("../../"))
 
 # -- General configuration ------------------------------------------------
 
@@ -16,17 +16,28 @@ sys.path.insert(0, os.path.abspath("../"))
 # ones.
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
+    "sphinx.ext.autosectionlabel",
+    "sphinx.ext.viewcode",
+    "sphinx_autodoc_typehints",
     "numpydoc",
     "nbsphinx",
-    "sphinx.ext.autosectionlabel",
-    "sphinx_tabs.tabs",
-    "sphinx.ext.viewcode",
+
 ]
 autosummary_generate = True
+# autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
+html_show_sourcelink = False  # Remove 'view source code' from top of page (for html, not python)
+# autodoc_inherit_docstrings = True  # If no docstring, inherit from base class
+add_module_names = False  # Remove namespaces from class/method signatures
+autodoc_default_options = {
+    # 'member-order': 'bysource',
+    'special-members': '__init__, __call__',
+    'exclude-members': '__weakref__'
+}
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ["templates"]
+templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -104,13 +115,23 @@ html_theme = "pydata_sphinx_theme"
 #         # "donate.html",
 #     ]
 # }
-html_logo = "_static/logo_github_inferno_transparent.png"
+html_logo = "_static/logo_github_inferno_transparent_light.png"
 html_favicon = "_static/bbh_graphic_inferno.png"
 
 html_sidebars = {"**": ["sidebar-nav-bs", "sidebar-ethical-ads"]}
 
-html_theme_options = {}
-
+html_theme_options = {
+    "github_url": "https://github.com/FarrOutLab/GWInferno",
+    "show_prev_next": False,
+    "secondary_sidebar_items": {
+        "**": ["page-toc", "sourcelink"],
+        # "index": ["page-toc"],
+        "index": [],
+    },
+    "logo": {"image_dark": "_static/logo_github_inferno_transparent.png"},
+}
+html_css_files = ['pydata-custom.css']
+html_static_path = ['_static']
 
 # -- Options for HTMLHelp output ------------------------------------------
 

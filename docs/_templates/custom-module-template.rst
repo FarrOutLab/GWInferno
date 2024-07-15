@@ -1,18 +1,15 @@
 {{ fullname | escape | underline}}
 
-.. currentmodule:: {{ fullname }}
-
 .. automodule:: {{ fullname }}
 
    {% block attributes %}
    {% if attributes %}
-   .. rubric:: Module Attributes
+   .. rubric:: Module attributes
 
    .. autosummary::
       :toctree:
    {% for item in attributes %}
-      {% set _path = item.split('.') %}
-      {{ _path[-1] }}
+      {{ item }}
    {%- endfor %}
    {% endif %}
    {% endblock %}
@@ -23,9 +20,9 @@
 
    .. autosummary::
       :toctree:
+      :nosignatures:
    {% for item in functions %}
-      {% set _path = item.split('.') %}
-      {{ _path[-1] }}
+      {{ item }}
    {%- endfor %}
    {% endif %}
    {% endblock %}
@@ -37,9 +34,9 @@
    .. autosummary::
       :toctree:
       :template: custom-class-template.rst
+      :nosignatures:
    {% for item in classes %}
-      {% set _path = item.split('.') %}
-      {{ _path[-1] }}
+      {{ item }}
    {%- endfor %}
    {% endif %}
    {% endblock %}
@@ -51,23 +48,19 @@
    .. autosummary::
       :toctree:
    {% for item in exceptions %}
-      {% set _path = item.split('.') %}
-      {{ _path[-1] }}
+      {{ item }}
    {%- endfor %}
    {% endif %}
    {% endblock %}
 
 {% block modules %}
 {% if modules %}
-.. rubric:: Modules
-
 .. autosummary::
    :toctree:
    :template: custom-module-template.rst
    :recursive:
 {% for item in modules %}
-   {% set _path = item.split('.') %}
-   {{ _path[-1] }}
+   {{ item }}
 {%- endfor %}
 {% endif %}
 {% endblock %}
