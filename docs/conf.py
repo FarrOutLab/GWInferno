@@ -23,7 +23,6 @@ extensions = [
     "sphinx_autodoc_typehints",
     "numpydoc",
     "nbsphinx",
-
 ]
 autosummary_generate = True
 # autoclass_content = "both"  # Add __init__ doc (ie. params) to class summaries
@@ -32,8 +31,8 @@ html_show_sourcelink = False  # Remove 'view source code' from top of page (for 
 add_module_names = False  # Remove namespaces from class/method signatures
 autodoc_default_options = {
     # 'member-order': 'bysource',
-    'special-members': '__init__, __call__',
-    'exclude-members': '__weakref__'
+    "special-members": "__init__, __call__",
+    "exclude-members": "__weakref__",
 }
 
 # Add any paths that contain templates here, relative to this directory.
@@ -130,8 +129,8 @@ html_theme_options = {
     },
     "logo": {"image_dark": "_static/logo_github_inferno_transparent.png"},
 }
-html_css_files = ['pydata-custom.css']
-html_static_path = ['_static']
+html_css_files = ["pydata-custom.css"]
+html_static_path = ["_static"]
 
 # -- Options for HTMLHelp output ------------------------------------------
 
