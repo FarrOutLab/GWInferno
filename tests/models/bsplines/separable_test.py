@@ -105,8 +105,12 @@ class TestBase1DBSplineModel(unittest.TestCase):
 
         plpeak_spline = PLPeakPrimaryBSplineRatio(self.nsplines, pe_q, inj_q)
 
-        pe_pdf = plpeak_spline(pe_m1, self.coefs, pe_samples=True, alpha=-3, mmin=self.mmin, mmax=self.mmax, mpp=10.0, sigpp=3.0, lam=0.8)
-        inj_pdf = plpeak_spline(inj_m1, self.coefs, pe_samples=False, alpha=-3, mmin=self.mmin, mmax=self.mmax, mpp=10.0, sigpp=3.0, lam=0.8)
+        pe_pdf = plpeak_spline(
+            pe_m1, alpha=-3, mmin=self.mmin, mmax=self.mmax, peak_mean=10.0, peak_sd=3.0, peak_frac=0.8, coefs=self.coefs, pe_samples=True
+        )
+        inj_pdf = plpeak_spline(
+            inj_m1, alpha=-3, mmin=self.mmin, mmax=self.mmax, peak_mean=10.0, peak_sd=3.0, peak_frac=0.8, coefs=self.coefs, pe_samples=False
+        )
 
         self.assertEqual(pe_m1.shape, pe_pdf.shape, msg="PE sample shape different than PE PDF shape")
         self.assertEqual(inj_m1.shape, inj_pdf.shape, msg="Inj sample shape different than Inj PDF shape")

@@ -5,7 +5,6 @@ import numpyro
 import numpyro.distributions as dist
 import xarray as xr
 
-from gwinferno.interpolation import LogXBSpline
 from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
 from gwinferno.models.bsplines.separable import BSplineIIDSpinMagnitudes
@@ -60,8 +59,8 @@ def setup_bspline_mass_models(pedict, injdict, m_nsplines, q_nsplines, mmin, mma
         m1min=mmin,
         m2min=mmin,
         mmax=mmax,
-        m1_kwargs={"basis": LogXLogYBSpline},
-        q_kwargs={"basis": LogYBSpline},
+        kwargs_m={"basis": LogXLogYBSpline},
+        kwargs_q={"basis": LogYBSpline},
     )
 
 
@@ -70,12 +69,10 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
 
     if IID:
         tilt_model = BSplineIIDSpinTilts(
-            ct1_nsplines, pedict["cos_tilt_1"], pedict["cos_tilt_2"], injdict["cos_tilt_1"], injdict["cos_tilt_2"], basis=LogYBSpline, normalize=True
+            ct1_nsplines, pedict["cos_tilt_1"], pedict["cos_tilt_2"], injdict["cos_tilt_1"], injdict["cos_tilt_2"], normalize=True
         )
 
-        mag_model = BSplineIIDSpinMagnitudes(
-            a1_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], basis=LogYBSpline, normalize=True
-        )
+        mag_model = BSplineIIDSpinMagnitudes(a1_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], normalize=True)
 
     else:
         tilt_model = BSplineIndependentSpinTilts(
@@ -85,12 +82,11 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
             pedict["cos_tilt_2"],
             injdict["cos_tilt_1"],
             injdict["cos_tilt_2"],
-            basis=LogYBSpline,
             normalize=True,
         )
 
         mag_model = BSplineIndependentSpinMagnitudes(
-            a1_nsplines, a2_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], basis=LogYBSpline, normalize=True
+            a1_nsplines, a2_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], normalize=True
         )
 
     return mag_model, tilt_model
@@ -102,7 +98,6 @@ def setup_powerlaw_spline_redshift_model(pedict, injdict, z_nsplines):
         z_nsplines,
         pedict["redshift"],
         injdict["redshift"],
-        basis=LogXBSpline,
     )
 
 

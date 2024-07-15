@@ -6,15 +6,22 @@ import jax.numpy as jnp
 
 
 def apply_difference_prior(coefs, inv_var, degree=1):
-    """computes the difference penalty for b-spline
+    """Computes the P-Spline difference penalty.
 
-    Args:
-        coefs (array_like): b-spline coefficients
-        inv_var (float): inverse of the penalty tuning parameter.
-        degree (int, optional): difference order. Defaults to 1.
+    Parameters
+    ----------
+    coefs : array_like
+        B-Spline coefficients.
+    inv_var : float
+        Inverse of the penalty tuning parameter.  Higher values result in
+        smoother functions.
+    degree : int, default=1
+        Difference order.
 
-    Returns:
-        float: log of the difference prior
+    Returns
+    -------
+    float
+        Log difference prior.
     """
     delta_c = jnp.diff(coefs, n=degree)
     prior = -0.5 * inv_var * jnp.dot(delta_c, delta_c.T)

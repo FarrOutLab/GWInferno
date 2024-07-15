@@ -129,9 +129,9 @@ def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs=None, tilt2
         return apdfs, aa, ctpdfs, cc
 
     else:
-        mag_model = BSplineIndependentSpinMagnitudes(nspline_dict["a1"], nspline_dict["a2"], aa, aa, aa, aa, basis=LogYBSpline, normalize=True)
+        mag_model = BSplineIndependentSpinMagnitudes(nspline_dict["a1"], nspline_dict["a2"], aa, aa, aa, aa, normalize=True)
 
-        tilt_model = BSplineIndependentSpinTilts(nspline_dict["tilt1"], nspline_dict["tilt2"], cc, cc, cc, cc, basis=LogYBSpline, normalize=True)
+        tilt_model = BSplineIndependentSpinTilts(nspline_dict["tilt1"], nspline_dict["tilt2"], cc, cc, cc, cc, normalize=True)
 
         apdfs_1 = np.zeros((a1_cs.shape[0], len(aa)))
         ctpdfs_1 = np.zeros((tilt1_cs.shape[0], len(cc)))

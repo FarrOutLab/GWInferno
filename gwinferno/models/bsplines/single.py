@@ -14,18 +14,22 @@ from ...interpolation import LogYBSpline
 
 
 class Base1DBSplineModel(object):
-    """Class to construct basis spline for population inference
+    """Base class for basis splines for population inference
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        xx (array_like): posterior samples to evaluate design matrix at
-        xx_inj (array_like): injection samples to evaluate design matrix at
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        xrange (tuple, optional): domain of spline. Defaults to (0, 1).
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
-        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to BSpline.
-
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    xx : array_like
+        Parameter estimation samples for basis evaluation.
+    xx_inj : array_like
+        Injection samples for basis evaluation.
+    degree : int, default=3
+        Degree of the spline, i.e., `3` for cubic splines.
+    xrange : tuple, default=(0.0, 1.0)
+        Domain of the spline.
+    basis : class, default=BSpline
+        Type of basis to use, e.g., `LogYBSpline`.
     """
 
     def __init__(
@@ -33,7 +37,6 @@ class Base1DBSplineModel(object):
         n_splines,
         xx,
         xx_inj,
-        knots=None,
         xrange=(0.0, 1.0),
         degree=3,
         basis=BSpline,
@@ -44,7 +47,6 @@ class Base1DBSplineModel(object):
         self.degree = degree
         self.interpolator = basis(
             n_splines,
-            knots=knots,
             xrange=xrange,
             k=degree + 1,
             **kwargs,
@@ -54,64 +56,85 @@ class Base1DBSplineModel(object):
         self.funcs = [self.inj_pdf, self.pe_pdf]
 
     def eval_spline(self, bases, coefs):
-        """given design matrix and coefficients, project coefficients onto the basis.
+        """Given design matrix ``bases`` and coefficients ``coefs``, project coefficients onto the basis.
 
-        Args:
-            bases (array_like): design matrix of of spline
-            coefs (array_like): basis spline coefficients
+        Parameters
+        ----------
+        bases : array_like
+            Design matrix of the spline, i.e., basis functions evaluated at samples.
+        coefs : array_like
+            Basis spline coefficients.
 
-        Returns:
-            array_like: The linear combination of the basis components given the coefficients
+        Returns
+        -------
+        array_like
+            The linear combination of the basis components given the coefficients.
         """
         return self.interpolator.project(bases, coefs)
 
     def pe_pdf(self, coefs):
-        """projects the coefficients onto the design matrix evaluated at the posterior samples
+        """Project the coefficients ``coefs`` onto the design matrix evaluated at the parameter estimation samples.
 
-        Args:
-            coefs (array_like): basis spline coefficients
+        Parameters
+        ----------
+        coefs : array_like
+            Basis spline coefficients.
 
-        Returns:
-            array_like: The linear combination of the basis components evaluated at the posterior samples given the coefficients
+        Returns
+        -------
+        array_like
+            The linear combination of the basis components evaluated at the parameter estimation samples given the coefficients.
         """
         return self.eval_spline(self.pe_design_matrix, coefs)
 
     def inj_pdf(self, coefs):
-        """projects the coefficients onto the design matrix evaluated at the injection samples
+        """Project the coefficients ``coefs`` onto the design matrix evaluated at the injection samples.
 
-        Args:
-            coefs (array_like): basis spline coefficients
+        Parameters
+        ----------
+        coefs : array_like
+            Basis spline coefficients.
 
-        Returns:
-            array_like: The linear combination of the basis components evaluated at the injection samples given the coefficients
+        Returns
+        -------
+        array_like
+            The linear combination of the basis components evaluated at the injection samples given the coefficients.
         """
         return self.eval_spline(self.inj_design_matrix, coefs)
 
     def __call__(self, coefs, pe_samples=True):
-        """will evaluate the projection of the coefficients along the design matrix evaluated at either posterior samples or injection samples.
-            Use flag pe_samples to specify which type of samples are being evaluated (pe or injection).
+        """Evaluate the projection of the coefficients along the design matrix over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            coefs (array_like): basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        coefs : array_like
+            Basis spline coefficients.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: The linear combination of the basis components evaluated at the posterior or injection samples given the coefficients.
+        Returns
+        -------
+        array_like
+            The linear combination of the basis components evaluated at the parameter estimation or injection samples given the coefficients.
         """
         return self.funcs[1](coefs) if pe_samples else self.funcs[0](coefs)
 
 
 class BSplineSpinMagnitude(Base1DBSplineModel):
-    """Class to construct a spin magnitude B-Spline model for a single binary component
+    """A B-Spline model for the spin magnitude of a single binary component.
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        a (array_like): spin magnitude pe samples to evaluate the basis spline at
-        a_inj (array_like): spin magnitude injection samples to evaluate the basis spline at
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    a1 : array_like
+        Component spin magnitude parameter estimation samples for basis evaluation.
+    a1_inj : array_like
+        Component spin magnitude injection samples for basis evaluation.
+    basis : class, default=LogYBSpline
+        Type of basis to use.
     """
 
     def __init__(
@@ -119,8 +142,6 @@ class BSplineSpinMagnitude(Base1DBSplineModel):
         n_splines,
         a,
         a_inj,
-        knots=None,
-        degree=3,
         basis=LogYBSpline,
         **kwargs,
     ):
@@ -129,8 +150,6 @@ class BSplineSpinMagnitude(Base1DBSplineModel):
             n_splines,
             a,
             a_inj,
-            knots=knots,
-            degree=degree,
             basis=basis,
             xrange=xrange,
             **kwargs,
@@ -138,15 +157,18 @@ class BSplineSpinMagnitude(Base1DBSplineModel):
 
 
 class BSplineSpinTilt(Base1DBSplineModel):
-    """Class to construct a cosine tilt (cos(theta)) B-Spline model for a single binary component
+    """A B-Spline model for the (cosine of) spin tilt of a single binary component.
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        ct (array_like): cosine tilt pe samples to evaluate the basis spline at
-        ct_inj (array_like): cosine tilt injection samples to evaluate the basis spline at
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    ct : array_like
+        Component spin cosine tilt parameter estimation samples for basis evaluation.
+    ct_inj : array_like
+        Component spin cosine tilt injection samples for basis evaluation.
+    basis : class, default=LogYBSpline
+        Type of basis to use.
     """
 
     def __init__(
@@ -154,8 +176,6 @@ class BSplineSpinTilt(Base1DBSplineModel):
         n_splines,
         ct,
         ct_inj,
-        knots=None,
-        degree=3,
         basis=LogYBSpline,
         **kwargs,
     ):
@@ -164,8 +184,6 @@ class BSplineSpinTilt(Base1DBSplineModel):
             n_splines,
             ct,
             ct_inj,
-            knots=knots,
-            degree=degree,
             basis=basis,
             xrange=xrange,
             **kwargs,
@@ -173,15 +191,18 @@ class BSplineSpinTilt(Base1DBSplineModel):
 
 
 class BSplineChiEffective(Base1DBSplineModel):
-    """Class to construct a chi effective B-Spline model for a single binary component
+    r"""A B-Spline model for the binary effective spin :math:`\chi_\mathrm{eff}`.
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        chieff (array_like): chi effective pe samples to evaluate the basis spline at
-        chieff_inj (array_like): chi effective injection samples to evaluate the basis spline at
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    chieff : array_like
+        Effective spin parameter estimation samples for basis evaluation.
+    chieff_inj : array_like
+        Effective spin injection samples for basis evaluation.
+    basis : class, default=BSpline
+        Type of basis to use.
     """
 
     def __init__(
@@ -189,8 +210,6 @@ class BSplineChiEffective(Base1DBSplineModel):
         n_splines,
         chieff,
         chieff_inj,
-        knots=None,
-        degree=3,
         basis=BSpline,
         **kwargs,
     ):
@@ -199,8 +218,6 @@ class BSplineChiEffective(Base1DBSplineModel):
             n_splines,
             chieff,
             chieff_inj,
-            knots=knots,
-            degree=degree,
             basis=basis,
             xrange=xrange,
             **kwargs,
@@ -208,15 +225,19 @@ class BSplineChiEffective(Base1DBSplineModel):
 
 
 class BSplineSymmetricChiEffective(Base1DBSplineModel):
-    """Class to construct a chi effective B-Spline model symmetric about chi effective = zero  for a single binary component
+    """A B-Spline model for the binary effective spin :math:`\chi_\mathrm{eff}`
+    that is symmetric about :math:`\chi_\mathrm{eff} = 0`.
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        chieff (array_like): chi effective pe samples to evaluate the basis spline at
-        chieff_inj (array_like): chi effective injection samples to evaluate the basis spline at
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    chieff : array_like
+        Effective spin parameter estimation samples for basis evaluation.
+    chieff_inj : array_like
+        Effective spin injection samples for basis evaluation.
+    basis : class, default=BSpline
+        Type of basis to use.
     """
 
     def __init__(
@@ -224,8 +245,6 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
         n_splines,
         chieff,
         chieff_inj,
-        knots=None,
-        degree=3,
         basis=BSpline,
         **kwargs,
     ):
@@ -234,38 +253,44 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
             n_splines,
             jnp.abs(chieff),
             jnp.abs(chieff_inj),
-            knots=knots,
-            degree=degree,
             basis=basis,
             xrange=xrange,
             **kwargs,
         )
 
     def __call__(self, coefs, pe_samples=True):
-        """Evaluate the projection of the coefficients along the design matrix evaluated at either posterior samples or injection samples.
-            Use flag pe_samples to specify which type of samples are being evaluated (pe or injection).
+        """Evaluate the projection of the coefficients along the design matrix over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            coefs (array_like): basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        coefs : array_like
+            Basis spline coefficients.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: The linear combination of the basis components evaluated at the posterior or injection samples given the coefficients.
+        Returns
+        -------
+        array_like
+            The linear combination of the basis components evaluated at the parameter estimation or injection samples given the coefficients.
         """
         return 0.5 * self.funcs[1](coefs) if pe_samples else 0.5 * self.funcs[0](coefs)
 
 
 class BSplineChiPrecess(Base1DBSplineModel):
-    """Class to construct an effective precession (chi_p) B-Spline model for a single binary component
+    r"""A B-Spline model for the binary effective precession :math:`\chi_\mathrm{p}`.
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        chip (array_like): chi_p pe samples to evaluate the basis spline at
-        chip_inj (array_like): chi_p injection samples to evaluate the basis spline at
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    chip : array_like
+        Effective precession parameter estimation samples for basis evaluation.
+    chip_inj : array_like
+        Effective precession injection samples for basis evaluation.
+    basis : class, default=BSpline
+        Type of basis to use.
     """
 
     def __init__(
@@ -273,8 +298,6 @@ class BSplineChiPrecess(Base1DBSplineModel):
         n_splines,
         chip,
         chip_inj,
-        knots=None,
-        degree=3,
         basis=BSpline,
         **kwargs,
     ):
@@ -283,8 +306,6 @@ class BSplineChiPrecess(Base1DBSplineModel):
             n_splines,
             chip,
             chip_inj,
-            knots=knots,
-            degree=degree,
             basis=basis,
             xrange=xrange,
             **kwargs,
@@ -292,16 +313,20 @@ class BSplineChiPrecess(Base1DBSplineModel):
 
 
 class BSplineRatio(Base1DBSplineModel):
-    """Class to construct a mass ratio (q) B-Spline model for a single binary component
+    """A B-Spline model for the binary mass ratio.
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        q (array_like): mass ratio pe samples to evaluate the basis spline at
-        q_inj (array_like): mass ratio injection samples to evaluate the basis spline at
-        qmin (float, optional): minimum mass ratio value. Spline is truncated below this minimum mass ratio.
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    q : array_like
+        Mass ratio parameter estimation samples for basis evaluation.
+    q_inj : array_like
+        Mass ratio injection samples for basis evaluation.
+    qmin : float, default=0
+        Minimum mass ratio. Ignored if ``xrange`` is provided.
+    basis : class, default=LogYBSpline
+        Type of basis to use.
     """
 
     def __init__(
@@ -310,34 +335,37 @@ class BSplineRatio(Base1DBSplineModel):
         q,
         q_inj,
         qmin=0,
-        knots=None,
-        degree=3,
         basis=LogYBSpline,
         **kwargs,
     ):
+        xrange = kwargs.pop("xrange", (qmin, 1))
         super().__init__(
             n_splines,
             q,
             q_inj,
-            knots=knots,
-            degree=degree,
             basis=basis,
-            xrange=(qmin, 1),
+            xrange=xrange,
             **kwargs,
         )
 
 
 class BSplineMass(Base1DBSplineModel):
-    """Class to construct a mass B-Spline model for a single binary component
+    """A B-Spline model for the mass of a single binary component.
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        m (array_like): mass pe samples to evaluate the basis spline at
-        m_inj (array_like): mass injection samples to evaluate the basis spline at
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred. Defaults to None.
-        mmin (float, optional): minimum mass value. Spline is truncated below this minimum mass. Defaults to 2.
-        mmax (float, optional): maximum mass value. Spline is truncated above this maximum mass. Defaults to 100.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    m : array_like
+        Component mass parameter estimation samples for basis evaluation.
+    m_inj : array_like
+        Component mass injection samples for basis evaluation.
+    mmin : float, default=2
+        Minimum component mass. Ignored if ``xrange`` is provided.
+    mmax : float, default=100
+        Maximum component mass. Ignored if ``xrange`` is provided.
+    basis : class, default=LogXLogYBSpline
+        Type of basis to use.
     """
 
     def __init__(
@@ -345,38 +373,47 @@ class BSplineMass(Base1DBSplineModel):
         n_splines,
         m,
         m_inj,
-        knots=None,
         mmin=2,
         mmax=100,
-        degree=3,
         basis=LogXLogYBSpline,
         **kwargs,
     ):
+        xrange = kwargs.pop("xrange", (mmin, mmax))
         super().__init__(
             n_splines,
             m,
             m_inj,
-            knots=knots,
-            degree=degree,
             basis=basis,
-            xrange=(mmin, mmax),
+            xrange=xrange,
             **kwargs,
         )
 
 
 class BSplineRedshift(Base1DBSplineModel):
-    """Class to construct a redshift B-Spline model
+    r"""A B-Spline model for redshift. The B-Spline will define the *volumetric* rate density :math:`r`, which relates to the
+    merger-rate per unit redshift in the detector-frame :math:`R` by
 
-    Args:
-        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-        z (array_like): redshift pe samples to evaluate the basis spline at
-        z_inj (array_like): redshift injection samples to evaluate the basis spline at
-        dVdc (array_like): differential co-moving volume pe samples to evaluate the basis spline at.
-        dVdc (array_like): differential co-moving volume injection samples to evaluate the basis spline at.
-        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred. Defaults to None.
-        zmax (float, optional): maximum redshift value. basis spline will be truncated above this value. Defaults to 2.3.
-        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
-        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to Bspline.
+    .. math::
+        R(z) = \frac{r(z)}{1+z} \frac{dV_c}{dz},
+
+    where :math:`dV_c/dz` is the co-moving volume element and :math:`r(z)` is the merger rate per unit co-moving volume.
+
+    Parameters
+    ----------
+    n_splines : int
+        Number of basis functions, i.e., the number of degrees of freedom of the spline model.
+    z : array_like
+        Redshift parameter estimation samples for basis evaluation.
+    z_inj : array_like
+        Redshift injection samples for basis evaluation.
+    dVdc : array_like
+        Differential co-moving volume for each parameter estimation sample.
+    dVdc_inj : array_like
+        Differential co-moving volume for each injection sample.
+    zmax : float, default=2.3
+        Maximum redshift. Ignored if ``xrange`` is provided.
+    basis : class, default=LogXBSpline
+        Type of basis to use.
     """
 
     def __init__(
@@ -386,19 +423,16 @@ class BSplineRedshift(Base1DBSplineModel):
         z_inj,
         dVdc,
         dVdc_inj,
-        knots=None,
         zmax=2.3,
-        degree=3,
         basis=LogXBSpline,
         **kwargs,
     ):
+        xrange = kwargs.pop("xrange", (1e-4, zmax))
         super().__init__(
             n_splines,
             z,
             z_inj,
-            knots=knots,
-            xrange=(1e-4, zmax),
-            degree=degree,
+            xrange=xrange,
             basis=basis,
             **kwargs,
         )
@@ -407,45 +441,41 @@ class BSplineRedshift(Base1DBSplineModel):
         self.differential_comov_vols = [dVdc_inj, dVdc]
         self.zs = [z_inj, z]
 
-    def eval_spline(self, bases, coefs):
-        """given design matrix and coefficients, project coefficients onto the basis.
-
-        Args:
-            bases (array_like): design matrix of of spline
-            coefs (array_like): basis spline coefficients
-
-        Returns:
-            array_like: The linear combination of the basis components given the coefficients
-        """
-        return self.interpolator.project(bases, coefs)
-
     def norm(self, coefs):
-        """compute the normalization coefficient for the redshift basis-spline.
+        """Compute the normalization coefficient for the redshift basis spline; useful for computing the merger rate.
 
-        Args:
-            coefs (array_like): basis spline coefficients
+        Parameters
+        ----------
+        coefs : array_like
+            Basis spline coefficients.
 
-        Returns:
-            float: the redshift normalization coefficient.
+        Returns
+        -------
+        float
+            The redshift normalization constant.
         """
         return trapezoid(
             self.dVcdzgrid / (1 + self.grid) * jnp.einsum("i...,i->...", self.grid_bases, coefs),
             self.grid,
         )
 
-    def __call__(self, coefs, pe_samples):
-        """Evaluate the projection of the coefficients along the design matrix evaluated at either posterior samples or injection samples.
-            Use flag pe_samples to specify which type of samples are being evaluated (pe or injection).
+    def __call__(self, coefs, pe_samples=True):
+        """Evaluate the merger-rate per unit redshift in the detector-frame :math:`R`. Use flag
+        `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
-        Args:
-            coefs (array_like): basis spline coefficients
-            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated
-                                        along injection samples. Defaults to True.
+        Parameters
+        ----------
+        coefs : array_like
+            Basis spline coefficients.
+        pe_samples : bool, default=True
+            If `True`, design matrix is evaluated across parameter estimation samples.
+            If `False`, design matrix is evaluated across injection samples.
 
-        Returns:
-            array_like: The linear combination of the basis components evaluated at the posterior or injection samples given the coefficients.
+        Returns
+        -------
+        array_like
+            Merger-rate per unit redshift in the detector-frame :math:`R`.
         """
-
         return (
             self.funcs[1](coefs) * self.differential_comov_vols[1] / (1 + self.zs[1])
             if pe_samples
