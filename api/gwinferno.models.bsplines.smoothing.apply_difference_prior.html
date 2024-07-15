@@ -57,7 +57,6 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -116,13 +115,24 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.smoothing.apply_difference_prior">
 <span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.smoothing.</span></span><span class="sig-name descname"><span class="pre">apply_difference_prior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/smoothing.html#apply_difference_prior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.smoothing.apply_difference_prior" title="Link to this definition"></a></dt>
-<dd><p>computes the difference penalty for b-spline</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>coefs (array_like): b-spline coefficients
-inv_var (float): inverse of the penalty tuning parameter.
-degree (int, optional): difference order. Defaults to 1.</p>
+<dd><p>Computes the P-Spline difference penalty.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coefs</strong><span class="classifier">array_like</span></dt><dd><p>B-Spline coefficients.</p>
 </dd>
-<dt>Returns:</dt><dd><p>float: log of the difference prior</p>
+<dt><strong>inv_var</strong><span class="classifier">float</span></dt><dd><p>Inverse of the penalty tuning parameter.  Higher values result in
+smoother functions.</p>
+</dd>
+<dt><strong>degree</strong><span class="classifier">int, default=1</span></dt><dd><p>Difference order.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>float</dt><dd><p>Log difference prior.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>

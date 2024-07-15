@@ -20,6 +20,8 @@
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,7 +59,6 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -124,40 +125,58 @@
 <h1>gwinferno.models.bsplines.separable.BSplineIIDComponentMasses<a class="headerlink" href="#gwinferno-models-bsplines-separable-bsplineiidcomponentmasses" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIIDComponentMasses">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">BSplineIIDComponentMasses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIIDComponentMasses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">BSplineIIDComponentMasses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIIDComponentMasses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to construct a B-Spline model in primary mass and secondary mass,
-assuming the two binary mass components are independently and identically distributed (IID).</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines, for primary mass model
-m1 (array_like): primary component mass pe samples to evaluate the basis spline at
-m2 (array_like): secondary component mass pe samples to evaluate the basis spline at
-m1_inj(array_like): primary component mass injection samples to evaluate the basis spline at
-m2_inj(array_like): secondary component mass injection samples to evaluate the basis spline at
-knots(array_like, optional): array of knots, if non-uniform knot placing is preferred. Defaults to None.
-mmin (float, optional): minimum mass value. Splines are truncated below this minimum mass. Defaults to 2.
-mmax (float, optional): maximum mass value. Splines are truncated above this maximum mass. Defaults to 100.</p>
+<p>B-Spline model for the masses of both binary components assuming they are independently and identically distributed (IID),
+with an optional pairing term as a powerlaw in mass ratio.</p>
+<div class="math notranslate nohighlight">
+\[p(m_1, m_2 \mid \mathbf{c}, \beta) = p(m_1 \mid \mathbf{c}) p(m_2 \mid \mathbf{c}) \left(\frac{m_2}{m_1}\right)^\beta,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{c}\)</span> is a vector of the <code class="docutils literal notranslate"><span class="pre">n_splines</span></code> basis spline coefficients.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n_splines</strong><span class="classifier">int</span></dt><dd><p>Number of basis functions, i.e., the number of degrees of freedom, of the spline model.</p>
+</dd>
+<dt><strong>m1, m2</strong><span class="classifier">array_like</span></dt><dd><p>Primary and secondary component mass parameter estimation samples for basis evaluation.</p>
+</dd>
+<dt><strong>m1_inj, m2_inj</strong><span class="classifier">array_like</span></dt><dd><p>Primary and secondary component mass injection samples for basis evaluation.</p>
+</dd>
+<dt><strong>mmin</strong><span class="classifier">float, default=2</span></dt><dd><p>Minimum component mass.</p>
+</dd>
+<dt><strong>mmax</strong><span class="classifier">float, default=100</span></dt><dd><p>Maximum component mass.</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments to pass to the basis spline model.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIIDComponentMasses.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIIDComponentMasses.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineIIDComponentMasses.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__call__" title="Link to this definition"></a></dt>
-<dd><p>will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.
-Use flag <cite>pe_samples</cite> to specify which type of samples are being evaluated (pe or injection).</p>
-<dl>
-<dt>Args:</dt><dd><p>coefs (array_like): mass basis spline coefficients
-beta (float, optional): mass ratio powerlaw slope. Defaults to 0.
-pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</p>
-<blockquote>
-<div><p>along injection samples. Defaults to True.</p>
-</div></blockquote>
+<dd><p>Evaluate the joint probability density over the parameter estimation or injection samples.
+Use flag <cite>pe_samples</cite> to specify which samples are being evaluated (parameter estimation or injection).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coefs</strong><span class="classifier">array_like</span></dt><dd><p>Spline coefficients.</p>
 </dd>
-<dt>Returns:</dt><dd><p>array_like: the joint probability density distribution for the primary and secondary mass and mass ratio, p(m1, m2, q)</p>
+<dt><strong>beta</strong><span class="classifier">float, default=0</span></dt><dd><p>Mass ratio powerlaw slope.</p>
+</dd>
+<dt><strong>pe_samples</strong><span class="classifier">bool, default=True</span></dt><dd><p>If <cite>True</cite>, design matrix is evaluated across parameter estimation samples.
+If <cite>False</cite>, design matrix is evaluated across injection samples.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like</dt><dd><p>Joint probability density for parameter estimation or injection samples.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>

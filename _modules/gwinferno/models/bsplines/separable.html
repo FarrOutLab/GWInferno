@@ -55,7 +55,6 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -95,13 +94,12 @@
              
   <h1>Source code for gwinferno.models.bsplines.separable</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">a module that stores 2D separable (i.e. independent) population models constructed from basis splines</span>
+<span class="sd">A collection of 2-D separable (i.e. independent) population models involving basis splines</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
 
 <span class="kn">from</span> <span class="nn">...distributions</span> <span class="kn">import</span> <span class="n">powerlaw_pdf</span>
-<span class="kn">from</span> <span class="nn">...interpolation</span> <span class="kn">import</span> <span class="n">BSpline</span>
 <span class="kn">from</span> <span class="nn">..parametric.parametric</span> <span class="kn">import</span> <span class="n">plpeak_primary_pdf</span>
 <span class="kn">from</span> <span class="nn">.single</span> <span class="kn">import</span> <span class="n">BSplineChiEffective</span>
 <span class="kn">from</span> <span class="nn">.single</span> <span class="kn">import</span> <span class="n">BSplineChiPrecess</span>
@@ -114,18 +112,24 @@
 <div class="viewcode-block" id="BSplineIIDSpinMagnitudes">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineIIDSpinMagnitudes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a spin magnitude B-Spline model for both binary components, assuming they</span>
-<span class="sd">        are independently and identically distributed (IID).</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A B-Spline model for the spin magnitude of both binary components assuming</span>
+<span class="sd">    they are independently and identically distributed (IID),</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis components</span>
-<span class="sd">        a1 (array_like): primary component spin magnitude pe samples to evaluate the basis spline at</span>
-<span class="sd">        a2 (array_like): secondary component spin magnitude pe samples to evaluate the basis spline at</span>
-<span class="sd">        a1_inj (array_like): primary component spin magnitude injection samples to evaluate the basis spline at</span>
-<span class="sd">        a2_inj (array_like): secondary component spin magnitude injection samples to evaluate the basis spline at</span>
-<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(a_1, a_2 \mid \mathbf{c}) = p(a_1 \mid \mathbf{c}) p(a_2 \mid \mathbf{c}),</span>
+
+<span class="sd">    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom of the spline model.</span>
+<span class="sd">    a1, a2 : array_like</span>
+<span class="sd">        Primary and secondary component spin magnitude parameter estimation samples for basis evaluation.</span>
+<span class="sd">    a1_inj, a2_inj : array_like</span>
+<span class="sd">        Primary and secondary component spin magnitude injection samples for basis evaluation.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIIDSpinMagnitudes.__init__">
@@ -137,24 +141,18 @@
         <span class="n">a2</span><span class="p">,</span>
         <span class="n">a1_inj</span><span class="p">,</span>
         <span class="n">a2_inj</span><span class="p">,</span>
-        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineSpinMagnitude</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines</span><span class="p">,</span>
             <span class="n">a</span><span class="o">=</span><span class="n">a1</span><span class="p">,</span>
             <span class="n">a_inj</span><span class="o">=</span><span class="n">a1_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span> <span class="o">=</span> <span class="n">BSplineSpinMagnitude</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines</span><span class="p">,</span>
             <span class="n">a</span><span class="o">=</span><span class="n">a2</span><span class="p">,</span>
             <span class="n">a_inj</span><span class="o">=</span><span class="n">a2_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -162,17 +160,21 @@
 <div class="viewcode-block" id="BSplineIIDSpinMagnitudes.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIIDSpinMagnitudes.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary spin</span>
-<span class="sd">        magnitude along the posterior or injection samples. Use flag `pe_samples` to specify which type</span>
-<span class="sd">        of samples are being evaluated (pe or injection).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            coefs (array_like): basis spline coefficients</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coefs : array_like</span>
+<span class="sd">            Spline coefficients.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary and secondary spin magnitude, p(a1, a2)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_a1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_a2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
@@ -184,21 +186,28 @@
 <div class="viewcode-block" id="BSplineIndependentSpinMagnitudes">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineIndependentSpinMagnitudes</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a spin magnitude B-Spline model for both binary components, assuming they are independently distributed.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A B-Spline model for the spin magnitudes of the primary and secondary components assuming</span>
+<span class="sd">    they are independently distributed,</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component</span>
-<span class="sd">        n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component</span>
-<span class="sd">        a1 (array_like): primary component spin magnitude pe samples to evaluate the basis spline at</span>
-<span class="sd">        a2 (array_like): secondary component spin magnitude pe samples to evaluate the basis spline at</span>
-<span class="sd">        a1_inj (array_like): primary component spin magnitude injection samples to evaluate the basis spline at</span>
-<span class="sd">        a2_inj (array_like): secondary component spin magnitude injection samples to evaluate the basis spline at</span>
-<span class="sd">        knots1 (array_like, optional): array of knots for the primary component, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        degree1 (int, optional): degree of primary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
-<span class="sd">        knots2 (array_like, optional): array of knots for the secondary component, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        degree2 (int, optional): degree of secondary component spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(a_1, a_2 \mid \mathbf{c}_1, \mathbf{c}_2) = p(a_1 \mid \mathbf{c}_1) p(a_2 \mid \mathbf{c}_2),</span>
+
+<span class="sd">    where :math:`\mathbf{c}_1, \mathbf{c}_2` are vectors of the ``n_splines1``, ``n_splines2`` basis</span>
+<span class="sd">    spline coefficients for the primary and secondary component spin magnitudes, respectively.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines1, n_splines2 : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom, of the</span>
+<span class="sd">        primary and secondary component spline models.</span>
+<span class="sd">    a1, a2 : array_like</span>
+<span class="sd">        Primary and secondary component spin magnitude parameter estimation samples for basis evaluation.</span>
+<span class="sd">    a1_inj, a2_inj : array_like</span>
+<span class="sd">        Primary and secondary component spin magnitude injection samples for basis evaluation.</span>
+<span class="sd">    kwargs1, kwargs2 : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline model for the primary and secondary components.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to both basis spline models.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIndependentSpinMagnitudes.__init__">
@@ -211,26 +220,22 @@
         <span class="n">a2</span><span class="p">,</span>
         <span class="n">a1_inj</span><span class="p">,</span>
         <span class="n">a2_inj</span><span class="p">,</span>
-        <span class="n">knots1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">knots2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree2</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">kwargs1</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">kwargs2</span><span class="o">=</span><span class="p">{},</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineSpinMagnitude</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines1</span><span class="p">,</span>
             <span class="n">a</span><span class="o">=</span><span class="n">a1</span><span class="p">,</span>
             <span class="n">a_inj</span><span class="o">=</span><span class="n">a1_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots1</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree1</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs1</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span> <span class="o">=</span> <span class="n">BSplineSpinMagnitude</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines2</span><span class="p">,</span>
             <span class="n">a</span><span class="o">=</span><span class="n">a2</span><span class="p">,</span>
             <span class="n">a_inj</span><span class="o">=</span><span class="n">a2_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots2</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree2</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs2</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -238,18 +243,21 @@
 <div class="viewcode-block" id="BSplineIndependentSpinMagnitudes.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinMagnitudes.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary spin</span>
-<span class="sd">        magnitude along the posterior or injection samples. Use flag `pe_samples` to specify which type</span>
-<span class="sd">        of samples are being evaluated (pe or injection).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            pcoefs (array_like): primary component spin magnitude basis spline coefficients</span>
-<span class="sd">            scoefs (array_like): secondary component spin magnitude basis spline coefficients</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pcoefs, scoefs : array_like</span>
+<span class="sd">            Spline coefficients for the (p)rimary and (s)econdary components.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary and secondary spin magnitude, p(a1, a2)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_a1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_a2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
@@ -261,19 +269,24 @@
 <div class="viewcode-block" id="BSplineIIDSpinTilts">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineIIDSpinTilts</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components,</span>
-<span class="sd">    assuming they are independently and identically distributed (IID).</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A B-Spline model for the (cosine of) spin tilts of both binary components assuming</span>
+<span class="sd">    they are independently and identically distributed (IID),</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines</span>
-<span class="sd">        ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at</span>
-<span class="sd">        ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at</span>
-<span class="sd">        ct1_inj (array_like): primary component cosine tilt injection samples to evaluate the basis spline at</span>
-<span class="sd">        ct2_inj (array_like): secondary component cosine tilt injection samples to evaluate the basis spline at</span>
-<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(\cos{t_1}, \cos{t_2} \mid \mathbf{c}) = p(\cos{t_1} \mid \mathbf{c}) p(\cos{t_2} \mid \mathbf{c}),</span>
+
+<span class="sd">    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines1 : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom of the spline model.</span>
+<span class="sd">    ct1, ct2 : array_like</span>
+<span class="sd">        Primary and secondary component spin cosine tilt parameter estimation samples for basis evaluation.</span>
+<span class="sd">    ct1_inj, ct2_inj : array_like</span>
+<span class="sd">        Primary and secondary component spin cosine tilt injection samples for basis evaluation.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIIDSpinTilts.__init__">
@@ -285,24 +298,18 @@
         <span class="n">ct2</span><span class="p">,</span>
         <span class="n">ct1_inj</span><span class="p">,</span>
         <span class="n">ct2_inj</span><span class="p">,</span>
-        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineSpinTilt</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines</span><span class="p">,</span>
             <span class="n">ct</span><span class="o">=</span><span class="n">ct1</span><span class="p">,</span>
             <span class="n">ct_inj</span><span class="o">=</span><span class="n">ct1_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span> <span class="o">=</span> <span class="n">BSplineSpinTilt</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines</span><span class="p">,</span>
             <span class="n">ct</span><span class="o">=</span><span class="n">ct2</span><span class="p">,</span>
             <span class="n">ct_inj</span><span class="o">=</span><span class="n">ct2_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -310,16 +317,21 @@
 <div class="viewcode-block" id="BSplineIIDSpinTilts.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIIDSpinTilts.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.</span>
-<span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            coefs (array_like): basis spline coefficients</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coefs : array_like</span>
+<span class="sd">            Spline coefficients.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary and secondary spin magnitude, p(ct1, ct2)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like:</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_ct1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_ct2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
@@ -331,21 +343,28 @@
 <div class="viewcode-block" id="BSplineIndependentSpinTilts">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineIndependentSpinTilts</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a cosine tilt (cos(theta)) B-Spline model for both binary components, assuming they are independently distributed.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A B-Spline model for the (cosine of) spin tilts of the primary and secondary components assuming</span>
+<span class="sd">    they are independently distributed,</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines1 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the primary binary component</span>
-<span class="sd">        n_splines2 (int): number of degrees of freedom of basis, i.e. number of basis splines, for the secondary binary component</span>
-<span class="sd">        ct1 (array_like): primary component cosine tilt pe samples to evaluate the basis spline at</span>
-<span class="sd">        ct2 (array_like): secondary component cosine tilt pe samples to evaluate the basis spline at</span>
-<span class="sd">        ct1_inj (array_like): primary component cosine tilt injection samples to evaluate the basis spline at</span>
-<span class="sd">        ct2_inj (array_like): secondary component cosine tilt injection samples to evaluate the basis spline at</span>
-<span class="sd">        knots1 (array_like, optional): array of knots for the primary binary component, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        degree1 (int, optional): degree of the spline for the primary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
-<span class="sd">        knots2 (array_like, optional): array of knots for the secondary binary component, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        degree2 (int, optional): degree of the spline for the secondary binary component, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(\cos{t_1}, \cos{t_2} \mid \mathbf{c}_1, \mathbf{c}_2) = p(\cos{t_1} \mid \mathbf{c}_1) p(\cos{t_2} \mid \mathbf{c}_2),</span>
+
+<span class="sd">    where :math:`\mathbf{c}_1, \mathbf{c}_2` are vectors of the ``n_splines1``, ``n_splines2`` basis</span>
+<span class="sd">    spline coefficients for the primary and secondary component cosine spin tilts, respectively.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines1, n_splines2 : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom, of the</span>
+<span class="sd">        primary and secondary component spline models.</span>
+<span class="sd">    ct1, ct2 : array_like</span>
+<span class="sd">        Primary and secondary component spin cosine tilt parameter estimation samples for basis evaluation.</span>
+<span class="sd">    ct1_inj, ct2_inj : array_like</span>
+<span class="sd">        Primary and secondary component spin cosine tilt injection samples for basis evaluation.</span>
+<span class="sd">    kwargs1, kwargs2 : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline model for the primary and secondary components.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to both basis spline models.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIndependentSpinTilts.__init__">
@@ -358,26 +377,22 @@
         <span class="n">ct2</span><span class="p">,</span>
         <span class="n">ct1_inj</span><span class="p">,</span>
         <span class="n">ct2_inj</span><span class="p">,</span>
-        <span class="n">knots1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">knots2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree2</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">kwargs1</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">kwargs2</span><span class="o">=</span><span class="p">{},</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineSpinTilt</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines1</span><span class="p">,</span>
             <span class="n">ct</span><span class="o">=</span><span class="n">ct1</span><span class="p">,</span>
             <span class="n">ct_inj</span><span class="o">=</span><span class="n">ct1_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots1</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree1</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs1</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span> <span class="o">=</span> <span class="n">BSplineSpinTilt</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines2</span><span class="p">,</span>
             <span class="n">ct</span><span class="o">=</span><span class="n">ct2</span><span class="p">,</span>
             <span class="n">ct_inj</span><span class="o">=</span><span class="n">ct2_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots2</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree2</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs2</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -385,17 +400,21 @@
 <div class="viewcode-block" id="BSplineIndependentSpinTilts.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.html#gwinferno.models.bsplines.separable.BSplineIndependentSpinTilts.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density for the primary and secondary cosine tilt along the posterior or injection samples.</span>
-<span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            pcoefs (array_like): primary component cosine tilt basis spline coefficients</span>
-<span class="sd">            scoefs (array_like): secondary component cosine tilt basis spline coefficients</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pcoefs, scoefs : array_like</span>
+<span class="sd">            Spline coefficients for the (p)rimary and (s)econdary components.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary and secondary cosine tilt, p(ct1, ct2)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_ct1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_ct2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
@@ -407,18 +426,32 @@
 <div class="viewcode-block" id="BSplinePrimaryPowerlawRatio">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplinePrimaryPowerlawRatio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in primary mass and a powerlaw model in mass ratio</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A B-Spline model in primary mass and a powerlaw model in mass ratio,</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines</span>
-<span class="sd">        m1 (array_like): primary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">        m1_inj(array_like): primary component mass injection samples to evaluate the basis spline at</span>
-<span class="sd">        mmin (float, optional): minimum mass value. Spline is truncated below this minimum mass. Defaults to 2.</span>
-<span class="sd">        mmax (float, optional): maximum mass value. Spline is truncated above this maximum mass. Defaults to 100.</span>
-<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
-<span class="sd">        basis (class, optional): type of basis to use (ex. LogYBSpline). Defaults to BSpline.</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(m_1, q \mid \mathbf{c}, \beta) = p(m_1 \mid \mathbf{c}) p(q \mid \beta, m_1, m_{\mathrm{min}}),</span>
+
+<span class="sd">    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients, and</span>
+<span class="sd">    :math:`\beta` is the powerlaw slope of the mass ratio distribution.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gwinferno.distributions.powerlaw_pdf : Powerlaw probability density function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom of the spline model.</span>
+<span class="sd">    m1 : array_like</span>
+<span class="sd">        Primary component mass parameter estimation samples for basis evaluation.</span>
+<span class="sd">    m1_inj : array_like</span>
+<span class="sd">        Primary component mass injection samples for basis evaluation.</span>
+<span class="sd">    mmin : float, default=2</span>
+<span class="sd">        Minimum component mass, setting lower bounds on the primary mass and mass ratio (:math:`q&gt;m_\mathrm{min}/m_1`).</span>
+<span class="sd">    mmax : float, default=100</span>
+<span class="sd">        Maximum component mass, setting the upper bound on the primary mass.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplinePrimaryPowerlawRatio.__init__">
@@ -430,20 +463,14 @@
         <span class="n">m1_inj</span><span class="p">,</span>
         <span class="n">mmin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="n">mmax</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">basis</span><span class="o">=</span><span class="n">BSpline</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="p">,</span>
             <span class="n">m1</span><span class="p">,</span>
             <span class="n">m1_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
             <span class="n">mmin</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
-            <span class="n">basis</span><span class="o">=</span><span class="n">basis</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
@@ -451,23 +478,26 @@
 <div class="viewcode-block" id="BSplinePrimaryPowerlawRatio.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryPowerlawRatio.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
-<span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            m1 (array_like): primary mass samples to evaluate pdf at</span>
-<span class="sd">            q (array_like): mass ratio samples to evaluate pdf at</span>
-<span class="sd">            mmin (float): minimum mass. Pdf will be truncated below this value.</span>
-<span class="sd">            coefs (array_like): primary component mass basis spline coefficients</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        m1, q : array_like</span>
+<span class="sd">            Primary masses and mass ratios for computing joint probability density.</span>
+<span class="sd">        mmin : float</span>
+<span class="sd">            Minimum component mass, setting lower bounds on the primary mass and mass ratio (:math:`q&gt;m_\mathrm{min}/m_1`).</span>
+<span class="sd">        coefs (array_like):</span>
+<span class="sd">            Spline coefficients.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary mass and mass ratio, p(m1, q)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># p_m1 = jnp.where(jnp.greater_equal(m1, mmin), self.primary_model(len(m1.shape), coefs), 0)</span>
-        <span class="c1"># norm_factor = self.primary_model.norm_mmin_cut(mmin, coefs)</span>
-        <span class="c1"># p_m1 = p_m1 / norm_factor</span>
         <span class="n">p_m1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_q</span> <span class="o">=</span> <span class="n">powerlaw_pdf</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">mmin</span> <span class="o">/</span> <span class="n">m1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_q</span></div>
@@ -478,17 +508,31 @@
 <div class="viewcode-block" id="PLPeakPrimaryBSplineRatio">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio">[docs]</a>
 <span class="k">class</span> <span class="nc">PLPeakPrimaryBSplineRatio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a powerlaw + gaussian peak primary mass model and B-Spline mass ratio model.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A powerlaw + gaussian peak primary mass model and B-Spline model in mass ratio.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines</span>
-<span class="sd">        q (array_like): mass ratio pe samples to evaluate the basis spline at</span>
-<span class="sd">        q_inj(array_like): mass ratio injection samples to evaluate the basis spline at</span>
-<span class="sd">        m1 (float, optional): primary mass pe samples</span>
-<span class="sd">        m1_inj (float, optional): primary mass injection samples</span>
-<span class="sd">        knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(m_1, q \mid \mathbf{c}, \alpha, \mu_\mathrm{peak}, \sigma_\mathrm{peak}, f_\mathrm{peak}) =</span>
+<span class="sd">        p(m_1 \mid \alpha, \mu_\mathrm{peak}, \sigma_\mathrm{peak}, f_\mathrm{peak}) p(q \mid \mathbf{c}, m_1, m_{\mathrm{min}}),</span>
+
+<span class="sd">    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients,</span>
+<span class="sd">    :math:`\alpha` is the powerlaw slope of the primary component mass distribution, :math:`\mu_\mathrm{peak}` and</span>
+<span class="sd">    :math:`\sigma_\mathrm{peak}` the mean and standard deviation of the peak in mass, and :math:`f_\mathrm{peak}`</span>
+<span class="sd">    is the mixing fraction between the powerlaw and peak in mass.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    gwinferno.models.parametric.parametric.plpeak_primary_pdf : Powerlaw+Peak primary mass model density.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom of the spline model.</span>
+<span class="sd">    q : array_like</span>
+<span class="sd">        Mass ratio parameter estimation samples for basis evaluation.</span>
+<span class="sd">    q_inj : array_like</span>
+<span class="sd">        Mass ratio injection samples for basis evaluation.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="PLPeakPrimaryBSplineRatio.__init__">
@@ -498,37 +542,51 @@
         <span class="n">n_splines</span><span class="p">,</span>
         <span class="n">q</span><span class="p">,</span>
         <span class="n">q_inj</span><span class="p">,</span>
-        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ratio_model</span> <span class="o">=</span> <span class="n">BSplineRatio</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="p">,</span>
             <span class="n">q</span><span class="p">,</span>
             <span class="n">q_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="PLPeakPrimaryBSplineRatio.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
-<span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">peak_mean</span><span class="p">,</span> <span class="n">peak_sd</span><span class="p">,</span> <span class="n">peak_frac</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            m1 (array_like): primary mass samples to evaluate pdf at</span>
-<span class="sd">            q (array_like): mass ratio samples to evaluate pdf at</span>
-<span class="sd">            mmin (float): minimum mass. Pdf will be truncated below this value.</span>
-<span class="sd">            coefs (array_like): primary component mass basis spline coefficients</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        m1 : array_like</span>
+<span class="sd">            Primary masses for computing joint probability density.</span>
+<span class="sd">        alpha : float</span>
+<span class="sd">            Powerlaw slope of the primary mass distribution.</span>
+<span class="sd">        mmin : float</span>
+<span class="sd">            Minimum component mass, the lower bound on the primary mass.</span>
+<span class="sd">        mmax : float</span>
+<span class="sd">            Maximum component mass, the upper bound on the primary mass.</span>
+<span class="sd">        peak_mean : float</span>
+<span class="sd">            Mean of the peak in mass.</span>
+<span class="sd">        peak_sd : float</span>
+<span class="sd">            Standard deviation of the peak in mass.</span>
+<span class="sd">        peak_frac : float</span>
+<span class="sd">            Fraction of binaries in the peak in mass.</span>
+<span class="sd">        coefs : array_like</span>
+<span class="sd">            Spline coefficients.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary mass and mass ratio, p(m1, q)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_q</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
-        <span class="n">p_m1</span> <span class="o">=</span> <span class="n">plpeak_primary_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">p_m1</span> <span class="o">=</span> <span class="n">plpeak_primary_pdf</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">,</span> <span class="n">peak_mean</span><span class="p">,</span> <span class="n">peak_sd</span><span class="p">,</span> <span class="n">peak_frac</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">p_m1</span> <span class="o">*</span> <span class="n">p_q</span></div>
 </div>
 
@@ -537,24 +595,37 @@
 <div class="viewcode-block" id="BSplinePrimaryBSplineRatio">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplinePrimaryBSplineRatio</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in primary mass and a B-Spline model in mass ratio</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;B-Spline models for the primary mass and mass ratio,</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines_m (int): number of degrees of freedom of basis, i.e. number of basis splines, for primary mass model</span>
-<span class="sd">        n_splines_q (int): number of degrees of freedom of basis, i.e. number of basis splines, for mass ratio model</span>
-<span class="sd">        m1 (array_like): primary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">        m1_inj(array_like): primary component mass injection samples to evaluate the basis spline at</span>
-<span class="sd">        q1 (array_like): mass ratio pe samples to evaluate the basis spline at</span>
-<span class="sd">        q1_inj(array_like): mass ratio injection samples to evaluate the basis spline at</span>
-<span class="sd">        knots_m (array_like, optional): primary mass array of knots, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        knots_q (array_like, optional): mass ratio array of knots, if non-uniform knot placing is preferred.</span>
-<span class="sd">                Defaults to None.</span>
-<span class="sd">        degree_m (int, optional): degree of the primary mass spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)</span>
-<span class="sd">        degree_q (int, optional): degree of the mass ratio spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline)</span>
-<span class="sd">        m1min (float, optional): minimum primary mass value. Primary mass spline is truncated below this minimum mass. Defaults to 3.</span>
-<span class="sd">        m2min (float, optional): minimum secondary mass value. Mass ratio spline is truncated below m2min/mmax. Defaults to 3.</span>
-<span class="sd">        mmax (float, optional): maximum mass value. Primary mass spline is truncated above this maximum mass. Defaults to 100.</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(m_1, q \mid \mathbf{c}_m, \mathbf{c}_q) = p(m_1 \mid \mathbf{c}_m) p(q \mid \mathbf{c}_q),</span>
+
+<span class="sd">    where :math:`\mathbf{c}_m` and :math:`\mathbf{c}_q` are vectors of the ``n_splines_m`` and ``n_splines_q``</span>
+<span class="sd">    basis spline coefficients for the primary mass and mass ratio, respectively.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines_m, n_splines_q : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom, of the</span>
+<span class="sd">        primary component mass and mass ratio spline models.</span>
+<span class="sd">    m1 : array_like</span>
+<span class="sd">        Primary component mass parameter estimation samples for basis evaluation.</span>
+<span class="sd">    m1_inj : array_like</span>
+<span class="sd">        Primary component mass injection samples for basis evaluation.</span>
+<span class="sd">    q : array_like</span>
+<span class="sd">        Mass ratio parameter estimation samples for basis evaluation.</span>
+<span class="sd">    q_inj : array_like</span>
+<span class="sd">        Mass ratio injection samples for basis evaluation.</span>
+<span class="sd">    mmax : float, default=100</span>
+<span class="sd">        Maximum component mass.</span>
+<span class="sd">    m1min : float, default=3</span>
+<span class="sd">        Minimum primary component mass.</span>
+<span class="sd">    m2min : float, default=3</span>
+<span class="sd">        Minimum secondary component mass, setting lower bound on the mass ratio (:math:`q&gt;m_{2,\mathrm{min}}/m_\mathrm{max}`).</span>
+<span class="sd">    kwargs_m, kwargs_q : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline models for the primary component mass and mass ratio.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to both basis spline models.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplinePrimaryBSplineRatio.__init__">
@@ -567,51 +638,50 @@
         <span class="n">m1_inj</span><span class="p">,</span>
         <span class="n">q</span><span class="p">,</span>
         <span class="n">q_inj</span><span class="p">,</span>
-        <span class="n">knots_m</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">knots_q</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree_m</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">degree_q</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">mmax</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
         <span class="n">m1min</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
         <span class="n">m2min</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span>
-        <span class="n">mmax</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
-        <span class="n">m1_kwargs</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">q_kwargs</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">kwargs_m</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">kwargs_q</span><span class="o">=</span><span class="p">{},</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines_m</span><span class="p">,</span>
             <span class="n">m1</span><span class="p">,</span>
             <span class="n">m1_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots_m</span><span class="p">,</span>
             <span class="n">mmin</span><span class="o">=</span><span class="n">m1min</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree_m</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">m1_kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs_m</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ratio_model</span> <span class="o">=</span> <span class="n">BSplineRatio</span><span class="p">(</span>
             <span class="n">n_splines_q</span><span class="p">,</span>
             <span class="n">q</span><span class="p">,</span>
             <span class="n">q_inj</span><span class="p">,</span>
             <span class="n">qmin</span><span class="o">=</span><span class="n">m2min</span> <span class="o">/</span> <span class="n">mmax</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots_q</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree_q</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">q_kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs_q</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BSplinePrimaryBSplineRatio.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.html#gwinferno.models.bsplines.separable.BSplinePrimaryBSplineRatio.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mcoefs</span><span class="p">,</span> <span class="n">qcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.</span>
-<span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            mcoefs (array_like): primary component mass basis spline coefficients</span>
-<span class="sd">            qcoefs (array_like): mass ratio basis spline coefficients</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        mcoefs, qcoefs : array_like</span>
+<span class="sd">            Spline coefficients for the primary component mass and mass ratio.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary mass and mass ratio, p(m1, q)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio_model</span><span class="p">(</span><span class="n">qcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">mcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span></div>
 </div>
@@ -621,19 +691,28 @@
 <div class="viewcode-block" id="BSplineIIDComponentMasses">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineIIDComponentMasses</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to construct a B-Spline model in primary mass and secondary mass,</span>
-<span class="sd">    assuming the two binary mass components are independently and identically distributed (IID).</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;B-Spline model for the masses of both binary components assuming they are independently and identically distributed (IID),</span>
+<span class="sd">    with an optional pairing term as a powerlaw in mass ratio.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines, for primary mass model</span>
-<span class="sd">        m1 (array_like): primary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">        m2 (array_like): secondary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">        m1_inj(array_like): primary component mass injection samples to evaluate the basis spline at</span>
-<span class="sd">        m2_inj(array_like): secondary component mass injection samples to evaluate the basis spline at</span>
-<span class="sd">        knots(array_like, optional): array of knots, if non-uniform knot placing is preferred. Defaults to None.</span>
-<span class="sd">        mmin (float, optional): minimum mass value. Splines are truncated below this minimum mass. Defaults to 2.</span>
-<span class="sd">        mmax (float, optional): maximum mass value. Splines are truncated above this maximum mass. Defaults to 100.</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(m_1, m_2 \mid \mathbf{c}, \beta) = p(m_1 \mid \mathbf{c}) p(m_2 \mid \mathbf{c}) \left(\frac{m_2}{m_1}\right)^\beta,</span>
+
+<span class="sd">    where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom, of the spline model.</span>
+<span class="sd">    m1, m2 : array_like</span>
+<span class="sd">        Primary and secondary component mass parameter estimation samples for basis evaluation.</span>
+<span class="sd">    m1_inj, m2_inj : array_like</span>
+<span class="sd">        Primary and secondary component mass injection samples for basis evaluation.</span>
+<span class="sd">    mmin : float, default=2</span>
+<span class="sd">        Minimum component mass.</span>
+<span class="sd">    mmax : float, default=100</span>
+<span class="sd">        Maximum component mass.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline model.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIIDComponentMasses.__init__">
@@ -645,29 +724,25 @@
         <span class="n">m2</span><span class="p">,</span>
         <span class="n">m1_inj</span><span class="p">,</span>
         <span class="n">m2_inj</span><span class="p">,</span>
-        <span class="n">knots</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">mmin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="n">mmax</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-        <span class="n">m1_kwargs</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">m2_kwargs</span><span class="o">=</span><span class="p">{},</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines</span><span class="p">,</span>
             <span class="n">m</span><span class="o">=</span><span class="n">m1</span><span class="p">,</span>
             <span class="n">m_inj</span><span class="o">=</span><span class="n">m1_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
             <span class="n">mmin</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">m1_kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines</span><span class="p">,</span>
             <span class="n">m</span><span class="o">=</span><span class="n">m2</span><span class="p">,</span>
             <span class="n">m_inj</span><span class="o">=</span><span class="n">m2_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots</span><span class="p">,</span>
             <span class="n">mmin</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">m2_kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">qs</span> <span class="o">=</span> <span class="p">[</span><span class="n">m2_inj</span> <span class="o">/</span> <span class="n">m1_inj</span><span class="p">,</span> <span class="n">m2</span> <span class="o">/</span> <span class="n">m1</span><span class="p">]</span></div>
 
@@ -675,17 +750,23 @@
 <div class="viewcode-block" id="BSplineIIDComponentMasses.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIIDComponentMasses.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coefs</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.</span>
-<span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            coefs (array_like): mass basis spline coefficients</span>
-<span class="sd">            beta (float, optional): mass ratio powerlaw slope. Defaults to 0.</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        coefs : array_like</span>
+<span class="sd">            Spline coefficients.</span>
+<span class="sd">        beta : float, default=0</span>
+<span class="sd">            Mass ratio powerlaw slope.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary and secondary mass and mass ratio, p(m1, m2, q)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_m1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_m2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
@@ -702,23 +783,32 @@
 <div class="viewcode-block" id="BSplineIndependentComponentMasses">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineIndependentComponentMasses</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in primary mass and secondary mass, assuming the two binary mass components are independently distributed.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A B-Spline model for the masses of the primary and secondary components assuming</span>
+<span class="sd">    they are independently distributed, with an optional pairing term as a powerlaw in mass ratio,</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines</span>
-<span class="sd">        n_splines2 (int): number of degrees of freedom of secondary mass basis, i.e. number of basis splines</span>
-<span class="sd">        m1 (array_like): primary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">        m2 (array_like): secondary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">        m1_inj(array_like): primary component mass injection samples to evaluate the basis spline at</span>
-<span class="sd">        m2_inj(array_like): secondary component mass injection samples to evaluate the basis spline at</span>
-<span class="sd">        knots1 (array_like, optional): array of primary mass knots, if non-uniform knot placing is preferred. Defaults to None.</span>
-<span class="sd">        knots2 (array_like, optional): array of secondary mass knots, if non-uniform knot placing is preferred. Defaults to None.</span>
-<span class="sd">        mmin1 (float, optional): minimum primary mass value. Spline is truncated below this minimum mass. Defaults to 2.</span>
-<span class="sd">        mmax1 (float, optional): maximum primary mass value. Spline is truncated above this maximum mass. Defaults to 100.</span>
-<span class="sd">        mmin2 (float, optional): minimum secondary mass value. Spline is truncated below this minimum mass. Defaults to 2.</span>
-<span class="sd">        mmax2 (float, optional): maximum secondary mass value. Spline is truncated above this maximum mass. Defaults to 100.</span>
-<span class="sd">        degree1 (int, optional): degree of the spline for the primary mass, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
-<span class="sd">        degree2 (int, optional): degree of the spline for the secondary mass, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(m_1, m_2 \mid \mathbf{c}_1, \mathbf{c}_2, \beta) = p(m_1 \mid \mathbf{c}_1) p(m_2 \mid \mathbf{c}_2) \left(\frac{m_2}{m_1}\right)^\beta,</span>
+
+<span class="sd">    where :math:`\mathbf{c}_1` and :math:`\mathbf{c}_2` are vectors of the ``n_splines1`` and ``n_splines2``</span>
+<span class="sd">    basis spline coefficients for the primary and secondary component masses, respectively.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines1, n_splines2 : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom, of the</span>
+<span class="sd">        primary and secondary component spline models.</span>
+<span class="sd">    m1, m2 : array_like</span>
+<span class="sd">        Primary and secondary component mass parameter estimation samples for basis evaluation.</span>
+<span class="sd">    m1_inj, m2_inj : array_like</span>
+<span class="sd">        Primary and secondary component mass injection samples for basis evaluation.</span>
+<span class="sd">    mmin1, mmax1 : float, default=2, 100</span>
+<span class="sd">        Minimum and maximum primary component mass.</span>
+<span class="sd">    mmin2, mmax2 : float, default=2, 100</span>
+<span class="sd">        Minimum and maximum secondary component mass.</span>
+<span class="sd">    kwargs1, kwargs2 : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline model for the primary and secondary components.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to both basis spline models.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineIndependentComponentMasses.__init__">
@@ -731,57 +821,55 @@
         <span class="n">m2</span><span class="p">,</span>
         <span class="n">m1_inj</span><span class="p">,</span>
         <span class="n">m2_inj</span><span class="p">,</span>
-        <span class="n">knots1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">knots2</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">mmin1</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="n">mmax1</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
         <span class="n">mmin2</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="n">mmax2</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
-        <span class="n">degree1</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">degree2</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">m1_kwargs</span><span class="o">=</span><span class="p">{},</span>
-        <span class="n">m2_kwargs</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">kwargs1</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">kwargs2</span><span class="o">=</span><span class="p">{},</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines1</span><span class="p">,</span>
             <span class="n">m</span><span class="o">=</span><span class="n">m1</span><span class="p">,</span>
             <span class="n">m_inj</span><span class="o">=</span><span class="n">m1_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots1</span><span class="p">,</span>
             <span class="n">mmin</span><span class="o">=</span><span class="n">mmin1</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax1</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree1</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">m1_kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs1</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span> <span class="o">=</span> <span class="n">BSplineMass</span><span class="p">(</span>
             <span class="n">n_splines</span><span class="o">=</span><span class="n">n_splines2</span><span class="p">,</span>
             <span class="n">m</span><span class="o">=</span><span class="n">m2</span><span class="p">,</span>
             <span class="n">m_inj</span><span class="o">=</span><span class="n">m2_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knots2</span><span class="p">,</span>
             <span class="n">mmin</span><span class="o">=</span><span class="n">mmin2</span><span class="p">,</span>
             <span class="n">mmax</span><span class="o">=</span><span class="n">mmax2</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree2</span><span class="p">,</span>
-            <span class="o">**</span><span class="n">m2_kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs2</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">qs</span> <span class="o">=</span> <span class="p">[</span><span class="n">m2_inj</span> <span class="o">/</span> <span class="n">m1_inj</span><span class="p">,</span> <span class="n">m2</span> <span class="o">/</span> <span class="n">m1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="BSplineIndependentComponentMasses.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.html#gwinferno.models.bsplines.separable.BSplineIndependentComponentMasses.__call__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for the primary and secondary masses along the posterior or injection samples.</span>
-<span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">scoefs</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            m1 (array_like): primary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">            m2 (array_like): secondary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">            pcoefs (array_like): primary mass basis spline coefficients</span>
-<span class="sd">            scoefs (array_like): secondary mass basis spline coefficients</span>
-<span class="sd">            beta (float, optional): mass ratio powerlaw slope.</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        pcoefs, scoefs : array_like</span>
+<span class="sd">            Spline coefficients for the (p)rimary and (s)econdary components.</span>
+<span class="sd">        beta : float, default=0</span>
+<span class="sd">            Mass ratio powerlaw slope.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary and secondary mass and mass ratio, p(m1, m2, q)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_m1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">primary_model</span><span class="p">(</span><span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_m2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">secondary_model</span><span class="p">(</span><span class="n">scoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
@@ -794,19 +882,28 @@
 <div class="viewcode-block" id="BSplineEffectiveSpinDims">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims">[docs]</a>
 <span class="k">class</span> <span class="nc">BSplineEffectiveSpinDims</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Class to construct a B-Spline model in the chi effective and effective precession (chi_p) parameters</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;B-Spline models for the effective spin (:math:`\chi_\mathrm{eff}`) and</span>
+<span class="sd">    effective precession (:math:`\chi_\mathrm{p}`) of binaries,</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines</span>
-<span class="sd">        n_splines2 (int): number of degrees of freedom of secondary mass basis, i.e. number of basis splines</span>
-<span class="sd">        chieff(array_like): chi effective pe samples to evaluate the basis spline at</span>
-<span class="sd">        chip (array_like): chi_p pe samples to evaluate the basis spline at</span>
-<span class="sd">        chieff_inj (array_like): chi effective injection samples to evaluate the basis spline at</span>
-<span class="sd">        chip_inj (array_like): chi_p injection samples to evaluate the basis spline at</span>
-<span class="sd">        knotse (array_like, optional): array of chi effective knots, if non-uniform knot placing is preferred. Defaults to None.</span>
-<span class="sd">        knotsp (array_like, optional): array of chi_p knots, if non-uniform knot placing is preferred. Defaults to None.</span>
-<span class="sd">        degree_e (int, optional): degree of the spline for chi effective, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
-<span class="sd">        degree_p (int, optional): degree of the spline for chi_p, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        p(\chi_\mathrm{eff}, \chi_\mathrm{p} \mid \mathbf{c}_\mathrm{eff}, \mathbf{c}_\mathrm{p}) = p(\chi_\mathrm{eff} \mid \mathbf{c}_\mathrm{eff}) p(\chi_\mathrm{p} \mid \mathbf{c}_\mathrm{p}),</span>
+
+<span class="sd">    where :math:`\mathbf{c}_\mathrm{eff}` and :math:`\mathbf{c}_\mathrm{p}` are vectors of the ``n_splines_e``</span>
+<span class="sd">    and ``n_splines_p`` basis spline coefficients for the effective spin and effective precession, respectively.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n_splines_e, n_splines_p : int</span>
+<span class="sd">        Number of basis functions, i.e., the number of degrees of freedom, of the</span>
+<span class="sd">        (e)ffective spin and effective (p)recession spline models.</span>
+<span class="sd">    chieff, chip : array_like</span>
+<span class="sd">        Effective spin and effective precession parameter estimation samples for basis evaluation.</span>
+<span class="sd">    chieff_inj, chip_inj : array_like</span>
+<span class="sd">        Effective spin and effective precession injection samples for basis evaluation.</span>
+<span class="sd">    kwargs_e, kwargs_p : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to the basis spline models for the effective spin and effective precession.</span>
+<span class="sd">    **kwargs : dict, optional</span>
+<span class="sd">        Additional keyword arguments to pass to both basis spline models.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="BSplineEffectiveSpinDims.__init__">
@@ -819,44 +916,45 @@
         <span class="n">chip</span><span class="p">,</span>
         <span class="n">chieff_inj</span><span class="p">,</span>
         <span class="n">chip_inj</span><span class="p">,</span>
-        <span class="n">knotse</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">knotsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">degree_e</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="n">degree_p</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+        <span class="n">kwargs_e</span><span class="o">=</span><span class="p">{},</span>
+        <span class="n">kwargs_p</span><span class="o">=</span><span class="p">{},</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">chi_eff_model</span> <span class="o">=</span> <span class="n">BSplineChiEffective</span><span class="p">(</span>
             <span class="n">n_splines_e</span><span class="p">,</span>
             <span class="n">chieff</span><span class="p">,</span>
             <span class="n">chieff_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knotse</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree_e</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs_e</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">chi_p_model</span> <span class="o">=</span> <span class="n">BSplineChiPrecess</span><span class="p">(</span>
             <span class="n">n_splines_p</span><span class="p">,</span>
             <span class="n">chip</span><span class="p">,</span>
             <span class="n">chip_inj</span><span class="p">,</span>
-            <span class="n">knots</span><span class="o">=</span><span class="n">knotsp</span><span class="p">,</span>
-            <span class="n">degree</span><span class="o">=</span><span class="n">degree_p</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs_p</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="BSplineEffectiveSpinDims.__call__">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__call__">[docs]</a>
     <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ecoefs</span><span class="p">,</span> <span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;will evaluate the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.</span>
-<span class="sd">        Use flag `pe_samples` to specify which type of samples are being evaluated (pe or injection).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evaluate the joint probability density over the parameter estimation or injection samples.</span>
+<span class="sd">        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            m1 (array_like): primary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">            m2 (array_like): secondary component mass pe samples to evaluate the basis spline at</span>
-<span class="sd">            ecoefs (array_like): chi_eff basis spline coefficients</span>
-<span class="sd">            pcoefs (array_like): chi_p basis spline coefficients</span>
-<span class="sd">            pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</span>
-<span class="sd">                                        along injection samples. Defaults to True.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ecoefs, pcoefs : array_like</span>
+<span class="sd">            Spline coefficients for the effective spin and effective precession.</span>
+<span class="sd">        pe_samples : bool, default=True</span>
+<span class="sd">            If `True`, design matrix is evaluated across parameter estimation samples.</span>
+<span class="sd">            If `False`, design matrix is evaluated across injection samples.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            array_like: the joint probability density distribution for the primary and secondary mass and mass ratio, p(m1, m2, q)</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        array_like</span>
+<span class="sd">            Joint probability density for parameter estimation or injection samples.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">p_chieff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chi_eff_model</span><span class="p">(</span><span class="n">ecoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>
         <span class="n">p_chip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chi_p_model</span><span class="p">(</span><span class="n">pcoefs</span><span class="p">,</span> <span class="n">pe_samples</span><span class="o">=</span><span class="n">pe_samples</span><span class="p">)</span>

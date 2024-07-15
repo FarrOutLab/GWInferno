@@ -20,6 +20,8 @@
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,7 +59,6 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -124,43 +125,76 @@
 <h1>gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio<a class="headerlink" href="#gwinferno-models-bsplines-separable-plpeakprimarybsplineratio" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">PLPeakPrimaryBSplineRatio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#PLPeakPrimaryBSplineRatio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">PLPeakPrimaryBSplineRatio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_inj</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#PLPeakPrimaryBSplineRatio"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to construct a powerlaw + gaussian peak primary mass model and B-Spline mass ratio model.</p>
-<dl>
-<dt>Args:</dt><dd><p>n_splines (int): number of degrees of freedom of basis, i.e. number of basis splines
-q (array_like): mass ratio pe samples to evaluate the basis spline at
-q_inj(array_like): mass ratio injection samples to evaluate the basis spline at
-m1 (float, optional): primary mass pe samples
-m1_inj (float, optional): primary mass injection samples
-knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</p>
-<blockquote>
-<div><p>Defaults to None.</p>
-</div></blockquote>
-<p>degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</p>
+<p>A powerlaw + gaussian peak primary mass model and B-Spline model in mass ratio.</p>
+<div class="math notranslate nohighlight">
+\[p(m_1, q \mid \mathbf{c}, \alpha, \mu_\mathrm{peak}, \sigma_\mathrm{peak}, f_\mathrm{peak}) =
+p(m_1 \mid \alpha, \mu_\mathrm{peak}, \sigma_\mathrm{peak}, f_\mathrm{peak}) p(q \mid \mathbf{c}, m_1, m_{\mathrm{min}}),\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{c}\)</span> is a vector of the <code class="docutils literal notranslate"><span class="pre">n_splines</span></code> basis spline coefficients,
+<span class="math notranslate nohighlight">\(\alpha\)</span> is the powerlaw slope of the primary component mass distribution, <span class="math notranslate nohighlight">\(\mu_\mathrm{peak}\)</span> and
+<span class="math notranslate nohighlight">\(\sigma_\mathrm{peak}\)</span> the mean and standard deviation of the peak in mass, and <span class="math notranslate nohighlight">\(f_\mathrm{peak}\)</span>
+is the mixing fraction between the powerlaw and peak in mass.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n_splines</strong><span class="classifier">int</span></dt><dd><p>Number of basis functions, i.e., the number of degrees of freedom of the spline model.</p>
+</dd>
+<dt><strong>q</strong><span class="classifier">array_like</span></dt><dd><p>Mass ratio parameter estimation samples for basis evaluation.</p>
+</dd>
+<dt><strong>q_inj</strong><span class="classifier">array_like</span></dt><dd><p>Mass ratio injection samples for basis evaluation.</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments to pass to the basis spline model.</p>
 </dd>
 </dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="gwinferno.models.parametric.parametric.plpeak_primary_pdf.html#gwinferno.models.parametric.parametric.plpeak_primary_pdf" title="gwinferno.models.parametric.parametric.plpeak_primary_pdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.models.parametric.parametric.plpeak_primary_pdf</span></code></a></dt><dd><p>Powerlaw+Peak primary mass model density.</p>
+</dd>
+</dl>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#PLPeakPrimaryBSplineRatio.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_inj</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#PLPeakPrimaryBSplineRatio.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__call__">
-<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#PLPeakPrimaryBSplineRatio.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__call__" title="Link to this definition"></a></dt>
-<dd><p>will evaluate the joint probability density distribution for the primary mass and mass ratio along the posterior or injection samples.
-Use flag <cite>pe_samples</cite> to specify which type of samples are being evaluated (pe or injection).</p>
-<dl>
-<dt>Args:</dt><dd><p>m1 (array_like): primary mass samples to evaluate pdf at
-q (array_like): mass ratio samples to evaluate pdf at
-mmin (float): minimum mass. Pdf will be truncated below this value.
-coefs (array_like): primary component mass basis spline coefficients
-pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</p>
-<blockquote>
-<div><p>along injection samples. Defaults to True.</p>
-</div></blockquote>
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_sd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">peak_frac</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#PLPeakPrimaryBSplineRatio.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__call__" title="Link to this definition"></a></dt>
+<dd><p>Evaluate the joint probability density over the parameter estimation or injection samples.
+Use flag <cite>pe_samples</cite> to specify which samples are being evaluated (parameter estimation or injection).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>m1</strong><span class="classifier">array_like</span></dt><dd><p>Primary masses for computing joint probability density.</p>
 </dd>
-<dt>Returns:</dt><dd><p>array_like: the joint probability density distribution for the primary mass and mass ratio, p(m1, q)</p>
+<dt><strong>alpha</strong><span class="classifier">float</span></dt><dd><p>Powerlaw slope of the primary mass distribution.</p>
+</dd>
+<dt><strong>mmin</strong><span class="classifier">float</span></dt><dd><p>Minimum component mass, the lower bound on the primary mass.</p>
+</dd>
+<dt><strong>mmax</strong><span class="classifier">float</span></dt><dd><p>Maximum component mass, the upper bound on the primary mass.</p>
+</dd>
+<dt><strong>peak_mean</strong><span class="classifier">float</span></dt><dd><p>Mean of the peak in mass.</p>
+</dd>
+<dt><strong>peak_sd</strong><span class="classifier">float</span></dt><dd><p>Standard deviation of the peak in mass.</p>
+</dd>
+<dt><strong>peak_frac</strong><span class="classifier">float</span></dt><dd><p>Fraction of binaries in the peak in mass.</p>
+</dd>
+<dt><strong>coefs</strong><span class="classifier">array_like</span></dt><dd><p>Spline coefficients.</p>
+</dd>
+<dt><strong>pe_samples</strong><span class="classifier">bool, default=True</span></dt><dd><p>If <cite>True</cite>, design matrix is evaluated across parameter estimation samples.
+If <cite>False</cite>, design matrix is evaluated across injection samples.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like</dt><dd><p>Joint probability density for parameter estimation or injection samples.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -168,7 +202,7 @@ pe_samples (bool, optional): If True, design matrix is evaluated along posterior
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__init__" title="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n_splines, q, q_inj[, knots, degree])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__init__" title="gwinferno.models.bsplines.separable.PLPeakPrimaryBSplineRatio.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n_splines, q, q_inj, **kwargs)</p></td>
 <td><p></p></td>
 </tr>
 </tbody>

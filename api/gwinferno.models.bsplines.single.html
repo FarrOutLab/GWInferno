@@ -20,6 +20,8 @@
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,7 +59,6 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -125,31 +126,31 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineChiEffective.html#gwinferno.models.bsplines.single.BSplineChiEffective" title="gwinferno.models.bsplines.single.BSplineChiEffective"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineChiEffective</span></code></a>(n_splines, chieff, ...)</p></td>
-<td><p>Class to construct a chi effective B-Spline model for a single binary component</p></td>
+<td><p>A B-Spline model for the binary effective spin <span class="math notranslate nohighlight">\(\chi_\mathrm{eff}\)</span>.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineChiPrecess.html#gwinferno.models.bsplines.single.BSplineChiPrecess" title="gwinferno.models.bsplines.single.BSplineChiPrecess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineChiPrecess</span></code></a>(n_splines, chip, chip_inj)</p></td>
-<td><p>Class to construct an effective precession (chi_p) B-Spline model for a single binary component</p></td>
+<td><p>A B-Spline model for the binary effective precession <span class="math notranslate nohighlight">\(\chi_\mathrm{p}\)</span>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineMass.html#gwinferno.models.bsplines.single.BSplineMass" title="gwinferno.models.bsplines.single.BSplineMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineMass</span></code></a>(n_splines, m, m_inj[, knots, ...])</p></td>
-<td><p>Class to construct a mass B-Spline model for a single binary component</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineMass.html#gwinferno.models.bsplines.single.BSplineMass" title="gwinferno.models.bsplines.single.BSplineMass"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineMass</span></code></a>(n_splines, m, m_inj[, mmin, ...])</p></td>
+<td><p>A B-Spline model for the mass of a single binary component.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineRatio.html#gwinferno.models.bsplines.single.BSplineRatio" title="gwinferno.models.bsplines.single.BSplineRatio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineRatio</span></code></a>(n_splines, q, q_inj[, qmin, ...])</p></td>
-<td><p>Class to construct a mass ratio (q) B-Spline model for a single binary component</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineRatio.html#gwinferno.models.bsplines.single.BSplineRatio" title="gwinferno.models.bsplines.single.BSplineRatio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineRatio</span></code></a>(n_splines, q, q_inj[, qmin, basis])</p></td>
+<td><p>A B-Spline model for the binary mass ratio.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineRedshift.html#gwinferno.models.bsplines.single.BSplineRedshift" title="gwinferno.models.bsplines.single.BSplineRedshift"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineRedshift</span></code></a>(n_splines, z, z_inj, dVdc, ...)</p></td>
-<td><p>Class to construct a redshift B-Spline model</p></td>
+<td><p>A B-Spline model for redshift.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSpinMagnitude.html#gwinferno.models.bsplines.single.BSplineSpinMagnitude" title="gwinferno.models.bsplines.single.BSplineSpinMagnitude"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineSpinMagnitude</span></code></a>(n_splines, a, a_inj[, ...])</p></td>
-<td><p>Class to construct a spin magnitude B-Spline model for a single binary component</p></td>
+<td><p>A B-Spline model for the spin magnitude of a single binary component.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSpinTilt.html#gwinferno.models.bsplines.single.BSplineSpinTilt" title="gwinferno.models.bsplines.single.BSplineSpinTilt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineSpinTilt</span></code></a>(n_splines, ct, ct_inj[, ...])</p></td>
-<td><p>Class to construct a cosine tilt (cos(theta)) B-Spline model for a single binary component</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSpinTilt.html#gwinferno.models.bsplines.single.BSplineSpinTilt" title="gwinferno.models.bsplines.single.BSplineSpinTilt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineSpinTilt</span></code></a>(n_splines, ct, ct_inj[, basis])</p></td>
+<td><p>A B-Spline model for the (cosine of) spin tilt of a single binary component.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.BSplineSymmetricChiEffective.html#gwinferno.models.bsplines.single.BSplineSymmetricChiEffective" title="gwinferno.models.bsplines.single.BSplineSymmetricChiEffective"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BSplineSymmetricChiEffective</span></code></a>(n_splines, ...)</p></td>
-<td><p>Class to construct a chi effective B-Spline model symmetric about chi effective = zero  for a single binary component</p></td>
+<td><p>A B-Spline model for the binary effective spin <span class="math notranslate nohighlight">\(\chi_\mathrm{eff}\)</span> that is symmetric about <span class="math notranslate nohighlight">\(\chi_\mathrm{eff} = 0\)</span>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel" title="gwinferno.models.bsplines.single.Base1DBSplineModel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Base1DBSplineModel</span></code></a>(n_splines, xx, xx_inj[, ...])</p></td>
-<td><p>Class to construct basis spline for population inference</p></td>
+<td><p>Base class for basis splines for population inference</p></td>
 </tr>
 </tbody>
 </table>

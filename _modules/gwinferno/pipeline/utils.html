@@ -55,7 +55,6 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -101,7 +100,6 @@
 <span class="kn">import</span> <span class="nn">numpyro.distributions</span> <span class="k">as</span> <span class="nn">dist</span>
 <span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
 
-<span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogXBSpline</span>
 <span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogXLogYBSpline</span>
 <span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogYBSpline</span>
 <span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIIDSpinMagnitudes</span>
@@ -161,8 +159,8 @@
         <span class="n">m1min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
         <span class="n">m2min</span><span class="o">=</span><span class="n">mmin</span><span class="p">,</span>
         <span class="n">mmax</span><span class="o">=</span><span class="n">mmax</span><span class="p">,</span>
-        <span class="n">m1_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;basis&quot;</span><span class="p">:</span> <span class="n">LogXLogYBSpline</span><span class="p">},</span>
-        <span class="n">q_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;basis&quot;</span><span class="p">:</span> <span class="n">LogYBSpline</span><span class="p">},</span>
+        <span class="n">kwargs_m</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;basis&quot;</span><span class="p">:</span> <span class="n">LogXLogYBSpline</span><span class="p">},</span>
+        <span class="n">kwargs_q</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;basis&quot;</span><span class="p">:</span> <span class="n">LogYBSpline</span><span class="p">},</span>
     <span class="p">)</span></div>
 
 
@@ -174,12 +172,10 @@
 
     <span class="k">if</span> <span class="n">IID</span><span class="p">:</span>
         <span class="n">tilt_model</span> <span class="o">=</span> <span class="n">BSplineIIDSpinTilts</span><span class="p">(</span>
-            <span class="n">ct1_nsplines</span><span class="p">,</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">],</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">ct1_nsplines</span><span class="p">,</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">],</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
 
-        <span class="n">mag_model</span> <span class="o">=</span> <span class="n">BSplineIIDSpinMagnitudes</span><span class="p">(</span>
-            <span class="n">a1_nsplines</span><span class="p">,</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
-        <span class="p">)</span>
+        <span class="n">mag_model</span> <span class="o">=</span> <span class="n">BSplineIIDSpinMagnitudes</span><span class="p">(</span><span class="n">a1_nsplines</span><span class="p">,</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">tilt_model</span> <span class="o">=</span> <span class="n">BSplineIndependentSpinTilts</span><span class="p">(</span>
@@ -189,12 +185,11 @@
             <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span>
             <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_1&quot;</span><span class="p">],</span>
             <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;cos_tilt_2&quot;</span><span class="p">],</span>
-            <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span>
             <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="n">mag_model</span> <span class="o">=</span> <span class="n">BSplineIndependentSpinMagnitudes</span><span class="p">(</span>
-            <span class="n">a1_nsplines</span><span class="p">,</span> <span class="n">a2_nsplines</span><span class="p">,</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">basis</span><span class="o">=</span><span class="n">LogYBSpline</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">a1_nsplines</span><span class="p">,</span> <span class="n">a2_nsplines</span><span class="p">,</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_1&quot;</span><span class="p">],</span> <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;a_2&quot;</span><span class="p">],</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">mag_model</span><span class="p">,</span> <span class="n">tilt_model</span></div>
@@ -209,7 +204,6 @@
         <span class="n">z_nsplines</span><span class="p">,</span>
         <span class="n">pedict</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">],</span>
         <span class="n">injdict</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">],</span>
-        <span class="n">basis</span><span class="o">=</span><span class="n">LogXBSpline</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 

@@ -20,6 +20,8 @@
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,7 +59,6 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -123,38 +124,48 @@
 <h1>gwinferno.models.bsplines.single.BSplineChiEffective<a class="headerlink" href="#gwinferno-models-bsplines-single-bsplinechieffective" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineChiEffective">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.single.</span></span><span class="sig-name descname"><span class="pre">BSplineChiEffective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis=&lt;class</span> <span class="pre">'gwinferno.interpolation.BSpline'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/single.html#BSplineChiEffective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineChiEffective" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.single.</span></span><span class="sig-name descname"><span class="pre">BSplineChiEffective</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis=&lt;class</span> <span class="pre">'gwinferno.interpolation.BSpline'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/single.html#BSplineChiEffective"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineChiEffective" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="gwinferno.models.bsplines.single.Base1DBSplineModel.html#gwinferno.models.bsplines.single.Base1DBSplineModel" title="gwinferno.models.bsplines.single.Base1DBSplineModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">Base1DBSplineModel</span></code></a></p>
-<p>Class to construct a chi effective B-Spline model for a single binary component</p>
-<dl>
-<dt>Args:</dt><dd><p>n_splines (int): number of degrees of freedom of basis, i.e. number of basis components
-chieff (array_like): chi effective pe samples to evaluate the basis spline at
-chieff_inj (array_like): chi effective injection samples to evaluate the basis spline at
-knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.</p>
-<blockquote>
-<div><p>Defaults to None.</p>
-</div></blockquote>
-<p>degree (int, optional): degree of the spline, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</p>
+<p>A B-Spline model for the binary effective spin <span class="math notranslate nohighlight">\(\chi_\mathrm{eff}\)</span>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n_splines</strong><span class="classifier">int</span></dt><dd><p>Number of basis functions, i.e., the number of degrees of freedom of the spline model.</p>
+</dd>
+<dt><strong>chieff</strong><span class="classifier">array_like</span></dt><dd><p>Effective spin parameter estimation samples for basis evaluation.</p>
+</dd>
+<dt><strong>chieff_inj</strong><span class="classifier">array_like</span></dt><dd><p>Effective spin injection samples for basis evaluation.</p>
+</dd>
+<dt><strong>basis</strong><span class="classifier">class, default=BSpline</span></dt><dd><p>Type of basis to use.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineChiEffective.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knots=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree=3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis=&lt;class</span> <span class="pre">'gwinferno.interpolation.BSpline'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/single.html#BSplineChiEffective.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineChiEffective.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">basis=&lt;class</span> <span class="pre">'gwinferno.interpolation.BSpline'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">**kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/single.html#BSplineChiEffective.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineChiEffective.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineChiEffective.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineChiEffective.__call__" title="Link to this definition"></a></dt>
-<dd><dl>
-<dt>will evaluate the projection of the coefficients along the design matrix evaluated at either posterior samples or injection samples.</dt><dd><p>Use flag pe_samples to specify which type of samples are being evaluated (pe or injection).</p>
+<dd><p>Evaluate the projection of the coefficients along the design matrix over the parameter estimation or injection samples.
+Use flag <cite>pe_samples</cite> to specify which samples are being evaluated (parameter estimation or injection).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coefs</strong><span class="classifier">array_like</span></dt><dd><p>Basis spline coefficients.</p>
 </dd>
-<dt>Args:</dt><dd><p>coefs (array_like): basis spline coefficients
-pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</p>
-<blockquote>
-<div><p>along injection samples. Defaults to True.</p>
-</div></blockquote>
+<dt><strong>pe_samples</strong><span class="classifier">bool, default=True</span></dt><dd><p>If <cite>True</cite>, design matrix is evaluated across parameter estimation samples.
+If <cite>False</cite>, design matrix is evaluated across injection samples.</p>
 </dd>
-<dt>Returns:</dt><dd><p>array_like: The linear combination of the basis components evaluated at the posterior or injection samples given the coefficients.</p>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like</dt><dd><p>The linear combination of the basis components evaluated at the parameter estimation or injection samples given the coefficients.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -162,29 +173,38 @@ pe_samples (bool, optional): If True, design matrix is evaluated along posterior
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.models.bsplines.single.BSplineChiEffective.__init__" title="gwinferno.models.bsplines.single.BSplineChiEffective.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n_splines, chieff, chieff_inj[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.models.bsplines.single.BSplineChiEffective.__init__" title="gwinferno.models.bsplines.single.BSplineChiEffective.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(n_splines, chieff, chieff_inj[, basis])</p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.models.bsplines.single.BSplineChiEffective.eval_spline" title="gwinferno.models.bsplines.single.BSplineChiEffective.eval_spline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval_spline</span></code></a>(bases, coefs)</p></td>
-<td><p>given design matrix and coefficients, project coefficients onto the basis.</p></td>
+<td><p>Given design matrix <code class="docutils literal notranslate"><span class="pre">bases</span></code> and coefficients <code class="docutils literal notranslate"><span class="pre">coefs</span></code>, project coefficients onto the basis.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.models.bsplines.single.BSplineChiEffective.inj_pdf" title="gwinferno.models.bsplines.single.BSplineChiEffective.inj_pdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inj_pdf</span></code></a>(coefs)</p></td>
-<td><p>projects the coefficients onto the design matrix evaluated at the injection samples</p></td>
+<td><p>Project the coefficients <code class="docutils literal notranslate"><span class="pre">coefs</span></code> onto the design matrix evaluated at the injection samples.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.models.bsplines.single.BSplineChiEffective.pe_pdf" title="gwinferno.models.bsplines.single.BSplineChiEffective.pe_pdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pe_pdf</span></code></a>(coefs)</p></td>
-<td><p>projects the coefficients onto the design matrix evaluated at the posterior samples</p></td>
+<td><p>Project the coefficients <code class="docutils literal notranslate"><span class="pre">coefs</span></code> onto the design matrix evaluated at the parameter estimation samples.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineChiEffective.eval_spline">
 <span class="sig-name descname"><span class="pre">eval_spline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineChiEffective.eval_spline" title="Link to this definition"></a></dt>
-<dd><p>given design matrix and coefficients, project coefficients onto the basis.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>bases (array_like): design matrix of of spline
-coefs (array_like): basis spline coefficients</p>
+<dd><p>Given design matrix <code class="docutils literal notranslate"><span class="pre">bases</span></code> and coefficients <code class="docutils literal notranslate"><span class="pre">coefs</span></code>, project coefficients onto the basis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>bases</strong><span class="classifier">array_like</span></dt><dd><p>Design matrix of the spline, i.e., basis functions evaluated at samples.</p>
 </dd>
-<dt>Returns:</dt><dd><p>array_like: The linear combination of the basis components given the coefficients</p>
+<dt><strong>coefs</strong><span class="classifier">array_like</span></dt><dd><p>Basis spline coefficients.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like</dt><dd><p>The linear combination of the basis components given the coefficients.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -192,11 +212,19 @@ coefs (array_like): basis spline coefficients</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineChiEffective.inj_pdf">
 <span class="sig-name descname"><span class="pre">inj_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineChiEffective.inj_pdf" title="Link to this definition"></a></dt>
-<dd><p>projects the coefficients onto the design matrix evaluated at the injection samples</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>coefs (array_like): basis spline coefficients</p>
+<dd><p>Project the coefficients <code class="docutils literal notranslate"><span class="pre">coefs</span></code> onto the design matrix evaluated at the injection samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coefs</strong><span class="classifier">array_like</span></dt><dd><p>Basis spline coefficients.</p>
 </dd>
-<dt>Returns:</dt><dd><p>array_like: The linear combination of the basis components evaluated at the injection samples given the coefficients</p>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like</dt><dd><p>The linear combination of the basis components evaluated at the injection samples given the coefficients.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>
@@ -204,11 +232,19 @@ coefs (array_like): basis spline coefficients</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.single.BSplineChiEffective.pe_pdf">
 <span class="sig-name descname"><span class="pre">pe_pdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">coefs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.models.bsplines.single.BSplineChiEffective.pe_pdf" title="Link to this definition"></a></dt>
-<dd><p>projects the coefficients onto the design matrix evaluated at the posterior samples</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>coefs (array_like): basis spline coefficients</p>
+<dd><p>Project the coefficients <code class="docutils literal notranslate"><span class="pre">coefs</span></code> onto the design matrix evaluated at the parameter estimation samples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>coefs</strong><span class="classifier">array_like</span></dt><dd><p>Basis spline coefficients.</p>
 </dd>
-<dt>Returns:</dt><dd><p>array_like: The linear combination of the basis components evaluated at the posterior samples given the coefficients</p>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like</dt><dd><p>The linear combination of the basis components evaluated at the parameter estimation samples given the coefficients.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>

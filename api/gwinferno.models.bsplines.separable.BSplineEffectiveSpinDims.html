@@ -20,6 +20,8 @@
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+        <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -57,7 +59,6 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul class="current">
@@ -124,43 +125,56 @@
 <h1>gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims<a class="headerlink" href="#gwinferno-models-bsplines-separable-bsplineeffectivespindims" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">BSplineEffectiveSpinDims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splines_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chip_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knotse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knotsp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree_e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineEffectiveSpinDims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">gwinferno.models.bsplines.separable.</span></span><span class="sig-name descname"><span class="pre">BSplineEffectiveSpinDims</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splines_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chip_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs_e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineEffectiveSpinDims"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Class to construct a B-Spline model in the chi effective and effective precession (chi_p) parameters</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>n_splines1 (int): number of degrees of freedom of primary mass basis, i.e. number of basis splines
-n_splines2 (int): number of degrees of freedom of secondary mass basis, i.e. number of basis splines
-chieff(array_like): chi effective pe samples to evaluate the basis spline at
-chip (array_like): chi_p pe samples to evaluate the basis spline at
-chieff_inj (array_like): chi effective injection samples to evaluate the basis spline at
-chip_inj (array_like): chi_p injection samples to evaluate the basis spline at
-knotse (array_like, optional): array of chi effective knots, if non-uniform knot placing is preferred. Defaults to None.
-knotsp (array_like, optional): array of chi_p knots, if non-uniform knot placing is preferred. Defaults to None.
-degree_e (int, optional): degree of the spline for chi effective, i.e. cubic splines = 3. Defaults to 3 (cubic spline).
-degree_p (int, optional): degree of the spline for chi_p, i.e. cubic splines = 3. Defaults to 3 (cubic spline).</p>
+<p>B-Spline models for the effective spin (<span class="math notranslate nohighlight">\(\chi_\mathrm{eff}\)</span>) and
+effective precession (<span class="math notranslate nohighlight">\(\chi_\mathrm{p}\)</span>) of binaries,</p>
+<div class="math notranslate nohighlight">
+\[p(\chi_\mathrm{eff}, \chi_\mathrm{p} \mid \mathbf{c}_\mathrm{eff}, \mathbf{c}_\mathrm{p}) = p(\chi_\mathrm{eff} \mid \mathbf{c}_\mathrm{eff}) p(\chi_\mathrm{p} \mid \mathbf{c}_\mathrm{p}),\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathbf{c}_\mathrm{eff}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{c}_\mathrm{p}\)</span> are vectors of the <code class="docutils literal notranslate"><span class="pre">n_splines_e</span></code>
+and <code class="docutils literal notranslate"><span class="pre">n_splines_p</span></code> basis spline coefficients for the effective spin and effective precession, respectively.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>n_splines_e, n_splines_p</strong><span class="classifier">int</span></dt><dd><p>Number of basis functions, i.e., the number of degrees of freedom, of the
+(e)ffective spin and effective (p)recession spline models.</p>
+</dd>
+<dt><strong>chieff, chip</strong><span class="classifier">array_like</span></dt><dd><p>Effective spin and effective precession parameter estimation samples for basis evaluation.</p>
+</dd>
+<dt><strong>chieff_inj, chip_inj</strong><span class="classifier">array_like</span></dt><dd><p>Effective spin and effective precession injection samples for basis evaluation.</p>
+</dd>
+<dt><strong>kwargs_e, kwargs_p</strong><span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments to pass to the basis spline models for the effective spin and effective precession.</p>
+</dd>
+<dt><strong>**kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Additional keyword arguments to pass to both basis spline models.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splines_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chip_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knotse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">knotsp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree_e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineEffectiveSpinDims.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_splines_e</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_splines_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chieff_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chip_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs_e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs_p</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineEffectiveSpinDims.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__init__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ecoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pcoefs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pe_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/bsplines/separable.html#BSplineEffectiveSpinDims.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.__call__" title="Link to this definition"></a></dt>
-<dd><p>will evaluate the joint probability density distribution for chi effective and chi_p along the posterior or injection samples.
-Use flag <cite>pe_samples</cite> to specify which type of samples are being evaluated (pe or injection).</p>
-<dl>
-<dt>Args:</dt><dd><p>m1 (array_like): primary component mass pe samples to evaluate the basis spline at
-m2 (array_like): secondary component mass pe samples to evaluate the basis spline at
-ecoefs (array_like): chi_eff basis spline coefficients
-pcoefs (array_like): chi_p basis spline coefficients
-pe_samples (bool, optional): If True, design matrix is evaluated along posterior samples. If False, design matrix is evaluated</p>
-<blockquote>
-<div><p>along injection samples. Defaults to True.</p>
-</div></blockquote>
+<dd><p>Evaluate the joint probability density over the parameter estimation or injection samples.
+Use flag <cite>pe_samples</cite> to specify which samples are being evaluated (parameter estimation or injection).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>ecoefs, pcoefs</strong><span class="classifier">array_like</span></dt><dd><p>Spline coefficients for the effective spin and effective precession.</p>
 </dd>
-<dt>Returns:</dt><dd><p>array_like: the joint probability density distribution for the primary and secondary mass and mass ratio, p(m1, m2, q)</p>
+<dt><strong>pe_samples</strong><span class="classifier">bool, default=True</span></dt><dd><p>If <cite>True</cite>, design matrix is evaluated across parameter estimation samples.
+If <cite>False</cite>, design matrix is evaluated across injection samples.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like</dt><dd><p>Joint probability density for parameter estimation or injection samples.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 </dd></dl>

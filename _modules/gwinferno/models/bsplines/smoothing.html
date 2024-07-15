@@ -55,7 +55,6 @@
 <p class="caption" role="heading"><span class="caption-text">Tutorials:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../Using%20Basis%20Splines.html">Using Basis Splines in Models</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../../Saving%20Data%20with%20PopSummary.html">Saving Data in Popsummary Standard Output</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API:</span></p>
 <ul>
@@ -104,15 +103,22 @@
 <div class="viewcode-block" id="apply_difference_prior">
 <a class="viewcode-back" href="../../../../api/gwinferno.models.bsplines.smoothing.apply_difference_prior.html#gwinferno.models.bsplines.smoothing.apply_difference_prior">[docs]</a>
 <span class="k">def</span> <span class="nf">apply_difference_prior</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">inv_var</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;computes the difference penalty for b-spline</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the P-Spline difference penalty.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        coefs (array_like): b-spline coefficients</span>
-<span class="sd">        inv_var (float): inverse of the penalty tuning parameter.</span>
-<span class="sd">        degree (int, optional): difference order. Defaults to 1.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    coefs : array_like</span>
+<span class="sd">        B-Spline coefficients.</span>
+<span class="sd">    inv_var : float</span>
+<span class="sd">        Inverse of the penalty tuning parameter.  Higher values result in</span>
+<span class="sd">        smoother functions.</span>
+<span class="sd">    degree : int, default=1</span>
+<span class="sd">        Difference order.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        float: log of the difference prior</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Log difference prior.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">delta_c</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">coefs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="n">degree</span><span class="p">)</span>
     <span class="n">prior</span> <span class="o">=</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">inv_var</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">delta_c</span><span class="p">,</span> <span class="n">delta_c</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
