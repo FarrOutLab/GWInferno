@@ -228,7 +228,8 @@ def chi_p_prior_from_isotropic_spins(chi_eff, q, a_max=1.0):
         (1.0 / (a_max**2 * q))
         * ((4.0 + 3.0 * q) / (3.0 + 4.0 * q))
         * (
-            np.arccos((4.0 + 3.0 * q) * chi_eff_A / ((3.0 + 4.0 * q) * q * a_max)) * (a_max - np.sqrt(a_max**2 - chi_eff_A**2) + chi_eff_A * np.arccos(chi_eff_A / a_max))
+            np.arccos((4.0 + 3.0 * q) * chi_eff_A / ((3.0 + 4.0 * q) * q * a_max))
+            * (a_max - np.sqrt(a_max**2 - chi_eff_A**2) + chi_eff_A * np.arccos(chi_eff_A / a_max))
             + np.arccos(chi_eff_A / a_max)
             * (
                 a_max * q * (3.0 + 4.0 * q) / (4.0 + 3.0 * q)
