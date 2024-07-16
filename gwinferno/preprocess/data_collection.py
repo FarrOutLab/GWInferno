@@ -197,7 +197,7 @@ def load_posterior_samples_and_injections(
     pe_array = load_posterior_data(key_file=key_file, param_names=parameter_names).to_dataset(name="posteriors")
     inj_array = load_injections(
         injfile, parameter_names, through_o4a=o4a, through_o3=o3, ifar_threshold=ifar_threshold, snr_threshold=snr_threshold
-    ).to_dataset(name="injections")
+    ).to_dataset(name="injections", promote_attrs=True)
 
     idata = az.InferenceData(pe_data=pe_array, inj_data=inj_array)
 
