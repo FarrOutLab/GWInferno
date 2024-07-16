@@ -20,6 +20,7 @@ pytest.xml
 **.err
 **.out
 **.png
+!docs/_static/**.png
 **.sub
 **.dag
 **.log
@@ -34,7 +35,6 @@ docs/_build/**
 docs/_build/_sources
 docs/_build/_static
 environment.yml
-<<<<<<< HEAD
 gwinferno_env.txt
 bin/submit**
 environment.txt
