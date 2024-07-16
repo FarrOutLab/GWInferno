@@ -191,8 +191,8 @@ def load_injections(injfile, param_names, through_o4a=False, through_o3=True, if
         return injs.drop_sel(param=remove)
 
 
-def load_posterior_samples_and_injections(
-    key_file, injfile, parameter_names, outdir, ifar_threshold=1, snr_threshold=11, save=False, o4a=False, o3=True
+def save_posterior_samples_and_injections(
+    key_file, injfile, parameter_names, outdir, ifar_threshold=1, snr_threshold=11, o4a=False, o3=True
 ):
     pe_array = load_posterior_data(key_file=key_file, param_names=parameter_names).to_dataset(name="posteriors")
     inj_array = load_injections(
@@ -204,10 +204,9 @@ def load_posterior_samples_and_injections(
     label = ""
     for i in parameter_names:
         label = label + f"-{i}"
-
-    if save:
-        cat = "o3" if o3 else "o4a"
-        idata.to_netcdf(outdir + f"/xarray_through-{cat}_posterior_samples_and_injections{label}.h5")
+        
+    cat = "o3" if o3 else "o4a"
+    idata.to_netcdf(outdir + f"/xarray_through-{cat}_posterior_samples_and_injections{label}.h5")
 
     return idata
 
