@@ -4,6 +4,7 @@ import jax.numpy as jnp
 import numpyro
 import numpyro.distributions as dist
 import xarray as xr
+import arviz as az
 
 from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
@@ -39,6 +40,42 @@ def load_base_parser():
     parser.add_argument("--rngkey", type=int, default=1)
     parser.add_argument("--save-plots", type=bool, default=True)
     return parser
+
+"""
+Load data
+"""
+
+def load_pe_and_injections_as_dict(file):
+    """Load PE and injection file created from `gwinferno.preprocess.data_collection.get_posterior_samples_and_injections()`.
+
+    Args:
+        file (str): Path to PE and Injection file
+
+    Returns:
+        pedict (dict): dictionary of PE samples
+        injdict (dict): dictionary of injection data
+        constants (dict): dictionary of constants like total generated injections
+        param_names (list of str): list of parameter names
+    """
+    data = az.from_netcdf(file)
+    print(f'data file {file} loaded')
+
+    pedict = {k: jnp.asarray(data.pe_data.posteriors.sel(param=k).values) for k in data.pe_data.param.values}
+    injdict = {k: jnp.asarray(data.inj_data.injections.sel(param=k).values) for k in data.inj_data.param.values}
+
+    param_names = list(data.pe_data.param.values)
+    
+    total_inj = data.inj_data.attrs['total_generated']
+    obs_time = data.inj_data.attrs['analysis_time']
+    nObs = data.pe_data.posteriors.shape[0]
+
+    constants = {
+        'total_inj': total_inj, 
+        'obs_time': obs_time, 
+        'nObs': nObs
+        }
+
+    return pedict, injdict, constants, param_names
 
 
 """
