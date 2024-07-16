@@ -40,6 +40,8 @@
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/gwinferno.preprocess.priors';</script>
     <link rel="icon" href="../_static/bbh_graphic_inferno.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -581,27 +583,27 @@ document.write(`
                   
   <section id="module-gwinferno.preprocess.priors">
 <span id="gwinferno-preprocess-priors"></span><h1>gwinferno.preprocess.priors<a class="headerlink" href="#module-gwinferno.preprocess.priors" title="Link to this heading">#</a></h1>
-<p>a module that stores useful prior functions to evaulate spin priors in terms of effective spin paramters</p>
+<p>a module that stores useful prior functions to evaluate spin priors in terms of effective spin parameters</p>
 <p class="rubric">Functions</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.priors.Di.html#gwinferno.preprocess.priors.Di" title="gwinferno.preprocess.priors.Di"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Di</span></code></a></p></td>
-<td><p>Wrapper for the scipy implmentation of Spence's function.</p></td>
+<td><p>Wrapper for the scipy implementation of Spence's function.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.priors.chi_effective_prior_from_aligned_spins.html#gwinferno.preprocess.priors.chi_effective_prior_from_aligned_spins" title="gwinferno.preprocess.priors.chi_effective_prior_from_aligned_spins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chi_effective_prior_from_aligned_spins</span></code></a></p></td>
-<td><p>Function defining the conditional priors p(chi_eff|q) corresponding to uniform, aligned component spin priors.</p></td>
+<td><p>Calculate the conditional prior density for effective spin <span class="math notranslate nohighlight">\(p(\chi_\mathrm{eff}\mid q)\)</span> corresponding to uniform and aligned component spin priors.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.priors.chi_effective_prior_from_isotropic_spins.html#gwinferno.preprocess.priors.chi_effective_prior_from_isotropic_spins" title="gwinferno.preprocess.priors.chi_effective_prior_from_isotropic_spins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chi_effective_prior_from_isotropic_spins</span></code></a></p></td>
-<td><p>Function defining the conditional priors p(chi_eff|q) corresponding to uniform, isotropic component spin priors.</p></td>
+<td><p>Calculate the conditional prior density for effective spin <span class="math notranslate nohighlight">\(p(\chi_\mathrm{eff}\mid q)\)</span> corresponding to uniform and isotropic component spin priors.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.priors.chi_p_prior_from_isotropic_spins.html#gwinferno.preprocess.priors.chi_p_prior_from_isotropic_spins" title="gwinferno.preprocess.priors.chi_p_prior_from_isotropic_spins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chi_p_prior_from_isotropic_spins</span></code></a></p></td>
-<td><p>Function defining the conditional priors p(chi_p|q) corresponding to uniform, isotropic component spin priors.</p></td>
+<td><p>Calculate the conditional prior density for effective precession <span class="math notranslate nohighlight">\(p(\chi_\mathrm{p}\mid q)\)</span> corresponding to uniform and isotropic component spin priors.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q.html#gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q" title="gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chi_p_prior_given_chi_eff_q</span></code></a></p></td>
-<td><p>Function to calculate the conditional prior p(xp|xeff,q) on a single {xp,xeff,q} posterior sample.</p></td>
+<td><p>Calculate the prior density for effective precession conditioned on effective spin and mass ratio, <span class="math notranslate nohighlight">\(p(\chi_\mathrm{p}\mid \chi_\mathrm{eff}, q)\)</span>, corresponding to uniform and isotropic component spin priors.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins.html#gwinferno.preprocess.priors.joint_prior_from_isotropic_spins" title="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">joint_prior_from_isotropic_spins</span></code></a></p></td>
-<td><p>Function to calculate the conditional priors p(xp|xeff,q) on a set of {xp,xeff,q} posterior samples.</p></td>
+<td><p>Calculate the joint prior density for effective spin and precession conditioned on mass ratio, corresponding to uniform and isotropic component spin priors,</p></td>
 </tr>
 </tbody>
 </table>

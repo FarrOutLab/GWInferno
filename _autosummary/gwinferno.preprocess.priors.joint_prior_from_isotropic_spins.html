@@ -40,6 +40,8 @@
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/gwinferno.preprocess.priors.joint_prior_from_isotropic_spins';</script>
     <link rel="icon" href="../_static/bbh_graphic_inferno.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -592,16 +594,40 @@ document.write(`
 <h1>gwinferno.preprocess.priors.joint_prior_from_isotropic_spins<a class="headerlink" href="#gwinferno-preprocess-priors-joint-prior-from-isotropic-spins" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins">
-<span class="sig-name descname"><span class="pre">joint_prior_from_isotropic_spins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aMax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xeffs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndraws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scott'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/priors.html#joint_prior_from_isotropic_spins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.priors.joint_prior_from_isotropic_spins" title="Link to this definition">#</a></dt>
-<dd><p>Function to calculate the conditional priors p(xp|xeff,q) on a set of {xp,xeff,q} posterior samples.
-INPUTS
-q: Mass ratio
-aMax: Maximimum spin magnitude considered
-xeffs: Effective inspiral spin samples
-xps: Effective precessing spin values
-ndraws: Number of draws from the component spin priors used in numerically building interpolant
-RETURNS
-p_chi_p: Array of priors on xp, conditioned on given effective inspiral spins and mass ratios</p>
+<span class="sig-name descname"><span class="pre">joint_prior_from_isotropic_spins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chi_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_eff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/priors.html#joint_prior_from_isotropic_spins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.priors.joint_prior_from_isotropic_spins" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the joint prior density for effective spin and precession
+conditioned on mass ratio, corresponding to uniform and isotropic component
+spin priors,</p>
+<div class="math notranslate nohighlight">
+\[:math:`p(\chi_\mathrm{eff}, \chi_\mathrm{p}\mid q) = p(\chi_\mathrm{p} \mid \chi_\mathrm{eff}, q) p(\chi_\mathrm{eff} \mid q)`.\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>chi_p</strong><span class="classifier">float, array-like</span></dt><dd><p>Effective precession value(s) at which to compute the prior density.</p>
+</dd>
+<dt><strong>chi_eff</strong><span class="classifier">float, array-like</span></dt><dd><p>Effective spin value(s) to condition on.</p>
+</dd>
+<dt><strong>q</strong><span class="classifier">float, array-like</span></dt><dd><p>Mass ratio value(s) to condition on. Expected convention <span class="math notranslate nohighlight">\(q&lt;1\)</span>.</p>
+</dd>
+<dt><strong>a_max</strong><span class="classifier">float, default=1.0</span></dt><dd><p>Maximum allowed dimensionless component spin magnitude.</p>
+</dd>
+<dt><strong>**kwargs: dict, optional</strong></dt><dd><p>Keyword arguments to pass to <a class="reference internal" href="gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q.html#gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q" title="gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q"><code class="xref py py-func docutils literal notranslate"><span class="pre">chi_p_prior_given_chi_eff_q()</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like</dt><dd><p>Prior density at given effective precession value(s).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="gwinferno.preprocess.priors.chi_effective_prior_from_isotropic_spins.html#gwinferno.preprocess.priors.chi_effective_prior_from_isotropic_spins" title="gwinferno.preprocess.priors.chi_effective_prior_from_isotropic_spins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chi_effective_prior_from_isotropic_spins</span></code></a>, <a class="reference internal" href="gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q.html#gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q" title="gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q"><code class="xref py py-obj docutils literal notranslate"><span class="pre">chi_p_prior_given_chi_eff_q</span></code></a></dt><dd></dd>
+</dl>
+</div>
 </dd></dl>
 
 </section>

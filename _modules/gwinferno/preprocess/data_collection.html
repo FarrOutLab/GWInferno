@@ -659,10 +659,10 @@ document.write(`
                     <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_1</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_2</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
                     <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
                         <span class="n">joint_prior_from_isotropic_spins</span><span class="p">(</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
-                            <span class="mf">1.0</span><span class="p">,</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
                             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_p</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                            <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
                 <span class="p">)</span>
@@ -673,9 +673,9 @@ document.write(`
                     <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_1</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_2</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
                     <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
                         <span class="n">chi_effective_prior_from_isotropic_spins</span><span class="p">(</span>
-                            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
-                            <span class="mf">1.0</span><span class="p">,</span>
                             <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                            <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">]),</span>
+                            <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                         <span class="p">)</span>
                     <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="p">)</span>
@@ -690,10 +690,10 @@ document.write(`
                         <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_1</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_2</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
                         <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
                             <span class="n">joint_prior_from_isotropic_spins</span><span class="p">(</span>
-                                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]),</span>
-                                <span class="mf">1.0</span><span class="p">,</span>
-                                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]),</span>
                                 <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_p</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]),</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]),</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]),</span>
+                                <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                             <span class="p">)</span>
                         <span class="p">)</span>
                     <span class="p">)</span>
@@ -703,9 +703,9 @@ document.write(`
                         <span class="o">/</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_1</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">a_2</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
                         <span class="o">*</span> <span class="n">jnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
                             <span class="n">chi_effective_prior_from_isotropic_spins</span><span class="p">(</span>
-                                <span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">],</span>
-                                <span class="mf">1.0</span><span class="p">,</span>
                                 <span class="n">chi_eff</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">],</span>
+                                <span class="n">q</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="n">jj</span><span class="p">],</span>
+                                <span class="n">a_max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
                             <span class="p">)</span>
                         <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="p">)</span>

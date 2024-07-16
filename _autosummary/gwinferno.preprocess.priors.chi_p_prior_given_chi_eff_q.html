@@ -40,6 +40,8 @@
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q';</script>
     <link rel="icon" href="../_static/bbh_graphic_inferno.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -592,17 +594,53 @@ document.write(`
 <h1>gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q<a class="headerlink" href="#gwinferno-preprocess-priors-chi-p-prior-given-chi-eff-q" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q">
-<span class="sig-name descname"><span class="pre">chi_p_prior_given_chi_eff_q</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aMax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xeff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndraws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scott'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/priors.html#chi_p_prior_given_chi_eff_q"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q" title="Link to this definition">#</a></dt>
-<dd><p>Function to calculate the conditional prior p(xp|xeff,q) on a single {xp,xeff,q} posterior sample.
-Called by <cite>joint_prior_from_isotropic_spins</cite>.
-INPUTS
-q: Single posterior mass ratio sample
-aMax: Maximimum spin magnitude considered
-xeff: Single effective inspiral spin sample
-xp: Single effective precessing spin value
-ndraws: Number of draws from the component spin priors used in numerically building interpolant
-RETURNS
-p_chi_p: Prior on xp, conditioned on given effective inspiral spin and mass ratio</p>
+<span class="sig-name descname"><span class="pre">chi_p_prior_given_chi_eff_q</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chi_p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chi_eff</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndraws</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bw_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'scott'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/priors.html#chi_p_prior_given_chi_eff_q"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the prior density for effective precession conditioned on effective spin
+and mass ratio, <span class="math notranslate nohighlight">\(p(\chi_\mathrm{p}\mid \chi_\mathrm{eff}, q)\)</span>, corresponding to uniform
+and isotropic component spin priors.</p>
+<dl class="simple">
+<dt>The prior density is computed numerically by:</dt><dd><ol class="arabic simple">
+<li><p>drawing random component spins and tilts,</p></li>
+<li><p>computing the corresponding effective precession values,</p></li>
+<li><p>training a kernel density estimate (KDE),</p></li>
+<li><p>building an interpolant using the KDE’s density evaluated over a grid.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>chi_p</strong><span class="classifier">float, array-like</span></dt><dd><p>Effective precession value at which to compute the prior density.</p>
+</dd>
+<dt><strong>chi_eff</strong><span class="classifier">float</span></dt><dd><p>Effective spin value to condition on.</p>
+</dd>
+<dt><strong>q</strong><span class="classifier">float</span></dt><dd><p>Mass ratio value to condition on. Expected convention <span class="math notranslate nohighlight">\(q&lt;1\)</span>.</p>
+</dd>
+<dt><strong>a_max</strong><span class="classifier">float, default=1.0</span></dt><dd><p>Maximum allowed dimensionless component spin magnitude.</p>
+</dd>
+<dt><strong>ndraws</strong><span class="classifier">int, default=10000</span></dt><dd><p>Number of draws from the component spin priors used to train KDE.</p>
+</dd>
+<dt><strong>**kwargs: dict, optional</strong></dt><dd><p>Keyword arguments to pass to <a class="reference internal" href="#gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q" title="gwinferno.preprocess.priors.chi_p_prior_given_chi_eff_q"><code class="xref py py-func docutils literal notranslate"><span class="pre">chi_p_prior_given_chi_eff_q()</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array-like</dt><dd><p>Prior density at given effective precession value.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins.html#gwinferno.preprocess.priors.joint_prior_from_isotropic_spins" title="gwinferno.preprocess.priors.joint_prior_from_isotropic_spins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">joint_prior_from_isotropic_spins</span></code></a></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>This can be <a href="#id1"><span class="problematic" id="id2">`</span></a>np.vectorize`ed for convenience, but it can become _painfully_ slow, especially
+when operating near boundaries where monte-carlo sampling of tilts results in frequent
+unphysical spins (e.g., extremal effective spins).</p>
 </dd></dl>
 
 </section>
