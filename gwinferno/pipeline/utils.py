@@ -48,7 +48,7 @@ Load data
 
 
 def load_pe_and_injections_as_dict(file):
-    """Load PE and injection file created from `gwinferno.preprocess.data_collection.save_posterior_samples_and_injections()`.
+    """Load PE and injection file created from `gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata()`.
 
     Args:
         file (str): Path to PE and Injection file

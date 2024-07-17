@@ -21,13 +21,13 @@ from .selection import get_o3_cumulative_injection_dict
 from .selection import get_o4a_cumulative_injection_dict
 
 
-def collect_data(run_map):
+def unprocessed_catalog_dict_from_metadata(catalog_metadata):
     posteriors = {}
-    for ev in list(run_map.keys()):
-        with h5py.File(run_map[ev]["file_path"], "r") as f:
-            wf = run_map[ev]["waveform"]
-            z_prior = run_map[ev]["redshift_prior"]
-            catalog = run_map[ev]["catalog"]
+    for ev in list(catalog_metadata.keys()):
+        with h5py.File(catalog_metadata[ev]["file_path"], "r") as f:
+            wf = catalog_metadata[ev]["waveform"]
+            z_prior = catalog_metadata[ev]["redshift_prior"]
+            catalog = catalog_metadata[ev]["catalog"]
             if catalog == "GWTC-1":
                 post = f[wf][:]
             else:
@@ -36,7 +36,7 @@ def collect_data(run_map):
     return posteriors
 
 
-def format_data(posteriors):
+def processed_catalog_dataset_from_dict(catalog_dict):
     param_mapping = dict(
         mass_1="mass_1_source",
         mass_2="mass_2_source",
@@ -49,30 +49,30 @@ def format_data(posteriors):
     )
 
     max_samples = 10000
-    event_names = list(posteriors.keys())
+    event_names = list(catalog_dict.keys())
     dataset = {}
     for ev in event_names:
 
-        if posteriors[ev]["catalog"] == "GWTC-1":
-            redshift = cosmo.DL2z(posteriors[ev]["posterior"]["luminosity_distance_Mpc"])
+        if catalog_dict[ev]["catalog"] == "GWTC-1":
+            redshift = cosmo.DL2z(catalog_dict[ev]["posterior"]["luminosity_distance_Mpc"])
             mass = []
             spin = []
             tilt = []
             for ii in [1, 2]:
-                mass.append(posteriors[ev]["posterior"][f"m{ii}_detector_frame_Msun"] / (1 + redshift))
-                spin.append(posteriors[ev]["posterior"][f"spin{ii}"])
-                tilt.append(posteriors[ev]["posterior"][f"costilt{ii}"])
+                mass.append(catalog_dict[ev]["posterior"][f"m{ii}_detector_frame_Msun"] / (1 + redshift))
+                spin.append(catalog_dict[ev]["posterior"][f"spin{ii}"])
+                tilt.append(catalog_dict[ev]["posterior"][f"costilt{ii}"])
             mass_ratio = mass[1] / mass[0]
             data = np.array([mass[0], mass[1], mass_ratio, redshift, spin[0], spin[1], tilt[0], tilt[1]])
 
         else:
-            data = np.array([posteriors[ev]["posterior"][param_mapping[param]] for param in list(param_mapping.keys())])
+            data = np.array([catalog_dict[ev]["posterior"][param_mapping[param]] for param in list(param_mapping.keys())])
         max_samples = min(data.shape[1], max_samples)
         data_array = xr.DataArray(
             data,
             dims=["param", "samples"],
             coords={"param": list(param_mapping.keys()), "samples": np.arange(0, data.shape[1])},
-            attrs={"redshift_prior": posteriors[ev]["redshift_prior"], "catalog": posteriors[ev]["catalog"]},
+            attrs={"redshift_prior": catalog_dict[ev]["redshift_prior"], "catalog": catalog_dict[ev]["catalog"]},
         )
         dataset[ev] = data_array
 
@@ -93,10 +93,10 @@ def dl_2_prior_on_z(z, euclidean=False):
         return cosmo.dVcdz(z) * 4 * np.pi / (1 + z)
 
 
-def evaluate_prior(full_catalog, param_names):
+def append_prior_to_processed_catalog(catalog_dataset, param_names):
     if "redshift" in param_names:
         z_max = 1.9
-        cat_z_max = full_catalog.sel(param="redshift").max().to_array().max().values
+        cat_z_max = catalog_dataset.sel(param="redshift").max().to_array().max().values
         z_max = cat_z_max if cat_z_max > z_max else z_max
         cat_z_max
         zs = jnp.linspace(0, z_max * 1.01, 1000)
@@ -105,20 +105,20 @@ def evaluate_prior(full_catalog, param_names):
         p_z_euclid /= trapezoid(p_z_euclid, zs)
         p_z_comoving /= trapezoid(p_z_comoving, zs)
 
-    events = list(full_catalog.data_vars)
+    events = list(catalog_dataset.data_vars)
     num_events = len(events)
-    num_samples = full_catalog["samples"].shape[0]
+    num_samples = catalog_dataset["samples"].shape[0]
 
     priors = jnp.zeros((num_events, 1, num_samples))
     for i, ev in enumerate(events):
         prior = jnp.ones(num_samples)
         if "redshift" in param_names:
-            p_z = p_z_euclid if full_catalog[ev].attrs["redshift_prior"] == "euclidean" else p_z_comoving
-            prior *= jnp.interp(full_catalog[ev].sel(param="redshift").values, zs, p_z)
+            p_z = p_z_euclid if catalog_dataset[ev].attrs["redshift_prior"] == "euclidean" else p_z_comoving
+            prior *= jnp.interp(catalog_dataset[ev].sel(param="redshift").values, zs, p_z)
         if "mass_1" in param_names:
-            prior *= (1 + full_catalog[ev].sel(param="mass_1").values) ** 2  # flat detector components
+            prior *= (1 + catalog_dataset[ev].sel(param="mass_1").values) ** 2  # flat detector components
         if "mass_ratio" in param_names:
-            prior *= full_catalog[ev].sel(param="mass_1").values
+            prior *= catalog_dataset[ev].sel(param="mass_1").values
         if "a_1" in param_names:
             prior *= 1 / 4
         priors = priors.at[i].set(prior)
@@ -126,41 +126,41 @@ def evaluate_prior(full_catalog, param_names):
     prior_array = xr.DataArray(
         priors, dims=["event", "param", "samples"], coords={"param": ["prior"], "samples": np.arange(num_samples), "event": events}
     )
-    catalog_array = full_catalog.to_array(dim="event")
+    catalog_array = catalog_dataset.to_array(dim="event")
 
-    new_full_catalog = xr.concat([catalog_array, prior_array], dim="param")
+    new_catalog_array = xr.concat([catalog_array, prior_array], dim="param")
 
-    return new_full_catalog
+    return new_catalog_array
 
 
-def load_posterior_data(run_map=None, key_file=None, param_names=["mass_1", "mass_ratio", "redshift"]):
-    if run_map is None:
+def load_posterior_dataset(catalog_metadata=None, key_file=None, param_names=["mass_1", "mass_ratio", "redshift"]):
+    if catalog_metadata is None:
         with open(key_file, "r") as f:
-            run_map = json.load(f)
+            catalog_metadata = json.load(f)
         if key_file is None:
-            raise AssertionError("run_map or key_file must be specified")
+            raise AssertionError("catalog_metadata or key_file must be specified")
 
-    posterior_dict = collect_data(run_map)
-    catalog = format_data(posterior_dict)
-    full_catalog = evaluate_prior(catalog, param_names)
+    posterior_dict = unprocessed_catalog_dict_from_metadata(catalog_metadata)
+    catalog_dataset = processed_catalog_dataset_from_dict(posterior_dict)
+    full_catalog_array = append_prior_to_processed_catalog(catalog_dataset, param_names)
 
     if "chi_eff" in param_names:
-        new_pe = convert_component_spins_to_chieff(full_catalog, param_names)
+        new_pe = convert_component_spins_to_chieff(full_catalog_array, param_names)
         remove = ["a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
 
         remove.append("mass_ratio") if "mass_2" in param_names else remove.append("mass_2")
         new_pe = new_pe.drop_sel(param=remove)
-        return new_pe
+        return new_pe.to_dataset(name="posteriors", promote_attrs = True)
 
     else:
         remove = list(np.setxor1d(full_catalog.param.values, np.array(param_names)))
         remove.remove("prior")
         full_catalog = full_catalog.drop_sel(param=remove)
 
-        return full_catalog
+        return full_catalog.to_dataset(name="posteriors", promote_attrs = True)
 
 
-def load_injections(injfile, param_names, through_o4a=False, through_o3=True, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
+def load_injection_dataset(injfile, param_names, through_o4a=False, through_o3=True, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
 
     if through_o4a:
         injs = get_o4a_cumulative_injection_dict(
@@ -183,30 +183,19 @@ def load_injections(injfile, param_names, through_o4a=False, through_o3=True, if
 
         remove.append("mass_ratio") if "mass_2" in param_names else remove.append("mass_2")
         new_injs = new_injs.drop_sel(param=remove)
-        return new_injs
+        return new_injs.to_dataset(name="injections", promote_attrs = True)
 
     else:
         remove = list(np.setxor1d(injs.param.values, np.array(param_names)))
         remove.remove("prior")
-        return injs.drop_sel(param=remove)
+        return injs.drop_sel(param=remove).to_dataset(name="injections", promote_attrs = True)
 
 
-def save_posterior_samples_and_injections(key_file, injfile, parameter_names, outdir, ifar_threshold=1, snr_threshold=11, o4a=False, o3=True):
-    pe_array = load_posterior_data(key_file=key_file, param_names=parameter_names).to_dataset(name="posteriors")
-    inj_array = load_injections(
-        injfile, parameter_names, through_o4a=o4a, through_o3=o3, ifar_threshold=ifar_threshold, snr_threshold=snr_threshold
-    ).to_dataset(name="injections")
-
-    idata = az.InferenceData(pe_data=pe_array, inj_data=inj_array)
-
-    label = ""
-    for i in parameter_names:
-        label = label + f"-{i}"
-
-    cat = "o3" if o3 else "o4a"
-    idata.to_netcdf(outdir + f"/xarray_through-{cat}_posterior_samples_and_injections{label}.h5")
-
-    return idata
+def save_posterior_samples_and_injection_datasets_as_idata(filename, posterior_dataset, injection_dataset):
+    idata = az.InferenceData(pe_data=posterior_dataset, inj_data=injection_dataset)
+    if '.h5' not in filename:
+        raise AssertionError('filename must use .h5 extension')
+    idata.to_netcdf(filename)
 
 
 def convert_component_spins_to_chieff(dat_array, param_names, injections=False):

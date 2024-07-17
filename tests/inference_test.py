@@ -26,8 +26,8 @@ from gwinferno.pipeline.analysis import construct_hierarchical_model
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.pipeline.parser import ConfigReader
 from gwinferno.pipeline.parser import load_model_from_python_file
-from gwinferno.preprocess.data_collection import load_injections
-from gwinferno.preprocess.data_collection import load_posterior_data
+from gwinferno.preprocess.data_collection import load_injection_dataset
+from gwinferno.preprocess.data_collection import load_posterior_dataset
 
 
 def norm_mass_model(alpha, beta, mmin, mmax):
@@ -90,8 +90,8 @@ class TestModelInference(unittest.TestCase):
             run_map[ev] = {"file_path": file, "waveform": "C01:Mixed", "redshift_prior": "euclidean", "catalog": "GWTC-3"}
         p_names = self.param_names.copy()
         p_names.remove("prior")
-        pe_catalog = load_posterior_data(run_map=run_map, param_names=p_names)
-        pedata = jnp.asarray(pe_catalog.data)
+        pe_catalog = load_posterior_dataset(run_map=run_map, param_names=p_names).to_array()
+        pedata = jnp.asarray(pe_catalog.data[0])
         Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]
         self.pedict = {k: pedata[:, i] for i, k in enumerate(pe_catalog.param.values)}
@@ -105,8 +105,8 @@ class TestModelInference(unittest.TestCase):
     def load_injs(self, **kwargs):
         p_names = self.param_names.copy()
         p_names.remove("prior")
-        injections = load_injections(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
-        injdata = jnp.asarray(injections.data)
+        injections = load_injection_dataset(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"]).to_array()
+        injdata = jnp.asarray(injections.data[0])
         total_inj = injections.attrs["total_generated"]
         obs_time = injections.attrs["analysis_time"]
         injdict = {k: injdata[i] for i, k in enumerate(injections.param.values)}
