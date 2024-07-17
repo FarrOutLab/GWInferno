@@ -395,19 +395,29 @@ document.write(`
 <div class="viewcode-block" id="chieff_from_q_component_spins">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.preprocess.conversions.chieff_from_q_component_spins.html#gwinferno.preprocess.conversions.chieff_from_q_component_spins">[docs]</a>
 <span class="k">def</span> <span class="nf">chieff_from_q_component_spins</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    chieff_from_q_component_spins calculates the effective spin paramer given the</span>
-<span class="sd">        mass ratio and spin mag/tilts.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Calculate the effective spin from, mass ratio, component spin magnitudes</span>
+<span class="sd">    and tilts.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        q (array_like): mass ratio (defined from 0 to 1)</span>
-<span class="sd">        a1 (array_like): primary spin magnitude</span>
-<span class="sd">        a2 (array_like): secondary spin magnitude</span>
-<span class="sd">        ct1 (array_like): primary cos tilt angle</span>
-<span class="sd">        ct2 (array_like): secondary cos tilt angle</span>
+<span class="sd">    .. math::</span>
+<span class="sd">        \chi_\mathrm{eff} = \frac{a_1 \cos t_1 + q a_2 \cos \theta_2}{1 + q}</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        array_like: effective spin</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    q : array_like</span>
+<span class="sd">        Mass ratio (defined from 0 to 1).</span>
+<span class="sd">    a1 : array_like</span>
+<span class="sd">        Spin magnitude of the primary component.</span>
+<span class="sd">    a2 : array_like</span>
+<span class="sd">        Spin magnitude of the secondary component.</span>
+<span class="sd">    ct1 : array_like</span>
+<span class="sd">        Cosine of the spin tilt of the primary component.</span>
+<span class="sd">    ct2 : array_like</span>
+<span class="sd">        Cosine of the spin tilt of the secondary component.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    array_like</span>
+<span class="sd">        Effective spin.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">a1</span> <span class="o">*</span> <span class="n">ct1</span> <span class="o">+</span> <span class="n">q</span> <span class="o">*</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">ct2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">q</span><span class="p">)</span></div>
 
@@ -415,67 +425,84 @@ document.write(`
 
 <div class="viewcode-block" id="chip_from_q_component_spins">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.preprocess.conversions.chip_from_q_component_spins.html#gwinferno.preprocess.conversions.chip_from_q_component_spins">[docs]</a>
-<span class="k">def</span> <span class="nf">chip_from_q_component_spins</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">,</span> <span class="n">bk</span><span class="o">=</span><span class="n">np</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    chip_from_q_component_spins calculates the effective spin precession paramer given</span>
-<span class="sd">        the mass ratio and spin mag/tilts.</span>
+<span class="k">def</span> <span class="nf">chip_from_q_component_spins</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">,</span> <span class="n">math</span><span class="o">=</span><span class="n">np</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the effective precessing spin, :math:`\chi_\mathrm{p}`, from</span>
+<span class="sd">    the mass ratio, component spin magnitudes and tilts.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        q (array_like): mass ratio (defined from 0 to 1)</span>
-<span class="sd">        a1 (array_like): primary spin magnitude</span>
-<span class="sd">        a2 (array_like): secondary spin magnitude</span>
-<span class="sd">        ct1 (array_like): primary cos tilt angle</span>
-<span class="sd">        ct2 (array_like): secondary cos tilt angle</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    q : array_like</span>
+<span class="sd">        Mass ratio (defined from 0 to 1).</span>
+<span class="sd">    a1 : array_like</span>
+<span class="sd">        Spin magnitude of the primary component.</span>
+<span class="sd">    a2 : array_like</span>
+<span class="sd">        Spin magnitude of the secondary component.</span>
+<span class="sd">    ct1 : array_like</span>
+<span class="sd">        Cosine of the spin tilt of the primary component.</span>
+<span class="sd">    ct2 : array_like</span>
+<span class="sd">        Cosine of the spin tilt of the secondary component.</span>
+<span class="sd">    math : module, default=`numpy`</span>
+<span class="sd">        Math module to use.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        array_like: effective spin precession</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    array_like</span>
+<span class="sd">        Effective precessing spin.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sint1</span> <span class="o">=</span> <span class="n">bk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">ct1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">sint2</span> <span class="o">=</span> <span class="n">bk</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">ct2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">bk</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">a1</span> <span class="o">*</span> <span class="n">sint1</span><span class="p">,</span> <span class="p">((</span><span class="mf">3.0</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">q</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">+</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">q</span><span class="p">))</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">sint2</span><span class="p">)</span></div>
+    <span class="n">sint1</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">ct1</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">sint2</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">ct2</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">a1</span> <span class="o">*</span> <span class="n">sint1</span><span class="p">,</span> <span class="p">((</span><span class="mf">3.0</span> <span class="o">+</span> <span class="mf">4.0</span> <span class="o">*</span> <span class="n">q</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mf">4.0</span> <span class="o">+</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">q</span><span class="p">))</span> <span class="o">*</span> <span class="n">q</span> <span class="o">*</span> <span class="n">a2</span> <span class="o">*</span> <span class="n">sint2</span><span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="mu_var_from_alpha_beta">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.preprocess.conversions.mu_var_from_alpha_beta.html#gwinferno.preprocess.conversions.mu_var_from_alpha_beta">[docs]</a>
-<span class="k">def</span> <span class="nf">mu_var_from_alpha_beta</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">amax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    mu_var_from_alpha_beta converts the alpha/beta shape parameters of the Beta</span>
-<span class="sd">        Distribution to the mean and variance (mu/var)</span>
+<span class="k">def</span> <span class="nf">mu_var_from_alpha_beta</span><span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert α, β shape parameters of the Beta distribution to the mean and variance.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        alpha (array_like): alpha Beta distribution shape parameter</span>
-<span class="sd">        beta (array_like): beta Beta distribution shape parameter</span>
-<span class="sd">        amax (array_like, optional): maximum spin mag. Defaults to 1.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha : array_like</span>
+<span class="sd">        α shape parameter.</span>
+<span class="sd">    beta : array_like</span>
+<span class="sd">        β shape parameter.</span>
+<span class="sd">    xmax : array_like, default=1</span>
+<span class="sd">        Maximum value with support.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        (array_like, array_like): returns tuple of arrays same shape as input that</span>
-<span class="sd">            represents the mean and variances given shape parameters</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    array_like, array_like</span>
+<span class="sd">        Tuple of arrays with shape matching inputs that represent the</span>
+<span class="sd">        means and variances corresponding to the shape parameters.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">mu</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">amax</span>
-    <span class="n">var</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">/</span> <span class="p">((</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">amax</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">/</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span><span class="p">)</span> <span class="o">*</span> <span class="n">xmax</span>
+    <span class="n">var</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">beta</span> <span class="o">/</span> <span class="p">((</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">*</span> <span class="n">xmax</span><span class="o">**</span><span class="mi">2</span>
     <span class="k">return</span> <span class="n">mu</span><span class="p">,</span> <span class="n">var</span></div>
 
 
 
 <div class="viewcode-block" id="alpha_beta_from_mu_var">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.preprocess.conversions.alpha_beta_from_mu_var.html#gwinferno.preprocess.conversions.alpha_beta_from_mu_var">[docs]</a>
-<span class="k">def</span> <span class="nf">alpha_beta_from_mu_var</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">amax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    alpha_beta_from_mu_var converts the mean/variance (mu/var) parameters of the Beta</span>
-<span class="sd">        Distribution to the shape parameters (alpha/beta)</span>
+<span class="k">def</span> <span class="nf">alpha_beta_from_mu_var</span><span class="p">(</span><span class="n">mu</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert desired mean and variance to α, β shape parameters of the Beta distribution.</span>
 
-<span class="sd">    Args:</span>
-<span class="sd">        mu (array_like): mean of Beta distribution</span>
-<span class="sd">        var (array_like): variance of Beta distribution</span>
-<span class="sd">        amax (array_like, optional): maximum spin mag. Defaults to 1.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mean : array_like</span>
+<span class="sd">        Desired mean.</span>
+<span class="sd">    var : array_like</span>
+<span class="sd">        Desired variance.</span>
+<span class="sd">    xmax : array_like, default=1</span>
+<span class="sd">        Maximum value with support.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        (array_like, array_like): returns tuple of arrays same shape as input that</span>
-<span class="sd">            represents the alpha and beta shape parameters given mean and variance</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    array_like, array_like</span>
+<span class="sd">        Tuple of arrays with shape matching inputs that represent the</span>
+<span class="sd">        α, β shape parameters corresponding to the desired means and variances.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">mu</span> <span class="o">/=</span> <span class="n">amax</span>
-    <span class="n">var</span> <span class="o">/=</span> <span class="n">amax</span><span class="o">**</span><span class="mi">2</span>
+    <span class="n">mu</span> <span class="o">/=</span> <span class="n">xmax</span>
+    <span class="n">var</span> <span class="o">/=</span> <span class="n">xmax</span><span class="o">**</span><span class="mi">2</span>
     <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">var</span><span class="p">)</span> <span class="o">/</span> <span class="n">var</span>
     <span class="n">beta</span> <span class="o">=</span> <span class="p">(</span><span class="n">mu</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mu</span><span class="p">)</span> <span class="o">*</span> <span class="n">var</span><span class="p">)</span> <span class="o">/</span> <span class="n">var</span>
     <span class="k">return</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span></div>

@@ -592,16 +592,23 @@ document.write(`
 <h1>gwinferno.preprocess.conversions.alpha_beta_from_mu_var<a class="headerlink" href="#gwinferno-preprocess-conversions-alpha-beta-from-mu-var" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="gwinferno.preprocess.conversions.alpha_beta_from_mu_var">
-<span class="sig-name descname"><span class="pre">alpha_beta_from_mu_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/conversions.html#alpha_beta_from_mu_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.conversions.alpha_beta_from_mu_var" title="Link to this definition">#</a></dt>
-<dd><dl class="simple">
-<dt>alpha_beta_from_mu_var converts the mean/variance (mu/var) parameters of the Beta</dt><dd><p>Distribution to the shape parameters (alpha/beta)</p>
+<span class="sig-name descname"><span class="pre">alpha_beta_from_mu_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/conversions.html#alpha_beta_from_mu_var"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.conversions.alpha_beta_from_mu_var" title="Link to this definition">#</a></dt>
+<dd><p>Convert desired mean and variance to α, β shape parameters of the Beta distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>mean</strong><span class="classifier">array_like</span></dt><dd><p>Desired mean.</p>
 </dd>
-<dt>Args:</dt><dd><p>mu (array_like): mean of Beta distribution
-var (array_like): variance of Beta distribution
-amax (array_like, optional): maximum spin mag. Defaults to 1.</p>
+<dt><strong>var</strong><span class="classifier">array_like</span></dt><dd><p>Desired variance.</p>
 </dd>
-<dt>Returns:</dt><dd><dl class="simple">
-<dt>(array_like, array_like): returns tuple of arrays same shape as input that</dt><dd><p>represents the alpha and beta shape parameters given mean and variance</p>
+<dt><strong>xmax</strong><span class="classifier">array_like, default=1</span></dt><dd><p>Maximum value with support.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>array_like, array_like</dt><dd><p>Tuple of arrays with shape matching inputs that represent the
+α, β shape parameters corresponding to the desired means and variances.</p>
 </dd>
 </dl>
 </dd>
