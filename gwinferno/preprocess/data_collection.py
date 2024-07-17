@@ -150,14 +150,14 @@ def load_posterior_dataset(catalog_metadata=None, key_file=None, param_names=["m
 
         remove.append("mass_ratio") if "mass_2" in param_names else remove.append("mass_2")
         new_pe = new_pe.drop_sel(param=remove)
-        return new_pe.to_dataset(name="posteriors", promote_attrs = True)
+        return new_pe.to_dataset(name="posteriors", promote_attrs=True)
 
     else:
-        remove = list(np.setxor1d(full_catalog.param.values, np.array(param_names)))
+        remove = list(np.setxor1d(full_catalog_array.param.values, np.array(param_names)))
         remove.remove("prior")
-        full_catalog = full_catalog.drop_sel(param=remove)
+        full_catalog_array = full_catalog_array.drop_sel(param=remove)
 
-        return full_catalog.to_dataset(name="posteriors", promote_attrs = True)
+        return full_catalog_array.to_dataset(name="posteriors", promote_attrs=True)
 
 
 def load_injection_dataset(injfile, param_names, through_o4a=False, through_o3=True, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
@@ -183,18 +183,18 @@ def load_injection_dataset(injfile, param_names, through_o4a=False, through_o3=T
 
         remove.append("mass_ratio") if "mass_2" in param_names else remove.append("mass_2")
         new_injs = new_injs.drop_sel(param=remove)
-        return new_injs.to_dataset(name="injections", promote_attrs = True)
+        return new_injs.to_dataset(name="injections", promote_attrs=True)
 
     else:
         remove = list(np.setxor1d(injs.param.values, np.array(param_names)))
         remove.remove("prior")
-        return injs.drop_sel(param=remove).to_dataset(name="injections", promote_attrs = True)
+        return injs.drop_sel(param=remove).to_dataset(name="injections", promote_attrs=True)
 
 
 def save_posterior_samples_and_injection_datasets_as_idata(filename, posterior_dataset, injection_dataset):
     idata = az.InferenceData(pe_data=posterior_dataset, inj_data=injection_dataset)
-    if '.h5' not in filename:
-        raise AssertionError('filename must use .h5 extension')
+    if ".h5" not in filename:
+        raise AssertionError("filename must use .h5 extension")
     idata.to_netcdf(filename)
 
 
