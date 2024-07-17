@@ -1,7 +1,8 @@
 import numpy as np
 from numpy.testing import assert_allclose
-from gwinferno.preprocess import conversions
 from scipy.stats import beta
+
+from gwinferno.preprocess import conversions
 
 
 def test_chieff_from_q_component_spins():
@@ -21,11 +22,11 @@ def test_chieff_from_q_component_spins():
 
     # Point checks
     test_cases = [
-        ([1., 1., 1., 0., 0.], 0.),
-        ([1., 1., 1., 1., 1.], 1.),
-        ([1., 1., 1., -1., -1.], -1.),
-        ([.5, .8, .2, -.4, .3], -0.1933333333),
-        ([.2, .3, .4, .5, .6], 0.165),
+        ([1.0, 1.0, 1.0, 0.0, 0.0], 0.0),
+        ([1.0, 1.0, 1.0, 1.0, 1.0], 1.0),
+        ([1.0, 1.0, 1.0, -1.0, -1.0], -1.0),
+        ([0.5, 0.8, 0.2, -0.4, 0.3], -0.1933333333),
+        ([0.2, 0.3, 0.4, 0.5, 0.6], 0.165),
     ]
     for inputs, expected in test_cases:
         chi_eff = conversions.chieff_from_q_component_spins(*inputs)
@@ -51,7 +52,7 @@ def test_chip_from_q_component_spins():
 def test_mu_var_from_alpha_beta():
     test_alphas = np.linspace(1, 50, 100)
     test_betas = np.linspace(1, 50, 100)
-    test_xmaxs = [1., .8, .5, .2]
+    test_xmaxs = [1.0, 0.8, 0.5, 0.2]
     for test_xmax in test_xmaxs:
         αα, ββ = np.meshgrid(test_alphas, test_betas)
 
@@ -66,7 +67,7 @@ def test_mu_var_from_alpha_beta():
 def test_alpha_beta_from_mu_var():
     expected_alphas = np.linspace(1, 50, 100)
     expected_betas = np.linspace(1, 50, 100)
-    test_xmaxs = [1., .8, .5, .2]
+    test_xmaxs = [1.0, 0.8, 0.5, 0.2]
     for test_xmax in test_xmaxs:
         αα, ββ = np.meshgrid(expected_alphas, expected_betas)
 
