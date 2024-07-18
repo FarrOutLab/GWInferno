@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.save\_posterior\_samples\_and\_injection\_datasets\_as\_idata
+===================================================================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: save_posterior_samples_and_injection_datasets_as_idata

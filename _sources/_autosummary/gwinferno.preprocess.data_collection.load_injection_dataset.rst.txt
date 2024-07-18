@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.load\_injection\_dataset
+==============================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: load_injection_dataset

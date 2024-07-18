@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.processed\_catalog\_dataset\_from\_dict
+=============================================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: processed_catalog_dataset_from_dict

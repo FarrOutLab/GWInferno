@@ -26,12 +26,12 @@
    :template: custom-module-template.rst
    :recursive:
 
-   gwinferno.cosmology
-   gwinferno.distributions
-   gwinferno.interpolation
-   gwinferno.models
-   gwinferno.numpyro_distributions
-   gwinferno.pipeline
-   gwinferno.postprocess
-   gwinferno.preprocess
+   cosmology
+   distributions
+   interpolation
+   models
+   numpyro_distributions
+   pipeline
+   postprocess
+   preprocess
 

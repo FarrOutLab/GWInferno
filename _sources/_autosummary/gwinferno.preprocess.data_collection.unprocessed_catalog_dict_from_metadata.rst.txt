@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.unprocessed\_catalog\_dict\_from\_metadata
+================================================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: unprocessed_catalog_dict_from_metadata

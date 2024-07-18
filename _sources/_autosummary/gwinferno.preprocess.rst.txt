@@ -26,8 +26,8 @@ gwinferno.preprocess
    :template: custom-module-template.rst
    :recursive:
 
-   gwinferno.preprocess.conversions
-   gwinferno.preprocess.data_collection
-   gwinferno.preprocess.priors
-   gwinferno.preprocess.selection
+   conversions
+   data_collection
+   priors
+   selection
 

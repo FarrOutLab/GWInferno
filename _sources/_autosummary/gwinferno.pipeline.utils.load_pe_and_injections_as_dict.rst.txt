@@ -1,0 +1,6 @@
+gwinferno.pipeline.utils.load\_pe\_and\_injections\_as\_dict
+============================================================
+
+.. currentmodule:: gwinferno.pipeline.utils
+
+.. autofunction:: load_pe_and_injections_as_dict

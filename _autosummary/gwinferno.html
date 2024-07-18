@@ -459,6 +459,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.bspline_redshift_prior.html">gwinferno.pipeline.utils.bspline_redshift_prior</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.bspline_spin_prior.html">gwinferno.pipeline.utils.bspline_spin_prior</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.load_base_parser.html">gwinferno.pipeline.utils.load_base_parser</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.load_pe_and_injections_as_dict.html">gwinferno.pipeline.utils.load_pe_and_injections_as_dict</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.pdf_dict_to_xarray.html">gwinferno.pipeline.utils.pdf_dict_to_xarray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.posterior_dict_to_xarray.html">gwinferno.pipeline.utils.posterior_dict_to_xarray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.setup_bspline_mass_models.html">gwinferno.pipeline.utils.setup_bspline_mass_models</a></li>
@@ -494,14 +495,14 @@ document.write(`
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.collect_data.html">gwinferno.preprocess.data_collection.collect_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.append_prior_to_processed_catalog.html">gwinferno.preprocess.data_collection.append_prior_to_processed_catalog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.convert_component_spins_to_chieff.html">gwinferno.preprocess.data_collection.convert_component_spins_to_chieff</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.dl_2_prior_on_z.html">gwinferno.preprocess.data_collection.dl_2_prior_on_z</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.evaluate_prior.html">gwinferno.preprocess.data_collection.evaluate_prior</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.format_data.html">gwinferno.preprocess.data_collection.format_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_injections.html">gwinferno.preprocess.data_collection.load_injections</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_data.html">gwinferno.preprocess.data_collection.load_posterior_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_samples_and_injections.html">gwinferno.preprocess.data_collection.load_posterior_samples_and_injections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_injection_dataset.html">gwinferno.preprocess.data_collection.load_injection_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_dataset.html">gwinferno.preprocess.data_collection.load_posterior_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.processed_catalog_dataset_from_dict.html">gwinferno.preprocess.data_collection.processed_catalog_dataset_from_dict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata.html">gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.unprocessed_catalog_dict_from_metadata.html">gwinferno.preprocess.data_collection.unprocessed_catalog_dict_from_metadata</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.preprocess.priors.html">gwinferno.preprocess.priors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -579,28 +580,28 @@ document.write(`
 <span id="gwinferno"></span><h1>gwinferno<a class="headerlink" href="#module-gwinferno" title="Link to this heading">#</a></h1>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.cosmology.html#module-gwinferno.cosmology" title="gwinferno.cosmology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.cosmology</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.cosmology.html#module-gwinferno.cosmology" title="gwinferno.cosmology"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cosmology</span></code></a></p></td>
 <td><p>a module for basic cosmology calculations using jax.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.distributions.html#module-gwinferno.distributions" title="gwinferno.distributions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.distributions</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.distributions.html#module-gwinferno.distributions" title="gwinferno.distributions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">distributions</span></code></a></p></td>
 <td><p>a module for basic distribution pdf calculations with jax</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.interpolation.html#module-gwinferno.interpolation" title="gwinferno.interpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.interpolation</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.interpolation.html#module-gwinferno.interpolation" title="gwinferno.interpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolation</span></code></a></p></td>
 <td><p>a module for interpolation calculations using jax</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.html#module-gwinferno.models" title="gwinferno.models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.models</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.models.html#module-gwinferno.models" title="gwinferno.models"><code class="xref py py-obj docutils literal notranslate"><span class="pre">models</span></code></a></p></td>
 <td><p>a module that stores defined population models</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.numpyro_distributions.html#module-gwinferno.numpyro_distributions" title="gwinferno.numpyro_distributions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.numpyro_distributions</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.numpyro_distributions.html#module-gwinferno.numpyro_distributions" title="gwinferno.numpyro_distributions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpyro_distributions</span></code></a></p></td>
 <td><p>a module defining additional numpyro distributions</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.pipeline.html#module-gwinferno.pipeline" title="gwinferno.pipeline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.pipeline</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.pipeline.html#module-gwinferno.pipeline" title="gwinferno.pipeline"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pipeline</span></code></a></p></td>
 <td><p>a module with utilities for running analysis pipelines</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.postprocess.html#module-gwinferno.postprocess" title="gwinferno.postprocess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.postprocess</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="gwinferno.postprocess.html#module-gwinferno.postprocess" title="gwinferno.postprocess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">postprocess</span></code></a></p></td>
 <td><p>a module for all postprocessing tools</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.html#module-gwinferno.preprocess" title="gwinferno.preprocess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.preprocess</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gwinferno.preprocess.html#module-gwinferno.preprocess" title="gwinferno.preprocess"><code class="xref py py-obj docutils literal notranslate"><span class="pre">preprocess</span></code></a></p></td>
 <td><p>a module for all preprocessing tools</p></td>
 </tr>
 </tbody>
@@ -651,7 +652,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.5.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.6.
     <br/>
   </p>
 </div>

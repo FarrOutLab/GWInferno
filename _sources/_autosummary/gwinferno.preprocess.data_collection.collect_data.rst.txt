@@ -1,6 +1,0 @@
-gwinferno.preprocess.data\_collection.collect\_data
-===================================================
-
-.. currentmodule:: gwinferno.preprocess.data_collection
-
-.. autofunction:: collect_data

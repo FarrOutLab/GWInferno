@@ -26,5 +26,5 @@ gwinferno.models.parametric
    :template: custom-module-template.rst
    :recursive:
 
-   gwinferno.models.parametric.parametric
+   parametric
 

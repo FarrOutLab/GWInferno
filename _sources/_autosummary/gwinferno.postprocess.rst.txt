@@ -26,6 +26,6 @@ gwinferno.postprocess
    :template: custom-module-template.rst
    :recursive:
 
-   gwinferno.postprocess.calculations
-   gwinferno.postprocess.plot
+   calculations
+   plot
 

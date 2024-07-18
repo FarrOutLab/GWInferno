@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>gwinferno.preprocess.data_collection.format_data &#8212; gwinferno 0.0 documentation</title>
+    <title>gwinferno.pipeline.utils.load_pe_and_injections_as_dict &#8212; gwinferno 0.0 documentation</title>
   
   
   
@@ -40,12 +40,12 @@
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/gwinferno.preprocess.data_collection.format_data';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/gwinferno.pipeline.utils.load_pe_and_injections_as_dict';</script>
     <link rel="icon" href="../_static/bbh_graphic_inferno.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.preprocess.data_collection.load_injections" href="gwinferno.preprocess.data_collection.load_injections.html" />
-    <link rel="prev" title="gwinferno.preprocess.data_collection.evaluate_prior" href="gwinferno.preprocess.data_collection.evaluate_prior.html" />
+    <link rel="next" title="gwinferno.pipeline.utils.pdf_dict_to_xarray" href="gwinferno.pipeline.utils.pdf_dict_to_xarray.html" />
+    <link rel="prev" title="gwinferno.pipeline.utils.load_base_parser" href="gwinferno.pipeline.utils.load_base_parser.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -436,7 +436,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.numpyro_distributions.Sine.html">gwinferno.numpyro_distributions.Sine</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="gwinferno.pipeline.html">gwinferno.pipeline</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="gwinferno.pipeline.html">gwinferno.pipeline</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.pipeline.analysis.html">gwinferno.pipeline.analysis</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.construct_hierarchical_model.html">gwinferno.pipeline.analysis.construct_hierarchical_model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.analysis.detection_efficiency.html">gwinferno.pipeline.analysis.detection_efficiency</a></li>
@@ -456,11 +456,12 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.parser.PopPrior.html">gwinferno.pipeline.parser.PopPrior</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.pipeline.utils.html">gwinferno.pipeline.utils</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="gwinferno.pipeline.utils.html">gwinferno.pipeline.utils</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.bspline_mass_prior.html">gwinferno.pipeline.utils.bspline_mass_prior</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.bspline_redshift_prior.html">gwinferno.pipeline.utils.bspline_redshift_prior</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.bspline_spin_prior.html">gwinferno.pipeline.utils.bspline_spin_prior</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.load_base_parser.html">gwinferno.pipeline.utils.load_base_parser</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">gwinferno.pipeline.utils.load_pe_and_injections_as_dict</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.pdf_dict_to_xarray.html">gwinferno.pipeline.utils.pdf_dict_to_xarray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.posterior_dict_to_xarray.html">gwinferno.pipeline.utils.posterior_dict_to_xarray</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.pipeline.utils.setup_bspline_mass_models.html">gwinferno.pipeline.utils.setup_bspline_mass_models</a></li>
@@ -487,7 +488,7 @@ document.write(`
 </details></li>
 </ul>
 </details></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="gwinferno.preprocess.html">gwinferno.preprocess</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.preprocess.conversions.html">gwinferno.preprocess.conversions</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.conversions.alpha_beta_from_mu_var.html">gwinferno.preprocess.conversions.alpha_beta_from_mu_var</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.conversions.chieff_from_q_component_spins.html">gwinferno.preprocess.conversions.chieff_from_q_component_spins</a></li>
@@ -495,15 +496,15 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.conversions.mu_var_from_alpha_beta.html">gwinferno.preprocess.conversions.mu_var_from_alpha_beta</a></li>
 </ul>
 </details></li>
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.collect_data.html">gwinferno.preprocess.data_collection.collect_data</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.preprocess.data_collection.html">gwinferno.preprocess.data_collection</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.append_prior_to_processed_catalog.html">gwinferno.preprocess.data_collection.append_prior_to_processed_catalog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.convert_component_spins_to_chieff.html">gwinferno.preprocess.data_collection.convert_component_spins_to_chieff</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.dl_2_prior_on_z.html">gwinferno.preprocess.data_collection.dl_2_prior_on_z</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.evaluate_prior.html">gwinferno.preprocess.data_collection.evaluate_prior</a></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">gwinferno.preprocess.data_collection.format_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_injections.html">gwinferno.preprocess.data_collection.load_injections</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_data.html">gwinferno.preprocess.data_collection.load_posterior_data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_samples_and_injections.html">gwinferno.preprocess.data_collection.load_posterior_samples_and_injections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_injection_dataset.html">gwinferno.preprocess.data_collection.load_injection_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.load_posterior_dataset.html">gwinferno.preprocess.data_collection.load_posterior_dataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.processed_catalog_dataset_from_dict.html">gwinferno.preprocess.data_collection.processed_catalog_dataset_from_dict</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata.html">gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.preprocess.data_collection.unprocessed_catalog_dict_from_metadata.html">gwinferno.preprocess.data_collection.unprocessed_catalog_dict_from_metadata</a></li>
 </ul>
 </details></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.preprocess.priors.html">gwinferno.preprocess.priors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -569,9 +570,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="gwinferno.preprocess.data_collection.html" class="nav-link">gwinferno.preprocess.data_collection</a></li>
+    <li class="breadcrumb-item"><a href="gwinferno.pipeline.utils.html" class="nav-link">gwinferno.pipeline.utils</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">gwinferno.pr...</li>
+    <li class="breadcrumb-item active" aria-current="page">gwinferno.pi...</li>
   </ul>
 </nav>
 </div>
@@ -588,12 +589,39 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="gwinferno-preprocess-data-collection-format-data">
-<h1>gwinferno.preprocess.data_collection.format_data<a class="headerlink" href="#gwinferno-preprocess-data-collection-format-data" title="Link to this heading">#</a></h1>
+  <section id="gwinferno-pipeline-utils-load-pe-and-injections-as-dict">
+<h1>gwinferno.pipeline.utils.load_pe_and_injections_as_dict<a class="headerlink" href="#gwinferno-pipeline-utils-load-pe-and-injections-as-dict" title="Link to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="gwinferno.preprocess.data_collection.format_data">
-<span class="sig-name descname"><span class="pre">format_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">posteriors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/preprocess/data_collection.html#format_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.preprocess.data_collection.format_data" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="gwinferno.pipeline.utils.load_pe_and_injections_as_dict">
+<span class="sig-name descname"><span class="pre">load_pe_and_injections_as_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/utils.html#load_pe_and_injections_as_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.utils.load_pe_and_injections_as_dict" title="Link to this definition">#</a></dt>
+<dd><p>Load PE and injection file created by <cite>gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata()</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>file</strong><span class="classifier">str</span></dt><dd><p>Path to NetCDF file containing parameter estimation samples and injection data.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>pedict</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of parameter estimation samples.</p>
+</dd>
+<dt><strong>injdict</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of injection data.</p>
+</dd>
+<dt><strong>constants</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of constants, e.g., total number of generated injections.</p>
+</dd>
+<dt><strong>param_names</strong><span class="classifier">List[str]</span></dt><dd><p>List of parameter names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata.html#gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata" title="gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata</span></code></a></dt><dd></dd>
+</dl>
+</div>
+</dd></dl>
 
 </section>
 
@@ -619,7 +647,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.preprocess.data_collection.format_data"><code class="docutils literal notranslate"><span class="pre">format_data()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.pipeline.utils.load_pe_and_injections_as_dict"><code class="docutils literal notranslate"><span class="pre">load_pe_and_injections_as_dict()</span></code></a></li>
 </ul>
   </nav></div>
 
@@ -657,7 +685,7 @@ document.write(`
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.5.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.6.
     <br/>
   </p>
 </div>

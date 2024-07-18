@@ -26,7 +26,7 @@ gwinferno.models
    :template: custom-module-template.rst
    :recursive:
 
-   gwinferno.models.bsplines
-   gwinferno.models.parametric
-   gwinferno.models.spline_perturbation
+   bsplines
+   parametric
+   spline_perturbation
 

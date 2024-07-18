@@ -19,6 +19,7 @@ gwinferno.pipeline.utils
       bspline_redshift_prior
       bspline_spin_prior
       load_base_parser
+      load_pe_and_injections_as_dict
       pdf_dict_to_xarray
       posterior_dict_to_xarray
       setup_bspline_mass_models

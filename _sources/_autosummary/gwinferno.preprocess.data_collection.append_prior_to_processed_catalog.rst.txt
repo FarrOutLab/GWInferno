@@ -1,0 +1,6 @@
+gwinferno.preprocess.data\_collection.append\_prior\_to\_processed\_catalog
+===========================================================================
+
+.. currentmodule:: gwinferno.preprocess.data_collection
+
+.. autofunction:: append_prior_to_processed_catalog
