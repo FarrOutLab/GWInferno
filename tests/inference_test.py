@@ -90,7 +90,7 @@ class TestModelInference(unittest.TestCase):
             run_map[ev] = {"file_path": file, "waveform": "C01:Mixed", "redshift_prior": "euclidean", "catalog": "GWTC-3"}
         p_names = self.param_names.copy()
         p_names.remove("prior")
-        pe_catalog = load_posterior_dataset(run_map=run_map, param_names=p_names).to_array()
+        pe_catalog = load_posterior_dataset(catalog_metadata=run_map, param_names=p_names).to_array()
         pedata = jnp.asarray(pe_catalog.data[0])
         Nobs = pedata.shape[0]
         Nsamples = pedata.shape[-1]

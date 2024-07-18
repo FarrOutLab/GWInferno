@@ -27,8 +27,8 @@ class TestPowerlawRedshift(unittest.TestCase):
 
     def load_injection_dataset(self, **kwargs):
         p_names = ["mass_1", "mass_ratio", "redshift", "a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
-        injections = load_injection_dataset(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
-        injdata = jnp.asarray(injections.data)
+        injections = load_injection_dataset(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"]).to_array()
+        injdata = jnp.asarray(injections.data[0])
         injdict = {k: injdata[i] for i, k in enumerate(injections.param.values)}
         return injdict
 
