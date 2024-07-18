@@ -17,7 +17,7 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
         param_names (list of strs): list of parameter names to work in. This should not include 'prior', as it will be generated automatically.
             Valid parameter options are: 'mass_1', 'mass_2', 'mass_ratio', 'redshift', 'a_1', 'a_2', 'cos_tilt_1', 'cos_tilt_2'.
             NOTE: 'chi_eff' and 'chi_p' cannot be accounted for here.
-            Please use `gwinferno.preprocess.data_collection.load_injections` if you wish to work in 'chi_eff' and 'chi_p'.
+            Please use `gwinferno.preprocess.data_collection.load_injection_dataset` if you wish to work in 'chi_eff' and 'chi_p'.
         ifar (int, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.
         snr (int, optional): signal to noise ratio threshold for found injections. Defaults to 10.
 

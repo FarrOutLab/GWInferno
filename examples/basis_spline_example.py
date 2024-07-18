@@ -26,7 +26,7 @@ from gwinferno.postprocess.plotting import plot_m1_vs_z_ppc
 from gwinferno.postprocess.plotting import plot_mass_dist
 from gwinferno.postprocess.plotting import plot_ppc_brontosaurus
 from gwinferno.postprocess.plotting import plot_rofz
-from gwinferno.preprocess.data_collection import load_injections
+from gwinferno.preprocess.data_collection import load_injection_dataset
 from gwinferno.preprocess.data_collection import load_posterior_samples
 
 az.style.use("arviz-darkgrid")
@@ -94,7 +94,7 @@ def setup_redshift_model(z_knots, injdata, pedata, pmap):
 
 
 def setup(args):
-    injections = load_injections(args.inj_file, spin=True)
+    injections = load_injection_dataset(args.inj_file, spin=True)
     pe_samples, names = load_posterior_samples(args.data_dir, spin=True)
     param_names = [
         "mass_1",
