@@ -48,16 +48,27 @@ Load data
 
 
 def load_pe_and_injections_as_dict(file):
-    """Load PE and injection file created from `gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata()`.
+    """Load PE and injection file created by `gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata()`.
 
-    Args:
-        file (str): Path to PE and Injection file
+    Parameters
+    ----------
+    file : str
+        Path to NetCDF file containing parameter estimation samples and injection data.
 
-    Returns:
-        pedict (dict): dictionary of PE samples
-        injdict (dict): dictionary of injection data
-        constants (dict): dictionary of constants like total generated injections
-        param_names (list of str): list of parameter names
+    Returns
+    -------
+    pedict : dict
+        Dictionary of parameter estimation samples.
+    injdict : dict
+        Dictionary of injection data.
+    constants : dict
+        Dictionary of constants, e.g., total number of generated injections.
+    param_names : List[str]
+        List of parameter names.
+
+    See Also
+    --------
+    gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata
     """
     data = az.from_netcdf(file)
     print(f"data file {file} loaded")
