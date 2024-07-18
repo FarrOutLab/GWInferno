@@ -14,7 +14,7 @@ from gwinferno.pipeline.analysis import construct_hierarchical_model
 from gwinferno.pipeline.parser import ConfigReader
 from gwinferno.pipeline.parser import load_model_from_python_file
 from gwinferno.preprocess.data_collection import load_catalog_from_metadata
-from gwinferno.preprocess.selection import load_injections
+from gwinferno.preprocess.selection import load_injection_dataset
 
 az.style.use("arviz-darkgrid")
 
@@ -31,7 +31,7 @@ def setup(data_conf, params):
     params.append("prior")
     spin = "a_1" in params or "chi_eff" in params
     (pe_dict, names), injfile, far_thresh, _ = load_catalog_from_metadata(catalog_info, spin=spin, downsample=True, max_samples=100000)
-    injections = load_injections(injfile, 1.0 / far_thresh, spin=spin, semianalytic=data_conf["seminanalytic_injs"])
+    injections = load_injection_dataset(injfile, 1.0 / far_thresh, spin=spin, semianalytic=data_conf["seminanalytic_injs"])
     Ninj = injections.pop("total_generated")
     Nobs = len(names)
     Tobs = injections.pop("analysis_time")

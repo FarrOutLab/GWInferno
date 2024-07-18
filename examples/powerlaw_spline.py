@@ -20,7 +20,7 @@ from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.postprocess.calculate_ppds import calculate_m1q_ppds_plbspline_model
 from gwinferno.postprocess.calculate_ppds import calculate_powerlaw_rate_of_z_ppds
 from gwinferno.postprocess.plotting import plot_mass_dist
-from gwinferno.preprocess.data_collection import load_injections
+from gwinferno.preprocess.data_collection import load_injection_dataset
 from gwinferno.preprocess.data_collection import load_posterior_samples
 
 config.update("jax_enable_x64", True)
@@ -35,7 +35,7 @@ def setup_redshift_model(injdata, pedata, pmap):
 
 
 def setup(args):
-    injections = load_injections(args.inj_file, spin=False)
+    injections = load_injection_dataset(args.inj_file, spin=False)
     pe_samples, names = load_posterior_samples(args.data_dir, spin=False)
     param_names = [
         "mass_1",

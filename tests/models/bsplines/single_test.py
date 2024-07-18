@@ -14,7 +14,7 @@ from gwinferno.models.bsplines.single import BSplineRedshift
 from gwinferno.models.bsplines.single import BSplineSpinMagnitude
 from gwinferno.models.bsplines.single import BSplineSpinTilt
 from gwinferno.models.bsplines.single import BSplineSymmetricChiEffective
-from gwinferno.preprocess.data_collection import load_injections
+from gwinferno.preprocess.data_collection import load_injection_dataset
 
 
 class TestBase1DBSplineModel(unittest.TestCase):
@@ -26,7 +26,7 @@ class TestBase1DBSplineModel(unittest.TestCase):
             self.data_dir = pref
         self.inj_file = f"{pref}/injections.h5"
         self.pedict = self.load_data()
-        self.injdict = self.load_injections(through_o4a=False, through_o3=True)
+        self.injdict = self.load_injection_dataset(through_o4a=False, through_o3=True)
         self.nsplines = 10
         self.coefs = jnp.ones((self.nsplines,))
 
@@ -37,10 +37,10 @@ class TestBase1DBSplineModel(unittest.TestCase):
         del self.injdict
         del self.nsplines
 
-    def load_injections(self, **kwargs):
+    def load_injection_dataset(self, **kwargs):
         p_names = ["mass_1", "mass_ratio", "redshift", "a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
-        injections = load_injections(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
-        injdata = jnp.asarray(injections.data)
+        injections = load_injection_dataset(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"]).to_array()
+        injdata = jnp.asarray(injections.data[0])
         injdict = {k: injdata[i] for i, k in enumerate(injections.param.values)}
         return injdict
 
