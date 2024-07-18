@@ -24,7 +24,7 @@ from gwinferno.postprocess.calculations import calculate_powerlaw_spline_rate_of
 from gwinferno.postprocess.plot import plot_mass_pdfs
 from gwinferno.postprocess.plot import plot_rate_of_z_pdfs
 from gwinferno.postprocess.plot import plot_spin_pdfs
-from gwinferno.preprocess.data_collection import load_injections
+from gwinferno.preprocess.data_collection import load_injection_dataset
 
 
 class TestModelUtils(unittest.TestCase):
@@ -49,7 +49,7 @@ class TestModelUtils(unittest.TestCase):
     def load_injs(self, **kwargs):
         p_names = self.param_names.copy()
         p_names.remove("prior")
-        injections = load_injections(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"])
+        injections = load_injection_dataset(self.inj_file, p_names, through_o3=kwargs["through_o3"], through_o4a=kwargs["through_o4a"]).to_array()
         injdata = jnp.asarray(injections.data)
         total_inj = injections.attrs["total_generated"]
         obs_time = injections.attrs["analysis_time"]
