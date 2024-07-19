@@ -160,9 +160,10 @@ class BasisSpline(object):
         """
         return [self._basis(xs, i, k=self.order) for i in range(self.N)]
 
-    def bases(self, xs, oob_val=0.0):
+    def bases(self, xs):
         """
-        bases form the basis spline design matrix evaluated at xs
+        bases form the basis spline design matrix evaluated at xs.  All basis values outside the range
+        of the spline are set to zero.
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
@@ -171,7 +172,7 @@ class BasisSpline(object):
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
         design_matrix = jnp.concatenate(self._bases(xs)).reshape(self.N, *xs.shape)
-        return jnp.where(jnp.less(xs, self.xrange[0]) | jnp.greater(xs, self.xrange[1]), oob_val, design_matrix)
+        return jnp.where(jnp.less(xs, self.xrange[0]) | jnp.greater(xs, self.xrange[1]), 0.0, design_matrix)
 
     def get_coefficients(self, xs, ys):
         """
@@ -342,19 +343,18 @@ class LogXBSpline(BSpline):
             self.grid = jnp.linspace(*np.exp(xrange), 1000)
             self.grid_bases = jnp.array(self.bases(self.grid))
 
-    def bases(self, xs, oob_val=0.0):
+    def bases(self, xs):
         """
-        bases form the basis spline design matrix evaluated at xs (in log space)
+        bases form the basis spline design matrix evaluated at xs (in log space). All basis values outside the range
+        of the spline are set to zero.
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
-            oob_val (float, optional): value to return for out-of-bounds values. Defaults to 0.
-                WARNING: nan or -inf breaks autograd.
 
         Returns:
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
-        return super().bases(jnp.log(xs), oob_val=oob_val)
+        return super().bases(jnp.log(xs))
 
 
 class LogYBSpline(BSpline):
@@ -378,39 +378,33 @@ class LogYBSpline(BSpline):
             self.grid = jnp.linspace(*xrange, 1000)
             self.grid_bases = jnp.array(self.bases(self.grid))
 
-    def _project(self, bases, coefs, oob_val=OOB_VAL):
+    def _project(self, bases, coefs):
         """
-        _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline
+        _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline.
+        Any inf's in the bases (positive or negative) will be treated as -inf, and 0. will be returned.
 
         Args:
             bases (array_like): The set of basis components or design matrix to project onto
             coefs (array_like): coefficients for the basis components
-            oob_val (float, optional): value to expect for bases at out-of-bounds values. Defaults to -9.
 
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
-        oob = jnp.all(bases == oob_val, axis=0)
-        logvals = jnp.where(oob, 0.0, jnp.einsum("i...,i->...", bases, coefs))
-        return jnp.where(oob, 0.0, jnp.exp(logvals))
+        logvals = jnp.nan_to_num(jnp.einsum("i...,i->...", bases, coefs), nan=-jnp.inf, posinf=-jnp.inf)
+        return jnp.exp(logvals)
 
-    def bases(self, xs, oob_val=OOB_VAL):
+    def bases(self, xs):
         """
-        Evaluate the basis spline design matrix at xs. We want the probability to ultimately
-        be zero outside the range of the spline, but since coefficients can be negative, negative
-        infinities for out-of-range values won't have the desired effect.  We'll use nans instead
-        and use nan_to_num to convert them to zeros upon projection.
+        Evaluate the basis spline design matrix at xs. -inf will be used for out-of-range values.
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
-            oob_val (float, optional): value to return for out-of-bounds values. Defaults to -9.
-                WARNING: nan or -inf breaks autograd.
 
         Returns:
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
         design_matrix = super().bases(xs)
-        return jnp.where(jnp.less(xs, self.xrange[0]) | jnp.greater(xs, self.xrange[1]), oob_val, design_matrix)
+        return jnp.where(jnp.less(xs, self.xrange[0]) | jnp.greater(xs, self.xrange[1]), -jnp.inf, design_matrix)
 
 
 class LogXLogYBSpline(LogYBSpline):
@@ -439,21 +433,20 @@ class LogXLogYBSpline(LogYBSpline):
             self.grid = jnp.linspace(*jnp.exp(xrange), 1500)
             self.grid_bases = jnp.array(self.bases(self.grid))
 
-    def bases(self, xs, oob_val=OOB_VAL):
+    def bases(self, xs):
         """
-        bases form the basis spline design matrix evaluated at xs (in log space)
+        bases form the basis spline design matrix evaluated at xs (in log space).
+        -inf will be used for out-of-range values.
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
-            oob_val (float, optional): value to return for out-of-bounds values. Defaults to -9.
-                WARNING: nan or -inf breaks autograd.
 
         Returns:
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
         logxs = jnp.log(xs)
         design_matrix = super().bases(logxs)
-        return jnp.where(jnp.less(logxs, self.xrange[0]) | jnp.greater(logxs, self.xrange[1]), oob_val, design_matrix)
+        return jnp.where(jnp.less(logxs, self.xrange[0]) | jnp.greater(logxs, self.xrange[1]), -jnp.inf, design_matrix)
 
 
 class RectBivariateBasisSpline(object):
