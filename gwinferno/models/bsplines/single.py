@@ -51,10 +51,8 @@ class Base1DBSplineModel(object):
             k=degree + 1,
             **kwargs,
         )
-        self._valid_xx = (xx >= self.xmin) & (xx <= self.xmax)
-        self._valid_xx_inj = (xx_inj >= self.xmin) & (xx_inj <= self.xmax)
-        self.pe_design_matrix = self.interpolator.bases(xx[self._valid_xx])
-        self.inj_design_matrix = self.interpolator.bases(xx_inj[self._valid_xx_inj])
+        self.pe_design_matrix = self.interpolator.bases(xx)
+        self.inj_design_matrix = self.interpolator.bases(xx_inj)
         self.funcs = [self.inj_pdf, self.pe_pdf]
 
     def eval_spline(self, bases, coefs):
@@ -87,9 +85,7 @@ class Base1DBSplineModel(object):
         array_like
             The linear combination of the basis components evaluated at the parameter estimation samples given the coefficients.
         """
-        pdf = jnp.zeros(self._valid_xx.shape)
-        pdf = pdf.at[self._valid_xx].set(self.eval_spline(self.pe_design_matrix, coefs))
-        return pdf
+        return self.eval_spline(self.pe_design_matrix, coefs)
 
     def inj_pdf(self, coefs):
         """Project the coefficients ``coefs`` onto the design matrix evaluated at the injection samples.
@@ -104,9 +100,7 @@ class Base1DBSplineModel(object):
         array_like
             The linear combination of the basis components evaluated at the injection samples given the coefficients.
         """
-        pdf = jnp.zeros(self._valid_xx_inj.shape)
-        pdf = pdf.at[self._valid_xx_inj].set(self.eval_spline(self.inj_design_matrix, coefs))
-        return pdf
+        return self.eval_spline(self.inj_design_matrix, coefs)
 
     def __call__(self, coefs, pe_samples=True):
         """Evaluate the projection of the coefficients along the design matrix over the parameter estimation or injection samples.
