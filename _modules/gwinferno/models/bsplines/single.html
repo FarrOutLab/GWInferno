@@ -442,10 +442,8 @@ document.write(`
             <span class="n">k</span><span class="o">=</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_valid_xx</span> <span class="o">=</span> <span class="p">(</span><span class="n">xx</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">xx</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_valid_xx_inj</span> <span class="o">=</span> <span class="p">(</span><span class="n">xx_inj</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmin</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">xx_inj</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">xmax</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pe_design_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">xx</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_xx</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inj_design_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">xx_inj</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_xx_inj</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pe_design_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">xx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inj_design_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">bases</span><span class="p">(</span><span class="n">xx_inj</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">funcs</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">inj_pdf</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pe_pdf</span><span class="p">]</span></div>
 
 
@@ -484,9 +482,7 @@ document.write(`
 <span class="sd">        array_like</span>
 <span class="sd">            The linear combination of the basis components evaluated at the parameter estimation samples given the coefficients.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_xx</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_xx</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_spline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pe_design_matrix</span><span class="p">,</span> <span class="n">coefs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">pdf</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_spline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pe_design_matrix</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Base1DBSplineModel.inj_pdf">
@@ -504,9 +500,7 @@ document.write(`
 <span class="sd">        array_like</span>
 <span class="sd">            The linear combination of the basis components evaluated at the injection samples given the coefficients.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_xx_inj</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_valid_xx_inj</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eval_spline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inj_design_matrix</span><span class="p">,</span> <span class="n">coefs</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">pdf</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_spline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inj_design_matrix</span><span class="p">,</span> <span class="n">coefs</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Base1DBSplineModel.__call__">
