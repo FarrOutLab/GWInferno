@@ -3,9 +3,7 @@ import os
 import numpyro
 import numpyro.distributions as dist
 import xarray as xr
-from numpyro.infer import MCMC
-from numpyro.infer import NUTS
-from utils import run_analysis
+from utils import run_bspline_analysis
 from utils import setup_result_dir
 
 from gwinferno.pipeline.analysis import hierarchical_likelihood
@@ -134,12 +132,12 @@ def main():
     """
 
     if args.skip_inference:
-        z_model = run_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args, skip_inference=True)
+        z_model = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args, skip_inference=True)
         print(f"loading posterior file: {result_dir}/{label}_posterior_samples.h5")
         posterior = xr.load_dataset(result_dir + f"/{label}_posterior_samples.h5")
 
     else:
-        posterior_dict, z_model = run_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args)
+        posterior_dict, z_model = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args)
         print(f"posteriors file saved: {result_dir}/{label}_posterior_samples.h5")
         posterior = posterior_dict_to_xarray(posterior_dict)
         posterior.to_netcdf(result_dir + f"/{label}_posterior_samples.h5")
