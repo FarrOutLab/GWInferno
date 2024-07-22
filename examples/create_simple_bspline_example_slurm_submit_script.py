@@ -85,12 +85,6 @@ def setup_parser():
         help="Number of GPUs to request. If >1 then automatically sets num-cpus=0",
     )
     parser.add_argument(
-        "--submit",
-        action="store_true",
-        default=False,
-        help="Boolean flag to automatically submit job at the end of this script",
-    )
-    parser.add_argument(
         "--env",
         type=str,
         default='gwinferno_gpu',
@@ -166,10 +160,6 @@ def main():
 
     with open(f"submit_{job}_rng{rng}.sh", "w") as f:
         f.write(base_submit_str)
-
-    if args["submit"]:
-        stream = os.popen(f"sbatch -A farr_lab submit_{job}.sh")
-        print(stream.read())
 
 if __name__ == "__main__":
     main()
