@@ -65,7 +65,7 @@ def iid_spin_magnitude(a1, a2, alpha_mag, beta_mag, amax=1):
     return betadist(a1, alpha_mag, beta_mag, scale=amax) * betadist(a2, alpha_mag, beta_mag, scale=amax)
 
 
-def independent_spin_magnitude(
+def independent_spin_magnitude_beta_dist(
     a1,
     a2,
     alpha_mag1,
@@ -82,8 +82,8 @@ def iid_spin_tilt(ct1, ct2, xi_tilt, sigma_tilt):
     return mixture_isoalign_spin_tilt(ct1, xi_tilt, sigma_tilt) * mixture_isoalign_spin_tilt(ct2, xi_tilt, sigma_tilt)
 
 
-def independent_spin_tilt(ct1, ct2, xi_tilt, sigma_tilt1, sigma_tilt2):
-    return mixture_isoalign_spin_tilt(ct1, xi_tilt, sigma_tilt1) * mixture_isoalign_spin_tilt(ct2, xi_tilt, sigma_tilt2)
+def independent_spin_tilt(ct1, ct2, xi_tilt_1, xi_tilt_2, sigma_tilt1, sigma_tilt2):
+    return mixture_isoalign_spin_tilt(ct1, xi_tilt_1, sigma_tilt1) * mixture_isoalign_spin_tilt(ct2, xi_tilt_2, sigma_tilt2)
 
 
 """
