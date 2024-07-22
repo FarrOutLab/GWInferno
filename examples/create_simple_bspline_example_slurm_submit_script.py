@@ -21,11 +21,7 @@ def setup_parser():
         type=str,
         help="path to python, e.g: /home/USERNAME/.conda/envs/ENV/bin/python. ENV should be same as --env argument.",
     )
-    parser.add_argument(
-        "--result-dir", 
-        type=str,  
-        help="Path of output directory of analysis"
-    )
+    parser.add_argument("--result-dir", type=str, help="Path of output directory of analysis")
     parser.add_argument(
         "--label",
         type=str,
@@ -75,9 +71,7 @@ def setup_parser():
         help="Time limit of Job (in minutes) --"
         + "times longer than 1440 min need the long partitions, jobs with lower time limits can get started with higher priority",
     )
-    parser.add_argument(
-        "--mem", type=int, default=8192, help="Requested Memory for analysis (in Mb)"
-    )
+    parser.add_argument("--mem", type=int, default=8192, help="Requested Memory for analysis (in Mb)")
     parser.add_argument(
         "--num-gpus",
         type=int,
@@ -87,7 +81,7 @@ def setup_parser():
     parser.add_argument(
         "--env",
         type=str,
-        default='gwinferno_gpu',
+        default="gwinferno_gpu",
         help="conda environment",
     )
     parser.add_argument(
@@ -116,27 +110,28 @@ def setup_parser():
     )
     return vars(parser.parse_args())
 
+
 def main():
     args = setup_parser()
     label = args["label"]
-    job = args['job_name']
+    job = args["job_name"]
     outdir = args["result_dir"]
     script = args["analysis_script"]
     mem = args["mem"]
     time = args["time"]
-    nodes = args['nodes']
-    ntasks = args['ntasks_per_node']
+    nodes = args["nodes"]
+    ntasks = args["ntasks_per_node"]
     partition = args["partition"]
     ngpu = args["num_gpus"]
-    rng = args['rng_keys']
-    env = args['env']
-    python = args['python_path']
-    mmin = args['mmin']
-    mmax = args['mmax']
-    samples = args['nsamples']
-    warmup = args['nwarmup']
-    peinj = args['pe_inj_file']
-    constraint = args['constraint']
+    rng = args["rng_keys"]
+    env = args["env"]
+    python = args["python_path"]
+    mmin = args["mmin"]
+    mmax = args["mmax"]
+    samples = args["nsamples"]
+    warmup = args["nwarmup"]
+    peinj = args["pe_inj_file"]
+    constraint = args["constraint"]
     if time > 1440 and "long" not in partition:
         time = 1440
     base_submit_str = f"""#!/bin/bash
@@ -153,13 +148,12 @@ def main():
 #SBATCH --constraint=\"{constraint}\"
 """
     base_submit_str += f"\nconda activate {env}"
-    base_submit_str += (
-        f"\n{python} {script} --samples {samples} --warmup {warmup} --rngkey $SLURM_ARRAY_TASK_ID --run-label {label} --result-dir {outdir} --mmin {mmin} --mmax {mmax} --pe-inj-file {peinj}"
-    )
+    base_submit_str += f"\n{python} {script} --samples {samples} --warmup {warmup} --rngkey $SLURM_ARRAY_TASK_ID --run-label {label} --result-dir {outdir} --mmin {mmin} --mmax {mmax} --pe-inj-file {peinj}"
     base_submit_str += "\nconda deactivate"
 
     with open(f"submit_{job}_rng{rng}.sh", "w") as f:
         f.write(base_submit_str)
+
 
 if __name__ == "__main__":
     main()
