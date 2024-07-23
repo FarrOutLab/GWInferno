@@ -93,7 +93,7 @@ class Cosmology(object):
         """
         if Dc is None:
             Dc = self.z2Dc(z, dz=dz)
-        return 4 * jnp.pi * Dc**2 * self.dDcdz(z)
+        return Dc**2 * self.dDcdz(z)
 
     def logdVcdz(self, z, Dc=None, dz=DEFAULT_DZ):
         """
@@ -101,7 +101,7 @@ class Cosmology(object):
         """
         if Dc is None:
             Dc = self.z2Dc(z, dz=dz)
-        return jnp.log(4 * jnp.pi) + 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z))
+        return 2 * jnp.log(Dc) + jnp.log(self.dDcdz(z))
 
     def z2Dc(self, z, dz=DEFAULT_DZ):
         """
