@@ -26,7 +26,7 @@ MASS MODELS
 
 def powerlaw_primary_ratio_pdf(m1, q, alpha, beta, mmin, mmax):
     p_q = powerlaw_pdf(q, beta, mmin / m1, 1)
-    p_m1 = powerlaw_pdf(m1, -alpha, mmin, mmax)
+    p_m1 = powerlaw_pdf(m1, alpha, mmin, mmax)
     return p_q * p_m1
 
 
@@ -43,7 +43,7 @@ def plpeak_primary_ratio_pdf(m1, q, alpha, beta, mmin, mmax, mpp, sigpp, lam):
 
 
 def plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam):
-    return (1 - lam) * powerlaw_pdf(m1, -alpha, mmin, mmax) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax)
+    return (1 - lam) * powerlaw_pdf(m1, alpha, mmin, mmax) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax)
 
 
 """
