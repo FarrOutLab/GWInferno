@@ -90,7 +90,7 @@ def dl_2_prior_on_z(z, euclidean=False):
         dl = cosmo.z2DL(z) / 1e3
         return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z) / 1e3)
     else:
-        return cosmo.dVcdz(z) * 4 * np.pi / (1 + z)
+        return cosmo.dVcdz(z) / (1 + z)
 
 
 def append_prior_to_processed_catalog(catalog_dataset, param_names):

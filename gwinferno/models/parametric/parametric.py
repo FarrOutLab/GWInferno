@@ -98,10 +98,10 @@ class PowerlawRedshiftModel(object):
         self.zmin = jnp.max(jnp.array([jnp.min(z_pe), jnp.min(z_inj)]))
         self.zmax = jnp.min(jnp.array([jnp.max(z_pe), jnp.max(z_inj)]))
         self.zs = jnp.linspace(self.zmin, self.zmax, 1000)
-        self.dVdz_ = jnp.array(Planck15.dVcdz(np.array(self.zs)) * 4.0 * np.pi)
+        self.dVdz_ = jnp.array(Planck15.dVcdz(np.array(self.zs)))
         self.dVdzs = [
-            jnp.array(Planck15.dVcdz(np.array(z_inj)) * 4.0 * np.pi),
-            jnp.array(Planck15.dVcdz(np.array(z_pe)) * 4.0 * np.pi),
+            jnp.array(Planck15.dVcdz(np.array(z_inj))),
+            jnp.array(Planck15.dVcdz(np.array(z_pe))),
         ]
 
     def normalization(self, lamb):
