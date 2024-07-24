@@ -116,7 +116,7 @@ def append_prior_to_processed_catalog(catalog_dataset, param_names):
             p_z = p_z_euclid if catalog_dataset[ev].attrs["redshift_prior"] == "euclidean" else p_z_comoving
             prior *= jnp.interp(catalog_dataset[ev].sel(param="redshift").values, zs, p_z)
         if "mass_1" in param_names:
-            prior *= (1 + catalog_dataset[ev].sel(param="mass_1").values) ** 2  # flat detector components
+            prior *= (1 + catalog_dataset[ev].sel(param="redshift").values) ** 2  # flat detector components
         if "mass_ratio" in param_names:
             prior *= catalog_dataset[ev].sel(param="mass_1").values
         if "a_1" in param_names:
