@@ -4,7 +4,7 @@ outdir: outdir
 
 # Population Parameters, Models, HyperParameters, and Priors
 models:
-  python_file: gwinferno/pipeline/config_files/example_python_model.py
+  python_file: examples/config_files/model.py
 
 # Sampler Configuration Args
 sampler:

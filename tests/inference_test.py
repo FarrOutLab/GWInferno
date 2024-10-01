@@ -427,7 +427,7 @@ class TestModelInference(unittest.TestCase):
 
     def test_config_reader(self):
         config_reader = ConfigReader()
-        config_reader.parse("gwinferno/pipeline/config_files/example_config.yml")
+        config_reader.parse("examples/config_files/config.yml")
         model_dict, prior_dict = config_reader.models, config_reader.priors
         data_conf, sampler_conf, likelihood_kwargs = config_reader.data_conf, config_reader.sampler_conf, config_reader.likelihood_kwargs
         sampling_params, label, outdir = config_reader.sampling_params, config_reader.label, config_reader.outdir
@@ -436,7 +436,7 @@ class TestModelInference(unittest.TestCase):
 
     def test_config_py_reader(self):
         config_reader = ConfigReader()
-        config_reader.parse("gwinferno/pipeline/config_files/example_config_python_model.yml")
+        config_reader.parse("examples/config_files/config_w_py_model.yml")
         model_dict, prior_dict = config_reader.models, config_reader.priors
         data_conf, sampler_conf, likelihood_kwargs = config_reader.data_conf, config_reader.sampler_conf, config_reader.likelihood_kwargs
         sampling_params, label, outdir = config_reader.sampling_params, config_reader.label, config_reader.outdir
