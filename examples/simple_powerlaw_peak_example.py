@@ -64,7 +64,7 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, z_model, mmin, mmax, param_names):
     alpha_a1 = numpyro.deterministic('alpha_a1', mu_a1 * var_a1)
     alpha_a2 = numpyro.deterministic('alpha_a2', mu_a2 * var_a2)
     beta_a1 = numpyro.deterministic('beta_a1', (1 - mu_a1) * var_a1)
-    beta_a2 = numpyro.determinsitic('beta_a2', (1 - mu_a2) * var_a2)
+    beta_a2 = numpyro.deterministic('beta_a2', (1 - mu_a2) * var_a2)
 
     # Spin Tilt (Independent)
 

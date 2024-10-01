@@ -22,12 +22,12 @@ def setup_result_dir(parsargs):
         label (str): label for file names
         full_dir (str): result directory
     """
-    label = parsargs.run_label + f"_{parsargs.warmup}w_{parsargs.samples}s_rng{parsargs.rngkey}"
-    result_directory = parsargs.result_dir + "/" + parsargs.run_label
-    full_dir = f"{result_directory}/rngnum-{parsargs.rngkey}"
+    label = parsargs.run_label + f'_{parsargs.warmup}w_{parsargs.samples}s_rng{parsargs.rngkey}'
+    result_directory = parsargs.result_dir+ '/' + parsargs.run_label
+    full_dir = f'{result_directory}/rngnum-{parsargs.rngkey}/{parsargs.warmup}w_{parsargs.samples}s'
     if not os.path.exists(full_dir):
         os.makedirs(full_dir)
-    print(f"result files will be saved in directory: {full_dir}")
+    print(f'result files will be saved in directory: {full_dir}')
     return label, full_dir
 
 
@@ -111,7 +111,7 @@ def run_powerlawpeak_analysis(numpyro_model, pedict, injdict, constants, param_n
             z_model
     """
 
-    z_model = PowerlawRedshiftModel(pedict, injdict)
+    z_model = PowerlawRedshiftModel(pedict['redshift'], injdict['redshift'])
 
     if not skip_inference:
         nChains = parsargs.chains
