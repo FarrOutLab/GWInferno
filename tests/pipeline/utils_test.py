@@ -34,6 +34,7 @@ class TestModelUtils(unittest.TestCase):
         self.pedict, self.Nobs, self.Nsamples = self.load_data()
         self.injdict, self.total_inj, self.obs_time = self.load_injs(through_o4a=False, through_o3=True)
         self.nspline_dict = {"m1": 10, "q": 10, "a1": 10, "tilt1": 10, "a2": 10, "tilt2": 10}
+        self.nspline_dict_iid = {"m1": 10, "q": 10, "a": 10, "tilt": 10}
         self.n_samples = 5
 
     def load_data(self, max_samps=100):
@@ -83,7 +84,7 @@ class TestModelUtils(unittest.TestCase):
         samples = mcmc.get_samples()
 
         m_pdfs, ms, q_pdfs, qs = calculate_bspline_mass_ppds(samples["mass_cs_test_mass"], samples["q_cs_test_mass"], self.nspline_dict, 5.0, 100.0)
-        apdfs, aa, ctpdfs, cc = calculate_bspline_spin_ppds(samples["a_cs_test_iid"], samples["tilt_cs_test_iid"], self.nspline_dict)
+        apdfs, aa, ctpdfs, cc = calculate_bspline_spin_ppds(samples["a_cs_test_iid"], samples["tilt_cs_test_iid"], self.nspline_dict_iid)
         apdfs_1, apdfs_2, aa, ctpdfs_1, ctpdfs_2, cc = calculate_bspline_spin_ppds(
             samples["a1_cs_test_ind"],
             samples["tilt1_cs_test_ind"],

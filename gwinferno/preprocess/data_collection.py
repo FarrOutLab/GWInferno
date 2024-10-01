@@ -87,10 +87,10 @@ def processed_catalog_dataset_from_dict(catalog_dict):
 
 def dl_2_prior_on_z(z, euclidean=False):
     if euclidean:
-        dl = cosmo.z2DL(z) / 1e3
-        return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z) / 1e3)
+        dl = cosmo.z2DL(z)
+        return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z))
     else:
-        return cosmo.dVcdz(z) * 4 * np.pi / (1 + z)
+        return cosmo.dVcdz(z) / (1 + z)
 
 
 def append_prior_to_processed_catalog(catalog_dataset, param_names):
@@ -116,7 +116,7 @@ def append_prior_to_processed_catalog(catalog_dataset, param_names):
             p_z = p_z_euclid if catalog_dataset[ev].attrs["redshift_prior"] == "euclidean" else p_z_comoving
             prior *= jnp.interp(catalog_dataset[ev].sel(param="redshift").values, zs, p_z)
         if "mass_1" in param_names:
-            prior *= (1 + catalog_dataset[ev].sel(param="mass_1").values) ** 2  # flat detector components
+            prior *= (1 + catalog_dataset[ev].sel(param="redshift").values) ** 2  # flat detector components
         if "mass_ratio" in param_names:
             prior *= catalog_dataset[ev].sel(param="mass_1").values
         if "a_1" in param_names:

@@ -26,7 +26,7 @@ MASS MODELS
 
 def powerlaw_primary_ratio_pdf(m1, q, alpha, beta, mmin, mmax):
     p_q = powerlaw_pdf(q, beta, mmin / m1, 1)
-    p_m1 = powerlaw_pdf(m1, -alpha, mmin, mmax)
+    p_m1 = powerlaw_pdf(m1, alpha, mmin, mmax)
     return p_q * p_m1
 
 
@@ -43,7 +43,7 @@ def plpeak_primary_ratio_pdf(m1, q, alpha, beta, mmin, mmax, mpp, sigpp, lam):
 
 
 def plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam):
-    return (1 - lam) * powerlaw_pdf(m1, -alpha, mmin, mmax) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax)
+    return (1 - lam) * powerlaw_pdf(m1, alpha, mmin, mmax) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax)
 
 
 """
@@ -65,7 +65,7 @@ def iid_spin_magnitude(a1, a2, alpha_mag, beta_mag, amax=1):
     return betadist(a1, alpha_mag, beta_mag, scale=amax) * betadist(a2, alpha_mag, beta_mag, scale=amax)
 
 
-def independent_spin_magnitude(
+def independent_spin_magnitude_beta_dist(
     a1,
     a2,
     alpha_mag1,
@@ -82,8 +82,8 @@ def iid_spin_tilt(ct1, ct2, xi_tilt, sigma_tilt):
     return mixture_isoalign_spin_tilt(ct1, xi_tilt, sigma_tilt) * mixture_isoalign_spin_tilt(ct2, xi_tilt, sigma_tilt)
 
 
-def independent_spin_tilt(ct1, ct2, xi_tilt, sigma_tilt1, sigma_tilt2):
-    return mixture_isoalign_spin_tilt(ct1, xi_tilt, sigma_tilt1) * mixture_isoalign_spin_tilt(ct2, xi_tilt, sigma_tilt2)
+def independent_spin_tilt(ct1, ct2, xi_tilt_1, xi_tilt_2, sigma_tilt1, sigma_tilt2):
+    return mixture_isoalign_spin_tilt(ct1, xi_tilt_1, sigma_tilt1) * mixture_isoalign_spin_tilt(ct2, xi_tilt_2, sigma_tilt2)
 
 
 """
@@ -98,10 +98,10 @@ class PowerlawRedshiftModel(object):
         self.zmin = jnp.max(jnp.array([jnp.min(z_pe), jnp.min(z_inj)]))
         self.zmax = jnp.min(jnp.array([jnp.max(z_pe), jnp.max(z_inj)]))
         self.zs = jnp.linspace(self.zmin, self.zmax, 1000)
-        self.dVdz_ = jnp.array(Planck15.dVcdz(np.array(self.zs)) * 4.0 * np.pi)
+        self.dVdz_ = jnp.array(Planck15.dVcdz(np.array(self.zs)))
         self.dVdzs = [
-            jnp.array(Planck15.dVcdz(np.array(z_inj)) * 4.0 * np.pi),
-            jnp.array(Planck15.dVcdz(np.array(z_pe)) * 4.0 * np.pi),
+            jnp.array(Planck15.dVcdz(np.array(z_inj))),
+            jnp.array(Planck15.dVcdz(np.array(z_pe))),
         ]
 
     def normalization(self, lamb):

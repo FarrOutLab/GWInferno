@@ -4,8 +4,9 @@ a module that stores 1D population models constructed from BSplines
 
 import jax.numpy as jnp
 import numpy as np
-from astropy.cosmology import Planck15
 from jax.scipy.integrate import trapezoid
+
+from gwinferno.cosmology import PLANCK_2015_Cosmology as Planck15
 
 from ...interpolation import BSpline
 from ...interpolation import LogXBSpline
@@ -443,7 +444,7 @@ class BSplineRedshift(Base1DBSplineModel):
             **kwargs,
         )
         self.zmax = zmax
-        self.dVcdzgrid = jnp.array(Planck15.differential_comoving_volume(np.linspace(1e-4, zmax, 2500)).value * 4 * np.pi)
+        self.dVcdzgrid = jnp.array(Planck15.dVcdz(np.linspace(1e-4, zmax, 2500)))
         self.differential_comov_vols = [dVdc_inj, dVdc]
         self.zs = [z_inj, z]
 
