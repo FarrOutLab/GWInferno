@@ -189,7 +189,7 @@ def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs=None, tilt2
         pop_frac = jnp.ones(a1_cs.shape[0])
 
     if a2_cs is None:
-        
+
         mag_model = BSplineIIDSpinMagnitudes(nspline_dict["a"], aa, aa, aa, aa, basis=LogYBSpline, normalize=True)
 
         tilt_model = BSplineIIDSpinTilts(nspline_dict["tilt"], cc, cc, cc, cc, basis=LogYBSpline, normalize=True)
