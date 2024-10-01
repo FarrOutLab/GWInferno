@@ -18,7 +18,7 @@ gwinferno.models.parametric.parametric
       beta_spin_magnitude
       iid_spin_magnitude
       iid_spin_tilt
-      independent_spin_magnitude
+      independent_spin_magnitude_beta_dist
       independent_spin_tilt
       mixture_isoalign_spin_tilt
       plpeak_primary_pdf

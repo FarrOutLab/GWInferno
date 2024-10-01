@@ -391,8 +391,9 @@ document.write(`
 
 <span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">astropy.cosmology</span> <span class="kn">import</span> <span class="n">Planck15</span>
 <span class="kn">from</span> <span class="nn">jax.scipy.integrate</span> <span class="kn">import</span> <span class="n">trapezoid</span>
+
+<span class="kn">from</span> <span class="nn">gwinferno.cosmology</span> <span class="kn">import</span> <span class="n">PLANCK_2015_Cosmology</span> <span class="k">as</span> <span class="n">Planck15</span>
 
 <span class="kn">from</span> <span class="nn">...interpolation</span> <span class="kn">import</span> <span class="n">BSpline</span>
 <span class="kn">from</span> <span class="nn">...interpolation</span> <span class="kn">import</span> <span class="n">LogXBSpline</span>
@@ -897,7 +898,7 @@ document.write(`
             <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zmax</span> <span class="o">=</span> <span class="n">zmax</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dVcdzgrid</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Planck15</span><span class="o">.</span><span class="n">differential_comoving_volume</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">zmax</span><span class="p">,</span> <span class="mi">2500</span><span class="p">))</span><span class="o">.</span><span class="n">value</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dVcdzgrid</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Planck15</span><span class="o">.</span><span class="n">dVcdz</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">zmax</span><span class="p">,</span> <span class="mi">2500</span><span class="p">)))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">differential_comov_vols</span> <span class="o">=</span> <span class="p">[</span><span class="n">dVdc_inj</span><span class="p">,</span> <span class="n">dVdc</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zs</span> <span class="o">=</span> <span class="p">[</span><span class="n">z_inj</span><span class="p">,</span> <span class="n">z</span><span class="p">]</span></div>
 

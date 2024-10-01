@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculations.calculate\_powerlaw\_peak\_mass\_ppds
+========================================================================
+
+.. currentmodule:: gwinferno.postprocess.calculations
+
+.. autofunction:: calculate_powerlaw_peak_mass_ppds

@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculations.calculate\_beta\_spin\_mag
+=============================================================
+
+.. currentmodule:: gwinferno.postprocess.calculations
+
+.. autofunction:: calculate_beta_spin_mag

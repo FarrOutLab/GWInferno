@@ -15,9 +15,13 @@ gwinferno.postprocess.calculations
       :toctree:
       :nosignatures:
    
+      calculate_beta_spin_mag
       calculate_bspline_mass_ppds
       calculate_bspline_spin_ppds
+      calculate_mixture_iso_aligned_spin_tilt
       calculate_peak_logm1_bspline_q_ppds
+      calculate_powerlaw_peak_mass_ppds
+      calculate_powerlaw_rate_of_z_ppds
       calculate_powerlaw_spline_rate_of_z_ppds
    
    

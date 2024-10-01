@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>gwinferno.models.parametric.parametric.independent_spin_magnitude &#8212; gwinferno 0.0 documentation</title>
+    <title>gwinferno.postprocess.calculations.calculate_powerlaw_rate_of_z_ppds &#8212; gwinferno 0.0 documentation</title>
   
   
   
@@ -40,12 +40,12 @@
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/gwinferno.models.parametric.parametric.independent_spin_magnitude';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_autosummary/gwinferno.postprocess.calculations.calculate_powerlaw_rate_of_z_ppds';</script>
     <link rel="icon" href="../_static/bbh_graphic_inferno.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="gwinferno.models.parametric.parametric.independent_spin_tilt" href="gwinferno.models.parametric.parametric.independent_spin_tilt.html" />
-    <link rel="prev" title="gwinferno.models.parametric.parametric.iid_spin_tilt" href="gwinferno.models.parametric.parametric.iid_spin_tilt.html" />
+    <link rel="next" title="gwinferno.postprocess.calculations.calculate_powerlaw_spline_rate_of_z_ppds" href="gwinferno.postprocess.calculations.calculate_powerlaw_spline_rate_of_z_ppds.html" />
+    <link rel="prev" title="gwinferno.postprocess.calculations.calculate_powerlaw_peak_mass_ppds" href="gwinferno.postprocess.calculations.calculate_powerlaw_peak_mass_ppds.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -367,7 +367,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="gwinferno.interpolation.RectBivariateBasisSpline.html">gwinferno.interpolation.RectBivariateBasisSpline</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="gwinferno.models.html">gwinferno.models</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.models.bsplines.html">gwinferno.models.bsplines</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="gwinferno.models.bsplines.separable.html">gwinferno.models.bsplines.separable</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims.html">gwinferno.models.bsplines.separable.BSplineEffectiveSpinDims</a></li>
@@ -400,12 +400,12 @@ document.write(`
 </details></li>
 </ul>
 </details></li>
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="gwinferno.models.parametric.html">gwinferno.models.parametric</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l3 current active has-children"><a class="reference internal" href="gwinferno.models.parametric.parametric.html">gwinferno.models.parametric.parametric</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.models.parametric.html">gwinferno.models.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="gwinferno.models.parametric.parametric.html">gwinferno.models.parametric.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.beta_spin_magnitude.html">gwinferno.models.parametric.parametric.beta_spin_magnitude</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_magnitude.html">gwinferno.models.parametric.parametric.iid_spin_magnitude</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_tilt.html">gwinferno.models.parametric.parametric.iid_spin_tilt</a></li>
-<li class="toctree-l4 current active"><a class="current reference internal" href="#">gwinferno.models.parametric.parametric.independent_spin_magnitude</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist.html">gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.independent_spin_tilt.html">gwinferno.models.parametric.parametric.independent_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.mixture_isoalign_spin_tilt.html">gwinferno.models.parametric.parametric.mixture_isoalign_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.plpeak_primary_pdf.html">gwinferno.models.parametric.parametric.plpeak_primary_pdf</a></li>
@@ -471,11 +471,15 @@ document.write(`
 </details></li>
 </ul>
 </details></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.postprocess.calculations.html">gwinferno.postprocess.calculations</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="gwinferno.postprocess.html">gwinferno.postprocess</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="gwinferno.postprocess.calculations.html">gwinferno.postprocess.calculations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculations.calculate_beta_spin_mag.html">gwinferno.postprocess.calculations.calculate_beta_spin_mag</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculations.calculate_bspline_mass_ppds.html">gwinferno.postprocess.calculations.calculate_bspline_mass_ppds</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculations.calculate_bspline_spin_ppds.html">gwinferno.postprocess.calculations.calculate_bspline_spin_ppds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculations.calculate_mixture_iso_aligned_spin_tilt.html">gwinferno.postprocess.calculations.calculate_mixture_iso_aligned_spin_tilt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculations.calculate_peak_logm1_bspline_q_ppds.html">gwinferno.postprocess.calculations.calculate_peak_logm1_bspline_q_ppds</a></li>
+<li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculations.calculate_powerlaw_peak_mass_ppds.html">gwinferno.postprocess.calculations.calculate_powerlaw_peak_mass_ppds</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">gwinferno.postprocess.calculations.calculate_powerlaw_rate_of_z_ppds</a></li>
 <li class="toctree-l3"><a class="reference internal" href="gwinferno.postprocess.calculations.calculate_powerlaw_spline_rate_of_z_ppds.html">gwinferno.postprocess.calculations.calculate_powerlaw_spline_rate_of_z_ppds</a></li>
 </ul>
 </details></li>
@@ -570,9 +574,9 @@ document.write(`
     <li class="breadcrumb-item"><i class="fa-solid fa-ellipsis"></i></li>
     
     
-    <li class="breadcrumb-item"><a href="gwinferno.models.parametric.parametric.html" class="nav-link">gwinferno.models.parametric.parametric</a></li>
+    <li class="breadcrumb-item"><a href="gwinferno.postprocess.calculations.html" class="nav-link">gwinferno.postprocess.calculations</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">gwinferno.mo...</li>
+    <li class="breadcrumb-item active" aria-current="page">gwinferno.po...</li>
   </ul>
 </nav>
 </div>
@@ -589,11 +593,11 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="gwinferno-models-parametric-parametric-independent-spin-magnitude">
-<h1>gwinferno.models.parametric.parametric.independent_spin_magnitude<a class="headerlink" href="#gwinferno-models-parametric-parametric-independent-spin-magnitude" title="Link to this heading">#</a></h1>
+  <section id="gwinferno-postprocess-calculations-calculate-powerlaw-rate-of-z-ppds">
+<h1>gwinferno.postprocess.calculations.calculate_powerlaw_rate_of_z_ppds<a class="headerlink" href="#gwinferno-postprocess-calculations-calculate-powerlaw-rate-of-z-ppds" title="Link to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="gwinferno.models.parametric.parametric.independent_spin_magnitude">
-<span class="sig-name descname"><span class="pre">independent_spin_magnitude</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_mag1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_mag1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha_mag2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_mag2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amax1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amax2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/models/parametric/parametric.html#independent_spin_magnitude"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.models.parametric.parametric.independent_spin_magnitude" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="gwinferno.postprocess.calculations.calculate_powerlaw_rate_of_z_ppds">
+<span class="sig-name descname"><span class="pre">calculate_powerlaw_rate_of_z_ppds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lamb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/postprocess/calculations.html#calculate_powerlaw_rate_of_z_ppds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.postprocess.calculations.calculate_powerlaw_rate_of_z_ppds" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 </section>
@@ -620,7 +624,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.models.parametric.parametric.independent_spin_magnitude"><code class="docutils literal notranslate"><span class="pre">independent_spin_magnitude()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.postprocess.calculations.calculate_powerlaw_rate_of_z_ppds"><code class="docutils literal notranslate"><span class="pre">calculate_powerlaw_rate_of_z_ppds()</span></code></a></li>
 </ul>
   </nav></div>
 

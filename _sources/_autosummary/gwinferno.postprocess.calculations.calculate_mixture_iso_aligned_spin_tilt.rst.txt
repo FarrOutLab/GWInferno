@@ -1,0 +1,6 @@
+gwinferno.postprocess.calculations.calculate\_mixture\_iso\_aligned\_spin\_tilt
+===============================================================================
+
+.. currentmodule:: gwinferno.postprocess.calculations
+
+.. autofunction:: calculate_mixture_iso_aligned_spin_tilt
