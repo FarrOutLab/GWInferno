@@ -44,7 +44,8 @@ def calculate_bspline_mass_ppds(m_cs, q_cs, nspline_dict, mmin, mmax, rate=None,
     qpdfs = np.zeros((q_cs.shape[0], len(qs)))
 
     def calc_pdf(m_cs, q_cs, r, frac):
-        p_mq = model(m_cs, q_cs, pe_samples=True)
+        p_MQ = model(m_cs, q_cs, pe_samples=True)
+        p_mq = jnp.where(jnp.greater(Q, mmin / M), p_MQ, 0.0)
         p_m = trapezoid(p_mq, qs, axis=0)
         p_q = trapezoid(p_mq, ms, axis=1)
         P_m = r * p_m * frac / trapezoid(p_m, ms)
@@ -131,7 +132,7 @@ def calculate_peak_logm1_bspline_q_ppds(logmp, logsigp, q_cs, nspline_dict, mmin
 
 def calculate_beta_spin_mag(alpha_a, beta_a, amax=1, rate=None, pop_frac=None):
 
-    aa = jnp.linspace(0, 1, 800)
+    aa = jnp.linspace(0, amax, 800)
 
     if rate is None:
         rate = jnp.ones(alpha_a.shape[0])
@@ -165,7 +166,7 @@ def calculate_mixture_iso_aligned_spin_tilt(sig_ct, lambda_ct, rate=None, pop_fr
     ctpdfs = np.zeros((sig_ct.shape[0], len(ct)))
 
     def calc_pdf(s_ct, l_ct, r, f):
-        p_ct = mixture_isoalign_spin_tilt(ct, lambda_ct, sig_ct)
+        p_ct = mixture_isoalign_spin_tilt(ct, l_ct, s_ct)
         P_ct = r * f * p_ct / trapezoid(p_ct, ct)
         return P_ct
 
@@ -189,9 +190,9 @@ def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs=None, tilt2
 
     if a2_cs is None:
 
-        mag_model = BSplineIIDSpinMagnitudes(nspline_dict["a1"], aa, aa, aa, aa, basis=LogYBSpline, normalize=True)
+        mag_model = BSplineIIDSpinMagnitudes(nspline_dict["a"], aa, aa, aa, aa, basis=LogYBSpline, normalize=True)
 
-        tilt_model = BSplineIIDSpinTilts(nspline_dict["tilt1"], cc, cc, cc, cc, basis=LogYBSpline, normalize=True)
+        tilt_model = BSplineIIDSpinTilts(nspline_dict["tilt"], cc, cc, cc, cc, basis=LogYBSpline, normalize=True)
 
         apdfs = np.zeros((a1_cs.shape[0], len(aa)))
         ctpdfs = np.zeros((tilt1_cs.shape[0], len(cc)))
@@ -253,7 +254,7 @@ def calculate_powerlaw_rate_of_z_ppds(lamb, rate, z_model, pop_frac=None):
 
     calc_rz = jit(calc_rz)
     for ii in trange(lamb.shape[0]):
-        rs[ii] = calc_rz([ii], lamb[ii], rate[ii], pop_frac[ii])
+        rs[ii] = calc_rz(lamb[ii], rate[ii], pop_frac[ii])
     return rs, zs
 
 
