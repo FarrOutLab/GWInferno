@@ -444,7 +444,7 @@ class BSplineRedshift(Base1DBSplineModel):
             **kwargs,
         )
         self.zmax = zmax
-        self.dVcdzgrid = jnp.array(Planck15.dVcdz(np.linspace(1e-4, zmax, 2500)).value)
+        self.dVcdzgrid = jnp.array(Planck15.dVcdz(np.linspace(1e-4, zmax, 2500)))
         self.differential_comov_vols = [dVdc_inj, dVdc]
         self.zs = [z_inj, z]
 

@@ -272,7 +272,7 @@ def hierarchical_likelihood(
             logBFs, logn_effs = per_event_log_bayes_factors(mix_pe_weights, log=log)
     else:
 
-        logBFs, logn_effs, var_L = per_event_log_bayes_factors(pe_weights, log=log)
+        logBFs, logn_effs = per_event_log_bayes_factors(pe_weights, log=log)
 
     log_det_eff, logn_eff_inj = detection_efficiency(inj_weights, total_inj, log=log)
     numpyro.deterministic("log_nEff_inj", logn_eff_inj)
