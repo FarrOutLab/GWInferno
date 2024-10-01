@@ -87,8 +87,8 @@ def processed_catalog_dataset_from_dict(catalog_dict):
 
 def dl_2_prior_on_z(z, euclidean=False):
     if euclidean:
-        dl = cosmo.z2DL(z) / 1e3
-        return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z) / 1e3)
+        dl = cosmo.z2DL(z)
+        return dl**2 * (dl / (1 + z) + (1 + z) * cosmo.dDcdz(z))
     else:
         return cosmo.dVcdz(z) / (1 + z)
 
