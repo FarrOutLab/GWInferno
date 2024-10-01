@@ -593,8 +593,8 @@ document.write(`
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.bases" title="gwinferno.interpolation.BSpline.bases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bases</span></code></a>(xs[, oob_val])</p></td>
-<td><p>bases form the basis spline design matrix evaluated at xs</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.bases" title="gwinferno.interpolation.BSpline.bases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bases</span></code></a>(xs)</p></td>
+<td><p>bases form the basis spline design matrix evaluated at xs.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.interpolation.BSpline.eval" title="gwinferno.interpolation.BSpline.eval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval</span></code></a>(xs, coefs)</p></td>
 <td><p>eval Evaluate basis spline at xs given coefficients</p></td>
@@ -647,8 +647,9 @@ normalize (bool, optional): flag whether or not to numerically normalize the spl
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.interpolation.BSpline.bases">
-<span class="sig-name descname"><span class="pre">bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oob_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.bases" title="Link to this definition">#</a></dt>
-<dd><p>bases form the basis spline design matrix evaluated at xs</p>
+<span class="sig-name descname"><span class="pre">bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.interpolation.BSpline.bases" title="Link to this definition">#</a></dt>
+<dd><p>bases form the basis spline design matrix evaluated at xs.  All basis values outside the range
+of the spline are set to zero.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>xs (array_like): input values to evaluate the basis spline at</p>
 </dd>
@@ -782,7 +783,7 @@ coefs (array_like): coefficients for the basis components</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     <br/>
   </p>
 </div>

@@ -593,7 +593,7 @@ document.write(`
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.interpolation.LogYBSpline.bases" title="gwinferno.interpolation.LogYBSpline.bases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bases</span></code></a>(xs[, oob_val])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.interpolation.LogYBSpline.bases" title="gwinferno.interpolation.LogYBSpline.bases"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bases</span></code></a>(xs)</p></td>
 <td><p>Evaluate the basis spline design matrix at xs.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.interpolation.LogYBSpline.eval" title="gwinferno.interpolation.LogYBSpline.eval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval</span></code></a>(xs, coefs)</p></td>
@@ -647,17 +647,10 @@ normalize (bool, optional): flag whether or not to numerically normalize the spl
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwinferno.interpolation.LogYBSpline.bases">
-<span class="sig-name descname"><span class="pre">bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oob_val</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-9</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/interpolation.html#LogYBSpline.bases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.interpolation.LogYBSpline.bases" title="Link to this definition">#</a></dt>
-<dd><p>Evaluate the basis spline design matrix at xs. We want the probability to ultimately
-be zero outside the range of the spline, but since coefficients can be negative, negative
-infinities for out-of-range values won’t have the desired effect.  We’ll use nans instead
-and use nan_to_num to convert them to zeros upon projection.</p>
-<dl>
-<dt>Args:</dt><dd><p>xs (array_like): input values to evaluate the basis spline at
-oob_val (float, optional): value to return for out-of-bounds values. Defaults to -9.</p>
-<blockquote>
-<div><p>WARNING: nan or -inf breaks autograd.</p>
-</div></blockquote>
+<span class="sig-name descname"><span class="pre">bases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/interpolation.html#LogYBSpline.bases"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.interpolation.LogYBSpline.bases" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the basis spline design matrix at xs. -inf will be used for out-of-range values.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>xs (array_like): input values to evaluate the basis spline at</p>
 </dd>
 <dt>Returns:</dt><dd><p>array_like: the design matrix evaluated at xs. shape (N, <a href="#id1"><span class="problematic" id="id2">*</span></a>xs.shape)</p>
 </dd>
@@ -789,7 +782,7 @@ coefs (array_like): coefficients for the basis components</p>
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.6.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     <br/>
   </p>
 </div>
