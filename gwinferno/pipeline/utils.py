@@ -80,7 +80,7 @@ def load_pe_and_injections_as_dict(file):
 
     total_inj = data.inj_data.attrs["total_generated"]
     obs_time = data.inj_data.attrs["analysis_time"]
-    nObs = data.pe_data.posteriors.shape[0]
+    nObs = float(data.pe_data.posteriors.shape[0])
 
     constants = {"total_inj": total_inj, "obs_time": obs_time, "nObs": nObs}
 
@@ -211,10 +211,10 @@ def posterior_dict_to_xarray(posteriors):
 
     for key in posteriors.keys():
         n_samples = posteriors[key].shape[0]
-        posteriors[key] = {"dims": "sample", "data": posteriors[key]}
+        posteriors[key] = {"dims": "draw", "data": posteriors[key]}
 
         if posteriors[key]["data"].shape != (n_samples,):
-            new_dims = ["samples"] + [f"{key}_dim{i + 2}" for i in range(len(posteriors[key]["data"].shape) - 1)]
+            new_dims = ["draw"] + [f"{key}_dim{i + 2}" for i in range(len(posteriors[key]["data"].shape) - 1)]
             posteriors[key]["dims"] = new_dims
 
     return xr.Dataset.from_dict(posteriors)
@@ -223,15 +223,18 @@ def posterior_dict_to_xarray(posteriors):
 def pdf_dict_to_xarray(pdf_dict, param_dict, n_samples, subpop_names=None):
     xr_dict = {}
     if subpop_names is None:
-        pdfs = {f"{key}_pdfs": (["sample", key], item) for key, item in pdf_dict.items()}
+        pdfs = {f"{key}_pdfs": (["draw", key], item) for key, item in pdf_dict.items()}
         xr_dict = xr_dict | pdfs
     else:
+        z = {'redshift_pdfs': (["draw", 'redshift'], pdf_dict['redshift'])}
+        xr_dict | z
+        del pdf_dict['redshift']
         for i, nm in enumerate(subpop_names):
-            single = {f"{nm}_{key}_pdfs": (["sample", key], item[i]) for key, item in pdf_dict.items()}
+            single = {f"{nm}_{key}_pdfs": (["draw", key], item[i]) for key, item in pdf_dict.items()}
             xr_dict = xr_dict | single
 
     coords = {key: ([key], item) for key, item in param_dict.items()}
-    coords = coords | {"samples": (["samples"], jnp.arange(n_samples))}
+    coords = coords | {"draw": (["draw"], jnp.arange(n_samples))}
 
     pdf_dataset = xr.Dataset(xr_dict, coords=coords)
 
