@@ -267,13 +267,12 @@ def hierarchical_likelihood(
                 "Qs",
                 dist.Categorical(probs=jnp.array(pop_frac)),
                 rng_key=rngkey,
-            ).reshape((-1,1))
-            mix_pe_weights = jnp.where(Qs[i]==0, pe_weights[0][i], pe_weights[1][i])
+            ).reshape((-1, 1))
+            mix_pe_weights = jnp.where(Qs[i] == 0, pe_weights[0][i], pe_weights[1][i])
             logBFs, logn_effs = per_event_log_bayes_factors(mix_pe_weights, log=log)
     else:
 
         logBFs, logn_effs, var_L = per_event_log_bayes_factors(pe_weights, log=log)
-
 
     log_det_eff, logn_eff_inj = detection_efficiency(inj_weights, total_inj, log=log)
     numpyro.deterministic("log_nEff_inj", logn_eff_inj)

@@ -226,9 +226,9 @@ def pdf_dict_to_xarray(pdf_dict, param_dict, n_samples, subpop_names=None):
         pdfs = {f"{key}_pdfs": (["draw", key], item) for key, item in pdf_dict.items()}
         xr_dict = xr_dict | pdfs
     else:
-        z = {'redshift_pdfs': (["draw", 'redshift'], pdf_dict['redshift'])}
+        z = {"redshift_pdfs": (["draw", "redshift"], pdf_dict["redshift"])}
         xr_dict | z
-        del pdf_dict['redshift']
+        del pdf_dict["redshift"]
         for i, nm in enumerate(subpop_names):
             single = {f"{nm}_{key}_pdfs": (["draw", key], item[i]) for key, item in pdf_dict.items()}
             xr_dict = xr_dict | single
