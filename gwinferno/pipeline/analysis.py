@@ -5,12 +5,10 @@ a module that stores the meat of the calculations for hierarchical population in
 from functools import partial
 
 import jax.numpy as jnp
-import numpy as np
 import numpyro
 import numpyro.distributions as dist
 from jax import jit
 from jax import random
-from jax.scipy.integrate import trapezoid
 from jax.scipy.special import logsumexp
 from numpyro.infer import SVI
 from numpyro.infer import Trace_ELBO
