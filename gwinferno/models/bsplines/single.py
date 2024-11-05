@@ -443,12 +443,15 @@ class BSplineRedshift(Base1DBSplineModel):
             basis=basis,
             **kwargs,
         )
-        self.zmax = zmax
-        self.dVcdzgrid = jnp.array(Planck15.dVcdz(np.linspace(1e-4, zmax, 2500)))
+        self.zmin = jnp.max(jnp.array([jnp.min(z), jnp.min(z_inj)]))
+        self.zmax = jnp.min(jnp.array([jnp.max(z), jnp.max(z_inj)]))
+        self.zgrid = jnp.linspace(self.zmin, self.zmax, 1000)
+        self.dVcdzgrid = Planck15.dVcdz(self.zgrid)
+        self.grid_bases = self.interpolator.bases(self.zgrid)
         self.differential_comov_vols = [dVdc_inj, dVdc]
         self.zs = [z_inj, z]
 
-    def norm(self, coefs):
+    def normalization(self, cs):
         """Compute the normalization coefficient for the redshift basis spline; useful for computing the merger rate.
 
         Parameters
@@ -462,8 +465,8 @@ class BSplineRedshift(Base1DBSplineModel):
             The redshift normalization constant.
         """
         return trapezoid(
-            self.dVcdzgrid / (1 + self.grid) * jnp.einsum("i...,i->...", self.grid_bases, coefs),
-            self.grid,
+            self.dVcdzgrid / (1 + self.zgrid) * jnp.exp(jnp.einsum("i...,i->...", self.grid_bases, cs)),
+            self.zgrid,
         )
 
     def __call__(self, coefs, pe_samples=True):
@@ -484,7 +487,7 @@ class BSplineRedshift(Base1DBSplineModel):
             Merger-rate per unit redshift in the detector-frame :math:`R`.
         """
         return (
-            self.funcs[1](coefs) * self.differential_comov_vols[1] / (1 + self.zs[1])
+            jnp.exp(self.funcs[1](coefs)) * self.differential_comov_vols[1] / (1 + self.zs[1]) / self.normalization(coefs)
             if pe_samples
-            else self.funcs[0](coefs) * self.differential_comov_vols[0] / (1 + self.zs[0])
+            else jnp.exp(self.funcs[0](coefs)) * self.differential_comov_vols[0] / (1 + self.zs[0]) / self.normalization(coefs)
         )
