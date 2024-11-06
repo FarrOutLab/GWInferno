@@ -1,5 +1,4 @@
 import jax.numpy as jnp
-import numpy as np
 from jax.scipy.integrate import trapezoid
 
 from gwinferno.cosmology import PLANCK_2015_Cosmology as Planck15
@@ -7,8 +6,8 @@ from gwinferno.cosmology import PLANCK_2015_Cosmology as Planck15
 from ...distributions import betadist
 from ...distributions import powerlaw_logit_pdf
 from ...distributions import powerlaw_pdf
-from ...distributions import truncnorm_pdf
 from ...distributions import smooth
+from ...distributions import truncnorm_pdf
 
 # subset Of Models From https://github.com/ColmTalbot/gwpopulation
 
@@ -37,17 +36,17 @@ def powerlaw_primary_ratio_falloff_pdf(m1, q, alpha, beta, mmin, mmax, fall_off)
     return p_q * p_m1
 
 
-def plpeak_primary_ratio_pdf(m1, q, alpha, beta, mmin, mmax, mpp, sigpp, lam, delta = None):
+def plpeak_primary_ratio_pdf(m1, q, alpha, beta, mmin, mmax, mpp, sigpp, lam, delta=None):
     p_q = powerlaw_pdf(q, beta, mmin / m1, 1)
-    p_m1 = plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam, delta = delta)
-    
+    p_m1 = plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam, delta=delta)
+
     if delta is None:
         return p_q * p_m1
     else:
-        return p_q * smooth(delta, q*m1, mmin) * p_m1
+        return p_q * smooth(delta, q * m1, mmin) * p_m1
 
 
-def plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam, delta = None):
+def plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam, delta=None):
     if delta is None:
         return (1 - lam) * powerlaw_pdf(m1, alpha, mmin, mmax) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax)
     else:
