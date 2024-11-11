@@ -27,6 +27,8 @@ git clone https://github.com/FarrOutLab/GWInferno.git
 
 Recommended to use conda to set up your environment with python>=3.9:
 
+### For CPU
+
 For CPU usage only create an environment and install requirements and GWInferno with:
 
 ```bash
@@ -38,8 +40,31 @@ pip install --upgrade pip
 pip install -r pip_requirements.txt
 python -m pip install .
 ```
+### For GPU
 
-To enable JAX access to CUDA enabled GPUs we need to specify specific versions to install (See [JAX](https://github.com/google/jax) installation instructions for more details). For a GPU enabled environment use:
+To enable JAX access to CUDA enabled GPUs we need to specify specific versions to install. The following procedure will only work for Linux x86_64 and Linux aarch64; for other platforms see [Jax documentation](https://jax.readthedocs.io/en/latest/installation.html)
+
+Jax recommends installing Nvidia CUDA and cuDNN with pip wheels. If you use local installations of CUDA and cuDNN, which could be the case for a remote cluster, then you'll need to install jax from the single CUDA wheel variant it offers. As of writing, this wheel is only compatible with CUDA >= 12.1 and cuDNN >= 9.1 < 10.0. See [JAX](https://github.com/google/jax) installation instructions for more details.
+
+#### Installation process for CUDA installed via pip:
+
+```bash
+cd gwinferno
+conda create -n gwinferno_gpu python=3.12
+conda activate gwinferno_gpu
+pip install --upgrade pip
+```
+Next, install CUDA and cuDNN pip wheels. See [Nvidia's CUDA quickstart guide](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#pip-wheels-linux) for the CUDA installation procedure and the [cuDNN documentation](https://docs.nvidia.com/deeplearning/cudnn/latest/installation/linux.html#installing-cudnn-with-pip) for the cuDNN installation procedure. Once that has finished, continue with these steps:
+```
+pip install --upgrade "jax[cuda12]"
+pip install numpyro[cuda]
+pip install -r pip_requirements.txt
+python -m pip install .
+```
+
+#### Installation process for locally installed CUDA and cuDNN:
+
+Ensure [Nvidia CUDA](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#linux) and [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/latest/installation/linux.html) are installed locally. 
 
 ```bash
 cd gwinferno
@@ -50,16 +75,6 @@ pip install --upgrade "jax[cuda12_local]"
 pip install numpyro[cuda]
 pip install -r pip_requirements.txt
 python -m pip install .
-```
-
-Install popsummary dependency:
-
-In a folder outside the gwinferno folder, run (make sure gwinferno conda environemnt is active):
-
-```bash
-git clone https://git.ligo.org/zoheyr-doctor/popsummary.git
-cd popsummary
-pip install .
 ```
 
 ## License 
