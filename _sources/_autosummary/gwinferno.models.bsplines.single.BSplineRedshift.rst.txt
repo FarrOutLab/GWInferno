@@ -17,7 +17,7 @@ gwinferno.models.bsplines.single.BSplineRedshift
    
          ~BSplineRedshift.eval_spline
          ~BSplineRedshift.inj_pdf
-         ~BSplineRedshift.norm
+         ~BSplineRedshift.normalization
          ~BSplineRedshift.pe_pdf
    
    

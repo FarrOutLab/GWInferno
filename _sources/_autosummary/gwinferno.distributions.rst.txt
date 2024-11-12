@@ -21,6 +21,7 @@ gwinferno.distributions
       logistic_unit
       powerlaw_logit_pdf
       powerlaw_pdf
+      smooth
       truncnorm_pdf
    
    

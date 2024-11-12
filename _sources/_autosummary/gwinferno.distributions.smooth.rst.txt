@@ -1,0 +1,6 @@
+gwinferno.distributions.smooth
+==============================
+
+.. currentmodule:: gwinferno.distributions
+
+.. autofunction:: smooth
