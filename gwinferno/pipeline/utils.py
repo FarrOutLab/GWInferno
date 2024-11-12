@@ -2,6 +2,7 @@ from argparse import ArgumentParser
 
 import arviz as az
 import jax.numpy as jnp
+import numpy as np
 import numpyro
 import numpyro.distributions as dist
 import xarray as xr
@@ -47,7 +48,7 @@ Load data
 """
 
 
-def load_pe_and_injections_as_dict(file):
+def load_pe_and_injections_as_dict(file, ignore=None):
     """Load PE and injection file created by `gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata()`.
 
     Parameters
@@ -73,14 +74,22 @@ def load_pe_and_injections_as_dict(file):
     data = az.from_netcdf(file)
     print(f"data file {file} loaded")
 
-    pedict = {k: jnp.asarray(data.pe_data.posteriors.sel(param=k).values) for k in data.pe_data.param.values}
+    if ignore is not None:
+        sel = np.zeros(data.pe_data["event"].values.shape, dtype=bool)
+        for gw in ignore:
+            sel += data.pe_data["event"] == gw
+        sel = ~sel
+        pedict = {k: jnp.asarray(data.pe_data.posteriors.sel(param=k).values[sel]) for k in data.pe_data.param.values}
+    else:
+        pedict = {k: jnp.asarray(data.pe_data.posteriors.sel(param=k).values) for k in data.pe_data.param.values}
+
     injdict = {k: jnp.asarray(data.inj_data.injections.sel(param=k).values) for k in data.inj_data.param.values}
 
     param_names = list(data.pe_data.param.values)
 
     total_inj = data.inj_data.attrs["total_generated"]
     obs_time = data.inj_data.attrs["analysis_time"]
-    nObs = float(data.pe_data.posteriors.shape[0])
+    nObs = data.pe_data.posteriors.shape[0]
 
     constants = {"total_inj": total_inj, "obs_time": obs_time, "nObs": nObs}
 

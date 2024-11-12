@@ -5,13 +5,10 @@ a module that stores the meat of the calculations for hierarchical population in
 from functools import partial
 
 import jax.numpy as jnp
-import numpy as np
 import numpyro
 import numpyro.distributions as dist
-from astropy.cosmology import Planck15
 from jax import jit
 from jax import random
-from jax.scipy.integrate import trapezoid
 from jax.scipy.special import logsumexp
 from numpyro.infer import SVI
 from numpyro.infer import Trace_ELBO
@@ -133,49 +130,18 @@ def detection_efficiency(weights, Ninj, log=False):
     return logmu, logn_eff
 
 
-class TotalVTCalculator(object):
-    """
-    TotalVTCalculator Object to calculate surveyed hyper-volume out to a maximum redshift
-    """
-
-    def __init__(self, maxz=1.9):
-        """
-        Args:
-            maxz (float, optional): maximum redshift to integrate out to. Defaults to 1.9.
-        """
-        self.zmax = maxz
-        self.zs = jnp.linspace(1e-4, maxz, 1000)
-        self.dVdcs = jnp.array(Planck15.differential_comoving_volume(np.array(self.zs)).value * 4.0 * np.pi)
-
-    def __call__(self, lamb=0):
-        """Perform trapezoidal integration to get total hypervolume
-
-        Parameters
-        ----------
-        lamb : int, optional
-            Exponent of power-law rate evolution. Defaults to `0` (uniform with co-moving volume).
-
-        Returns
-        -------
-        float
-            Total hypervolume out to `z=zmax`. In units of `Gpc^3*yr`.
-        """
-        return trapezoid(self.dVdcs * jnp.power(1 + self.zs, lamb - 1), self.zs)
-
-
 def hierarchical_likelihood(
     pe_weights,
     inj_weights,
     total_inj,
     Nobs,
     Tobs,
+    surveyed_hypervolume_function,
     categorical=False,
     marginal_qs=False,
     indv_weights=None,
     rngkey=None,
     pop_frac=None,
-    surv_hypervolume_fct=TotalVTCalculator(),
-    vtfct_kwargs={"lamb": 0},
     marginalize_selection=False,
     reconstruct_rate=True,
     min_neff_cut=True,
@@ -280,7 +246,7 @@ def hierarchical_likelihood(
     numpyro.deterministic("logBFs", logBFs)
     numpyro.deterministic("detection_efficiency", jnp.exp(log_det_eff))
     if reconstruct_rate:
-        total_vt = numpyro.deterministic("surveyed_hypervolume", surv_hypervolume_fct(**vtfct_kwargs) / 1.0e9 * Tobs)
+        total_vt = numpyro.deterministic("surveyed_hypervolume", surveyed_hypervolume_function / 1.0e9 * Tobs)
         unscaled_rate = numpyro.sample("unscaled_rate", dist.Gamma(Nobs))
         rate = numpyro.deterministic("rate", unscaled_rate / jnp.exp(log_det_eff) / total_vt)
     if marginalize_selection:
