@@ -41,7 +41,7 @@ def norm_mass_model(alpha, beta, mmin, mmax):
 class TestModelInference(unittest.TestCase):
     def setUp(self) -> None:
         self.mmin = 5.0
-        self.mmax = 85.0
+        self.mmax = 100.0
 
         if os.path.exists("~/unit_tests/data"):
             pref = "~/unit_tests/data"
