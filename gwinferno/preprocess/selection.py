@@ -109,7 +109,7 @@ def get_o3_cumulative_injection_dict(fi, param_names, ifar=1, snr=10, additional
         analysis_time = None
         for key in "analysis_time", "total_analysis_time", "analysis_time_s":
             if key in ff.attrs:
-                analysis_time = ff.attrs[key] / 365.25 / 24 / 60 / 60
+                analysis_time = ff.attrs[key][()] / 365.25 / 24 / 60 / 60
         if analysis_time is None:
             raise Exception("analysis time not found")
 
