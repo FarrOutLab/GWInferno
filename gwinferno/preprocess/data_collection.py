@@ -69,7 +69,7 @@ def processed_catalog_dataset_from_dict(catalog_dict, mmax=100.0):
             sel = np.ones_like(catalog_dict[ev]["posterior"][param_mapping["mass_1"]], dtype=bool)
             if np.sum(catalog_dict[ev]["posterior"][param_mapping["mass_1"]] > mmax) > 0:
                 print(np.sum(catalog_dict[ev]["posterior"][param_mapping["mass_1"]] > mmax))
-                print(f"removing samples from {ev} with mass_1 > 100")
+                print(f"removing samples from {ev} with mass_1 > {mmax}")
                 sel = catalog_dict[ev]["posterior"][param_mapping["mass_1"]] < mmax
 
             data = np.array([catalog_dict[ev]["posterior"][param_mapping[param]][sel] for param in list(param_mapping.keys())])
