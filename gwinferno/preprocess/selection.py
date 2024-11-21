@@ -45,7 +45,7 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
     )
 
     inj_weights = inj_weights
-    total_generated = int(total_generated)
+    total_generated = total_generated
     analysis_time = analysis_time / 365.25 / 24 / 60 / 60
 
     injs["prior"] = jnp.exp(injections["lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z"][found]) / inj_weights
@@ -98,7 +98,7 @@ def get_o3_cumulative_injection_dict(fi, param_names, ifar=1, snr=10, additional
             redshift=data["redshift"][()][found],
         )
 
-        total_generated = int(data.attrs["total_generated"][()])
+        total_generated = data.attrs["total_generated"][()]
         analysis_time = data.attrs["analysis_time_s"][()] / 365.25 / 24 / 60 / 60
 
         injs["prior"] = data["sampling_pdf"][()][found]
