@@ -29,11 +29,11 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
         injections = np.asarray(ff["events"][:])
 
         analysis_time = None
-        for key in 'analysis_time', 'total_analysis_time', 'analysis_time_s':
+        for key in "analysis_time", "total_analysis_time", "analysis_time_s":
             if key in ff.attrs:
-                analysis_time = f.attrs[key]
+                analysis_time = ff.attrs[key]
         if analysis_time is None:
-            raise Exception('analysis time not found')
+            raise Exception("analysis time not found")
 
     found = injections["semianalytic_observed_phase_maximized_snr_net"] >= snr
 
@@ -107,11 +107,11 @@ def get_o3_cumulative_injection_dict(fi, param_names, ifar=1, snr=10, additional
         total_generated = data.attrs["total_generated"][()]
 
         analysis_time = None
-        for key in 'analysis_time', 'total_analysis_time', 'analysis_time_s':
+        for key in "analysis_time", "total_analysis_time", "analysis_time_s":
             if key in ff.attrs:
-                analysis_time = f.attrs[key] / 365.25 / 24 / 60 / 60
+                analysis_time = ff.attrs[key] / 365.25 / 24 / 60 / 60
         if analysis_time is None:
-            raise Exception('analysis time not found')
+            raise Exception("analysis time not found")
 
         injs["prior"] = data["sampling_pdf"][()][found]
 
