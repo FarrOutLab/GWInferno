@@ -136,7 +136,7 @@ def hierarchical_likelihood(
     total_inj,
     Nobs,
     Tobs,
-    surveyed_hypervolume_function,
+    surveyed_hypervolume=None,
     categorical=False,
     marginal_qs=False,
     indv_weights=None,
@@ -188,12 +188,8 @@ def hierarchical_likelihood(
         Tuple of true astrophysical population fractions.
         Shape is number of categorical subpopulations, needs to sum to 1, and is
         needed if `categorical=True`. Defaults to `None`.
-    surv_hypervolume_fct : callable, optional
-        Callable function to calculate total VT (normalization of the redshift model).
-        Defaults to `TotalVTCalculator()`.
-    vtfct_kwargs : dict, optional
-        Diction of args needed to call `surv_hypervolume_fct()`.
-        Defaults to `{"lamb": 0}`.
+    surveyed_hypervolume : float
+        Total VT (normalization of the redshift model).
     marginalize_selection : bool, optional
         Flag to marginalize over uncertainty in selection monte carlo integral.
         Defaults to `True`.
@@ -246,7 +242,7 @@ def hierarchical_likelihood(
     numpyro.deterministic("logBFs", logBFs)
     numpyro.deterministic("detection_efficiency", jnp.exp(log_det_eff))
     if reconstruct_rate:
-        total_vt = numpyro.deterministic("surveyed_hypervolume", surveyed_hypervolume_function / 1.0e9 * Tobs)
+        total_vt = numpyro.deterministic("surveyed_hypervolume", surveyed_hypervolume / 1.0e9 * Tobs)
         unscaled_rate = numpyro.sample("unscaled_rate", dist.Gamma(Nobs))
         rate = numpyro.deterministic("rate", unscaled_rate / jnp.exp(log_det_eff) / total_vt)
     if marginalize_selection:
@@ -368,8 +364,7 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
             total_inj=Ninj,
             Nobs=Nobs,
             Tobs=Tobs,
-            surveyed_hypervolume_function=lambda *_: pop_models["redshift"].norm,
-            vtfct_kwargs={},
+            surveyed_hypervolume=pop_models["redshift"].norm,
             marginalize_selection=marginalize_selection,
             min_neff_cut=min_neff_cut,
             posterior_predictive_check=posterior_predictive_check,
