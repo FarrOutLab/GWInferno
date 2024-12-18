@@ -302,7 +302,10 @@ def hierarchical_likelihood(
             ),
         )
 
-    variance = numpyro.deterministic("variance_log_likelihood", Nobs * variance + variances.sum())
+    variance = numpyro.deterministic(
+        "variance_log_likelihood",
+        Nobs**2 * variance + variances.sum(),
+    )
     if max_variance_cut:
         log_l = numpyro.deterministic(
             "variance_less_1",
