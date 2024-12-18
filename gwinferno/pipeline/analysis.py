@@ -250,9 +250,11 @@ def hierarchical_likelihood(
         unscaled_rate = numpyro.sample("unscaled_rate", dist.Gamma(Nobs))
         rate = numpyro.deterministic("rate", unscaled_rate / jnp.exp(log_det_eff) / total_vt)
     if marginalize_selection:
+        log_det_eff = log_det_eff - (3 + Nobs) / (2 * jnp.exp(logn_eff_inj))
+    if min_neff_cut:
         log_det_eff = jnp.where(
             jnp.greater_equal(logn_eff_inj, jnp.log(4 * Nobs)),
-            log_det_eff - (3 + Nobs) / (2 * jnp.exp(logn_eff_inj)),
+            log_det_eff,
             jnp.inf,
         )
     sel = numpyro.deterministic(
