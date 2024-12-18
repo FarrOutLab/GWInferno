@@ -236,12 +236,12 @@ def hierarchical_likelihood(
     """
     if max_variance_cut and (marginalize_selection or min_neff_cut):
         raise ValueError(
-            'max_variance_cut is True which requires marginalize_selection and `
-            'min_neff_cut to be False but got '
-            f'marginalize_selection = {marginalize_selection} '
-            f'and min_neff_cut = {min_neff_cut}',
+            "max_variance_cut is True which requires marginalize_selection and "
+            "min_neff_cut to be False but got "
+            f"marginalize_selection = {marginalize_selection} "
+            f"and min_neff_cut = {min_neff_cut}",
         )
-    
+
     rate = None
     if categorical:
         with numpyro.plate("nObs", Nobs) as i:
