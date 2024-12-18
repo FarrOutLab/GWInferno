@@ -148,8 +148,8 @@ def hierarchical_likelihood(
     indv_weights=None,
     rngkey=None,
     pop_frac=None,
-    marginalize_selection=False,
     reconstruct_rate=True,
+    marginalize_selection=False,
     min_neff_cut=True,
     max_variance_cut=False,
     posterior_predictive_check=False,
@@ -353,7 +353,14 @@ def hierarchical_likelihood(
     return rate
 
 
-def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marginalize_selection=False, posterior_predictive_check=True):
+def construct_hierarchical_model(
+    model_dict,
+    prior_dict,
+    marginalize_selection=False,
+    min_neff_cut=True,
+    max_variance_cut=False,
+    posterior_predictive_check=True,
+):
     source_param_names = [k for k in model_dict.keys()]
     hyper_params = {k: None for k in prior_dict.keys()}
     pop_models = {k: None for k in model_dict.keys()}
@@ -400,6 +407,7 @@ def construct_hierarchical_model(model_dict, prior_dict, min_neff_cut=True, marg
             surveyed_hypervolume=pop_models["redshift"].norm,
             marginalize_selection=marginalize_selection,
             min_neff_cut=min_neff_cut,
+            max_variance_cut=max_variance_cut,
             posterior_predictive_check=posterior_predictive_check,
             pedata=samps,
             injdata=injs,
