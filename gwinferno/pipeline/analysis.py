@@ -70,6 +70,8 @@ def per_event_log_bayes_factors(weights, log=False):
         Array of per-event log bayes factors.
     jax.DeviceArray
         Array of per-event log effective samples sizes from Monte Carlo integrals.
+    jax.DeviceArray
+        Array of per-event estimated variances from log of Monte Carlo integrals.
     """
     if log:
         logweights = weights
@@ -82,7 +84,8 @@ def per_event_log_bayes_factors(weights, log=False):
         BFs /= weights.shape[1]
         logBFs = jnp.log(BFs)
         logn_effs = jnp.log(n_effs)
-    return logBFs, logn_effs
+    variances = 1 / jnp.exp(logn_effs) - 1 / weights.shape[1]
+    return logBFs, logn_effs, variances
 
 
 @partial(jit, static_argnames=["log"])
@@ -114,7 +117,9 @@ def detection_efficiency(weights, Ninj, log=False):
     jax.DeviceArray
         Array of log detection efficiency.
     jax.DeviceArray
-        Array of log N_eff from Monte Carlo Integral.
+        Array of log N_eff from Monte Carlo integral.
+    jax.DeviceArray
+        Array of variance estimated from log of Monte Carlo integral.
     """
     if log:
         logweights = weights
@@ -127,7 +132,8 @@ def detection_efficiency(weights, Ninj, log=False):
         var = jnp.sum(weights**2) / Ninj**2 - mu**2 / Ninj
         logmu = jnp.log(mu)
         logn_eff = 2 * logmu - jnp.log(var)
-    return logmu, logn_eff
+    variance = 1 / jnp.exp(logn_eff) - 1 / Ninj
+    return logmu, logn_eff, variance
 
 
 def hierarchical_likelihood(
@@ -145,6 +151,7 @@ def hierarchical_likelihood(
     marginalize_selection=False,
     reconstruct_rate=True,
     min_neff_cut=True,
+    max_variance_cut=False,
     posterior_predictive_check=False,
     param_names=None,
     pedata=None,
@@ -174,6 +181,8 @@ def hierarchical_likelihood(
         Total number of observed events analyzing.
     Tobs : float
         Time spent observing to produce catalog (in yrs).
+    surveyed_hypervolume : float
+        Total VT (normalization of the redshift model).
     categorical : bool, optional
         If `True` use latent categorical parameters to assign
         each event to one of many subpopulations. Defaults to `False`.
@@ -188,8 +197,6 @@ def hierarchical_likelihood(
         Tuple of true astrophysical population fractions.
         Shape is number of categorical subpopulations, needs to sum to 1, and is
         needed if `categorical=True`. Defaults to `None`.
-    surveyed_hypervolume : float
-        Total VT (normalization of the redshift model).
     marginalize_selection : bool, optional
         Flag to marginalize over uncertainty in selection monte carlo integral.
         Defaults to `True`.
@@ -198,6 +205,11 @@ def hierarchical_likelihood(
     min_neff_cut : bool, optional
         Flag to use the `min_neff` cut on the likelihood ensuring Monte Carlo
         integrals converge. Defaults to `True`.
+    max_variance_cut : bool, optional
+        Flag to use a cut on the maximum allowed variance < 1 estimated for the
+        total log likelihood. If this is `True`, then `marginalize_selection` and
+        `min_neff_cut` must be `False`.
+        Defaults to `False`.
     posterior_predictive_check : bool, optional
         Flag to sample from the PE/injection data to perform posterior predictive check.
         Defaults to `False`.
@@ -222,6 +234,14 @@ def hierarchical_likelihood(
     float
         Marginalized merger rate in units of `Gpc^-3 yr^-1`.
     """
+    if max_variance_cut and (marginalize_selection or min_neff_cut):
+        raise ValueError(
+            'max_variance_cut is True which requires marginalize_selection and `
+            'min_neff_cut to be False but got '
+            f'marginalize_selection = {marginalize_selection} '
+            f'and min_neff_cut = {min_neff_cut}',
+        )
+    
     rate = None
     if categorical:
         with numpyro.plate("nObs", Nobs) as i:
@@ -231,16 +251,18 @@ def hierarchical_likelihood(
                 rng_key=rngkey,
             ).reshape((-1, 1))
             mix_pe_weights = jnp.where(Qs[i] == 0, pe_weights[0][i], pe_weights[1][i])
-            logBFs, logn_effs = per_event_log_bayes_factors(mix_pe_weights, log=log)
+            logBFs, logn_effs, variances = per_event_log_bayes_factors(mix_pe_weights, log=log)
     else:
 
-        logBFs, logn_effs = per_event_log_bayes_factors(pe_weights, log=log)
+        logBFs, logn_effs, variances = per_event_log_bayes_factors(pe_weights, log=log)
 
-    log_det_eff, logn_eff_inj = detection_efficiency(inj_weights, total_inj, log=log)
+    log_det_eff, logn_eff_inj, variance = detection_efficiency(inj_weights, total_inj, log=log)
     numpyro.deterministic("log_nEff_inj", logn_eff_inj)
     numpyro.deterministic("log_nEffs", logn_effs)
     numpyro.deterministic("logBFs", logBFs)
     numpyro.deterministic("detection_efficiency", jnp.exp(log_det_eff))
+    numpyro.deterministic("variance_log_BFs", variances)
+    numpyro.deterministic("variance_log_detection_efficiency", variance)
     if reconstruct_rate:
         total_vt = numpyro.deterministic("surveyed_hypervolume", surveyed_hypervolume / 1.0e9 * Tobs)
         unscaled_rate = numpyro.sample("unscaled_rate", dist.Gamma(Nobs))
@@ -277,6 +299,17 @@ def hierarchical_likelihood(
                 jnp.less_equal(min_n_effs, Nobs),
                 jnp.nan_to_num(-jnp.inf),
                 log_l,
+            ),
+        )
+
+    variance = numpyro.deterministic("variance_log_likelihood", Nobs * variance + variances.sum())
+    if max_variance_cut:
+        log_l = numpyro.deterministic(
+            "variance_less_1",
+            jnp.where(
+                jnp.less_equal(variance, 1),
+                log_l,
+                jnp.nan_to_num(-jnp.inf),
             ),
         )
 
