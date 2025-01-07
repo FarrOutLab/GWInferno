@@ -94,6 +94,14 @@ def independent_spin_tilt(ct1, ct2, xi_tilt_1, xi_tilt_2, sigma_tilt1, sigma_til
     return mixture_isoalign_spin_tilt(ct1, xi_tilt_1, sigma_tilt1) * mixture_isoalign_spin_tilt(ct2, xi_tilt_2, sigma_tilt2)
 
 
+def default_spin_tilt(ct1, ct2, xi_tilt, sigma_tilt):
+    iso1 = jnp.where(jnp.greater(ct1, 1) | jnp.less(ct1, -1), 0, 0.5)
+    iso2 = jnp.where(jnp.greater(ct2, 1) | jnp.less(ct2, -1), 0, 0.5)
+    ali1 = truncnorm_pdf(ct1, 1, sigma_tilt, -1, 1)
+    ali2 = truncnorm_pdf(ct2, 1, sigma_tilt, -1, 1)
+    return (1 - xi_tilt) * iso1 * iso2 + xi_tilt * ali1 * ali2
+
+
 """
 ***************************************
 REDSHIFT MODELS
