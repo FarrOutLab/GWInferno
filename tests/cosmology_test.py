@@ -3,15 +3,16 @@ import unittest
 import jax.numpy as jnp
 import numpy as np
 from astropy import units as u
+from astropy.cosmology import FlatLambdaCDM
 from astropy.cosmology import Planck15 as astropy_cosmology
 from astropy.cosmology import z_at_value
 
 from gwinferno.cosmology import PLANCK_2015_Cosmology as cosmology
-
 from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology as lvk_cosmology
-from gwinferno.cosmology import PLANCK_2015_LVK_Ho, PLANCK_2015_LVK_OmegaMatter
-from astropy.cosmology import FlatLambdaCDM
-astropy_lvk_cosmology = FlatLambdaCDM(H0=PLANCK_2015_LVK_Ho*1e-3, Om0=PLANCK_2015_LVK_OmegaMatter)
+from gwinferno.cosmology import PLANCK_2015_LVK_Ho
+from gwinferno.cosmology import PLANCK_2015_LVK_OmegaMatter
+
+astropy_lvk_cosmology = FlatLambdaCDM(H0=PLANCK_2015_LVK_Ho * 1e-3, Om0=PLANCK_2015_LVK_OmegaMatter)
 
 
 class TestDefaultCosmology(unittest.TestCase):
@@ -85,7 +86,8 @@ class TestLVKCosmology(unittest.TestCase):
         dl_gpc_astropy = astropy_lvk_cosmology.luminosity_distance(self.zs).to(u.Gpc).value
         dl2_prior = dl_gpc**2 * (dl_gpc / (1 + self.zs) + (1 + self.zs) * lvk_cosmology.dDcdz(self.zs) / 1e3)
         dl2_prior_astropy = dl_gpc_astropy**2 * (
-            dl_gpc_astropy / (1 + self.zs) + (1 + self.zs) * astropy_lvk_cosmology.hubble_distance.to(u.Gpc).value / astropy_lvk_cosmology.efunc(self.zs)
+            dl_gpc_astropy / (1 + self.zs)
+            + (1 + self.zs) * astropy_lvk_cosmology.hubble_distance.to(u.Gpc).value / astropy_lvk_cosmology.efunc(self.zs)
         )
         frac_errs = jnp.abs(dl2_prior - dl2_prior_astropy) / dl2_prior
         self.assertTrue(jnp.all(frac_errs < threshold))
