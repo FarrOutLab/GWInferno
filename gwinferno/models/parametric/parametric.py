@@ -64,10 +64,6 @@ def beta_spin_magnitude(a, alpha, beta, amax=1):
     return betadist(a, alpha, beta, scale=amax)
 
 
-def mixture_isoalign_spin_tilt(ct, xi_tilt, sigma_tilt):
-    return (1 - xi_tilt) / 2 + xi_tilt * truncnorm_pdf(ct, 1, sigma_tilt, -1, 1)
-
-
 def iid_spin_magnitude(a1, a2, alpha_mag, beta_mag, amax=1):
     return betadist(a1, alpha_mag, beta_mag, scale=amax) * betadist(a2, alpha_mag, beta_mag, scale=amax)
 
@@ -83,6 +79,11 @@ def independent_spin_magnitude_beta_dist(
     amax2=1,
 ):
     return betadist(a1, alpha_mag1, beta_mag1, scale=amax1) * betadist(a2, alpha_mag2, beta_mag2, scale=amax2)
+
+
+def mixture_isoalign_spin_tilt(ct, xi_tilt, sigma_tilt):
+    cut = jnp.where(jnp.greater(ct, 1) | jnp.less(ct, -1), 0, 1)
+    return cut * (1 - xi_tilt) / 2 + xi_tilt * truncnorm_pdf(ct, 1, sigma_tilt, -1, 1)
 
 
 def iid_spin_tilt(ct1, ct2, xi_tilt, sigma_tilt):
