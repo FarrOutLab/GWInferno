@@ -397,22 +397,16 @@
 <span class="sd">            Valid parameter options are: &#39;mass_1&#39;, &#39;mass_2&#39;, &#39;mass_ratio&#39;, &#39;redshift&#39;, &#39;a_1&#39;, &#39;a_2&#39;, &#39;cos_tilt_1&#39;, &#39;cos_tilt_2&#39;.</span>
 <span class="sd">            NOTE: &#39;chi_eff&#39; and &#39;chi_p&#39; cannot be accounted for here.</span>
 <span class="sd">            Please use `gwinferno.preprocess.data_collection.load_injection_dataset` if you wish to work in &#39;chi_eff&#39; and &#39;chi_p&#39;.</span>
-<span class="sd">        ifar (int or float, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.</span>
-<span class="sd">        snr (int or float, optional): signal to noise ratio threshold for found injections. Defaults to 10.</span>
+<span class="sd">        ifar (int, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.</span>
+<span class="sd">        snr (int, optional): signal to noise ratio threshold for found injections. Defaults to 10.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        DataArray: xarray DataArray of injection data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">total_generated</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">]</span>
+        <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">]</span>
         <span class="n">injections</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ff</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">][:])</span>
-
-        <span class="n">analysis_time</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="s2">&quot;analysis_time&quot;</span><span class="p">,</span> <span class="s2">&quot;total_analysis_time&quot;</span><span class="p">,</span> <span class="s2">&quot;analysis_time_s&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
-                <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">analysis_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;analysis time not found&quot;</span><span class="p">)</span>
 
     <span class="n">found</span> <span class="o">=</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;semianalytic_observed_phase_maximized_snr_net&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">snr</span>
 
@@ -430,7 +424,7 @@
     <span class="p">)</span>
 
     <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">inj_weights</span>
-    <span class="n">total_generated</span> <span class="o">=</span> <span class="n">total_generated</span>
+    <span class="n">total_generated</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_generated</span><span class="p">)</span>
     <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">analysis_time</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span>
 
     <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">])</span> <span class="o">/</span> <span class="n">inj_weights</span>
@@ -486,14 +480,8 @@
             <span class="n">redshift</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
         <span class="p">)</span>
 
-        <span class="n">total_generated</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">][()]</span>
-
-        <span class="n">analysis_time</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="s2">&quot;analysis_time&quot;</span><span class="p">,</span> <span class="s2">&quot;total_analysis_time&quot;</span><span class="p">,</span> <span class="s2">&quot;analysis_time_s&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
-                <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">][()]</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span>
-        <span class="k">if</span> <span class="n">analysis_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;analysis time not found&quot;</span><span class="p">)</span>
+        <span class="n">total_generated</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">][()])</span>
+        <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;analysis_time_s&quot;</span><span class="p">][()]</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span>
 
         <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sampling_pdf&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span>
 

@@ -381,7 +381,6 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.models.parametric.html">gwinferno.models.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="gwinferno.models.parametric.parametric.html">gwinferno.models.parametric.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.beta_spin_magnitude.html">gwinferno.models.parametric.parametric.beta_spin_magnitude</a></li>
-<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.default_spin_tilt.html">gwinferno.models.parametric.parametric.default_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_magnitude.html">gwinferno.models.parametric.parametric.iid_spin_magnitude</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_tilt.html">gwinferno.models.parametric.parametric.iid_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist.html">gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist</a></li>
@@ -593,8 +592,8 @@ param_names (list of strs): list of parameter names to work in. This should not 
 NOTE: ‘chi_eff’ and ‘chi_p’ cannot be accounted for here.
 Please use <cite>gwinferno.preprocess.data_collection.load_injection_dataset</cite> if you wish to work in ‘chi_eff’ and ‘chi_p’.</p>
 </div></blockquote>
-<p>ifar (int or float, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.
-snr (int or float, optional): signal to noise ratio threshold for found injections. Defaults to 10.</p>
+<p>ifar (int, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.
+snr (int, optional): signal to noise ratio threshold for found injections. Defaults to 10.</p>
 </dd>
 <dt>Returns:</dt><dd><p>DataArray: xarray DataArray of injection data.</p>
 </dd>

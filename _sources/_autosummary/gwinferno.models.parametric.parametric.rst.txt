@@ -16,7 +16,6 @@ gwinferno.models.parametric.parametric
       :nosignatures:
    
       beta_spin_magnitude
-      default_spin_tilt
       iid_spin_magnitude
       iid_spin_tilt
       independent_spin_magnitude_beta_dist

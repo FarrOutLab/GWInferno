@@ -1,6 +1,0 @@
-gwinferno.models.parametric.parametric.default\_spin\_tilt
-==========================================================
-
-.. currentmodule:: gwinferno.models.parametric.parametric
-
-.. autofunction:: default_spin_tilt
