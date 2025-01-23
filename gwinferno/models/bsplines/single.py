@@ -5,7 +5,7 @@ a module that stores 1D population models constructed from BSplines
 import jax.numpy as jnp
 from jax.scipy.integrate import trapezoid
 
-from gwinferno.cosmology import PLANCK_2015_Cosmology as Planck15
+from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology as Planck15
 
 from ...interpolation import BSpline
 from ...interpolation import LogXBSpline
