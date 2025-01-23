@@ -22,6 +22,7 @@ gwinferno.numpyro\_distributions.PSplineCoeficientPrior
          ~PSplineCoeficientPrior.expand_by
          ~PSplineCoeficientPrior.gather_pytree_aux_fields
          ~PSplineCoeficientPrior.gather_pytree_data_fields
+         ~PSplineCoeficientPrior.get_args
          ~PSplineCoeficientPrior.icdf
          ~PSplineCoeficientPrior.infer_shapes
          ~PSplineCoeficientPrior.log_prob
@@ -34,6 +35,7 @@ gwinferno.numpyro\_distributions.PSplineCoeficientPrior
          ~PSplineCoeficientPrior.to_event
          ~PSplineCoeficientPrior.tree_flatten
          ~PSplineCoeficientPrior.tree_unflatten
+         ~PSplineCoeficientPrior.validate_args
    
    
 

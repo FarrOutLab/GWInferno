@@ -22,6 +22,7 @@ gwinferno.numpyro\_distributions.Powerlaw
          ~Powerlaw.expand_by
          ~Powerlaw.gather_pytree_aux_fields
          ~Powerlaw.gather_pytree_data_fields
+         ~Powerlaw.get_args
          ~Powerlaw.icdf
          ~Powerlaw.infer_shapes
          ~Powerlaw.log_prob
@@ -34,6 +35,7 @@ gwinferno.numpyro\_distributions.Powerlaw
          ~Powerlaw.to_event
          ~Powerlaw.tree_flatten
          ~Powerlaw.tree_unflatten
+         ~Powerlaw.validate_args
    
    
 

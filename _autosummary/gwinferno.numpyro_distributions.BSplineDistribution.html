@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,17 +27,17 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/pydata-custom.css?v=c365f546" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=837179f8"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -381,6 +381,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.models.parametric.html">gwinferno.models.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="gwinferno.models.parametric.parametric.html">gwinferno.models.parametric.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.beta_spin_magnitude.html">gwinferno.models.parametric.parametric.beta_spin_magnitude</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.default_spin_tilt.html">gwinferno.models.parametric.parametric.default_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_magnitude.html">gwinferno.models.parametric.parametric.iid_spin_magnitude</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_tilt.html">gwinferno.models.parametric.parametric.iid_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist.html">gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist</a></li>
@@ -508,13 +509,25 @@
 </ul>
 </div>
 </nav></div>
+        <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
     </div>
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -593,41 +606,47 @@
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">gather_pytree_data_fields</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.icdf" title="gwinferno.numpyro_distributions.BSplineDistribution.icdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icdf</span></code></a>(q)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.get_args" title="gwinferno.numpyro_distributions.BSplineDistribution.get_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_args</span></code></a>()</p></td>
+<td><p>Get arguments of the distribution.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.icdf" title="gwinferno.numpyro_distributions.BSplineDistribution.icdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">icdf</span></code></a>(q)</p></td>
 <td><p>The inverse cumulative distribution function of this distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.infer_shapes" title="gwinferno.numpyro_distributions.BSplineDistribution.infer_shapes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_shapes</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.infer_shapes" title="gwinferno.numpyro_distributions.BSplineDistribution.infer_shapes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">infer_shapes</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Infers <code class="docutils literal notranslate"><span class="pre">batch_shape</span></code> and <code class="docutils literal notranslate"><span class="pre">event_shape</span></code> given shapes of args to <a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.__init__" title="gwinferno.numpyro_distributions.BSplineDistribution.__init__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__init__()</span></code></a>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.log_prob" title="gwinferno.numpyro_distributions.BSplineDistribution.log_prob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_prob</span></code></a>(*args, **kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.log_prob" title="gwinferno.numpyro_distributions.BSplineDistribution.log_prob"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_prob</span></code></a>(*args, **kwargs)</p></td>
 <td><p>Evaluates the log probability density for a batch of samples given by <cite>value</cite>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.mask" title="gwinferno.numpyro_distributions.BSplineDistribution.mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mask</span></code></a>(mask)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.mask" title="gwinferno.numpyro_distributions.BSplineDistribution.mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mask</span></code></a>(mask)</p></td>
 <td><p>Masks a distribution by a boolean or boolean-valued array that is broadcastable to the distributions <code class="xref py py-attr docutils literal notranslate"><span class="pre">Distribution.batch_shape</span></code> .</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rsample</span></code>(key[, sample_shape])</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rsample</span></code>(key[, sample_shape])</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.sample" title="gwinferno.numpyro_distributions.BSplineDistribution.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(key[, sample_shape])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.sample" title="gwinferno.numpyro_distributions.BSplineDistribution.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>(key[, sample_shape])</p></td>
 <td><p>Returns a sample from the distribution having shape given by <cite>sample_shape + batch_shape + event_shape</cite>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.sample_with_intermediates" title="gwinferno.numpyro_distributions.BSplineDistribution.sample_with_intermediates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_with_intermediates</span></code></a>(key[, sample_shape])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.sample_with_intermediates" title="gwinferno.numpyro_distributions.BSplineDistribution.sample_with_intermediates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_with_intermediates</span></code></a>(key[, sample_shape])</p></td>
 <td><p>Same as <code class="docutils literal notranslate"><span class="pre">sample</span></code> except that any intermediate computations are returned (useful for <cite>TransformedDistribution</cite>).</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_validate_args</span></code>(value)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_default_validate_args</span></code>(value)</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.shape" title="gwinferno.numpyro_distributions.BSplineDistribution.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>([sample_shape])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.shape" title="gwinferno.numpyro_distributions.BSplineDistribution.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shape</span></code></a>([sample_shape])</p></td>
 <td><p>The tensor shape of samples from this distribution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.to_event" title="gwinferno.numpyro_distributions.BSplineDistribution.to_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_event</span></code></a>([reinterpreted_batch_ndims])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.to_event" title="gwinferno.numpyro_distributions.BSplineDistribution.to_event"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_event</span></code></a>([reinterpreted_batch_ndims])</p></td>
 <td><p>Interpret the rightmost <cite>reinterpreted_batch_ndims</cite> batch dimensions as dependent event dimensions.</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree_flatten</span></code>()</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree_flatten</span></code>()</p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree_unflatten</span></code>(aux_data, params)</p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">tree_unflatten</span></code>(aux_data, params)</p></td>
 <td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#gwinferno.numpyro_distributions.BSplineDistribution.validate_args" title="gwinferno.numpyro_distributions.BSplineDistribution.validate_args"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_args</span></code></a>([strict])</p></td>
+<td><p>Validate the arguments of the distribution.</p></td>
 </tr>
 </tbody>
 </table>
@@ -800,6 +819,17 @@ from the distribution.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ExpandedDistribution</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.get_args">
+<span class="sig-name descname"><span class="pre">get_args</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.get_args" title="Link to this definition">#</a></dt>
+<dd><p>Get arguments of the distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -978,6 +1008,21 @@ interpret as event dims.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.validate_args">
+<span class="sig-name descname"><span class="pre">validate_args</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.validate_args" title="Link to this definition">#</a></dt>
+<dd><p>Validate the arguments of the distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>strict</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Require strict validation, raising an error if the function is
+called inside jitted code.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.variance">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variance</span></span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.variance" title="Link to this definition">#</a></dt>
@@ -1023,6 +1068,7 @@ interpret as event dims.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.event_shape"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.event_shape</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.expand"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.expand()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.expand_by"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.expand_by()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.get_args"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.get_args()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.icdf"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.icdf()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.infer_shapes"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.infer_shapes()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.log_prob"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.log_prob()</span></code></a></li>
@@ -1032,6 +1078,7 @@ interpret as event dims.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.sample_with_intermediates"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.sample_with_intermediates()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.shape"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.shape()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.to_event"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.to_event()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.validate_args"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.validate_args()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.variance"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.variance</span></code></a></li>
 </ul>
 </li>
@@ -1051,8 +1098,8 @@ interpret as event dims.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1085,7 +1132,8 @@ interpret as event dims.</p>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

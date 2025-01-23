@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,17 +27,17 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="_static/pydata-custom.css?v=c365f546" />
   
   <!-- So that users can add custom icons -->
-  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=837179f8"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
@@ -321,13 +321,25 @@
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"></div>
 </nav></div>
+        <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
     </div>
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -446,16 +458,16 @@ population parameters to share a model when assuming they are IID (i.e. spin mag
 <section id="example-scripted-model">
 <h2>Example Scripted Model<a class="headerlink" href="#example-scripted-model" title="Link to this heading">#</a></h2>
 <p>Here is how one would define a numpyro probabilistic model in a python file to be passed to GWInferno’s infrastructure</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">import</span> <span class="nn">numpyro</span>
-<span class="kn">import</span> <span class="nn">numpyro.distributions</span> <span class="k">as</span> <span class="nn">dist</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
 
-<span class="kn">from</span> <span class="nn">gwinferno.numpyro_distributions</span> <span class="kn">import</span> <span class="n">Powerlaw</span>
-<span class="kn">from</span> <span class="nn">gwinferno.numpyro_distributions</span> <span class="kn">import</span> <span class="n">PowerlawRedshift</span>
-<span class="kn">from</span> <span class="nn">gwinferno.pipeline.analysis</span> <span class="kn">import</span> <span class="n">hierarchical_likelihood</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.numpyro_distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">Powerlaw</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.numpyro_distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">PowerlawRedshift</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.pipeline.analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">hierarchical_likelihood</span>
 
 
-<span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="n">samps</span><span class="p">,</span> <span class="n">injs</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">,</span> <span class="n">Nobs</span><span class="p">,</span> <span class="n">Tobs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">model</span><span class="p">(</span><span class="n">samps</span><span class="p">,</span> <span class="n">injs</span><span class="p">,</span> <span class="n">Ninj</span><span class="p">,</span> <span class="n">Nobs</span><span class="p">,</span> <span class="n">Tobs</span><span class="p">):</span>
     <span class="n">alpha</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
     <span class="n">beta</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
     <span class="n">mmin</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;mmin&quot;</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Uniform</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
@@ -539,8 +551,8 @@ population parameters to share a model when assuming they are IID (i.e. spin mag
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -573,7 +585,8 @@ population parameters to share a model when assuming they are IID (i.e. spin mag
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

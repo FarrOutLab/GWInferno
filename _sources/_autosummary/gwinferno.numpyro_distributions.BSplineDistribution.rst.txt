@@ -22,6 +22,7 @@ gwinferno.numpyro\_distributions.BSplineDistribution
          ~BSplineDistribution.expand_by
          ~BSplineDistribution.gather_pytree_aux_fields
          ~BSplineDistribution.gather_pytree_data_fields
+         ~BSplineDistribution.get_args
          ~BSplineDistribution.icdf
          ~BSplineDistribution.infer_shapes
          ~BSplineDistribution.log_prob
@@ -34,6 +35,7 @@ gwinferno.numpyro\_distributions.BSplineDistribution
          ~BSplineDistribution.to_event
          ~BSplineDistribution.tree_flatten
          ~BSplineDistribution.tree_unflatten
+         ~BSplineDistribution.validate_args
    
    
 

@@ -22,6 +22,7 @@ gwinferno.numpyro\_distributions.PowerlawRedshift
          ~PowerlawRedshift.expand_by
          ~PowerlawRedshift.gather_pytree_aux_fields
          ~PowerlawRedshift.gather_pytree_data_fields
+         ~PowerlawRedshift.get_args
          ~PowerlawRedshift.icdf
          ~PowerlawRedshift.infer_shapes
          ~PowerlawRedshift.log_prob
@@ -34,6 +35,7 @@ gwinferno.numpyro\_distributions.PowerlawRedshift
          ~PowerlawRedshift.to_event
          ~PowerlawRedshift.tree_flatten
          ~PowerlawRedshift.tree_unflatten
+         ~PowerlawRedshift.validate_args
    
    
 

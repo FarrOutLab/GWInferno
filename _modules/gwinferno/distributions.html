@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,17 +26,17 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../_static/pydata-custom.css?v=c365f546" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../_static/documentation_options.js?v=837179f8"></script>
     <script src="../../_static/doctools.js?v=9a2dae69"></script>
@@ -229,7 +229,7 @@
         
       
       <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -309,11 +309,26 @@
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -364,9 +379,9 @@
 <span class="sd">a module for basic distribution pdf calculations with jax</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">from</span> <span class="nn">jax.scipy.special</span> <span class="kn">import</span> <span class="n">betaln</span>
-<span class="kn">from</span> <span class="nn">jax.scipy.special</span> <span class="kn">import</span> <span class="n">erf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax.scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">betaln</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax.scipy.special</span><span class="w"> </span><span class="kn">import</span> <span class="n">erf</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">=============================================</span>
@@ -377,7 +392,7 @@
 
 <div class="viewcode-block" id="smooth">
 <a class="viewcode-back" href="../../_autosummary/gwinferno.distributions.smooth.html#gwinferno.distributions.smooth">[docs]</a>
-<span class="k">def</span> <span class="nf">smooth</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xmin</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">smooth</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">xmin</span><span class="p">):</span>
 
     <span class="n">func</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">dx</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">xmin</span><span class="p">)</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">/</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">xmin</span> <span class="o">-</span> <span class="n">dx</span><span class="p">))</span>
     <span class="n">s1</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">xmin</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -388,7 +403,7 @@
 
 <div class="viewcode-block" id="logistic_function">
 <a class="viewcode-back" href="../../_autosummary/gwinferno.distributions.logistic_function.html#gwinferno.distributions.logistic_function">[docs]</a>
-<span class="k">def</span> <span class="nf">logistic_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logistic_function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">x0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Logistic function or logistic curve</span>
 
@@ -407,7 +422,7 @@
 
 <div class="viewcode-block" id="logistic_unit">
 <a class="viewcode-back" href="../../_autosummary/gwinferno.distributions.logistic_unit.html#gwinferno.distributions.logistic_unit">[docs]</a>
-<span class="k">def</span> <span class="nf">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    logistic_unit soft truncate a distribution with the logistic unit</span>
 
@@ -426,7 +441,7 @@
 
 <div class="viewcode-block" id="log_logistic_unit">
 <a class="viewcode-back" href="../../_autosummary/gwinferno.distributions.log_logistic_unit.html#gwinferno.distributions.log_logistic_unit">[docs]</a>
-<span class="k">def</span> <span class="nf">log_logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_logistic_unit</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    log_logistic_unit soft truncate a distribution with the log logistic unit</span>
 
@@ -448,7 +463,7 @@
 
 <div class="viewcode-block" id="powerlaw_logit_pdf">
 <a class="viewcode-back" href="../../_autosummary/gwinferno.distributions.powerlaw_logit_pdf.html#gwinferno.distributions.powerlaw_logit_pdf">[docs]</a>
-<span class="k">def</span> <span class="nf">powerlaw_logit_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">low_fall_off</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">high_fall_off</span><span class="o">=</span><span class="mf">4.0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">powerlaw_logit_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">low_fall_off</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">high_fall_off</span><span class="o">=</span><span class="mf">4.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    powerlaw_logit_pdf pdf of high mass soft truncation powerlaw:</span>
 <span class="sd">        $$ p(x) \propto x^{\alpha}\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$</span>
@@ -469,14 +484,14 @@
     <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">prob</span> <span class="o">*=</span> <span class="n">logistic_unit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">low_fall_off</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">high</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">logistic_unit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">high_fall_off</span><span class="p">)</span>
+        <span class="n">prob</span> <span class="o">*=</span> <span class="n">logistic_unit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">high_fall_off</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">prob</span></div>
 
 
 
 <div class="viewcode-block" id="powerlaw_pdf">
 <a class="viewcode-back" href="../../_autosummary/gwinferno.distributions.powerlaw_pdf.html#gwinferno.distributions.powerlaw_pdf">[docs]</a>
-<span class="k">def</span> <span class="nf">powerlaw_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">floor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">powerlaw_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">floor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    powerlaw_pdf pdf of sharp truncated powerlaw:</span>
 
@@ -501,7 +516,7 @@
 
 <div class="viewcode-block" id="truncnorm_pdf">
 <a class="viewcode-back" href="../../_autosummary/gwinferno.distributions.truncnorm_pdf.html#gwinferno.distributions.truncnorm_pdf">[docs]</a>
-<span class="k">def</span> <span class="nf">truncnorm_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">truncnorm_pdf</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sig</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    $$ p(x) \propto \mathcal{N}(x | \mu, \sigma)\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$</span>
 
@@ -528,7 +543,7 @@
 
 <div class="viewcode-block" id="betadist">
 <a class="viewcode-back" href="../../_autosummary/gwinferno.distributions.betadist.html#gwinferno.distributions.betadist">[docs]</a>
-<span class="k">def</span> <span class="nf">betadist</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">floor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">betadist</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">floor</span><span class="o">=</span><span class="mf">0.0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    betadist pdf of Beta distribution evaluated at xx with optional max value of scale:</span>
 
@@ -569,8 +584,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -603,7 +618,8 @@
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

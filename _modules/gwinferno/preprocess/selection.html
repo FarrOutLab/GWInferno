@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,17 +26,17 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pydata-custom.css?v=c365f546" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../../_static/documentation_options.js?v=837179f8"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -229,7 +229,7 @@
         
       
       <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -309,11 +309,26 @@
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -364,16 +379,16 @@
 <span class="sd">a module that stores functions for reading in and processing injection search results</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">h5py</span>
-<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
-<span class="kn">from</span> <span class="nn">jax</span> <span class="kn">import</span> <span class="n">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jax</span><span class="w"> </span><span class="kn">import</span> <span class="n">random</span>
 
 
 <div class="viewcode-block" id="get_o4a_cumulative_injection_dict">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict.html#gwinferno.preprocess.selection.get_o4a_cumulative_injection_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">get_o4a_cumulative_injection_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">ifar</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_o4a_cumulative_injection_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">ifar</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generates injection dataset with desired parameters and proper prior density calculated.</span>
 
 <span class="sd">    Args:</span>
@@ -382,16 +397,22 @@
 <span class="sd">            Valid parameter options are: &#39;mass_1&#39;, &#39;mass_2&#39;, &#39;mass_ratio&#39;, &#39;redshift&#39;, &#39;a_1&#39;, &#39;a_2&#39;, &#39;cos_tilt_1&#39;, &#39;cos_tilt_2&#39;.</span>
 <span class="sd">            NOTE: &#39;chi_eff&#39; and &#39;chi_p&#39; cannot be accounted for here.</span>
 <span class="sd">            Please use `gwinferno.preprocess.data_collection.load_injection_dataset` if you wish to work in &#39;chi_eff&#39; and &#39;chi_p&#39;.</span>
-<span class="sd">        ifar (int, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.</span>
-<span class="sd">        snr (int, optional): signal to noise ratio threshold for found injections. Defaults to 10.</span>
+<span class="sd">        ifar (int or float, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.</span>
+<span class="sd">        snr (int or float, optional): signal to noise ratio threshold for found injections. Defaults to 10.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        DataArray: xarray DataArray of injection data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ff</span><span class="p">:</span>
         <span class="n">total_generated</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">]</span>
-        <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;analysis_time&quot;</span><span class="p">]</span>
         <span class="n">injections</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ff</span><span class="p">[</span><span class="s2">&quot;events&quot;</span><span class="p">][:])</span>
+
+        <span class="n">analysis_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="s2">&quot;analysis_time&quot;</span><span class="p">,</span> <span class="s2">&quot;total_analysis_time&quot;</span><span class="p">,</span> <span class="s2">&quot;analysis_time_s&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+                <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">analysis_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;analysis time not found&quot;</span><span class="p">)</span>
 
     <span class="n">found</span> <span class="o">=</span> <span class="n">injections</span><span class="p">[</span><span class="s2">&quot;semianalytic_observed_phase_maximized_snr_net&quot;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">snr</span>
 
@@ -409,7 +430,7 @@
     <span class="p">)</span>
 
     <span class="n">inj_weights</span> <span class="o">=</span> <span class="n">inj_weights</span>
-    <span class="n">total_generated</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">total_generated</span><span class="p">)</span>
+    <span class="n">total_generated</span> <span class="o">=</span> <span class="n">total_generated</span>
     <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">analysis_time</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span>
 
     <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">injections</span><span class="p">[</span><span class="s2">&quot;lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z&quot;</span><span class="p">][</span><span class="n">found</span><span class="p">])</span> <span class="o">/</span> <span class="n">inj_weights</span>
@@ -440,7 +461,7 @@
 
 <div class="viewcode-block" id="get_o3_cumulative_injection_dict">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.preprocess.selection.get_o3_cumulative_injection_dict.html#gwinferno.preprocess.selection.get_o3_cumulative_injection_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">get_o3_cumulative_injection_dict</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">ifar</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_o3_cumulative_injection_dict</span><span class="p">(</span><span class="n">fi</span><span class="p">,</span> <span class="n">param_names</span><span class="p">,</span> <span class="n">ifar</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">snr</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">additional_cuts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Based from the function load_injection_data() at:</span>
 <span class="sd">    https://git.ligo.org/RatesAndPopulations/gwpopulation_pipe/-/blob/master/gwpopulation_pipe/vt_helper.py#L66</span>
@@ -465,8 +486,14 @@
             <span class="n">redshift</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;redshift&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">],</span>
         <span class="p">)</span>
 
-        <span class="n">total_generated</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">][()])</span>
-        <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;analysis_time_s&quot;</span><span class="p">][()]</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span>
+        <span class="n">total_generated</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;total_generated&quot;</span><span class="p">][()]</span>
+
+        <span class="n">analysis_time</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="s2">&quot;analysis_time&quot;</span><span class="p">,</span> <span class="s2">&quot;total_analysis_time&quot;</span><span class="p">,</span> <span class="s2">&quot;analysis_time_s&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">:</span>
+                <span class="n">analysis_time</span> <span class="o">=</span> <span class="n">ff</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="n">key</span><span class="p">][()]</span> <span class="o">/</span> <span class="mf">365.25</span> <span class="o">/</span> <span class="mi">24</span> <span class="o">/</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">60</span>
+        <span class="k">if</span> <span class="n">analysis_time</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;analysis time not found&quot;</span><span class="p">)</span>
 
         <span class="n">injs</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;sampling_pdf&quot;</span><span class="p">][()][</span><span class="n">found</span><span class="p">]</span>
 
@@ -498,7 +525,7 @@
 
 <div class="viewcode-block" id="resample_injections">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.preprocess.selection.resample_injections.html#gwinferno.preprocess.selection.resample_injections">[docs]</a>
-<span class="k">def</span> <span class="nf">resample_injections</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="n">model_prob</span><span class="p">,</span> <span class="n">injdata</span><span class="p">,</span> <span class="n">Ndraw</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">resample_injections</span><span class="p">(</span><span class="n">rng_key</span><span class="p">,</span> <span class="n">model_prob</span><span class="p">,</span> <span class="n">injdata</span><span class="p">,</span> <span class="n">Ndraw</span><span class="p">,</span> <span class="n">param_map</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">wts</span> <span class="o">=</span> <span class="n">model_prob</span><span class="p">(</span><span class="n">injdata</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">/</span> <span class="n">injdata</span><span class="p">[</span><span class="n">param_map</span><span class="p">[</span><span class="s2">&quot;prior&quot;</span><span class="p">],</span> <span class="p">:]</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">wts</span> <span class="o">/</span> <span class="n">jnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">wts</span><span class="p">)</span>
     <span class="n">Ndet</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
@@ -536,8 +563,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -570,7 +597,8 @@
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

@@ -15,8 +15,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -26,17 +26,17 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../../../_static/pydata-custom.css?v=c365f546" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../../../_static/documentation_options.js?v=837179f8"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
@@ -229,7 +229,7 @@
         
       
       <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -309,11 +309,26 @@
     
   </div>
   
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+    </div>
+  
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -360,29 +375,29 @@
                 <article class="bd-article">
                   
   <h1>Source code for gwinferno.pipeline.utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">argparse</span> <span class="kn">import</span> <span class="n">ArgumentParser</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">argparse</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArgumentParser</span>
 
-<span class="kn">import</span> <span class="nn">arviz</span> <span class="k">as</span> <span class="nn">az</span>
-<span class="kn">import</span> <span class="nn">jax.numpy</span> <span class="k">as</span> <span class="nn">jnp</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">numpyro</span>
-<span class="kn">import</span> <span class="nn">numpyro.distributions</span> <span class="k">as</span> <span class="nn">dist</span>
-<span class="kn">import</span> <span class="nn">xarray</span> <span class="k">as</span> <span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">arviz</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">az</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpyro.distributions</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dist</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
 
-<span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogXLogYBSpline</span>
-<span class="kn">from</span> <span class="nn">gwinferno.interpolation</span> <span class="kn">import</span> <span class="n">LogYBSpline</span>
-<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIIDSpinMagnitudes</span>
-<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIIDSpinTilts</span>
-<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIndependentSpinMagnitudes</span>
-<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplineIndependentSpinTilts</span>
-<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.separable</span> <span class="kn">import</span> <span class="n">BSplinePrimaryBSplineRatio</span>
-<span class="kn">from</span> <span class="nn">gwinferno.models.bsplines.smoothing</span> <span class="kn">import</span> <span class="n">apply_difference_prior</span>
-<span class="kn">from</span> <span class="nn">gwinferno.models.spline_perturbation</span> <span class="kn">import</span> <span class="n">PowerlawSplineRedshiftModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogXLogYBSpline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.interpolation</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogYBSpline</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.models.bsplines.separable</span><span class="w"> </span><span class="kn">import</span> <span class="n">BSplineIIDSpinMagnitudes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.models.bsplines.separable</span><span class="w"> </span><span class="kn">import</span> <span class="n">BSplineIIDSpinTilts</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.models.bsplines.separable</span><span class="w"> </span><span class="kn">import</span> <span class="n">BSplineIndependentSpinMagnitudes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.models.bsplines.separable</span><span class="w"> </span><span class="kn">import</span> <span class="n">BSplineIndependentSpinTilts</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.models.bsplines.separable</span><span class="w"> </span><span class="kn">import</span> <span class="n">BSplinePrimaryBSplineRatio</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.models.bsplines.smoothing</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_difference_prior</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.models.spline_perturbation</span><span class="w"> </span><span class="kn">import</span> <span class="n">PowerlawSplineRedshiftModel</span>
 
 
 <div class="viewcode-block" id="load_base_parser">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.load_base_parser.html#gwinferno.pipeline.utils.load_base_parser">[docs]</a>
-<span class="k">def</span> <span class="nf">load_base_parser</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_base_parser</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">ArgumentParser</span><span class="p">()</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s2">&quot;--pe-inj-file&quot;</span><span class="p">,</span>
@@ -415,7 +430,7 @@
 
 <div class="viewcode-block" id="load_pe_and_injections_as_dict">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.load_pe_and_injections_as_dict.html#gwinferno.pipeline.utils.load_pe_and_injections_as_dict">[docs]</a>
-<span class="k">def</span> <span class="nf">load_pe_and_injections_as_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_pe_and_injections_as_dict</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">ignore</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Load PE and injection file created by `gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata()`.</span>
 
 <span class="sd">    Parameters</span>
@@ -471,7 +486,7 @@
 
 <div class="viewcode-block" id="setup_bspline_mass_models">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.setup_bspline_mass_models.html#gwinferno.pipeline.utils.setup_bspline_mass_models">[docs]</a>
-<span class="k">def</span> <span class="nf">setup_bspline_mass_models</span><span class="p">(</span><span class="n">pedict</span><span class="p">,</span> <span class="n">injdict</span><span class="p">,</span> <span class="n">m_nsplines</span><span class="p">,</span> <span class="n">q_nsplines</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_bspline_mass_models</span><span class="p">(</span><span class="n">pedict</span><span class="p">,</span> <span class="n">injdict</span><span class="p">,</span> <span class="n">m_nsplines</span><span class="p">,</span> <span class="n">q_nsplines</span><span class="p">,</span> <span class="n">mmin</span><span class="p">,</span> <span class="n">mmax</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initializing spline mass design matrices&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">BSplinePrimaryBSplineRatio</span><span class="p">(</span>
         <span class="n">m_nsplines</span><span class="p">,</span>
@@ -491,7 +506,7 @@
 
 <div class="viewcode-block" id="setup_bspline_spin_models">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.setup_bspline_spin_models.html#gwinferno.pipeline.utils.setup_bspline_spin_models">[docs]</a>
-<span class="k">def</span> <span class="nf">setup_bspline_spin_models</span><span class="p">(</span><span class="n">pedict</span><span class="p">,</span> <span class="n">injdict</span><span class="p">,</span> <span class="n">a1_nsplines</span><span class="p">,</span> <span class="n">ct1_nsplines</span><span class="p">,</span> <span class="n">IID</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">a2_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ct2_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_bspline_spin_models</span><span class="p">(</span><span class="n">pedict</span><span class="p">,</span> <span class="n">injdict</span><span class="p">,</span> <span class="n">a1_nsplines</span><span class="p">,</span> <span class="n">ct1_nsplines</span><span class="p">,</span> <span class="n">IID</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">a2_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ct2_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initializing spline spin design matrices&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">IID</span><span class="p">:</span>
@@ -522,7 +537,7 @@
 
 <div class="viewcode-block" id="setup_powerlaw_spline_redshift_model">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.setup_powerlaw_spline_redshift_model.html#gwinferno.pipeline.utils.setup_powerlaw_spline_redshift_model">[docs]</a>
-<span class="k">def</span> <span class="nf">setup_powerlaw_spline_redshift_model</span><span class="p">(</span><span class="n">pedict</span><span class="p">,</span> <span class="n">injdict</span><span class="p">,</span> <span class="n">z_nsplines</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">setup_powerlaw_spline_redshift_model</span><span class="p">(</span><span class="n">pedict</span><span class="p">,</span> <span class="n">injdict</span><span class="p">,</span> <span class="n">z_nsplines</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;initializing redshift model&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">PowerlawSplineRedshiftModel</span><span class="p">(</span>
         <span class="n">z_nsplines</span><span class="p">,</span>
@@ -539,7 +554,7 @@
 
 <div class="viewcode-block" id="bspline_mass_prior">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.bspline_mass_prior.html#gwinferno.pipeline.utils.bspline_mass_prior">[docs]</a>
-<span class="k">def</span> <span class="nf">bspline_mass_prior</span><span class="p">(</span><span class="n">m_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">m_tau</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">q_tau</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">m_cs_sig</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">q_cs_sig</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">m_deg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">q_deg</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bspline_mass_prior</span><span class="p">(</span><span class="n">m_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">q_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">m_tau</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">q_tau</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">m_cs_sig</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">q_cs_sig</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">m_deg</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">q_deg</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
@@ -564,7 +579,7 @@
 
 <div class="viewcode-block" id="bspline_spin_prior">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.bspline_spin_prior.html#gwinferno.pipeline.utils.bspline_spin_prior">[docs]</a>
-<span class="k">def</span> <span class="nf">bspline_spin_prior</span><span class="p">(</span><span class="n">a_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ct_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">a_tau</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ct_tau</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IID</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">a_cs_sig</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">ct_cs_sig</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">a_deg</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ct_deg</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bspline_spin_prior</span><span class="p">(</span><span class="n">a_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ct_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">a_tau</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ct_tau</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">IID</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">a_cs_sig</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">ct_cs_sig</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">a_deg</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ct_deg</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
 
@@ -593,7 +608,7 @@
 
 <div class="viewcode-block" id="bspline_redshift_prior">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.bspline_redshift_prior.html#gwinferno.pipeline.utils.bspline_redshift_prior">[docs]</a>
-<span class="k">def</span> <span class="nf">bspline_redshift_prior</span><span class="p">(</span><span class="n">z_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_tau</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_cs_sig</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z_deg</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bspline_redshift_prior</span><span class="p">(</span><span class="n">z_nsplines</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_tau</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">z_cs_sig</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">z_deg</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
     <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="n">name</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
     <span class="n">z_cs</span> <span class="o">=</span> <span class="n">numpyro</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="s2">&quot;z_cs&quot;</span> <span class="o">+</span> <span class="n">name</span><span class="p">,</span> <span class="n">dist</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">z_cs_sig</span><span class="p">),</span> <span class="n">sample_shape</span><span class="o">=</span><span class="p">(</span><span class="n">z_nsplines</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,))</span>
     <span class="n">z_cs</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">jnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">z_cs</span><span class="p">])</span>
@@ -604,7 +619,7 @@
 
 <div class="viewcode-block" id="posterior_dict_to_xarray">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.posterior_dict_to_xarray.html#gwinferno.pipeline.utils.posterior_dict_to_xarray">[docs]</a>
-<span class="k">def</span> <span class="nf">posterior_dict_to_xarray</span><span class="p">(</span><span class="n">posteriors</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">posterior_dict_to_xarray</span><span class="p">(</span><span class="n">posteriors</span><span class="p">):</span>
 
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">posteriors</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
         <span class="n">n_samples</span> <span class="o">=</span> <span class="n">posteriors</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -620,7 +635,7 @@
 
 <div class="viewcode-block" id="pdf_dict_to_xarray">
 <a class="viewcode-back" href="../../../_autosummary/gwinferno.pipeline.utils.pdf_dict_to_xarray.html#gwinferno.pipeline.utils.pdf_dict_to_xarray">[docs]</a>
-<span class="k">def</span> <span class="nf">pdf_dict_to_xarray</span><span class="p">(</span><span class="n">pdf_dict</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">subpop_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pdf_dict_to_xarray</span><span class="p">(</span><span class="n">pdf_dict</span><span class="p">,</span> <span class="n">param_dict</span><span class="p">,</span> <span class="n">n_samples</span><span class="p">,</span> <span class="n">subpop_names</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">xr_dict</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">if</span> <span class="n">subpop_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pdfs</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_pdfs&quot;</span><span class="p">:</span> <span class="p">([</span><span class="s2">&quot;draw&quot;</span><span class="p">,</span> <span class="n">key</span><span class="p">],</span> <span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">pdf_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
@@ -663,8 +678,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -697,7 +712,8 @@
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

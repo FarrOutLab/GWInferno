@@ -16,8 +16,8 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!-- 
-    this give us a css class that will be invisible only if js is disabled 
+  <!--
+    this give us a css class that will be invisible only if js is disabled
   -->
   <noscript>
     <style>
@@ -27,17 +27,17 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
-    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
     <link rel="stylesheet" type="text/css" href="../_static/pydata-custom.css?v=c365f546" />
   
   <!-- So that users can add custom icons -->
-  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=837179f8"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -381,6 +381,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.models.parametric.html">gwinferno.models.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="gwinferno.models.parametric.parametric.html">gwinferno.models.parametric.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.beta_spin_magnitude.html">gwinferno.models.parametric.parametric.beta_spin_magnitude</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.default_spin_tilt.html">gwinferno.models.parametric.parametric.default_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_magnitude.html">gwinferno.models.parametric.parametric.iid_spin_magnitude</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_tilt.html">gwinferno.models.parametric.parametric.iid_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist.html">gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist</a></li>
@@ -508,13 +509,25 @@
 </ul>
 </div>
 </nav></div>
+        <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
     </div>
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -570,7 +583,7 @@
 <h1>gwinferno.pipeline.analysis.hierarchical_likelihood<a class="headerlink" href="#gwinferno-pipeline-analysis-hierarchical-likelihood" title="Link to this heading">#</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="gwinferno.pipeline.analysis.hierarchical_likelihood">
-<span class="sig-name descname"><span class="pre">hierarchical_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pe_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inj_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surveyed_hypervolume_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marginal_qs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indv_weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rngkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marginalize_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruct_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_neff_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posterior_predictive_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pedata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/analysis.html#hierarchical_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.analysis.hierarchical_likelihood" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">hierarchical_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pe_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inj_weights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_inj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Tobs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surveyed_hypervolume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">categorical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marginal_qs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indv_weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rngkey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pop_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reconstruct_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marginalize_selection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_neff_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_variance_cut</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">posterior_predictive_check</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pedata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">injdata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m1min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mmax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/gwinferno/pipeline/analysis.html#hierarchical_likelihood"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwinferno.pipeline.analysis.hierarchical_likelihood" title="Link to this definition">#</a></dt>
 <dd><p>Performs the hierarchical likelihood calculation using importance sampling
 over injections and PE samples from each event’s posterior samples assuming
 a fiducial prior density.</p>
@@ -591,6 +604,8 @@ Expected size of <cite>(N_found_injections,)</cite>.</p>
 </dd>
 <dt><strong>Tobs</strong><span class="classifier">float</span></dt><dd><p>Time spent observing to produce catalog (in yrs).</p>
 </dd>
+<dt><strong>surveyed_hypervolume</strong><span class="classifier">float</span></dt><dd><p>Total VT (normalization of the redshift model).</p>
+</dd>
 <dt><strong>categorical</strong><span class="classifier">bool, optional</span></dt><dd><p>If <cite>True</cite> use latent categorical parameters to assign
 each event to one of many subpopulations. Defaults to <cite>False</cite>.</p>
 </dd>
@@ -605,12 +620,6 @@ Needed if <cite>categorical=True</cite>. Defaults to <cite>None</cite>.</p>
 Shape is number of categorical subpopulations, needs to sum to 1, and is
 needed if <cite>categorical=True</cite>. Defaults to <cite>None</cite>.</p>
 </dd>
-<dt><strong>surv_hypervolume_fct</strong><span class="classifier">callable, optional</span></dt><dd><p>Callable function to calculate total VT (normalization of the redshift model).
-Defaults to <cite>TotalVTCalculator()</cite>.</p>
-</dd>
-<dt><strong>vtfct_kwargs</strong><span class="classifier">dict, optional</span></dt><dd><p>Diction of args needed to call <cite>surv_hypervolume_fct()</cite>.
-Defaults to <cite>{“lamb”: 0}</cite>.</p>
-</dd>
 <dt><strong>marginalize_selection</strong><span class="classifier">bool, optional</span></dt><dd><p>Flag to marginalize over uncertainty in selection monte carlo integral.
 Defaults to <cite>True</cite>.</p>
 </dd>
@@ -618,6 +627,11 @@ Defaults to <cite>True</cite>.</p>
 </dd>
 <dt><strong>min_neff_cut</strong><span class="classifier">bool, optional</span></dt><dd><p>Flag to use the <cite>min_neff</cite> cut on the likelihood ensuring Monte Carlo
 integrals converge. Defaults to <cite>True</cite>.</p>
+</dd>
+<dt><strong>max_variance_cut</strong><span class="classifier">bool, optional</span></dt><dd><p>Flag to use a cut on the maximum allowed variance &lt; 1 estimated for the
+total log likelihood. If this is <cite>True</cite>, then <cite>marginalize_selection</cite> and
+<cite>min_neff_cut</cite> must be <cite>False</cite>.
+Defaults to <cite>False</cite>.</p>
 </dd>
 <dt><strong>posterior_predictive_check</strong><span class="classifier">bool, optional</span></dt><dd><p>Flag to sample from the PE/injection data to perform posterior predictive check.
 Defaults to <cite>False</cite>.</p>
@@ -690,8 +704,8 @@ This is slower but more numerically stable. Defaults to <cite>False</cite>.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
-<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -724,7 +738,8 @@ This is slower but more numerically stable. Defaults to <cite>False</cite>.</p>
       
         <div class="footer-item">
 <p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.0.
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
 </p></div>
       
     </div>

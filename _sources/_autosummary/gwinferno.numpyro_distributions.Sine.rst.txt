@@ -22,6 +22,7 @@ gwinferno.numpyro\_distributions.Sine
          ~Sine.expand_by
          ~Sine.gather_pytree_aux_fields
          ~Sine.gather_pytree_data_fields
+         ~Sine.get_args
          ~Sine.icdf
          ~Sine.infer_shapes
          ~Sine.log_prob
@@ -34,6 +35,7 @@ gwinferno.numpyro\_distributions.Sine
          ~Sine.to_event
          ~Sine.tree_flatten
          ~Sine.tree_unflatten
+         ~Sine.validate_args
    
    
 

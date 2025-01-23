@@ -22,6 +22,7 @@ gwinferno.numpyro\_distributions.Cosine
          ~Cosine.expand_by
          ~Cosine.gather_pytree_aux_fields
          ~Cosine.gather_pytree_data_fields
+         ~Cosine.get_args
          ~Cosine.icdf
          ~Cosine.infer_shapes
          ~Cosine.log_prob
@@ -34,6 +35,7 @@ gwinferno.numpyro\_distributions.Cosine
          ~Cosine.to_event
          ~Cosine.tree_flatten
          ~Cosine.tree_unflatten
+         ~Cosine.validate_args
    
    
 
