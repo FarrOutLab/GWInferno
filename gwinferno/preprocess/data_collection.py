@@ -69,7 +69,7 @@ def processed_catalog_dataset_from_dict(catalog_dict, mmax=100.0):
             sel = np.ones_like(catalog_dict[ev]["posterior"][param_mapping["mass_1"]], dtype=bool)
             if np.sum(catalog_dict[ev]["posterior"][param_mapping["mass_1"]] > mmax) > 0:
                 print(np.sum(catalog_dict[ev]["posterior"][param_mapping["mass_1"]] > mmax))
-                print(f"removing samples from {ev} with mass_1 > {mmax}")
+                print(f"removing samples from {ev} with mass_1 > 100")
                 sel = catalog_dict[ev]["posterior"][param_mapping["mass_1"]] < mmax
 
             data = np.array([catalog_dict[ev]["posterior"][param_mapping[param]][sel] for param in list(param_mapping.keys())])
@@ -169,7 +169,7 @@ def load_posterior_dataset(maximum_mass=100.0, catalog_metadata=None, key_file=N
         return full_catalog_array.to_dataset(name="posteriors", promote_attrs=True)
 
 
-def load_injection_dataset(injfile, param_names, through_o4a=False, through_o3=True, ifar_threshold=1, snr_threshold=10, additional_cuts=None):
+def load_injection_dataset(injfile, param_names, through_o4a=False, through_o3=True, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
 
     if through_o4a:
         injs = get_o4a_cumulative_injection_dict(
