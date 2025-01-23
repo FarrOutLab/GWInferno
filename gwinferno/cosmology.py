@@ -16,11 +16,6 @@ PLANCK_2015_OmegaMatter = 0.3089
 PLANCK_2015_OmegaLambda = 1.0 - PLANCK_2015_OmegaMatter
 PLANCK_2015_OmegaRadiation = 0.0
 
-PLANCK_2015_LVK_Ho = 67.90 / 1e-3
-PLANCK_2015_LVK_OmegaMatter = 0.3065
-PLANCK_2015_LVK_OmegaLambda = 1.0 - PLANCK_2015_LVK_OmegaMatter
-PLANCK_2015_LVK_OmegaRadiation = PLANCK_2015_OmegaRadiation
-
 DEFAULT_DZ = 1e-3  # should be good enough for most numeric integrations we want to do
 
 
@@ -145,11 +140,4 @@ PLANCK_2015_Cosmology = Cosmology(
     PLANCK_2015_OmegaMatter,
     PLANCK_2015_OmegaRadiation,
     PLANCK_2015_OmegaLambda,
-)
-
-PLANCK_2015_LVK_Cosmology = Cosmology(
-    PLANCK_2015_LVK_Ho,
-    PLANCK_2015_LVK_OmegaMatter,
-    PLANCK_2015_LVK_OmegaRadiation,
-    PLANCK_2015_LVK_OmegaLambda,
 )

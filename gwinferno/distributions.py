@@ -93,7 +93,7 @@ def powerlaw_logit_pdf(xx, alpha, low=None, high=None, low_fall_off=4.0, high_fa
     if low is not None:
         prob *= logistic_unit(xx, low, sgn=-1.0, sc=low_fall_off)
     if high is not None:
-        prob *= logistic_unit(xx, high, sgn=1.0, sc=high_fall_off)
+        logistic_unit(xx, high, sgn=1.0, sc=high_fall_off)
     return prob
 
 
