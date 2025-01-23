@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 from jax.scipy.integrate import trapezoid
 
-from gwinferno.cosmology import PLANCK_2015_Cosmology as Planck15
+from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology as Planck15
 
 from ...distributions import betadist
 from ...distributions import powerlaw_logit_pdf
@@ -64,10 +64,6 @@ def beta_spin_magnitude(a, alpha, beta, amax=1):
     return betadist(a, alpha, beta, scale=amax)
 
 
-def mixture_isoalign_spin_tilt(ct, xi_tilt, sigma_tilt):
-    return (1 - xi_tilt) / 2 + xi_tilt * truncnorm_pdf(ct, 1, sigma_tilt, -1, 1)
-
-
 def iid_spin_magnitude(a1, a2, alpha_mag, beta_mag, amax=1):
     return betadist(a1, alpha_mag, beta_mag, scale=amax) * betadist(a2, alpha_mag, beta_mag, scale=amax)
 
@@ -85,12 +81,25 @@ def independent_spin_magnitude_beta_dist(
     return betadist(a1, alpha_mag1, beta_mag1, scale=amax1) * betadist(a2, alpha_mag2, beta_mag2, scale=amax2)
 
 
+def mixture_isoalign_spin_tilt(ct, xi_tilt, sigma_tilt):
+    cut = jnp.where(jnp.greater(ct, 1) | jnp.less(ct, -1), 0, 1)
+    return cut * (1 - xi_tilt) / 2 + xi_tilt * truncnorm_pdf(ct, 1, sigma_tilt, -1, 1)
+
+
 def iid_spin_tilt(ct1, ct2, xi_tilt, sigma_tilt):
     return mixture_isoalign_spin_tilt(ct1, xi_tilt, sigma_tilt) * mixture_isoalign_spin_tilt(ct2, xi_tilt, sigma_tilt)
 
 
 def independent_spin_tilt(ct1, ct2, xi_tilt_1, xi_tilt_2, sigma_tilt1, sigma_tilt2):
     return mixture_isoalign_spin_tilt(ct1, xi_tilt_1, sigma_tilt1) * mixture_isoalign_spin_tilt(ct2, xi_tilt_2, sigma_tilt2)
+
+
+def default_spin_tilt(ct1, ct2, xi_tilt, sigma_tilt):
+    iso1 = jnp.where(jnp.greater(ct1, 1) | jnp.less(ct1, -1), 0, 0.5)
+    iso2 = jnp.where(jnp.greater(ct2, 1) | jnp.less(ct2, -1), 0, 0.5)
+    ali1 = truncnorm_pdf(ct1, 1, sigma_tilt, -1, 1)
+    ali2 = truncnorm_pdf(ct2, 1, sigma_tilt, -1, 1)
+    return (1 - xi_tilt) * iso1 * iso2 + xi_tilt * ali1 * ali2
 
 
 """
