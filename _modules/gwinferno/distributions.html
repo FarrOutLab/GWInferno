@@ -484,7 +484,7 @@
     <span class="k">if</span> <span class="n">low</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">prob</span> <span class="o">*=</span> <span class="n">logistic_unit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=-</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">low_fall_off</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">high</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">logistic_unit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">high_fall_off</span><span class="p">)</span>
+        <span class="n">prob</span> <span class="o">*=</span> <span class="n">logistic_unit</span><span class="p">(</span><span class="n">xx</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">sgn</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">sc</span><span class="o">=</span><span class="n">high_fall_off</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">prob</span></div>
 
 

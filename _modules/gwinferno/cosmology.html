@@ -393,6 +393,11 @@
 <span class="n">PLANCK_2015_OmegaLambda</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">PLANCK_2015_OmegaMatter</span>
 <span class="n">PLANCK_2015_OmegaRadiation</span> <span class="o">=</span> <span class="mf">0.0</span>
 
+<span class="n">PLANCK_2015_LVK_Ho</span> <span class="o">=</span> <span class="mf">67.90</span> <span class="o">/</span> <span class="mf">1e-3</span>
+<span class="n">PLANCK_2015_LVK_OmegaMatter</span> <span class="o">=</span> <span class="mf">0.3065</span>
+<span class="n">PLANCK_2015_LVK_OmegaLambda</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">-</span> <span class="n">PLANCK_2015_LVK_OmegaMatter</span>
+<span class="n">PLANCK_2015_LVK_OmegaRadiation</span> <span class="o">=</span> <span class="n">PLANCK_2015_OmegaRadiation</span>
+
 <span class="n">DEFAULT_DZ</span> <span class="o">=</span> <span class="mf">1e-3</span>  <span class="c1"># should be good enough for most numeric integrations we want to do</span>
 
 
@@ -547,6 +552,13 @@
     <span class="n">PLANCK_2015_OmegaMatter</span><span class="p">,</span>
     <span class="n">PLANCK_2015_OmegaRadiation</span><span class="p">,</span>
     <span class="n">PLANCK_2015_OmegaLambda</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">PLANCK_2015_LVK_Cosmology</span> <span class="o">=</span> <span class="n">Cosmology</span><span class="p">(</span>
+    <span class="n">PLANCK_2015_LVK_Ho</span><span class="p">,</span>
+    <span class="n">PLANCK_2015_LVK_OmegaMatter</span><span class="p">,</span>
+    <span class="n">PLANCK_2015_LVK_OmegaRadiation</span><span class="p">,</span>
+    <span class="n">PLANCK_2015_LVK_OmegaLambda</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 

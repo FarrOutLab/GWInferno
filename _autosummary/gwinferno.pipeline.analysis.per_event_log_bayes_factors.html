@@ -383,6 +383,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="gwinferno.models.parametric.html">gwinferno.models.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l3 has-children"><a class="reference internal" href="gwinferno.models.parametric.parametric.html">gwinferno.models.parametric.parametric</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.beta_spin_magnitude.html">gwinferno.models.parametric.parametric.beta_spin_magnitude</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.default_spin_tilt.html">gwinferno.models.parametric.parametric.default_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_magnitude.html">gwinferno.models.parametric.parametric.iid_spin_magnitude</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.iid_spin_tilt.html">gwinferno.models.parametric.parametric.iid_spin_tilt</a></li>
 <li class="toctree-l4"><a class="reference internal" href="gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist.html">gwinferno.models.parametric.parametric.independent_spin_magnitude_beta_dist</a></li>
@@ -604,6 +605,8 @@ This should be more numerically stable in general but can break autograd with tr
 <dt>jax.DeviceArray</dt><dd><p>Array of per-event log bayes factors.</p>
 </dd>
 <dt>jax.DeviceArray</dt><dd><p>Array of per-event log effective samples sizes from Monte Carlo integrals.</p>
+</dd>
+<dt>jax.DeviceArray</dt><dd><p>Array of per-event estimated variances from log of Monte Carlo integrals.</p>
 </dd>
 </dl>
 </dd>

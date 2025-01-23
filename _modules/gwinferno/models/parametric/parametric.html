@@ -378,7 +378,7 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">jax.numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jnp</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">jax.scipy.integrate</span><span class="w"> </span><span class="kn">import</span> <span class="n">trapezoid</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.cosmology</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANCK_2015_Cosmology</span> <span class="k">as</span> <span class="n">Planck15</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gwinferno.cosmology</span><span class="w"> </span><span class="kn">import</span> <span class="n">PLANCK_2015_LVK_Cosmology</span> <span class="k">as</span> <span class="n">Planck15</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">...distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">betadist</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">...distributions</span><span class="w"> </span><span class="kn">import</span> <span class="n">powerlaw_logit_pdf</span>
@@ -456,13 +456,6 @@
 
 
 
-<div class="viewcode-block" id="mixture_isoalign_spin_tilt">
-<a class="viewcode-back" href="../../../../_autosummary/gwinferno.models.parametric.parametric.mixture_isoalign_spin_tilt.html#gwinferno.models.parametric.parametric.mixture_isoalign_spin_tilt">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">mixture_isoalign_spin_tilt</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="n">xi_tilt</span><span class="p">,</span> <span class="n">sigma_tilt</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">xi_tilt</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">xi_tilt</span> <span class="o">*</span> <span class="n">truncnorm_pdf</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sigma_tilt</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
-
-
-
 <div class="viewcode-block" id="iid_spin_magnitude">
 <a class="viewcode-back" href="../../../../_autosummary/gwinferno.models.parametric.parametric.iid_spin_magnitude.html#gwinferno.models.parametric.parametric.iid_spin_magnitude">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">iid_spin_magnitude</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">alpha_mag</span><span class="p">,</span> <span class="n">beta_mag</span><span class="p">,</span> <span class="n">amax</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -486,6 +479,14 @@
 
 
 
+<div class="viewcode-block" id="mixture_isoalign_spin_tilt">
+<a class="viewcode-back" href="../../../../_autosummary/gwinferno.models.parametric.parametric.mixture_isoalign_spin_tilt.html#gwinferno.models.parametric.parametric.mixture_isoalign_spin_tilt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">mixture_isoalign_spin_tilt</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="n">xi_tilt</span><span class="p">,</span> <span class="n">sigma_tilt</span><span class="p">):</span>
+    <span class="n">cut</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">cut</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">xi_tilt</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">xi_tilt</span> <span class="o">*</span> <span class="n">truncnorm_pdf</span><span class="p">(</span><span class="n">ct</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sigma_tilt</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="iid_spin_tilt">
 <a class="viewcode-back" href="../../../../_autosummary/gwinferno.models.parametric.parametric.iid_spin_tilt.html#gwinferno.models.parametric.parametric.iid_spin_tilt">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">iid_spin_tilt</span><span class="p">(</span><span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">,</span> <span class="n">xi_tilt</span><span class="p">,</span> <span class="n">sigma_tilt</span><span class="p">):</span>
@@ -497,6 +498,17 @@
 <a class="viewcode-back" href="../../../../_autosummary/gwinferno.models.parametric.parametric.independent_spin_tilt.html#gwinferno.models.parametric.parametric.independent_spin_tilt">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">independent_spin_tilt</span><span class="p">(</span><span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">,</span> <span class="n">xi_tilt_1</span><span class="p">,</span> <span class="n">xi_tilt_2</span><span class="p">,</span> <span class="n">sigma_tilt1</span><span class="p">,</span> <span class="n">sigma_tilt2</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">mixture_isoalign_spin_tilt</span><span class="p">(</span><span class="n">ct1</span><span class="p">,</span> <span class="n">xi_tilt_1</span><span class="p">,</span> <span class="n">sigma_tilt1</span><span class="p">)</span> <span class="o">*</span> <span class="n">mixture_isoalign_spin_tilt</span><span class="p">(</span><span class="n">ct2</span><span class="p">,</span> <span class="n">xi_tilt_2</span><span class="p">,</span> <span class="n">sigma_tilt2</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="default_spin_tilt">
+<a class="viewcode-back" href="../../../../_autosummary/gwinferno.models.parametric.parametric.default_spin_tilt.html#gwinferno.models.parametric.parametric.default_spin_tilt">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_spin_tilt</span><span class="p">(</span><span class="n">ct1</span><span class="p">,</span> <span class="n">ct2</span><span class="p">,</span> <span class="n">xi_tilt</span><span class="p">,</span> <span class="n">sigma_tilt</span><span class="p">):</span>
+    <span class="n">iso1</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">ct1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">ct1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">iso2</span> <span class="o">=</span> <span class="n">jnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">jnp</span><span class="o">.</span><span class="n">greater</span><span class="p">(</span><span class="n">ct2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="n">jnp</span><span class="o">.</span><span class="n">less</span><span class="p">(</span><span class="n">ct2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">ali1</span> <span class="o">=</span> <span class="n">truncnorm_pdf</span><span class="p">(</span><span class="n">ct1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sigma_tilt</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ali2</span> <span class="o">=</span> <span class="n">truncnorm_pdf</span><span class="p">(</span><span class="n">ct2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sigma_tilt</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">xi_tilt</span><span class="p">)</span> <span class="o">*</span> <span class="n">iso1</span> <span class="o">*</span> <span class="n">iso2</span> <span class="o">+</span> <span class="n">xi_tilt</span> <span class="o">*</span> <span class="n">ali1</span> <span class="o">*</span> <span class="n">ali2</span></div>
 
 
 
