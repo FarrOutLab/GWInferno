@@ -448,6 +448,29 @@ class LogXLogYBSpline(LogYBSpline):
         design_matrix = super().bases(logxs)
         return jnp.where(jnp.less(logxs, self.xrange[0]) | jnp.greater(logxs, self.xrange[1]), -jnp.inf, design_matrix)
 
+class BivariateBSpline():
+    def __init__(self, u_domain, v_domain, u_order = int, v_order = int, u_l = int, v_l = int, u_knots=None, v_knots=None):
+        """Class to construct the 2D B-spline design tensor.
+
+        Args:
+            u_domain (array-like): u value(s) to evaluate the function at
+            v_domain (array-like): v value(s) to evaluate the function at
+            u_order (int): order of B-spline in the u-direction
+            v_order (int): order of B-spline in the v-direction
+            u_l (int): u_l+1 number of B-splines
+            v_l (int): v_l+1 number of B-splines
+            u_knots (array-like): knot vector in the u-direction (both exterior and interior knots)
+            v_knots (array-like): knot vector in the v-direction (both exterior and interior knots)
+        """
+        self.domain = np.array([u_domain, v_domain])
+        self.ls = np.array([u_l, v_l])
+        self.orders = np.array([u_order, v_order])
+        self.degrees = np.array([u_order - 1, v_order - 1])
+        self.u_BSpline = BSplines(u_domain = u_domain, P = u_order, l = u_l, knots = u_knots)
+        self.v_BSpline = BSplines(u_domain = v_domain, P = v_order, l = v_l, knots = v_knots)
+
+    def design_tensor(self, u_domain, v_domain):
+        return np.tensordot(self.u_BSpline.design_matrix(u_domain), self.v_BSpline.design_matrix(v_domain), axes = 0)
 
 class RectBivariateBasisSpline(object):
     def __init__(

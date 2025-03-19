@@ -101,7 +101,7 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, z_model, mmin, mmax, param_names):
         float(Ninj),
         Nobs,
         Tobs,
-        surv_hypervolume_fct=z_model.normalization,
+        surveyed_hypervolume=z_model.normalization,
         vtfct_kwargs=dict(lamb=lamb),
         param_names=param_names,
         posterior_predictive_check=True,

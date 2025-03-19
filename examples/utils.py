@@ -10,6 +10,7 @@ from gwinferno.pipeline.utils import setup_bspline_spin_models
 from gwinferno.pipeline.utils import setup_powerlaw_spline_redshift_model
 
 from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
+from gwinferno.interpolation import BSpline
 
 
 def setup_result_dir(parsargs):

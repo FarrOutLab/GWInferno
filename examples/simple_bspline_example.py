@@ -78,8 +78,7 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model,
         float(Ninj),
         Nobs,
         Tobs,
-        surv_hypervolume_fct=z_model.normalization,
-        vtfct_kwargs=dict(lamb=lamb, cs=z_cs),
+        z_model.normalization(lamb=lamb, cs=z_cs),
         param_names=param_names,
         pedata=pedict,
         injdata=injdict,
@@ -205,7 +204,7 @@ def main():
     print("plotting secondary spin distributions:")
     plot_spin_pdfs(mag2_pdfs, tilt2_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors, secondary=True)
 
-    print("plotting mass distributions:")
+    print("plotting redshift distributions:")
     plot_rate_of_z_pdfs(r_of_z, zs, label, result_dir, save=args.save_plots)
 
     """
