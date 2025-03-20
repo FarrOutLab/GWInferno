@@ -448,30 +448,6 @@ class LogXLogYBSpline(LogYBSpline):
         design_matrix = super().bases(logxs)
         return jnp.where(jnp.less(logxs, self.xrange[0]) | jnp.greater(logxs, self.xrange[1]), -jnp.inf, design_matrix)
 
-class BivariateBSpline():
-    def __init__(self, u_domain, v_domain, u_order = int, v_order = int, u_l = int, v_l = int, u_knots=None, v_knots=None):
-        """Class to construct the 2D B-spline design tensor.
-
-        Args:
-            u_domain (array-like): u value(s) to evaluate the function at
-            v_domain (array-like): v value(s) to evaluate the function at
-            u_order (int): order of B-spline in the u-direction
-            v_order (int): order of B-spline in the v-direction
-            u_l (int): u_l+1 number of B-splines
-            v_l (int): v_l+1 number of B-splines
-            u_knots (array-like): knot vector in the u-direction (both exterior and interior knots)
-            v_knots (array-like): knot vector in the v-direction (both exterior and interior knots)
-        """
-        self.domain = np.array([u_domain, v_domain])
-        self.ls = np.array([u_l, v_l])
-        self.orders = np.array([u_order, v_order])
-        self.degrees = np.array([u_order - 1, v_order - 1])
-        self.u_BSpline = BSplines(u_domain = u_domain, P = u_order, l = u_l, knots = u_knots)
-        self.v_BSpline = BSplines(u_domain = v_domain, P = v_order, l = v_l, knots = v_knots)
-
-    def design_tensor(self, u_domain, v_domain):
-        return np.tensordot(self.u_BSpline.design_matrix(u_domain), self.v_BSpline.design_matrix(v_domain), axes = 0)
-
 class RectBivariateBasisSpline(object):
     def __init__(
         self,
@@ -573,3 +549,92 @@ class RectBivariateBasisSpline(object):
             array_like: The linear combination of the basis components given the coefficients
         """
         return self._project(bases, coefs) * self.norm_2d(coefs)
+
+class BSplines():
+
+    def __init__(self, u_domain, P=int, l=int, knots=None, normalization=False):
+        """Class to construct the B-spline design matrix.
+
+        Args:
+            u_domain (array-like): lower and upper values for the domain of interest
+            P (int): order of B-spline
+            l (int): l+1 number of B-splines
+            knots (array-like): knot vector (both exterior and interior knots)
+        """
+        self.u_domain = u_domain
+        self.P = P
+        self.p = P - 1 # degree
+        self.l = l
+        self.l_E = self.l + 2*self.p # l_E+1 number of extended B-splines
+        self.knots  = knots
+        self.L = self.l + self.p + 1 # L+1 number of knots in domain
+        self.L_E = self.L + 2*self.p # L_E+1 number of extended knots in and out of domain
+        self.normalization = normalization
+        if self.knots is not None:
+            assert len(self.knots) == self.L_E + 1, "The number of knots must satisfy the relation L = l + p + 1."
+        elif self.knots is None:
+            interior_knots = jnp.linspace(jnp.min(self.u_domain), jnp.max(self.u_domain), self.L + 1)
+            dx = interior_knots[1] - interior_knots[0]
+            self.knots = jnp.linspace(jnp.min(self.u_domain) - self.p*dx, jnp.max(self.u_domain) + self.p*dx, self.L_E + 1)
+    
+    def _basis(self, u_domain, P, k, knots):
+        """Calculates the kth P-order B-spline basis function 
+
+        Args:
+            u_domain (array-like): u value(s) to evaluate the function at
+            P (int): order of the B-spline basis function
+            k (int): B-spline BF index (k = 0 to the total number of B-spline BFs)
+            knots (array-like): knot vector in and out of the domain
+        """
+        if P == 1:
+            b1 = jnp.zeros_like(u_domain)
+            q = (u_domain >= knots[k]) & (u_domain < knots[k+1])
+            b1 += q*1
+            return b1
+        else:
+            if knots[k+P-1] - knots[k] < 1e-6:
+                term_1 = jnp.zeros_like(u_domain)
+            else:
+                term_1 = ((u_domain - knots[k]) / (knots[k+P-1] - knots[k])) * self._basis(u_domain, P-1, k, knots)
+            if knots[k+1+P-1] - knots[k+1] < 1e-6:
+                term_2 = jnp.zeros_like(u_domain)
+            else:
+                term_2 = (1 - ((u_domain - knots[k+1]) / (knots[k+1+P-1] - knots[k+1]))) * self._basis(u_domain, P-1, k+1, knots)
+            base = term_1 + term_2
+            return base
+        
+    def _design_matrix(self, u_domain):
+        """Calculates the design matrix for the set of points contained in u_domain
+
+        Args:
+            u_domain (array-like): u value(s) to evaluate the function at
+        """
+        return jnp.array([self._basis(u_domain, self.P, k, self.knots) for k in range(self.l_E + 1)])
+    
+    def design_matrix(self, u_domain):
+        """Calculates the design matrix for the set of points contained in u_domain, and sets values outside the domain of interest to zero.
+
+        Args:
+            u_domain (array-like): u value(s) to evaluate the function at
+        """
+        design_matrix = self._design_matrix(u_domain)
+        return jnp.where(jnp.less(u_domain, jnp.min(self.u_domain)) | jnp.greater(u_domain, jnp.max(self.u_domain)), 0.0, design_matrix)
+    
+    def normalize(self, coeffs):
+        if self.normalization:
+            integration_domain = jnp.linspace(jnp.min(self.u_domain), jnp.max(self.u_domain), 1000)
+            norm_bases = jnp.array([trapezoid(self._basis(integration_domain, self.P, k, self.knots), integration_domain) for k in range(self.l_E + 1)])
+            return 1.0 / jnp.einsum('i,i->', norm_bases, coeffs)
+        else:
+            return 1.0
+    
+    def spline(self, coeffs, design_matrix):
+        """Calculates the spine given a set of coefficients and a design matrix
+
+        Args:
+            coeffs (array-like): coefficients for the B-splines
+            design_matrix (array-like): B-splines
+        """
+        assert coeffs.shape[0] == design_matrix.shape[0], "The number of coefficients must match the number of B-splines."
+        spline = jnp.einsum('ij,i->j', design_matrix, coeffs)
+        return spline * self.normalize(coeffs)
