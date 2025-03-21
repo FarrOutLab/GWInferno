@@ -492,7 +492,7 @@ class BSplineRedshift(Base1DBSplineModel):
             else jnp.exp(self.funcs[0](coefs)) * self.differential_comov_vols[0] / (1 + self.zs[0]) / self.normalization(coefs)
         )
 
-class Base1DBSplineModel_IJR(object):
+class Base1DBSplineModel_IJR():
     """Base class for basis splines for population inference, using the BSplines class as a default
 
     Args:
