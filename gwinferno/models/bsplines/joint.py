@@ -32,6 +32,7 @@ class Base2DBSplineModel(BivariateBSpline):
             l_BSplines = ul_BSplines, domain=u_domain, order=u_order, **kwargs,)
         self.v_model = basis(pe_vals = v_pe_vals, inj_vals = v_inj_vals, 
             l_BSplines = vl_BSplines, domain=v_domain, order=v_order, **kwargs,)
+        self.funcs = [self.inj_pdf, self.pe_pdf]
 
     # Because you are not using the BivariateBSpline as an interpolator, you must construct the design tensor in this class
     # However, you can use spline from BivariateBSpline to construct the spline from the design tensor!
