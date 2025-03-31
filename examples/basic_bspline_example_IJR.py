@@ -7,15 +7,22 @@ from utils import run_bspline_analysis
 from utils import setup_result_dir
 
 from gwinferno.pipeline.analysis import hierarchical_likelihood
+from gwinferno.pipeline.utils import bspline_mass_prior
+from gwinferno.pipeline.utils import bspline_redshift_prior
 from gwinferno.pipeline.utils import bspline_spin_prior
 from gwinferno.pipeline.utils import load_base_parser
 from gwinferno.pipeline.utils import load_pe_and_injections_as_dict
 from gwinferno.pipeline.utils import pdf_dict_to_xarray
 from gwinferno.pipeline.utils import posterior_dict_to_xarray
+from gwinferno.postprocess.calculations import calculate_bspline_mass_ppds
 from gwinferno.postprocess.calculations import calculate_bspline_spin_ppds
+from gwinferno.postprocess.calculations import calculate_powerlaw_spline_rate_of_z_ppds
+from gwinferno.postprocess.plot import plot_mass_pdfs
+from gwinferno.postprocess.plot import plot_rate_of_z_pdfs
 from gwinferno.postprocess.plot import plot_spin_pdfs
 
-def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, nspline_dict, param_names):
+
+def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model, z_model, mmin, mmax, nspline_dict, param_names):
     """Numpyro model
 
     Args:
@@ -24,8 +31,10 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, 
         Nobs (int): Number of CBC events
         Tobs (float): analysis time
         Ninj (int): total number of generated injectiosn
+        mass_models (list of objs): list containing initialized b-splines for primary mass and mass ratio
         mag_model (obj): initialized b-spline for spin magnitude
         tilt_model (obj): initialized b-spline for cos_tilt
+        z_model (obj): initialized b-spline-powerlaw for redshift
         mmin (float): minimum mass
         mmax (float): maximum mass
         nspline_dict (dict): dictionary containing the number of splines for each parameter
@@ -35,18 +44,26 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, 
 
     #### Priors ####
 
-    a1_cs, tilt1_cs, a2_cs, tilt2_cs = bspline_spin_prior(
+    mass_cs, q_cs = bspline_mass_prior(m_nsplines=nspline_dict["m1"], q_nsplines=nspline_dict["q"], m_tau=1, q_tau=1)
+
+    a_cs, tilt_cs = bspline_spin_prior(
         a_nsplines=nspline_dict["a1"], ct_nsplines=nspline_dict["tilt1"], a_tau=25, ct_tau=25, IID=False
     )
+
+    z_cs = bspline_redshift_prior(z_nsplines=nspline_dict["redshift"], z_tau=1)
+    lamb = numpyro.sample("lamb", dist.Normal(0, 3))
 
     #### Calcualte weights ####
 
     def get_weights(datadict, pe_samples=True):
 
-        p_a = mag_model(a1_cs, a2_cs, pe_samples=pe_samples)
-        p_ct = tilt_model(tilt1_cs, tilt2_cs, pe_samples=pe_samples)
+        p_m1q = mass_models(mass_cs, q_cs, pe_samples=pe_samples)
+        p_a = mag_model(a_cs, pe_samples=pe_samples)
+        p_ct = tilt_model(tilt_cs, pe_samples=pe_samples)
 
-        weights_1 = p_a * p_ct / datadict["prior"]
+        p_z = z_model(datadict["redshift"], lamb, z_cs)
+
+        weights_1 = p_m1q * p_a * p_ct * p_z / datadict["prior"]
 
         return weights_1
 
@@ -61,6 +78,7 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, 
         float(Ninj),
         Nobs,
         Tobs,
+        z_model.normalization(lamb=lamb, cs=z_cs),
         param_names=param_names,
         pedata=pedict,
         injdata=injdict,
@@ -69,7 +87,8 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, 
         mmax=mmax,
     )
 
-    def main():
+
+def main():
 
     """
     load argument parser (used when running script from command line)
@@ -86,10 +105,13 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, 
     args = parser.parse_args()
 
     nspline_dict = {
+        "m1": args.m_nsplines,
+        "q": args.q_nsplines,
         "a1": args.a_nsplines,
         "tilt1": args.tilt_nsplines,
         "a2": args.a_nsplines,
-        "tilt2": args.tilt_nsplines
+        "tilt2": args.tilt_nsplines,
+        "redshift": args.z_nsplines,
     }
 
     """
@@ -108,7 +130,6 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, 
     Run inference and save posterior samples to file. If flag --skip-inference present, then don't perform inference and load posterior samples from existing file.
     """
 
-    # TODO: change to run_bspline_spin_analysis
     if args.skip_inference:
         z_model = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args, skip_inference=True)
         print(f"loading posterior file: {result_dir}/{label}_posterior_samples.h5")
@@ -130,9 +151,22 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, 
     names = ["B-Spline"]
     colors = ["tab:blue"]
 
+    """
+    Calculate Mass pdfs (for loop necessary for multiple subpopulations)
+    """
+
+    print("calculating mass ppds:")
+    mass_pdfs = []
+    q_pdfs = []
+    for i in range(len(names)):
+        mass, m1s, mass_ratio, qs = calculate_bspline_mass_ppds(
+            posterior[f"mass_cs"].values, posterior[f"q_cs"].values, nspline_dict, args.mmin, args.mmax
+        )
+        mass_pdfs.append(mass)
+        q_pdfs.append(mass_ratio)
 
     """
-    Calculate mag pdfs (for loop necessary for multiple subpopulations)
+    Calculate Mass pdfs (for loop necessary for multiple subpopulations)
     """
     print("calculating spin ppds:")
     mag1_pdfs = []
@@ -153,13 +187,25 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, 
         tilt2_pdfs.append(tilt2)
 
     """
+    Calculate rate as a funciton of redshift
+    """
+    print("calculating rate(z) ppds:")
+    r_of_z, zs = calculate_powerlaw_spline_rate_of_z_ppds(posterior["lamb"].values, posterior["z_cs"].values, posterior["rate"].values, z_model)
+
+    """
     Save PDF plots of each parameter
     """
+    print("plotting mass distributions:")
+    plot_mass_pdfs(mass_pdfs, q_pdfs, m1s, qs, names, label, result_dir, save=args.save_plots, colors=colors)
+
     print("plotting primary spin distributions:")
     plot_spin_pdfs(mag1_pdfs, tilt1_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors)
 
     print("plotting secondary spin distributions:")
     plot_spin_pdfs(mag2_pdfs, tilt2_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors, secondary=True)
+
+    print("plotting redshift distributions:")
+    plot_rate_of_z_pdfs(r_of_z, zs, label, result_dir, save=args.save_plots)
 
     """
     Convert dictionary of pdfs and params to an xarray Dataset
@@ -168,9 +214,12 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mag_model, tilt_model, mmin, mmax, 
         "a1": mag1_pdfs[0],
         "cos_tilt1": tilt1_pdfs[0],
         "a2": mag2_pdfs[0],
-        "cos_tilt2": tilt2_pdfs[0]
+        "cos_tilt2": tilt2_pdfs[0],
+        "mass_1": mass_pdfs[0],
+        "mass_ratio": q_pdfs[0],
+        "redshift": r_of_z,
     }
-    param_dict = {"a1": mags, "a2": mags, "cos_tilt1": tilts, "cos_tilt2": tilts}
+    param_dict = {"a1": mags, "a2": mags, "cos_tilt1": tilts, "cos_tilt2": tilts, "mass_1": m1s, "redshift": zs, "mass_ratio": qs}
     pdf_dataset = pdf_dict_to_xarray(pdf_dict, param_dict, args.samples)
 
     """
