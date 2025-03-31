@@ -16,6 +16,7 @@ from gwinferno.models.bsplines.separable import BSplineIndependentSpinTilts
 from gwinferno.models.bsplines.separable import BSplinePrimaryBSplineRatio
 from gwinferno.models.bsplines.smoothing import apply_difference_prior
 from gwinferno.models.spline_perturbation import PowerlawSplineRedshiftModel
+from gwinferno.models.bsplines.joint import Base2DBSplineModel
 
 
 def load_base_parser():
@@ -118,7 +119,8 @@ def setup_bspline_mass_models(pedict, injdict, m_nsplines, q_nsplines, mmin, mma
     )
 
 
-def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=False, a2_nsplines=None, ct2_nsplines=None):
+def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=False, a2_nsplines=None, ct2_nsplines=None, Bivariate=True):
+    # TODO: move the ```Bivariate``` flag before the number of B-splines arguments and set default to False - set to True for testing
     print("initializing spline spin design matrices")
 
     if IID:
@@ -127,6 +129,13 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
         )
 
         mag_model = BSplineIIDSpinMagnitudes(a1_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], normalize=True)
+
+    elif Bivariate:
+        tilt_model = Base2DBSplineModel(u_pe_vals = pedict["cos_tilt_1"], u_inj_vals = injdict["cos_tilt_1"], v_pe_vals = pedict["cos_tilt_2"],
+            v_inj_vals = injdict["cos_tilt_2"], ul_BSplines = ct1_nsplines, vl_BSplines = ct2_nsplines, normalization = True)
+
+        mag_model = Base2DBSplineModel(u_pe_vals = pedict["a_1"], u_inj_vals = injdict["a_1"], v_pe_vals = pedict["a_2"],
+            v_inj_vals = injdict["a_2"], ul_BSplines = a1_nsplines, vl_BSplines = a2_nsplines, normalization = True)
 
     else:
         tilt_model = BSplineIndependentSpinTilts(
@@ -182,7 +191,9 @@ def bspline_mass_prior(m_nsplines=None, q_nsplines=None, m_tau=1, q_tau=1, name=
         return mass_cs, q_cs
 
 
-def bspline_spin_prior(a_nsplines=None, ct_nsplines=None, a_tau=None, ct_tau=None, name=None, IID=False, a_cs_sig=5, ct_cs_sig=5, a_deg=2, ct_deg=2):
+def bspline_spin_prior(a_nsplines=None, ct_nsplines=None, a_tau=None, ct_tau=None, name=None, IID=False, a_cs_sig=5, ct_cs_sig=5, a_deg=2, ct_deg=2,
+    Bivariate=True):
+    # TODO: move the ```Bivariate``` flag before the number of B-splines arguments and set default to False - set to True for testing
 
     name = "_" + name if name is not None else ""
 
@@ -192,6 +203,15 @@ def bspline_spin_prior(a_nsplines=None, ct_nsplines=None, a_tau=None, ct_tau=Non
 
         ct_cs = numpyro.sample("tilt_cs" + name, dist.Normal(0, ct_cs_sig), sample_shape=(ct_nsplines,))
         numpyro.factor("ct_smoothing_prior" + name, apply_difference_prior(ct_cs, ct_tau, degree=ct_deg))
+        return a_cs, ct_cs
+
+    elif Bivariate:
+        a_cs = numpyro.sample("a_cs" + name, dist.Normal(0, a_cs_sig), sample_shape=(a_nsplines, a_nsplines))
+        numpyro.factor("a_smoothing_prior" + name, apply_difference_prior(a_cs, a_tau, degree=a_deg))
+        
+        ct_cs = numpyro.sample("tilt_cs" + name, dist.Normal(0, ct_cs_sig), sample_shape=(ct_nsplines, ct_nsplines))
+        numpyro.factor("ct_smoothing_prior" + name, apply_difference_prior(ct_cs, ct_tau, degree=ct_deg))
+        
         return a_cs, ct_cs
 
     else:
