@@ -14,6 +14,17 @@ def plot_pdf(x, pdf, label, color="blue", loglog=True, alpha=1.0):
 
     plt.fill_between(x, low, high, color=color, alpha=0.1)
 
+def plot_2dpdf(ax1, ax2, u, v, pdf, label, color = "blue", loglog = False, alpha = 1.0):
+    med = np.median(pdf, axis = 0)
+    # low = np.percentile(pdf, 5, axis = 0)
+    # high = np.percentile(pdf, 95, axis = 0)
+
+    if loglog:
+        pass
+    else:
+        U, V = np.meshgrid(u, v, indexing = 'ij')
+        ax1.plot_wireframe(U, V, med, color = color, alpha = alpha)
+        ax2.contourf(U, V, med, cmap = 'viridis', alpha = alpha)
 
 def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, save=True, colors=["red", "blue", "green"]):
 
@@ -74,6 +85,35 @@ def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=Tru
         plt.savefig(result_dir + f"/cos_tilt{comp}_pdf_{label}.png", dpi=100)
     plt.close()
 
+def plot_2dspin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=True, colors=["red", "blue", "green"]):
+    fig = plt.figure(1, 2, figsize=(10,7))
+    ax1 = fig.add_subplot(projection = '3d')
+    ax2 = fig.add_subplot()
+    for i in range(len(a_pdfs)):
+        plot_2dpdf(ax1, ax2, aa, aa, a_pdfs[i], label = label, color=colors[i])
+    ax1.set_xlabel('a1')
+    ax1.set_ylabel('a2')
+    ax2.set_xlabel('a1')
+    ax2.set_ylabel('a2')
+    # fig.colorbar()
+    plt.show()
+    if save:
+        fig.savefig(result_dir + f"/spin_mag2d_pdf_{label}.png", dpi = 100)
+    plt.close()
+
+    fig = plt.figure(1, 2, figsize=(10,7))
+    ax1 = fig.add_subplot(projection = '3d')
+    ax2 = fig.add_subplot()
+    for i in range(len(tilt_pdfs)):
+        plot_2dpdf(ax1, ax2, cc, cc, tilt_pdfs[i], label = label, color=colors[i])
+    ax1.set_xlabel(r'cos$\theta_1$')
+    ax1.set_ylabel(r'cos$\theta_2$')
+    ax2.set_xlabel(r'cos$\theta_1$')
+    ax2.set_ylabel(r'cos$\theta_2$')
+    plt.show()
+    if save:
+        fig.savefig(result_dir + f"/cos_tilt2d_pdf_{label}.png", dpi = 100)
+    plt.close()
 
 def plot_rate_of_z_pdfs(z_pdfs, z, label, result_dir, save=True):
 
