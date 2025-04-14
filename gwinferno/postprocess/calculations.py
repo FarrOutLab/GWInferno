@@ -15,6 +15,7 @@ from gwinferno.models.bsplines.separable import BSplinePrimaryBSplineRatio
 from gwinferno.models.bsplines.single import BSplineRatio
 from gwinferno.models.parametric.parametric import mixture_isoalign_spin_tilt
 from gwinferno.models.parametric.parametric import plpeak_primary_ratio_pdf
+from gwinferno.models.bsplines.joint import Base2DBSplineModel
 
 
 def calculate_bspline_mass_ppds(m_cs, q_cs, nspline_dict, mmin, mmax, rate=None, pop_frac=None):
@@ -178,10 +179,13 @@ def calculate_mixture_iso_aligned_spin_tilt(sig_ct, lambda_ct, rate=None, pop_fr
     return ctpdfs, ct
 
 
-def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs=None, tilt2_cs=None, rate=None, pop_frac=None):
+def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs=None, tilt2_cs=None, rate=None, pop_frac=None, bivariate = False):
 
     aa = jnp.linspace(0, 1, 800)
     cc = jnp.linspace(-1, 1, 800)
+
+    print('a_cs shape: ', a1_cs.shape)
+    print('number of b-splines: ', nspline_dict["a1"])
 
     if rate is None:
         rate = jnp.ones(a1_cs.shape[0])
@@ -190,26 +194,53 @@ def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs=None, tilt2
 
     if a2_cs is None:
 
-        mag_model = BSplineIIDSpinMagnitudes(nspline_dict["a"], aa, aa, aa, aa, basis=LogYBSpline, normalize=True)
+        if bivariate:
+            mag_model = Base2DBSplineModel(u_pe_vals = aa, u_inj_vals = aa, v_pe_vals = aa, v_inj_vals = aa,
+                                           ul_BSplines = nspline_dict["a1"], vl_BSplines = nspline_dict["a2"], normalization = True,
+                                           independent = True)
+            
+            tilt_model = Base2DBSplineModel(u_pe_vals = cc, u_inj_vals = cc, v_pe_vals = cc, v_inj_vals = cc, u_domain = (-1.0, 1.0), v_domain = (-1.0, 1.0),
+                                            ul_BSplines = nspline_dict["tilt1"], vl_BSplines = nspline_dict["tilt2"], normalization = True,
+                                            independent = True)
+                        
+            apdfs = np.zeros((a1_cs.shape[0], len(aa), len(aa)))
+            ctpdfs = np.zeros((tilt1_cs.shape[0], len(cc), len(cc)))
 
-        tilt_model = BSplineIIDSpinTilts(nspline_dict["tilt"], cc, cc, cc, cc, basis=LogYBSpline, normalize=True)
+            def calc_pdf(a_cs, ct_cs, r, f):
+                p_a = mag_model(a_cs, independent = True)
+                p_ct = tilt_model(ct_cs, independent = True)
 
-        apdfs = np.zeros((a1_cs.shape[0], len(aa)))
-        ctpdfs = np.zeros((tilt1_cs.shape[0], len(cc)))
+                P_a = r * f * p_a / trapezoid(trapezoid(p_a, aa, axis = 1), aa, axis = 0)
+                P_ct = r * f * p_ct / trapezoid(trapezoid(p_ct, cc, axis = 1), cc, axis = 0)
+                return P_a, P_ct
+            
+            calc_pdf = jit(calc_pdf)
 
-        def calc_pdf(a_cs, ct_cs, r, f):
-            p_a = mag_model.primary_model(a_cs)
-            p_ct = tilt_model.primary_model(ct_cs)
-            P_a = r * f * p_a / trapezoid(p_a, aa)
-            P_ct = r * f * p_ct / trapezoid(p_ct, cc)
-            return P_a, P_ct
+            for i in trange(apdfs.shape[0]):
+                apdfs[i], ctpdfs[i] = calc_pdf(a1_cs[i], tilt1_cs[i], rate[i], pop_frac[i])
 
-        calc_pdf = jit(calc_pdf)
+            return apdfs, aa, ctpdfs, cc
+        else: 
+            mag_model = BSplineIIDSpinMagnitudes(nspline_dict["a"], aa, aa, aa, aa, basis=LogYBSpline, normalize=True)
 
-        for i in trange(apdfs.shape[0]):
-            apdfs[i], ctpdfs[i] = calc_pdf(a1_cs[i], tilt1_cs[i], rate[i], pop_frac[i])
+            tilt_model = BSplineIIDSpinTilts(nspline_dict["tilt"], cc, cc, cc, cc, basis=LogYBSpline, normalize=True)
 
-        return apdfs, aa, ctpdfs, cc
+            apdfs = np.zeros((a1_cs.shape[0], len(aa)))
+            ctpdfs = np.zeros((tilt1_cs.shape[0], len(cc)))
+
+            def calc_pdf(a_cs, ct_cs, r, f):
+                p_a = mag_model.primary_model(a_cs)
+                p_ct = tilt_model.primary_model(ct_cs)
+                P_a = r * f * p_a / trapezoid(p_a, aa)
+                P_ct = r * f * p_ct / trapezoid(p_ct, cc)
+                return P_a, P_ct
+
+            calc_pdf = jit(calc_pdf)
+
+            for i in trange(apdfs.shape[0]):
+                apdfs[i], ctpdfs[i] = calc_pdf(a1_cs[i], tilt1_cs[i], rate[i], pop_frac[i])
+
+            return apdfs, aa, ctpdfs, cc
 
     else:
         mag_model = BSplineIndependentSpinMagnitudes(nspline_dict["a1"], nspline_dict["a2"], aa, aa, aa, aa, normalize=True)
