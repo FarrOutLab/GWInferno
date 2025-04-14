@@ -132,7 +132,7 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
 
     elif Bivariate:
         tilt_model = Base2DBSplineModel(u_pe_vals = pedict["cos_tilt_1"], u_inj_vals = injdict["cos_tilt_1"], v_pe_vals = pedict["cos_tilt_2"],
-            v_inj_vals = injdict["cos_tilt_2"], ul_BSplines = ct1_nsplines, vl_BSplines = ct2_nsplines, normalization = True)
+            v_inj_vals = injdict["cos_tilt_2"], u_domain=(-1.0, 1.0), v_domain=(-1.0, 1.0), ul_BSplines = ct1_nsplines, vl_BSplines = ct2_nsplines, normalization = True)
 
         mag_model = Base2DBSplineModel(u_pe_vals = pedict["a_1"], u_inj_vals = injdict["a_1"], v_pe_vals = pedict["a_2"],
             v_inj_vals = injdict["a_2"], ul_BSplines = a1_nsplines, vl_BSplines = a2_nsplines, normalization = True)
@@ -205,27 +205,29 @@ def bspline_spin_prior(a_nsplines=None, ct_nsplines=None, a_tau=None, ct_tau=Non
         numpyro.factor("ct_smoothing_prior" + name, apply_difference_prior(ct_cs, ct_tau, degree=ct_deg))
         return a_cs, ct_cs
 
-    elif Bivariate:
-        a_cs = numpyro.sample("a_cs" + name, dist.Normal(0, a_cs_sig), sample_shape=(a_nsplines, a_nsplines))
-        numpyro.factor("a_smoothing_prior" + name, apply_difference_prior(a_cs, a_tau, degree=a_deg))
-        
-        ct_cs = numpyro.sample("tilt_cs" + name, dist.Normal(0, ct_cs_sig), sample_shape=(ct_nsplines, ct_nsplines))
-        numpyro.factor("ct_smoothing_prior" + name, apply_difference_prior(ct_cs, ct_tau, degree=ct_deg))
-        
-        return a_cs, ct_cs
-
     else:
-        a1_cs = numpyro.sample("a1_cs" + name, dist.Normal(0, a_cs_sig), sample_shape=(a_nsplines,))
-        numpyro.factor("a1_smoothing_prior" + name, apply_difference_prior(a1_cs, a_tau, degree=a_deg))
-        a2_cs = numpyro.sample("a2_cs" + name, dist.Normal(0, a_cs_sig), sample_shape=(a_nsplines,))
-        numpyro.factor("a2_smoothing_prior" + name, apply_difference_prior(a2_cs, a_tau, degree=a_deg))
+        if Bivariate:
+            a_cs = numpyro.sample("a_cs" + name, dist.Normal(0, a_cs_sig), sample_shape=(a_nsplines, a_nsplines))
+            numpyro.factor("a_smoothing_prior" + name, apply_difference_prior(a_cs, a_tau, degree=a_deg))
+            
+            ct_cs = numpyro.sample("tilt_cs" + name, dist.Normal(0, ct_cs_sig), sample_shape=(ct_nsplines, ct_nsplines))
+            numpyro.factor("ct_smoothing_prior" + name, apply_difference_prior(ct_cs, ct_tau, degree=ct_deg))
+            print('Bivariate: yes')
+            # print('a_cs shape: ', a_cs.shape)
+            # print('ct_cs shape: ', ct_cs.shape)
+            return a_cs, ct_cs
+        else:
+            a1_cs = numpyro.sample("a1_cs" + name, dist.Normal(0, a_cs_sig), sample_shape=(a_nsplines,))
+            numpyro.factor("a1_smoothing_prior" + name, apply_difference_prior(a1_cs, a_tau, degree=a_deg))
+            a2_cs = numpyro.sample("a2_cs" + name, dist.Normal(0, a_cs_sig), sample_shape=(a_nsplines,))
+            numpyro.factor("a2_smoothing_prior" + name, apply_difference_prior(a2_cs, a_tau, degree=a_deg))
 
-        ct1_cs = numpyro.sample("tilt1_cs" + name, dist.Normal(0, ct_cs_sig), sample_shape=(ct_nsplines,))
-        numpyro.factor("ct1_smoothing_prior" + name, apply_difference_prior(ct1_cs, ct_tau, degree=ct_deg))
-        ct2_cs = numpyro.sample("tilt2_cs" + name, dist.Normal(0, ct_cs_sig), sample_shape=(ct_nsplines,))
-        numpyro.factor("ct2_smoothing_prior" + name, apply_difference_prior(ct2_cs, ct_tau, degree=ct_deg))
-
-        return a1_cs, ct1_cs, a2_cs, ct2_cs
+            ct1_cs = numpyro.sample("tilt1_cs" + name, dist.Normal(0, ct_cs_sig), sample_shape=(ct_nsplines,))
+            numpyro.factor("ct1_smoothing_prior" + name, apply_difference_prior(ct1_cs, ct_tau, degree=ct_deg))
+            ct2_cs = numpyro.sample("tilt2_cs" + name, dist.Normal(0, ct_cs_sig), sample_shape=(ct_nsplines,))
+            numpyro.factor("ct2_smoothing_prior" + name, apply_difference_prior(ct2_cs, ct_tau, degree=ct_deg))
+            print('IID: no')
+            return a1_cs, ct1_cs, a2_cs, ct2_cs
 
 
 def bspline_redshift_prior(z_nsplines=None, z_tau=None, name=None, z_cs_sig=1, z_deg=2):
@@ -249,11 +251,14 @@ def posterior_dict_to_xarray(posteriors):
     return xr.Dataset.from_dict(posteriors)
 
 
-def pdf_dict_to_xarray(pdf_dict, param_dict, n_samples, subpop_names=None):
+def pdf_dict_to_xarray(pdf_dict, param_dict, n_samples, subpop_names=None, bivariate = False):
     xr_dict = {}
     if subpop_names is None:
-        pdfs = {f"{key}_pdfs": (["draw", key], item) for key, item in pdf_dict.items()}
-        xr_dict = xr_dict | pdfs
+        if bivariate:
+            pass
+        else:
+            pdfs = {f"{key}_pdfs": (["draw", key], item) for key, item in pdf_dict.items()}
+            xr_dict = xr_dict | pdfs
     else:
         z = {"redshift_pdfs": (["draw", "redshift"], pdf_dict["redshift"])}
         xr_dict | z
