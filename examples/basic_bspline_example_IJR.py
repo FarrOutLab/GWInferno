@@ -20,6 +20,7 @@ from gwinferno.postprocess.calculations import calculate_powerlaw_spline_rate_of
 from gwinferno.postprocess.plot import plot_mass_pdfs
 from gwinferno.postprocess.plot import plot_rate_of_z_pdfs
 from gwinferno.postprocess.plot import plot_spin_pdfs
+from gwinferno.postprocess.plot import plot_2dspin_pdfs
 
 
 def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model, z_model, mmin, mmax, nspline_dict, param_names):
@@ -47,7 +48,7 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model,
     mass_cs, q_cs = bspline_mass_prior(m_nsplines=nspline_dict["m1"], q_nsplines=nspline_dict["q"], m_tau=1, q_tau=1)
 
     a_cs, tilt_cs = bspline_spin_prior(
-        a_nsplines=nspline_dict["a1"], ct_nsplines=nspline_dict["tilt1"], a_tau=25, ct_tau=25, IID=False
+        a_nsplines=nspline_dict["a1"],ct_nsplines=nspline_dict["tilt1"],a_tau=25, ct_tau=25, IID=False
     )
 
     z_cs = bspline_redshift_prior(z_nsplines=nspline_dict["redshift"], z_tau=1)
@@ -169,22 +170,17 @@ def main():
     Calculate Mass pdfs (for loop necessary for multiple subpopulations)
     """
     print("calculating spin ppds:")
-    mag1_pdfs = []
-    mag2_pdfs = []
-    tilt1_pdfs = []
-    tilt2_pdfs = []
+    mag_pdfs = []
+    tilt_pdfs = []
     for i in range(len(names)):
-        mag1, mag2, mags, tilt1, tilt2, tilts = calculate_bspline_spin_ppds(
-            posterior[f"a1_cs"].values,
-            posterior[f"tilt1_cs"].values,
+        mag1, mags, tilt1, tilts = calculate_bspline_spin_ppds(
+            posterior[f"a_cs"].values,
+            posterior[f"tilt_cs"].values,
             nspline_dict,
-            a2_cs=posterior[f"a2_cs"].values,
-            tilt2_cs=posterior[f"tilt2_cs"].values,
+            Bivariate = True
         )
-        mag1_pdfs.append(mag1)
-        mag2_pdfs.append(mag2)
-        tilt1_pdfs.append(tilt1)
-        tilt2_pdfs.append(tilt2)
+        mag_pdfs.append(mag1)
+        tilt_pdfs.append(tilt1)
 
     """
     Calculate rate as a funciton of redshift
@@ -199,10 +195,10 @@ def main():
     plot_mass_pdfs(mass_pdfs, q_pdfs, m1s, qs, names, label, result_dir, save=args.save_plots, colors=colors)
 
     print("plotting primary spin distributions:")
-    plot_spin_pdfs(mag1_pdfs, tilt1_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors)
+    plot_2dspin_pdfs(mag_pdfs, tilt_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors)
 
-    print("plotting secondary spin distributions:")
-    plot_spin_pdfs(mag2_pdfs, tilt2_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors, secondary=True)
+    # print("plotting secondary spin distributions:")
+    # plot_spin_pdfs(mag2_pdfs, tilt2_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors, secondary=True)
 
     print("plotting redshift distributions:")
     plot_rate_of_z_pdfs(r_of_z, zs, label, result_dir, save=args.save_plots)
@@ -211,15 +207,13 @@ def main():
     Convert dictionary of pdfs and params to an xarray Dataset
     """
     pdf_dict = {
-        "a1": mag1_pdfs[0],
-        "cos_tilt1": tilt1_pdfs[0],
-        "a2": mag2_pdfs[0],
-        "cos_tilt2": tilt2_pdfs[0],
+        "mag": mag_pdfs,
+        "cos_tilt": tilt_pdfs,
         "mass_1": mass_pdfs[0],
         "mass_ratio": q_pdfs[0],
         "redshift": r_of_z,
     }
-    param_dict = {"a1": mags, "a2": mags, "cos_tilt1": tilts, "cos_tilt2": tilts, "mass_1": m1s, "redshift": zs, "mass_ratio": qs}
+    param_dict = {"a": mags, "cos_tilt": tilts, "mass_1": m1s, "redshift": zs, "mass_ratio": qs}
     pdf_dataset = pdf_dict_to_xarray(pdf_dict, param_dict, args.samples)
 
     """
