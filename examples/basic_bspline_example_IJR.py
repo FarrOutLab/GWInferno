@@ -31,7 +31,7 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model,
         injdict (dict): dictionary of injection data
         Nobs (int): Number of CBC events
         Tobs (float): analysis time
-        Ninj (int): total number of generated injectiosn
+        Ninj (int): total number of generated injections
         mass_models (list of objs): list containing initialized b-splines for primary mass and mass ratio
         mag_model (obj): initialized b-spline for spin magnitude
         tilt_model (obj): initialized b-spline for cos_tilt
@@ -177,7 +177,7 @@ def main():
             posterior[f"a_cs"].values,
             posterior[f"tilt_cs"].values,
             nspline_dict,
-            Bivariate = True
+            bivariate = True
         )
         mag_pdfs.append(mag1)
         tilt_pdfs.append(tilt1)
