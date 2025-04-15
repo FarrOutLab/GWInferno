@@ -10,7 +10,6 @@ from gwinferno.pipeline.utils import setup_bspline_spin_models
 from gwinferno.pipeline.utils import setup_powerlaw_spline_redshift_model
 
 from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
-from gwinferno.interpolation import BSpline
 
 
 def setup_result_dir(parsargs):
@@ -54,7 +53,7 @@ def run_bspline_analysis(numpyro_model, pedict, injdict, constants, param_names,
     """
     mass_models = setup_bspline_mass_models(pedict, injdict, nspline_dict["m1"], nspline_dict["q"], mmin=parsargs.mmin, mmax=parsargs.mmax)
     mag_model, tilt_model = setup_bspline_spin_models(
-        pedict, injdict, nspline_dict["a1"], nspline_dict["tilt1"], IID=False, a2_nsplines=nspline_dict["a2"], ct2_nsplines=nspline_dict["tilt2"]
+        pedict, injdict, nspline_dict["a1"], nspline_dict["tilt1"], IID=False, a2_nsplines=nspline_dict["a2"], ct2_nsplines=nspline_dict["tilt2"], bivariate=True
     )
     z_model = setup_powerlaw_spline_redshift_model(pedict, injdict, nspline_dict["redshift"])
 
@@ -83,6 +82,7 @@ def run_bspline_analysis(numpyro_model, pedict, injdict, constants, param_names,
             nspline_dict,
             param_names,
         )
+        mcmc.print_summary()
         posterior = mcmc.get_samples()
 
         return posterior, z_model
