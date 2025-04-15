@@ -11,7 +11,9 @@ from ...interpolation import BSpline
 from ...interpolation import LogXBSpline
 from ...interpolation import LogXLogYBSpline
 from ...interpolation import LogYBSpline
+from ...interpolation import SplineDOF_wrapper
 from ...interpolation import BSplines
+from ...interpolation import LogYBSplines
 
 
 class Base1DBSplineModel(object):
@@ -89,6 +91,7 @@ class Base1DBSplineModel(object):
             The linear combination of the basis components evaluated at the parameter estimation samples given the coefficients.
         """
         pdf = jnp.zeros(self._valid_xx.shape)
+        # print('pe dm shape! ', self.pe_design_matrix.shape)
         pdf = pdf.at[self._valid_xx].set(self.eval_spline(self.pe_design_matrix, coefs))
         return pdf
 
@@ -501,7 +504,7 @@ class Base1DBSplineModel_IJR():
         l_Bsplines (int): total number of basis functions - 1
         domain (tuple, default=(0.0, 1.0)): domain of the B-splines
         order (int, default=4): order of the B-splines, i.e., `4` for cubic splines
-        basis (class, default=BSplines): type of basis to use
+        basis (class, default=LogYBSplines): type of basis to use
     """
 
     def __init__(
@@ -520,13 +523,16 @@ class Base1DBSplineModel_IJR():
         self.interpolator = basis(
             u_domain=domain,
             P=order,
-            l=l_BSplines,
+            l=self.l_BSplines,
             **kwargs,
         )
-        self._valid_pe_vals = (pe_vals >= self.xmin) & (pe_vals <= self.xmax)
-        self._valid_inj_vals = (inj_vals >= self.xmin) & (inj_vals <= self.xmax)
-        self.pe_design_matrix = self.interpolator.design_matrix(pe_vals[self._valid_pe_vals])
-        self.inj_design_matrix = self.interpolator.design_matrix(inj_vals[self._valid_inj_vals])
+        # print("pe vals shape: ", pe_vals.shape)
+        # self._valid_pe_vals = (pe_vals >= self.xmin) & (pe_vals <= self.xmax)
+        # print("valid pe vals shape: ", self._valid_pe_vals.shape)
+        # self._valid_inj_vals = (inj_vals >= self.xmin) & (inj_vals <= self.xmax)
+        self.pe_design_matrix = self.interpolator.design_matrix(pe_vals)
+        # print("pe dm shape? ", self.pe_design_matrix.shape)
+        self.inj_design_matrix = self.interpolator.design_matrix(inj_vals)
         self.funcs = [self.inj_pdf, self.pe_pdf]
 
     def eval_spline(self, bases, coefs):
@@ -544,8 +550,7 @@ class Base1DBSplineModel_IJR():
         Args:
             coefs (array_like): basis spline coefficients
         """
-        pdf = jnp.zeros(self._valid_pe_vals.shape)
-        pdf = pdf.at[self._valid_pe_vals].set(self.eval_spline(coefs, self.pe_design_matrix))
+        pdf = self.eval_spline(coefs, self.pe_design_matrix)
         return pdf
 
     def inj_pdf(self, coefs):
@@ -554,8 +559,7 @@ class Base1DBSplineModel_IJR():
         Args:
             coefs (array_like): basis spline coefficients
         """
-        pdf = jnp.zeros(self._valid_inj_vals.shape)
-        pdf = pdf.at[self._valid_inj_vals].set(self.eval_spline(coefs, self.inj_design_matrix))
+        pdf = self.eval_spline(coefs, self.inj_design_matrix)
         return pdf
 
     def __call__(self, coefs, pe_samples=True):
