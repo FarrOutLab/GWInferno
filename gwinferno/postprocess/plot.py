@@ -87,7 +87,7 @@ def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=Tru
     plt.close()
 
 def plot_2dspin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=True, colors=["red", "blue", "green"]):
-    fig = plt.figure(figsize=(10,7))
+    fig = plt.figure(figsize=(10,7), layout = 'tight')
     ax1 = fig.add_subplot(1, 2, 1, projection = '3d')
     ax2 = fig.add_subplot(1, 2, 2)
     for i in range(len(a_pdfs)):
@@ -102,7 +102,7 @@ def plot_2dspin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=T
         fig.savefig(result_dir + f"/spin_mag2d_pdf_{label}.png", dpi = 100)
     plt.close()
 
-    fig = plt.figure(figsize=(10,7))
+    fig = plt.figure(figsize=(10,7), layout = 'tight')
     ax1 = fig.add_subplot(1, 2, 1, projection = '3d')
     ax2 = fig.add_subplot(1, 2, 2)
     for i in range(len(tilt_pdfs)):
