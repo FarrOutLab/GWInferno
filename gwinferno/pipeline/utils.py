@@ -16,6 +16,8 @@ from gwinferno.models.bsplines.separable import BSplineIndependentSpinTilts
 from gwinferno.models.bsplines.separable import BSplinePrimaryBSplineRatio
 from gwinferno.models.bsplines.smoothing import apply_difference_prior
 from gwinferno.models.spline_perturbation import PowerlawSplineRedshiftModel
+from gwinferno.interpolation import LogYBSplines
+from gwinferno.models.bsplines.single import Base1DBSplineModel_IJR
 from gwinferno.models.bsplines.joint import Base2DBSplineModel
 
 
@@ -119,7 +121,7 @@ def setup_bspline_mass_models(pedict, injdict, m_nsplines, q_nsplines, mmin, mma
     )
 
 
-def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=False, a2_nsplines=None, ct2_nsplines=None, Bivariate=True):
+def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=False, a2_nsplines=None, ct2_nsplines=None, bivariate=True):
     # TODO: move the ```Bivariate``` flag before the number of B-splines arguments and set default to False - set to True for testing
     print("initializing spline spin design matrices")
 
@@ -130,12 +132,14 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
 
         mag_model = BSplineIIDSpinMagnitudes(a1_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], normalize=True)
 
-    elif Bivariate:
+    elif bivariate:
         tilt_model = Base2DBSplineModel(u_pe_vals = pedict["cos_tilt_1"], u_inj_vals = injdict["cos_tilt_1"], v_pe_vals = pedict["cos_tilt_2"],
-            v_inj_vals = injdict["cos_tilt_2"], u_domain=(-1.0, 1.0), v_domain=(-1.0, 1.0), ul_BSplines = ct1_nsplines, vl_BSplines = ct2_nsplines, normalization = True)
+            v_inj_vals = injdict["cos_tilt_2"], u_domain=(-1.0, 1.0), v_domain=(-1.0, 1.0), ul_BSplines = ct1_nsplines, vl_BSplines = ct2_nsplines,
+            normalization = True)
 
         mag_model = Base2DBSplineModel(u_pe_vals = pedict["a_1"], u_inj_vals = injdict["a_1"], v_pe_vals = pedict["a_2"],
-            v_inj_vals = injdict["a_2"], ul_BSplines = a1_nsplines, vl_BSplines = a2_nsplines, normalization = True)
+            v_inj_vals = injdict["a_2"], ul_BSplines = a1_nsplines, vl_BSplines = a2_nsplines,
+            normalization = True)
 
     else:
         tilt_model = BSplineIndependentSpinTilts(
@@ -251,14 +255,11 @@ def posterior_dict_to_xarray(posteriors):
     return xr.Dataset.from_dict(posteriors)
 
 
-def pdf_dict_to_xarray(pdf_dict, param_dict, n_samples, subpop_names=None, bivariate = False):
+def pdf_dict_to_xarray(pdf_dict, param_dict, n_samples, subpop_names=None):
     xr_dict = {}
     if subpop_names is None:
-        if bivariate:
-            pass
-        else:
-            pdfs = {f"{key}_pdfs": (["draw", key], item) for key, item in pdf_dict.items()}
-            xr_dict = xr_dict | pdfs
+        pdfs = {f"{key}_pdfs": (["draw", key], item) for key, item in pdf_dict.items()}
+        xr_dict = xr_dict | pdfs
     else:
         z = {"redshift_pdfs": (["draw", "redshift"], pdf_dict["redshift"])}
         xr_dict | z
