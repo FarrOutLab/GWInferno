@@ -715,9 +715,20 @@
 overridden to extend subclasses.</p>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.__repr__">
+<span class="sig-name descname"><span class="pre">__repr__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.__repr__" title="Link to this definition">#</a></dt>
+<dd><p>Return repr(self).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py property">
 <dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.batch_shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_shape</span></span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.batch_shape" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.batch_shape" title="Link to this definition">#</a></dt>
 <dd><p>Returns the shape over which the distribution parameters are batched.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -758,7 +769,7 @@ containing all values in the support.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.event_dim">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event_dim</span></span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.event_dim" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event_dim</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.event_dim" title="Link to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Number of dimensions of individual events.</p>
@@ -771,7 +782,7 @@ containing all values in the support.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.event_shape">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event_shape</span></span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.event_shape" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">event_shape</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="p"><span class="pre">...</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.event_shape" title="Link to this definition">#</a></dt>
 <dd><p>Returns the shape of a single sample from the distribution without
 batching.</p>
 <dl class="field-list simple">
@@ -919,7 +930,7 @@ a site, <cite>False</cite> excludes a site).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.mean">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean</span></span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.mean" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">mean</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool_</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span></em><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.mean" title="Link to this definition">#</a></dt>
 <dd><p>Mean of the distribution.</p>
 </dd></dl>
 
@@ -1025,7 +1036,7 @@ called inside jitted code.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.variance">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variance</span></span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.variance" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Array</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool_</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">number</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">bool</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">complex</span></em><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.variance" title="Link to this definition">#</a></dt>
 <dd><p>Variance of the distribution.</p>
 </dd></dl>
 
@@ -1060,6 +1071,7 @@ called inside jitted code.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.__call__"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.__call__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.__init__"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.__init_subclass__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.__repr__"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.__repr__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.batch_shape"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.batch_shape</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.cdf"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.cdf()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gwinferno.numpyro_distributions.BSplineDistribution.entropy"><code class="docutils literal notranslate"><span class="pre">BSplineDistribution.entropy()</span></code></a></li>

@@ -219,6 +219,10 @@
   
 
   
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
 </div>
 
     </header>
@@ -385,10 +389,12 @@
 <span class="nb">cd</span><span class="w"> </span>gwinferno
 </pre></div>
 </div>
-<p>Recommended to use conda to set up your environment with python versions newer than at least 3.9:</p>
-<p>For CPU usage only create an environment and install requirements and GWInferno with:</p>
+<p>It is recommended to use conda to set up your environment with python versions newer than at least 3.12:</p>
+<section id="for-cpu">
+<h2>For CPU<a class="headerlink" href="#for-cpu" title="Link to this heading">#</a></h2>
+<p>For CPU usage only, create an environment and install requirements and GWInferno with:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>gwinferno
-conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>gwinferno<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>gwinferno<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12
 conda<span class="w"> </span>activate<span class="w"> </span>gwinferno
 conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>numpyro<span class="w"> </span>h5py
 pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
@@ -396,16 +402,42 @@ pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </s
 python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.
 </pre></div>
 </div>
-<p>To enable JAX access to CUDA enabled GPUs we need to specify specific versions to install (See <a class="reference external" href="https://github.com/google/jax">JAX</a> installation instructions for more details). For a GPU enabled environment use:</p>
+</section>
+<section id="for-gpu">
+<h2>For GPU<a class="headerlink" href="#for-gpu" title="Link to this heading">#</a></h2>
+<p>To enable JAX access to CUDA enabled GPUs, we need to specify specific versions to install. The following procedure will only work for Linux x86_64 and Linux aarch64; for other platforms see <a class="reference external" href="https://jax.readthedocs.io/en/latest/installation.html">Jax documentation</a>.</p>
+<p>Jax recommends installing Nvidia CUDA and cuDNN with pip wheels. If you use local installations of CUDA and cuDNN, which could be the case for a remote cluster, then you’ll need to install jax from the single CUDA wheel variant it offers. As of writing, this wheel is only compatible with CUDA &gt;= 12.1 and cuDNN &gt;= 9.1 &lt; 10.0. See <a class="reference external" href="https://github.com/google/jax">JAX</a> installation instructions for more details.</p>
+<section id="installation-process-for-cuda-installed-via-pip">
+<h3>Installation process for CUDA installed via pip:<a class="headerlink" href="#installation-process-for-cuda-installed-via-pip" title="Link to this heading">#</a></h3>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>gwinferno
-conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>gwinferno_gpu<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>gwinferno_gpu<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12
 conda<span class="w"> </span>activate<span class="w"> </span>gwinferno_gpu
-conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>nvidia<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">jaxlib</span><span class="o">=</span>*<span class="o">=</span>*cuda*<span class="w"> </span>jax<span class="w"> </span>cuda-nvcc<span class="w"> </span>numpyro<span class="w"> </span>h5py
 pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+</pre></div>
+</div>
+<p>Next, install CUDA and cuDNN pip wheels. See <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#pip-wheels-linux">Nvidia’s CUDA quickstart guide</a> for the CUDA installation procedure and the <a class="reference external" href="https://docs.nvidia.com/deeplearning/cudnn/latest/installation/linux.html#installing-cudnn-with-pip">cuDNN documentation</a> for the cuDNN installation procedure. Once that has finished, continue with these steps:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="s2">&quot;jax[cuda12]&quot;</span>
+pip<span class="w"> </span>install<span class="w"> </span>numpyro<span class="o">[</span>cuda<span class="o">]</span>
 pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>pip_requirements.txt
 python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.
 </pre></div>
 </div>
+</section>
+<section id="installation-process-for-locally-installed-cuda-and-cudnn">
+<h3>Installation process for locally installed CUDA and cuDNN:<a class="headerlink" href="#installation-process-for-locally-installed-cuda-and-cudnn" title="Link to this heading">#</a></h3>
+<p>Ensure <a class="reference external" href="https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#linux">Nvidia CUDA</a> and <a class="reference external" href="https://docs.nvidia.com/deeplearning/cudnn/latest/installation/linux.html">cuDNN</a> are installed locally.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>gwinferno
+conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>gwinferno_gpu<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12
+conda<span class="w"> </span>activate<span class="w"> </span>gwinferno_gpu
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span><span class="s2">&quot;jax[cuda12_local]&quot;</span>
+pip<span class="w"> </span>install<span class="w"> </span>numpyro<span class="o">[</span>cuda<span class="o">]</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>pip_requirements.txt
+python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 
 
@@ -418,6 +450,29 @@ python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </sp
             </div>
             
             
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#for-cpu">For CPU</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#for-gpu">For GPU</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-process-for-cuda-installed-via-pip">Installation process for CUDA installed via pip:</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-process-for-locally-installed-cuda-and-cudnn">Installation process for locally installed CUDA and cuDNN:</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
