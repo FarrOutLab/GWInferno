@@ -18,16 +18,22 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
             Valid parameter options are: 'mass_1', 'mass_2', 'mass_ratio', 'redshift', 'a_1', 'a_2', 'cos_tilt_1', 'cos_tilt_2'.
             NOTE: 'chi_eff' and 'chi_p' cannot be accounted for here.
             Please use `gwinferno.preprocess.data_collection.load_injection_dataset` if you wish to work in 'chi_eff' and 'chi_p'.
-        ifar (int, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.
-        snr (int, optional): signal to noise ratio threshold for found injections. Defaults to 10.
+        ifar (int or float, optional): Inverse false alarm rate threshold for found injections. Defaults to 1.
+        snr (int or float, optional): signal to noise ratio threshold for found injections. Defaults to 10.
 
     Returns:
         DataArray: xarray DataArray of injection data.
     """
     with h5py.File(file, "r") as ff:
         total_generated = ff.attrs["total_generated"]
-        analysis_time = ff.attrs["analysis_time"]
         injections = np.asarray(ff["events"][:])
+
+        analysis_time = None
+        for key in "analysis_time", "total_analysis_time", "analysis_time_s":
+            if key in ff.attrs:
+                analysis_time = ff.attrs[key]
+        if analysis_time is None:
+            raise Exception("analysis time not found")
 
     found = injections["semianalytic_observed_phase_maximized_snr_net"] >= snr
 
@@ -45,7 +51,7 @@ def get_o4a_cumulative_injection_dict(file, param_names, ifar=1, snr=10):
     )
 
     inj_weights = inj_weights
-    total_generated = int(total_generated)
+    total_generated = total_generated
     analysis_time = analysis_time / 365.25 / 24 / 60 / 60
 
     injs["prior"] = jnp.exp(injections["lnpdraw_mass1_source_mass2_source_redshift_spin1x_spin1y_spin1z_spin2x_spin2y_spin2z"][found]) / inj_weights
@@ -98,8 +104,14 @@ def get_o3_cumulative_injection_dict(fi, param_names, ifar=1, snr=10, additional
             redshift=data["redshift"][()][found],
         )
 
-        total_generated = int(data.attrs["total_generated"][()])
-        analysis_time = data.attrs["analysis_time_s"][()] / 365.25 / 24 / 60 / 60
+        total_generated = data.attrs["total_generated"][()]
+
+        analysis_time = None
+        for key in "analysis_time", "total_analysis_time", "analysis_time_s":
+            if key in ff.attrs:
+                analysis_time = ff.attrs[key][()] / 365.25 / 24 / 60 / 60
+        if analysis_time is None:
+            raise Exception("analysis time not found")
 
         injs["prior"] = data["sampling_pdf"][()][found]
 

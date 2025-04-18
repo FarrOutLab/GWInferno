@@ -19,7 +19,7 @@
 
 ## Installation
 
-Clone the reposi)tory
+Clone the repository
 
 ```bash
 git clone https://github.com/FarrOutLab/GWInferno.git
@@ -27,89 +27,54 @@ git clone https://github.com/FarrOutLab/GWInferno.git
 
 Recommended to use conda to set up your environment with python>=3.9:
 
+### For CPU
+
 For CPU usage only create an environment and install requirements and GWInferno with:
 
 ```bash
 cd gwinferno
-conda create -n gwinferno python=3.10
+conda create -n gwinferno python=3.12
 conda activate gwinferno
 conda install -c conda-forge numpyro h5py 
 pip install --upgrade pip
 pip install -r pip_requirements.txt
 python -m pip install .
 ```
+### For GPU
 
-To enable JAX access to CUDA enabled GPUs we need to specify specific versions to install (See [JAX](https://github.com/google/jax) installation instructions for more details). For a GPU enabled environment use:
+To enable JAX access to CUDA enabled GPUs we need to specify specific versions to install. The following procedure will only work for Linux x86_64 and Linux aarch64; for other platforms see [Jax documentation](https://jax.readthedocs.io/en/latest/installation.html)
+
+Jax recommends installing Nvidia CUDA and cuDNN with pip wheels. If you use local installations of CUDA and cuDNN, which could be the case for a remote cluster, then you'll need to install jax from the single CUDA wheel variant it offers. As of writing, this wheel is only compatible with CUDA >= 12.1 and cuDNN >= 9.1 < 10.0. See [JAX](https://github.com/google/jax) installation instructions for more details.
+
+#### Installation process for CUDA installed via pip:
 
 ```bash
 cd gwinferno
-conda create -n gwinferno_gpu python=3.10
+conda create -n gwinferno_gpu python=3.12
 conda activate gwinferno_gpu
-pip install numpyro[cuda] -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-conda install h5py cudnn
+pip install --upgrade pip
+```
+Next, install CUDA and cuDNN pip wheels. See [Nvidia's CUDA quickstart guide](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#pip-wheels-linux) for the CUDA installation procedure and the [cuDNN documentation](https://docs.nvidia.com/deeplearning/cudnn/latest/installation/linux.html#installing-cudnn-with-pip) for the cuDNN installation procedure. Once that has finished, continue with these steps:
+```
+pip install --upgrade "jax[cuda12]"
+pip install numpyro[cuda]
 pip install -r pip_requirements.txt
 python -m pip install .
 ```
 
-Install popsummary dependency:
+#### Installation process for locally installed CUDA and cuDNN:
 
-In a folder outside the gwinferno folder, run (make sure gwinferno conda environemnt is active):
-
-```bash
-git clone https://git.ligo.org/zoheyr-doctor/popsummary.git
-cd popsummary
-pip install .
-```
-
-## Quick Start
-Given a catalog of GW Posterior samples in standardized PESummary format, defined by catalog.json file to run population inference with GWInferno one must write a yaml file defining the desired model, hyperparameters, and other auxiliary configuration arguments. 
-
-For example a simple config.yml file that defines a Truncated Powerlaw population model over primary masses (i.e. mass_1) we have:
-
-```yaml
-# Run Label
-label: Truncated_Powerlaw_mass_1
-
-# Population Parameters, Models, HyperParameters, and Priors
-models:
-  mass_1:
-    model: gwinferno.numpyro_distributions.Powerlaw
-    hyper_params:
-      alpha:
-        prior: numpyro.distributions.Normal
-        prior_params:
-          loc: 0.0
-          scale: 3.0
-      minimum:
-        prior: numpyro.distributions.Uniform
-        prior_params:
-          low: 2.0
-          high: 10.0
-      maximum:
-        prior: numpyro.distributions.Uniform
-        prior_params:
-          low: 50.0
-          high: 100.0
-
-# Sampler Configuration Args
-sampler:
-  kernel: NUTS
-  kernel_kwargs:
-    dense_mass: true
-  mcmc_kwargs:
-    num_warmup: 500
-    num_samples: 1500
-    num_chains: 1
-
-# Data Configuration Args
-data:
-  catalog_summary_json: /path/to/catalog/summary/file/catalog.json
-```
-
-with this file written and ready to go run to perform inference!
+Ensure [Nvidia CUDA](https://docs.nvidia.com/cuda/cuda-quick-start-guide/index.html#linux) and [cuDNN](https://docs.nvidia.com/deeplearning/cudnn/latest/installation/linux.html) are installed locally. 
 
 ```bash
-gwinferno_run_from_config.py config.yml
+cd gwinferno
+conda create -n gwinferno_gpu python=3.12
+conda activate gwinferno_gpu
+pip install --upgrade pip
+pip install --upgrade "jax[cuda12_local]"
+pip install numpyro[cuda]
+pip install -r pip_requirements.txt
+python -m pip install .
 ```
 
 ## License 

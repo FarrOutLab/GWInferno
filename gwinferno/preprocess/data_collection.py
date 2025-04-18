@@ -36,7 +36,7 @@ def unprocessed_catalog_dict_from_metadata(catalog_metadata):
     return posteriors
 
 
-def processed_catalog_dataset_from_dict(catalog_dict):
+def processed_catalog_dataset_from_dict(catalog_dict, mmax=100.0):
     param_mapping = dict(
         mass_1="mass_1_source",
         mass_2="mass_2_source",
@@ -66,8 +66,14 @@ def processed_catalog_dataset_from_dict(catalog_dict):
             data = np.array([mass[0], mass[1], mass_ratio, redshift, spin[0], spin[1], tilt[0], tilt[1]])
 
         else:
-            data = np.array([catalog_dict[ev]["posterior"][param_mapping[param]] for param in list(param_mapping.keys())])
-        max_samples = min(data.shape[1], max_samples)
+            sel = np.ones_like(catalog_dict[ev]["posterior"][param_mapping["mass_1"]], dtype=bool)
+            if np.sum(catalog_dict[ev]["posterior"][param_mapping["mass_1"]] > mmax) > 0:
+                print(np.sum(catalog_dict[ev]["posterior"][param_mapping["mass_1"]] > mmax))
+                print(f"removing samples from {ev} with mass_1 > {mmax}")
+                sel = catalog_dict[ev]["posterior"][param_mapping["mass_1"]] < mmax
+
+            data = np.array([catalog_dict[ev]["posterior"][param_mapping[param]][sel] for param in list(param_mapping.keys())])
+
         data_array = xr.DataArray(
             data,
             dims=["param", "samples"],
@@ -75,6 +81,7 @@ def processed_catalog_dataset_from_dict(catalog_dict):
             attrs={"redshift_prior": catalog_dict[ev]["redshift_prior"], "catalog": catalog_dict[ev]["catalog"]},
         )
         dataset[ev] = data_array
+        max_samples = min(data.shape[1], max_samples)
 
     downsampled_data = {}
     for ev in list(dataset.keys()):
@@ -113,6 +120,8 @@ def append_prior_to_processed_catalog(catalog_dataset, param_names):
     for i, ev in enumerate(events):
         prior = jnp.ones(num_samples)
         if "redshift" in param_names:
+            if catalog_dataset[ev].attrs["redshift_prior"] not in ["euclidean", "comoving"]:
+                raise AssertionError("redshift prior not valid. check spelling")
             p_z = p_z_euclid if catalog_dataset[ev].attrs["redshift_prior"] == "euclidean" else p_z_comoving
             prior *= jnp.interp(catalog_dataset[ev].sel(param="redshift").values, zs, p_z)
         if "mass_1" in param_names:
@@ -133,7 +142,7 @@ def append_prior_to_processed_catalog(catalog_dataset, param_names):
     return new_catalog_array
 
 
-def load_posterior_dataset(catalog_metadata=None, key_file=None, param_names=["mass_1", "mass_ratio", "redshift"]):
+def load_posterior_dataset(maximum_mass=100.0, catalog_metadata=None, key_file=None, param_names=["mass_1", "mass_ratio", "redshift"]):
     if catalog_metadata is None:
         with open(key_file, "r") as f:
             catalog_metadata = json.load(f)
@@ -141,7 +150,7 @@ def load_posterior_dataset(catalog_metadata=None, key_file=None, param_names=["m
             raise AssertionError("catalog_metadata or key_file must be specified")
 
     posterior_dict = unprocessed_catalog_dict_from_metadata(catalog_metadata)
-    catalog_dataset = processed_catalog_dataset_from_dict(posterior_dict)
+    catalog_dataset = processed_catalog_dataset_from_dict(posterior_dict, mmax=maximum_mass)
     full_catalog_array = append_prior_to_processed_catalog(catalog_dataset, param_names)
 
     if "chi_eff" in param_names:
@@ -160,7 +169,7 @@ def load_posterior_dataset(catalog_metadata=None, key_file=None, param_names=["m
         return full_catalog_array.to_dataset(name="posteriors", promote_attrs=True)
 
 
-def load_injection_dataset(injfile, param_names, through_o4a=False, through_o3=True, ifar_threshold=1, snr_threshold=11, additional_cuts=None):
+def load_injection_dataset(injfile, param_names, through_o4a=False, through_o3=True, ifar_threshold=1, snr_threshold=10, additional_cuts=None):
 
     if through_o4a:
         injs = get_o4a_cumulative_injection_dict(

@@ -41,7 +41,7 @@ def norm_mass_model(alpha, beta, mmin, mmax):
 class TestModelInference(unittest.TestCase):
     def setUp(self) -> None:
         self.mmin = 5.0
-        self.mmax = 85.0
+        self.mmax = 100.0
 
         if os.path.exists("~/unit_tests/data"):
             pref = "~/unit_tests/data"
@@ -180,7 +180,7 @@ class TestModelInference(unittest.TestCase):
                         total_inj=total_inj,
                         Nobs=Nobs,
                         Tobs=obs_time,
-                        surveyed_hypervolume_function=z_model.normalization(lamb=lamb),
+                        surveyed_hypervolume=z_model.normalization(lamb=lamb),
                         marginalize_selection=False,
                         min_neff_cut=False,
                         posterior_predictive_check=True,
@@ -203,7 +203,7 @@ class TestModelInference(unittest.TestCase):
                         total_inj=total_inj,
                         Nobs=Nobs,
                         Tobs=obs_time,
-                        surveyed_hypervolume_function=z_model.normalization(lamb=lamb),
+                        surveyed_hypervolume=z_model.normalization(lamb=lamb),
                         marginalize_selection=False,
                         min_neff_cut=False,
                         posterior_predictive_check=True,
@@ -268,7 +268,7 @@ class TestModelInference(unittest.TestCase):
                         total_inj=total_inj,
                         Nobs=Nobs,
                         Tobs=obs_time,
-                        surveyed_hypervolume_function=z_model.normalization(lamb=lamb, cs=z_coef),
+                        surveyed_hypervolume=z_model.normalization(lamb=lamb, cs=z_coef),
                         marginalize_selection=False,
                         min_neff_cut=False,
                         posterior_predictive_check=True,
@@ -291,7 +291,7 @@ class TestModelInference(unittest.TestCase):
                         total_inj=total_inj,
                         Nobs=Nobs,
                         Tobs=obs_time,
-                        surveyed_hypervolume_function=z_model.normalization(lamb=lamb, cs=z_coef),
+                        surveyed_hypervolume=z_model.normalization(lamb=lamb, cs=z_coef),
                         marginalize_selection=False,
                         min_neff_cut=False,
                         posterior_predictive_check=True,
