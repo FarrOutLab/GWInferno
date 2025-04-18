@@ -15,7 +15,7 @@ def plot_pdf(x, pdf, label, color="blue", loglog=True, alpha=1.0):
     plt.fill_between(x, low, high, color=color, alpha=0.1)
 
 
-def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, save=True, colors=["red", "blue", "green"], alt_label = ''):
+def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, save=True, colors=["red", "blue", "green"], alt_label=""):
 
     plt.figure(figsize=(15, 5))
     for i in range(len(mpdfs)):
@@ -43,7 +43,7 @@ def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, save=True, col
     plt.close()
 
 
-def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=True, colors=["red", "blue", "green"], secondary=False, alt_label = ''):
+def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=True, colors=["red", "blue", "green"], secondary=False, alt_label=""):
 
     if secondary:
         comp = "2"
@@ -75,15 +75,15 @@ def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=Tru
     plt.close()
 
 
-def plot_rate_of_z_pdfs(z_pdfs, z, names, label, result_dir, colors = ['red', 'blue', 'green'], save=True):
+def plot_rate_of_z_pdfs(z_pdfs, z, names, label, result_dir, colors=["red", "blue", "green"], save=True):
 
     plt.figure(figsize=(10, 7))
-    for i in range(len(z_pdfs)):    
-        plot_pdf(z, z_pdfs[i], names[i], color = colors[i], loglog=False)
+    for i in range(len(z_pdfs)):
+        plot_pdf(z, z_pdfs[i], names[i], color=colors[i], loglog=False)
     plt.xlabel("z")
     plt.ylabel("R(z)")
     plt.legend()
-    plt.yscale('log')
+    plt.yscale("log")
     plt.xlim(0, 1.5)
     plt.ylim(5, 1e3)
     plt.show()
