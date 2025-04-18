@@ -8,7 +8,7 @@ import numpyro.distributions as dist
 import xarray as xr
 
 from gwinferno.interpolation import LogXLogYBSpline
-from gwinferno.interpolation import LogYBSpline
+from gwinferno.interpolation import LogYBSpline, LogXBSpline
 from gwinferno.models.bsplines.separable import BSplineIIDSpinMagnitudes
 from gwinferno.models.bsplines.separable import BSplineIIDSpinTilts
 from gwinferno.models.bsplines.separable import BSplineIndependentSpinMagnitudes
@@ -26,11 +26,11 @@ def load_base_parser():
     )
     parser.add_argument("--run-label", type=str)
     parser.add_argument("--result-dir", type=str)
-    parser.add_argument("--m-nsplines", type=str, default=50)
-    parser.add_argument("--q-nsplines", type=str, default=30)
-    parser.add_argument("--a-nsplines", type=str, default=16)
-    parser.add_argument("--tilt-nsplines", type=str, default=16)
-    parser.add_argument("--z-nsplines", type=str, default=20)
+    parser.add_argument("--m-nsplines", type=int, default=50)
+    parser.add_argument("--q-nsplines", type=int, default=30)
+    parser.add_argument("--a-nsplines", type=int, default=16)
+    parser.add_argument("--tilt-nsplines", type=int, default=16)
+    parser.add_argument("--z-nsplines", type=int, default=20)
     parser.add_argument("--mmin", type=float, default=3.0)
     parser.add_argument("--mmax", type=float, default=100.0)
     parser.add_argument("--chains", type=int, default=1)
@@ -48,7 +48,7 @@ Load data
 """
 
 
-def load_pe_and_injections_as_dict(file, ignore=None):
+def load_pe_and_injections_as_dict(file, ignore=[]):
     """Load PE and injection file created by `gwinferno.preprocess.data_collection.save_posterior_samples_and_injection_datasets_as_idata()`.
 
     Parameters
@@ -74,7 +74,7 @@ def load_pe_and_injections_as_dict(file, ignore=None):
     data = az.from_netcdf(file)
     print(f"data file {file} loaded")
 
-    if ignore is not None:
+    if ignore:
         sel = np.zeros(data.pe_data["event"].values.shape, dtype=bool)
         for gw in ignore:
             sel += data.pe_data["event"] == gw
@@ -90,7 +90,6 @@ def load_pe_and_injections_as_dict(file, ignore=None):
     total_inj = data.inj_data.attrs["total_generated"]
     obs_time = data.inj_data.attrs["analysis_time"]
     nObs = data.pe_data.posteriors.shape[0]
-
     constants = {"total_inj": total_inj, "obs_time": obs_time, "nObs": nObs}
 
     return pedict, injdict, constants, param_names
@@ -145,13 +144,13 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
 
     return mag_model, tilt_model
 
-
-def setup_powerlaw_spline_redshift_model(pedict, injdict, z_nsplines):
+def setup_powerlaw_spline_redshift_model(pedict, injdict, z_nsplines, basis = LogXBSpline):
     print("initializing redshift model")
     return PowerlawSplineRedshiftModel(
         z_nsplines,
         pedict["redshift"],
         injdict["redshift"],
+        basis = basis
     )
 
 
@@ -210,8 +209,7 @@ def bspline_spin_prior(a_nsplines=None, ct_nsplines=None, a_tau=None, ct_tau=Non
 
 def bspline_redshift_prior(z_nsplines=None, z_tau=None, name=None, z_cs_sig=1, z_deg=2):
     name = "_" + name if name is not None else ""
-    z_cs = numpyro.sample("z_cs" + name, dist.Normal(0, z_cs_sig), sample_shape=(z_nsplines - 1,))
-    z_cs = jnp.concatenate([jnp.zeros(1), z_cs])
+    z_cs = numpyro.sample("z_cs" + name, dist.Normal(0, z_cs_sig), sample_shape=(z_nsplines,))
     numpyro.factor("z_smoothing_prior" + name, apply_difference_prior(z_cs, z_tau, degree=z_deg))
     return z_cs
 
@@ -236,7 +234,7 @@ def pdf_dict_to_xarray(pdf_dict, param_dict, n_samples, subpop_names=None):
         xr_dict = xr_dict | pdfs
     else:
         z = {"redshift_pdfs": (["draw", "redshift"], pdf_dict["redshift"])}
-        xr_dict | z
+        xr_dict = xr_dict | z
         del pdf_dict["redshift"]
         for i, nm in enumerate(subpop_names):
             single = {f"{nm}_{key}_pdfs": (["draw", key], item[i]) for key, item in pdf_dict.items()}
