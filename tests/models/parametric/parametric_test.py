@@ -7,6 +7,8 @@ from jax.scipy.integrate import trapezoid
 
 from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
 from gwinferno.preprocess.data_collection import load_injection_dataset
+from gwinferno.models.parametric.parametric import Planck15
+from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology
 
 
 class TestPowerlawRedshift(unittest.TestCase):
@@ -67,3 +69,6 @@ class TestPowerlawRedshift(unittest.TestCase):
 
         self.assertEqual(z_nonzero_pe, 0, msg="PE PDF not properly truncated")
         self.assertEqual(z_nonzero_inj, 0, msg="Inj PDF not properly truncated")
+
+    def test_cosmology(self):
+        self.assertIs(Planck15, PLANCK_2015_LVK_Cosmology)
