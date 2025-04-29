@@ -3,7 +3,7 @@ import unittest
 
 import jax.numpy as jnp
 import xarray as xr
-from astropy.cosmology import Planck15_astropy
+from astropy.cosmology import Planck15 as Planck15_astropy
 
 from gwinferno.models.bsplines.single import Base1DBSplineModel
 from gwinferno.models.bsplines.single import BSplineChiEffective
