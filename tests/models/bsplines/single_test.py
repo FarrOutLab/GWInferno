@@ -3,7 +3,7 @@ import unittest
 
 import jax.numpy as jnp
 import xarray as xr
-from astropy.cosmology import Planck15
+from astropy.cosmology import Planck15 as Planck15_astropy
 
 from gwinferno.models.bsplines.single import Base1DBSplineModel
 from gwinferno.models.bsplines.single import BSplineChiEffective
@@ -15,6 +15,8 @@ from gwinferno.models.bsplines.single import BSplineSpinMagnitude
 from gwinferno.models.bsplines.single import BSplineSpinTilt
 from gwinferno.models.bsplines.single import BSplineSymmetricChiEffective
 from gwinferno.preprocess.data_collection import load_injection_dataset
+from gwinferno.models.bsplines.single import Planck15
+from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology
 
 
 class TestBase1DBSplineModel(unittest.TestCase):
@@ -54,8 +56,8 @@ class TestBase1DBSplineModel(unittest.TestCase):
     def spline_shape(self, model, pe_x, inj_x, redshift=False):
 
         if redshift:
-            pe_dvcdz = jnp.array(Planck15.differential_comoving_volume(pe_x).value * 4 * jnp.pi)
-            inj_dvcdz = jnp.array(Planck15.differential_comoving_volume(inj_x).value * 4 * jnp.pi)
+            pe_dvcdz = jnp.array(Planck15_astropy.differential_comoving_volume(pe_x).value * 4 * jnp.pi)
+            inj_dvcdz = jnp.array(Planck15_astropy.differential_comoving_volume(inj_x).value * 4 * jnp.pi)
             bspline = model(self.nsplines, pe_x, inj_x, pe_dvcdz, inj_dvcdz)
             pe_pdf = bspline(self.coefs, pe_samples=True)
             inj_pdf = bspline(self.coefs, pe_samples=False)
@@ -79,3 +81,6 @@ class TestBase1DBSplineModel(unittest.TestCase):
         self.spline_shape(BSplineRatio, self.pedict["mass_ratio"], self.injdict["mass_ratio"])
         self.spline_shape(BSplineMass, self.pedict["mass_1"], self.injdict["mass_1"])
         self.spline_shape(BSplineRedshift, self.pedict["redshift"], self.injdict["redshift"], redshift=True)
+
+    def test_cosmology(self):
+        self.assertIs(Planck15, PLANCK_2015_LVK_Cosmology)
