@@ -134,19 +134,19 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
         mag_model = BSplineIIDSpinMagnitudes(a1_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], normalize=True)
 
     else:
-        tilt_model = BSplineIndependentSpinTilts_IJR(u_pe_vals=pedict["cos_tilt_1"], u_inj_vals=injdict["cos_tilt_1"],
-                                                     v_pe_vals=pedict["cos_tilt_2"], v_inj_vals=injdict["cos_tilt_2"],
-                                                     ul_BSplines=ct1_nsplines, vl_BSplines=ct2_nsplines,
-                                                     normalization=True, book=True)
-        # tilt_model = BSplineIndependentSpinTilts(
-        #     ct1_nsplines,
-        #     ct2_nsplines,
-        #     pedict["cos_tilt_1"],
-        #     pedict["cos_tilt_2"],
-        #     injdict["cos_tilt_1"],
-        #     injdict["cos_tilt_2"],
-        #     normalize=True,
-        # )
+        # tilt_model = BSplineIndependentSpinTilts_IJR(u_pe_vals=pedict["cos_tilt_1"], u_inj_vals=injdict["cos_tilt_1"],
+        #                                              v_pe_vals=pedict["cos_tilt_2"], v_inj_vals=injdict["cos_tilt_2"],
+        #                                              ul_BSplines=ct1_nsplines, vl_BSplines=ct2_nsplines,
+        #                                              normalization=True, book=True)
+        tilt_model = BSplineIndependentSpinTilts(
+            ct1_nsplines,
+            ct2_nsplines,
+            pedict["cos_tilt_1"],
+            pedict["cos_tilt_2"],
+            injdict["cos_tilt_1"],
+            injdict["cos_tilt_2"],
+            normalize=True,
+        )
         mag_model = BSplineIndependentSpinMagnitudes(
             a1_nsplines, a2_nsplines, pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"], normalize=True
         )
