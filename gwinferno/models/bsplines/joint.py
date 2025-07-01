@@ -1,91 +1,119 @@
 import jax.numpy as jnp
 
+from ...interpolation import BSpline_IJR
 from ...interpolation import BivariateBSpline
-from ...interpolation import SplineDOF_wrapper
-from .single import Base1DBSplineModel_IJR     
+from .single import Base1DBSplineModel_IJR
+from .single import LogYBSpline_IJR     
+from .single import BSplineSpinTilt_IJR
+from .single import BSplineSpinMagnitude_IJR
    
+class Base2DBSplineModel():
 
-class Base2DBSplineModel(BivariateBSpline):
-
-    def __init__(self, u_pe_vals=None, u_inj_vals=None,
-        v_pe_vals=None, v_inj_vals=None,
-        u_domain=(0.0, 1.0), v_domain=(0.0, 1.0),
-        u_order=4, v_order=4,
-        ul_BSplines=None, vl_BSplines=None,
-        # TODO: change variable name ```basis``` to something else -- this arg is already being used for the Base1D
-        basis=Base1DBSplineModel_IJR,
-        book = True,
-        **kwargs,):
-        """
-        Args:
-            u_pe_vals, v_pe_vals (array_like): parameter estimation samples for basis evaluation
-            u_inj_vals, v_inj_vals (array-like): injection samples for basis evaluation
-            ul_Bsplines, vl_BSplines (int): total number of basis functions - 1
-            u_domain, v_domain (tuple, default=(0.0, 1.0)): domain of the B-splines
-            u_order, v_order (int, default=4): order of the B-splines, i.e., `4` for cubic splines
-            basis (class, default=BivariateBSpline): type of basis to use
-        """
-        self.domain = jnp.array([u_domain, v_domain])
-        self.ls = (SplineDOF_wrapper(n_splines = ul_BSplines, degree = u_order - 1), SplineDOF_wrapper(n_splines = vl_BSplines, degree = v_order - 1)) if book else (ul_BSplines, vl_BSplines)
-        # self.ls = jnp.array([ul_BSplines, vl_BSplines])
-        self.orders = (u_order, v_order)
-        self.degrees = (u_order - 1, v_order - 1)
-        self.l_Es = (self.ls[0] + 2*self.degrees[0], self.ls[1] + 2*self.degrees[1])
-        self.u_model = basis(pe_vals = u_pe_vals, inj_vals = u_inj_vals, 
-            l_BSplines = self.ls[0], domain=u_domain, order=u_order, **kwargs,)
-        self.v_model = basis(pe_vals = v_pe_vals, inj_vals = v_inj_vals, 
-            l_BSplines = self.ls[1], domain=v_domain, order=v_order, **kwargs,)
-        self.u_pe_dm = self.u_model.pe_design_matrix
-        self.v_pe_dm = self.v_model.pe_design_matrix
-        self.u_inj_dm = self.u_model.inj_design_matrix
-        self.v_inj_dm = self.v_model.inj_design_matrix
-        self.funcs = [self.inj_pdf, self.pe_pdf]
-        print(self.u_model.interpolator)
-
-    # Because you are not using the BivariateBSpline as an interpolator, you must construct the design tensor in this class
-    # However, you can use spline from BivariateBSpline to construct the spline from the design tensor!
-    # TODO: Eventually, you want to use the interpolator and modify as needed.
-    def _pe_design_tensor(self,  independent=False, **kwargs,):
-        # u_pe_dm = self.u_model.pe_design_matrix
-        # v_pe_dm = self.v_model.pe_design_matrix
-        # print('u_pe_dm shape ', self.u_pe_dm.shape)
-        if independent:
-            pe_dt =  jnp.tensordot(self.u_pe_dm, self.v_pe_dm, axes = 0)
-            return pe_dt
-        else:
-            # print('pre-pe dt shap:', (self.l_Es[0] + 1, self.l_Es[1] + 1, self.u_pe_dm.shape[1], self.u_pe_dm.shape[2]))
-            pe_dt = jnp.zeros((self.l_Es[0] + 1, self.l_Es[1] + 1, self.u_pe_dm.shape[1], self.u_pe_dm.shape[2]))
-            # print('pe dt shape ', pe_dt.shape)
-            # TODO: Figure out how to not use a nested for-loop to perform this operation 
-            for s in range(self.l_Es[1] + 1):
-                for k in range(self.l_Es[0] + 1):
-                    pe_dt = pe_dt.at[k,s].set(self.u_pe_dm[k] * self.v_pe_dm[s])
-            return pe_dt
+    def __init__(self, ndofs, domains, pe_vals, inj_vals, orders, basis=BSpline_IJR, full_product=False, **kwargs):
+        """Base class for 2D B-spline population inference, with `BSpline_IJR` as the default basis
         
-    def _inj_design_tensor(self, independent=False, **kwargs,):
-        # u_inj_dm = self.u_model.inj_design_matrix
-        # v_inj_dm = self.v_model.inj_design_matrix
-        # print('u_inj_dm shape ', self.u_inj_dm.shape)
-        if independent:
-            inj_dt = jnp.tensordot(self.u_inj_dm, self.v_inj_dm, axes = 0)
-            return inj_dt
-        else:
-            inj_dt = jnp.zeros((self.l_Es[0] + 1, self.l_Es[1] + 1, self.u_inj_dm.shape[1]))
-            # print('inj dt shape: ', inj_dt.shape)
-            for s in range(self.l_Es[1] + 1):
-                for k in range(self.l_Es[0] + 1):
-                    inj_dt = inj_dt.at[k,s].set(self.u_inj_dm[k] * self.v_inj_dm[s])
-            return inj_dt
+        Args:
+            ndofs (tuple): pair of the total number of basis functions/degrees of freedom
+            domains (array-like): pair of tuples of the minimum and maximum values of the domains
+            pe_vals, inj_vals (array-like): pair of parameter estimation and injection samples for basis evaluation, respectively
+            orders (tuple): pair of the orders of the B-splines
+            basis (class): interpolator basis class used to construct the design matrices
+            full_product (bool): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+        """
+        self.ndofs = ndofs
+        self.domains = domains
+        self.orders = orders
+        self.full_product = full_product
+        self.interpolator = BivariateBSpline(ndofs=ndofs, domains=domains, orders=orders, basis=basis)
+        self.pe_dt = self.interpolator.design_tensor(pe_vals[0], pe_vals[1], full_product)
+        self.inj_dt = self.interpolator.design_tensor(inj_vals[0], inj_vals[1], full_product)
+        self.funcs = [self.inj_pdf, self.pe_pdf]
 
-    # TODO: too many independent args, reduce this!
-    def eval_spline(self, coefs, design_tensor, independent = False):
-        return self.spline(coefs, design_tensor, independent = independent)
+    def eval_spline(self, coeffs, design_tensor):
+        """Calculates the (normalized) spline given a set of coefficients and a design tensor
 
-    def pe_pdf(self, coefs, independent = False):
-        return self.eval_spline(coefs, self._pe_design_tensor(independent=independent), independent=independent)
+        Args:
+            coeffs (array-like): coefficients of the B-spline
+            design_tensor (array-like): design tensor of the basis functions
+        """
+        return self.interpolator.spline(coeffs, design_tensor, self.full_product)
+    
+    def pe_pdf(self, coeffs):
+        """Project the coefficients `coeffs` onto the design tensor evaluated at the parameter estimation samples
 
-    def inj_pdf(self, coefs, independent = False):
-        return self.eval_spline(coefs, self._inj_design_tensor(independent=independent), independent=independent)
+        Args:
+            coeffs (array_like): coefficients of the B-spline
+        """
+        return self.eval_spline(coeffs, self.pe_dt)
+    
+    def inj_pdf(self, coeffs):
+        """Project the coefficients `coeffs` onto the design tensor evaluated at the injection samples
 
-    def __call__(self, coefs, pe_samples = True, independent = False):
-        return self.funcs[1](coefs, independent=independent) if pe_samples else self.funcs[0](coefs, independent=independent)
+        Args:
+            coeffs (array_like): coefficients of the B-spline
+        """
+        return self.eval_spline(coeffs, self.inj_dt)
+    
+    def __call__(self, coeffs, pe_samples=True):
+        """Evaluate the projection of the coefficients along the design tensor over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
+
+        Args:
+            coeffs (array_like): coefficients of the B-spline
+            pe_samples (bool):
+                If `True`, design tensor is evaluated across parameter estimation samples
+                If `False`, design tensor is evaluated across injection samples
+        """
+        return self.funcs[1](coeffs) if pe_samples else self.funcs[0](coeffs)
+    
+class BivariateBSplineSpinMagTilt(Base2DBSplineModel):
+
+    def __init__(self, ndofs, pe_vals, inj_vals, orders=(4,4), basis=BSpline_IJR, full_product=False, **kwargs):
+        """A 2D B-spline model for the spin magnitude and cosine of spin tilt of a component of a binary pair
+
+        Args:
+            ndofs (tuple): pair (primary, primary) of the total number of basis functions/degrees of freedom
+            pe_vals, inj_vals (array-like): pair (spin mag, spin tilt) of parameter estimation and injection samples for basis evaluation, respectively
+            orders (tuple): pair of the orders of the B-splines
+            basis (class): interpolator basis class used to construct the design matrices
+            full_product (bool): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+        """
+        spin_mag_domain = (0.0, 1.0)
+        spin_tilt_domain = (-1.0, 1.0)
+        spin_mag_tilt_domain = jnp.array([spin_mag_domain, spin_tilt_domain])
+        domains = kwargs.pop("domains", spin_mag_tilt_domain)
+        super().__init__(ndofs, domains, pe_vals, inj_vals, orders, basis, full_product, **kwargs)
+
+class BivariateBSplineSpinTilt(Base2DBSplineModel):
+
+    def __init__(self, ndofs, pe_vals, inj_vals, orders=(4,4), basis=LogYBSpline_IJR, full_product=False, **kwargs):
+        """"A 2D B-spline model for the cosine of spin tilts of the components of a binary pair
+
+        Args:
+            ndofs (tuple): pair (primary, secondary) of the total number of basis functions/degrees of freedom
+            pe_vals, inj_vals (array-like): pair (spin tilt, spin tilt) of parameter estimation and injection samples for basis evaluation, respectively
+            orders (tuple): pair of the orders of the B-splines
+            basis (class): interpolator basis class used to construct the design matrices
+            full_product (bool): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+        """
+        spin_tilt_domain = (-1.0, 1.0)
+        spin_tilt_tilt_domain = jnp.array([spin_tilt_domain, spin_tilt_domain])
+        domains = kwargs.pop("domains", spin_tilt_tilt_domain)
+        super().__init__(ndofs, domains, pe_vals, inj_vals, orders, basis, full_product, **kwargs)
+    
+class BivariateBSplineSpinMag(Base2DBSplineModel):
+
+    def __init__(self, ndofs, pe_vals, inj_vals, orders=(4,4), basis=LogYBSpline_IJR, full_product=False, **kwargs):
+        """"A 2D B-spline model for the spin magnitudes of the components of a binary pair
+
+        Args:
+            ndofs (tuple): pair (primary, secondary) of the total number of basis functions/degrees of freedom
+            pe_vals, inj_vals (array-like): pair (spin mag, spin mag) of parameter estimation and injection samples for basis evaluation, respectively
+            orders (tuple): pair of the orders of the B-splines
+            basis (class): interpolator basis class used to construct the design matrices
+            full_product (bool): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+        """
+        spin_mag_domain = (0.0, 1.0)
+        spin_mag_mag_domain = jnp.array([spin_mag_domain, spin_mag_domain])
+        domains = kwargs.pop("domains", spin_mag_mag_domain)
+        super().__init__(ndofs, domains, pe_vals, inj_vals, orders, basis, full_product, **kwargs)
