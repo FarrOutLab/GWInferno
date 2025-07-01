@@ -12,7 +12,8 @@ from .single import BSplineMass
 from .single import BSplineRatio
 from .single import BSplineSpinMagnitude
 from .single import BSplineSpinTilt
-
+from .single import BSplineSpinTilt_IJR
+from .joint import BivariateBSplineSpinMagTilt
 
 class BSplineIIDSpinMagnitudes(object):
     r"""A B-Spline model for the spin magnitude of both binary components assuming
@@ -776,3 +777,65 @@ class BSplineEffectiveSpinDims(object):
         p_chieff = self.chi_eff_model(ecoefs, pe_samples=pe_samples)
         p_chip = self.chi_p_model(pcoefs, pe_samples=pe_samples)
         return p_chieff * p_chip
+
+class BSplineIndependentSpinTilts_IJR():
+
+    def __init__(self, ndofs, primary_pe_vals, primary_inj_vals, secondary_pe_vals, secondary_inj_vals,
+                 normalize=True, **kwargs):
+        r"""A B-spline model for the cosine of spin tilts of the components of a binary pair assuming
+        they are independently but not identically distributed, following
+        $p(\cos\theta_1, \cos\theta_2 \mid \alpha_1, \alpha_2)=p(\cos\theta_1 \mid \alpha_1)p(\cos\theta_2 \mid \alpha_2)$
+
+        Args:
+            ndofs (tuple): pair (primary, secondary) of the total number of basis functions/degrees of freedom
+            primary_pe_vals, primary_inj_vals (array-like): primary parameter estimation and injection samples for basis evaluation, respectively
+            secondary_pe_vals, secondary_inj_vals (array-like): secondary parameter estimation and injection samples for basis evaluation, respectively
+            normalize (bool): sets normalization of B-splines
+        """
+        self.primary_model = BSplineSpinTilt_IJR(ndofs[0], primary_pe_vals, primary_inj_vals, normalize=normalize, **kwargs)
+        self.secondary_model = BSplineSpinTilt_IJR(ndofs[1], secondary_pe_vals, secondary_inj_vals, normalize=normalize, **kwargs)
+
+    def __call__(self, pcoeffs, scoeffs, pe_samples=True, **kwargs):
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
+        
+        Args:
+            pcoeffs, scoeffs (array_like): primary and secondary coefficients of the B-splines
+            pe_samples (bool):
+                If `True`, design matrix is evaluated across parameter estimation samples
+                If `False`, design matrix is evaluated across injection samples
+        """
+        p_1 = self.primary_model(pcoeffs, pe_samples, **kwargs)
+        p_2 = self.secondary_model(scoeffs, pe_samples, **kwargs)
+        return p_1 * p_2
+    
+class BivariateBSplineIIDSpinMagTilt():
+
+    def __init__(self, ndofs, primary_pe_vals, primary_inj_vals, secondary_pe_vals, secondary_inj_vals,
+                 normalize=True, **kwargs):
+        r"""A B-spline model for the spin magnitude and spin tilt of the components of a binary pair assuming
+        they are independently and identically distributed (IID), following
+        $p(a_1, a_2, \cos\theta_1, \cos\theta_2 \mid \alpha)=p(a_1, \cos\theta_1 \mid \alpha)p(a_2, \cos\theta_2 \mid \alpha)$
+
+        Args:
+            ndofs (tuple): pair (primary, secondary) of the total number of basis functions/degrees of freedom
+            primary_pe_vals, primary_inj_vals (array-like): pair (spin mag, spin tilt) of primary parameter estimation and injection samples for basis evaluation, respectively
+            secondary_pe_vals, secondary_inj_vals (array-like): pair (spin mag, spin tilt) of secondary parameter estimation and injection samples for basis evaluation, respectively
+            normalize (bool): sets normalization of B-splines
+        """
+        self.primary_model = BivariateBSplineSpinMagTilt(ndofs, primary_pe_vals, primary_inj_vals, normalize=normalize, **kwargs)
+        self.secondary_model = BivariateBSplineSpinMagTilt(ndofs, secondary_pe_vals, secondary_inj_vals, normalize=normalize, **kwargs)
+
+    def __call__(self, coeffs, pe_samples=True, **kwargs):
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
+        
+        Args:
+            coeffs (array_like): coefficients of the B-splines
+            pe_samples (bool):
+                If `True`, design tensor is evaluated across parameter estimation samples
+                If `False`, design tensor is evaluated across injection samples
+        """
+        p_1 = self.primary_model(coeffs=coeffs, pe_samples=pe_samples, **kwargs)
+        p_2 = self.secondary_model(coeffs=coeffs, pe_samples=pe_samples, **kwargs)
+        return p_1 * p_2
