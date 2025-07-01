@@ -4,18 +4,21 @@ import numpyro
 import numpyro.distributions as dist
 import xarray as xr
 from utils import run_bspline_analysis
+from utils import run_bspline_analysis_2d
 from utils import setup_result_dir
 
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.pipeline.utils import bspline_mass_prior
 from gwinferno.pipeline.utils import bspline_redshift_prior
 from gwinferno.pipeline.utils import bspline_spin_prior
+from gwinferno.pipeline.utils import bspline_spin_prior_2d
 from gwinferno.pipeline.utils import load_base_parser
 from gwinferno.pipeline.utils import load_pe_and_injections_as_dict
 from gwinferno.pipeline.utils import pdf_dict_to_xarray
 from gwinferno.pipeline.utils import posterior_dict_to_xarray
 from gwinferno.postprocess.calculations import calculate_bspline_mass_ppds
 from gwinferno.postprocess.calculations import calculate_bspline_spin_ppds
+from gwinferno.postprocess.calculations import calculate_2d_bspline_spin_ppds
 from gwinferno.postprocess.calculations import calculate_powerlaw_spline_rate_of_z_ppds
 from gwinferno.postprocess.plot import plot_mass_pdfs
 from gwinferno.postprocess.plot import plot_rate_of_z_pdfs
@@ -23,7 +26,7 @@ from gwinferno.postprocess.plot import plot_spin_pdfs
 from gwinferno.postprocess.plot import plot_2dspin_pdfs
 
 
-def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model, z_model, mmin, mmax, nspline_dict, param_names):
+def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, spin_tilt_mag_model, z_model, mmin, mmax, nspline_dict, param_names):
     """Numpyro model
 
     Args:
@@ -47,9 +50,8 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model,
 
     mass_cs, q_cs = bspline_mass_prior(m_nsplines=nspline_dict["m1"], q_nsplines=nspline_dict["q"], m_tau=1, q_tau=1)
 
-    a_cs, tilt_cs = bspline_spin_prior(
-        a_nsplines=nspline_dict["a1"],ct_nsplines=nspline_dict["tilt1"],a_tau=25, ct_tau=25, IID=False
-    )
+    a_tilt_cs = bspline_spin_prior_2d(
+        a_nsplines=nspline_dict["a1"], ct_nsplines=nspline_dict["tilt1"], a_tau=25, ct_tau=25, IID=True)
 
     z_cs = bspline_redshift_prior(z_nsplines=nspline_dict["redshift"], z_tau=1)
     lamb = numpyro.sample("lamb", dist.Normal(0, 3))
@@ -59,12 +61,11 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model,
     def get_weights(datadict, pe_samples=True):
 
         p_m1q = mass_models(mass_cs, q_cs, pe_samples=pe_samples)
-        p_a = mag_model(a_cs, pe_samples=pe_samples)
-        p_ct = tilt_model(tilt_cs, pe_samples=pe_samples)
+        p_a_ct = spin_tilt_mag_model(a_tilt_cs, pe_samples=pe_samples)
 
         p_z = z_model(datadict["redshift"], lamb, z_cs)
 
-        weights_1 = p_m1q * p_a * p_ct * p_z / datadict["prior"]
+        weights_1 = p_m1q * p_a_ct * p_z / datadict["prior"]
 
         return weights_1
 
@@ -132,12 +133,12 @@ def main():
     """
 
     if args.skip_inference:
-        z_model = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args, skip_inference=True)
+        z_model = run_bspline_analysis_2d(model, pedict, injdict, constants, param_names, nspline_dict, args, skip_inference=True)
         print(f"loading posterior file: {result_dir}/{label}_posterior_samples.h5")
         posterior = xr.load_dataset(result_dir + f"/{label}_posterior_samples.h5")
 
     else:
-        posterior_dict, z_model = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args)
+        posterior_dict, z_model = run_bspline_analysis_2d(model, pedict, injdict, constants, param_names, nspline_dict, args)
         print(f"posteriors file saved: {result_dir}/{label}_posterior_samples.h5")
         posterior = posterior_dict_to_xarray(posterior_dict)
         posterior.to_netcdf(result_dir + f"/{label}_posterior_samples.h5")
@@ -170,17 +171,16 @@ def main():
     Calculate Mass pdfs (for loop necessary for multiple subpopulations)
     """
     print("calculating spin ppds:")
-    mag_pdfs = []
-    tilt_pdfs = []
+    print("a_tilt_cs shape:", posterior[f"a_ct_cs"].shape)
     for i in range(len(names)):
-        mag1, mags, tilt1, tilts = calculate_bspline_spin_ppds(
-            posterior[f"a_cs"].values,
-            posterior[f"tilt_cs"].values,
-            nspline_dict,
-            bivariate = True
+        # mag1, mags, tilt1, tilts = calculate_bspline_spin_ppds(
+        mag_tilt1, mags, tilts, prim_mag_tilt, sec_mag_tilt = calculate_2d_bspline_spin_ppds(
+            a_tilt_cs=posterior[f"a_ct_cs"].values,
+            nspline_dict=nspline_dict
         )
-        mag_pdfs.append(mag1)
-        tilt_pdfs.append(tilt1)
+        # mag_pdfs = mag1
+        # tilt_pdfs = tilt1
+        mag_tilt_pdfs = mag_tilt1
 
     """
     Calculate rate as a funciton of redshift
@@ -195,7 +195,7 @@ def main():
     plot_mass_pdfs(mass_pdfs, q_pdfs, m1s, qs, names, label, result_dir, save=args.save_plots, colors=colors)
 
     print("plotting primary spin distributions:")
-    plot_2dspin_pdfs(mag_pdfs, tilt_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors)
+    plot_2dspin_pdfs(prim_mag_tilt, sec_mag_tilt, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors)
 
     # print("plotting secondary spin distributions:")
     # plot_spin_pdfs(mag2_pdfs, tilt2_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors, secondary=True)
