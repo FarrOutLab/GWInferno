@@ -11,9 +11,8 @@ from ...interpolation import BSpline
 from ...interpolation import LogXBSpline
 from ...interpolation import LogXLogYBSpline
 from ...interpolation import LogYBSpline
-from ...interpolation import SplineDOF_wrapper
-from ...interpolation import BSplines
-from ...interpolation import LogYBSplines
+from ...interpolation import BSpline_IJR
+from ...interpolation import LogYBSpline_IJR
 
 
 class Base1DBSplineModel(object):
@@ -91,7 +90,6 @@ class Base1DBSplineModel(object):
             The linear combination of the basis components evaluated at the parameter estimation samples given the coefficients.
         """
         pdf = jnp.zeros(self._valid_xx.shape)
-        # print('pe dm shape! ', self.pe_design_matrix.shape)
         pdf = pdf.at[self._valid_xx].set(self.eval_spline(self.pe_design_matrix, coefs))
         return pdf
 
@@ -496,80 +494,88 @@ class BSplineRedshift(Base1DBSplineModel):
         )
 
 class Base1DBSplineModel_IJR():
-    """Base class for basis splines for population inference, using the BSplines class as a default
 
-    Args:
-        pe_vals (array_like): parameter estimation samples for basis evaluation
-        inj_vals (array-like): injection samples for basis evaluation
-        l_Bsplines (int): total number of basis functions - 1
-        domain (tuple, default=(0.0, 1.0)): domain of the B-splines
-        order (int, default=4): order of the B-splines, i.e., `4` for cubic splines
-        basis (class, default=LogYBSplines): type of basis to use
-    """
+    def __init__(self, ndof, domain, pe_vals, inj_vals, order, basis=BSpline_IJR, **kwargs):
+        """Base class for B-splines for population inference, with `BSpline_IJR` as the default basis
 
-    def __init__(
-        self,
-        pe_vals,
-        inj_vals,
-        l_BSplines,
-        domain=(0.0, 1.0),
-        order=4,
-        basis=BSplines,
-        **kwargs,
-    ):
-        self.l_BSplines = l_BSplines
-        self.xmin, self.xmax = domain
+        Args:
+            ndof (int): total number of basis functions/degrees of freedom
+            domain (tuple): minimum and maximum values of the domain
+            pe_vals, inj_vals (array-like): parameter estimation and injection samples for basis evaluation, respectively
+            order (int): order of B-spline
+            basis (class): interpolator for basis functions
+        """
+        self.ndof = ndof
+        self.domain = domain
         self.order = order
-        self.interpolator = basis(
-            u_domain=domain,
-            P=order,
-            l=self.l_BSplines,
-            **kwargs,
-        )
-        # print("pe vals shape: ", pe_vals.shape)
-        # self._valid_pe_vals = (pe_vals >= self.xmin) & (pe_vals <= self.xmax)
-        # print("valid pe vals shape: ", self._valid_pe_vals.shape)
-        # self._valid_inj_vals = (inj_vals >= self.xmin) & (inj_vals <= self.xmax)
-        self.pe_design_matrix = self.interpolator.design_matrix(pe_vals)
-        # print("pe dm shape? ", self.pe_design_matrix.shape)
-        self.inj_design_matrix = self.interpolator.design_matrix(inj_vals)
+        self.interpolator = basis(ndof=ndof, domain=domain, order=order, **kwargs)
+        self.pe_dm = self.interpolator.design_matrix(pe_vals)
+        self.inj_dm = self.interpolator.design_matrix(inj_vals)
         self.funcs = [self.inj_pdf, self.pe_pdf]
-
-    def eval_spline(self, bases, coefs):
-        """Given design matrix ``bases`` and coefficients ``coefs``, project coefficients onto the basis.
-
-        Args:
-            bases (array_like): design matrix of the B-splines, i.e., basis functions evaluated at samples
-            coefs (array_like): basis spline coefficients.
-        """
-        return self.interpolator.spline(coefs, bases)
-
-    def pe_pdf(self, coefs):
-        """Project the coefficients ``coefs`` onto the design matrix evaluated at the parameter estimation samples.
+    
+    def eval_spline(self, coeffs, design_matrix):
+        """Calculates the (normalized) spline given a set of coefficients and a design matrix
 
         Args:
-            coefs (array_like): basis spline coefficients
+            coeffs (array-like): coefficients of the B-spline
+            design_matrix (array-like): design matrix of the basis functions
         """
-        pdf = self.eval_spline(coefs, self.pe_design_matrix)
-        return pdf
-
-    def inj_pdf(self, coefs):
-        """Project the coefficients ``coefs`` onto the design matrix evaluated at the injection samples.
+        return self.interpolator.spline(coeffs, design_matrix)
+    
+    def pe_pdf(self, coeffs):
+        """Project the coefficients `coeffs` onto the design matrix evaluated at the parameter estimation samples
 
         Args:
-            coefs (array_like): basis spline coefficients
+            coeffs (array_like): coefficients of the B-spline
         """
-        pdf = self.eval_spline(coefs, self.inj_design_matrix)
-        return pdf
+        return self.eval_spline(coeffs, self.pe_dm)
+    
+    def inj_pdf(self, coeffs):
+        """Project the coefficients `coeffs` onto the design matrix evaluated at the injection samples
 
-    def __call__(self, coefs, pe_samples=True):
+        Args:
+            coeffs (array_like): coefficients of the B-spline
+        """
+        return self.eval_spline(coeffs, self.inj_dm)
+    
+    def __call__(self, coeffs, pe_samples=True):
         """Evaluate the projection of the coefficients along the design matrix over the parameter estimation or injection samples.
         Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
         Args:
-            coefs (array_like): basis spline coefficients
-            pe_samples (bool, default=True):
+            coeffs (array_like): coefficients of the B-spline
+            pe_samples (bool):
                 If `True`, design matrix is evaluated across parameter estimation samples
                 If `False`, design matrix is evaluated across injection samples
         """
-        return self.funcs[1](coefs) if pe_samples else self.funcs[0](coefs)
+        return self.funcs[1](coeffs) if pe_samples else self.funcs[0](coeffs)
+    
+class BSplineSpinTilt_IJR(Base1DBSplineModel_IJR):
+    
+    def __init__(self, ndof, pe_vals, inj_vals, order=4, basis=LogYBSpline_IJR, **kwargs):
+        """A B-spline model for the cosine of the spin tilt of a component of a binary pair
+        
+        Args:
+            ndof (int): total number of basis functions/degrees of freedom
+            domain (tuple): minimum and maximum values of the domain
+            pe_vals, inj_vals (array-like): parameter estimation and injection samples for basis evaluation, respectively
+            order (int): order of B-spline
+            basis (class): interpolator for basis functions
+        """
+        domain = kwargs.pop("domain", (-1.0, 1.0))
+        super().__init__(ndof, domain, pe_vals, inj_vals, order, basis, **kwargs)
+
+class BSplineSpinMagnitude_IJR(Base1DBSplineModel_IJR):
+    
+    def __init__(self, ndof, pe_vals, inj_vals, order=4, basis=LogYBSpline_IJR, **kwargs):
+        """A B-spline model for the spin magnitude of a component of a binary pair
+        
+        Args:
+            ndof (int): total number of basis functions/degrees of freedom
+            domain (tuple): minimum and maximum values of the domain
+            pe_vals, inj_vals (array-like): parameter estimation and injection samples for basis evaluation, respectively
+            order (int): order of B-spline
+            basis (class): interpolator for basis functions
+        """
+        domain = kwargs.pop("domain", (0.0, 1.0))
+        super().__init__(ndof, domain, pe_vals, inj_vals, order, basis, **kwargs)
