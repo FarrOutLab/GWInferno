@@ -551,177 +551,227 @@ class RectBivariateBasisSpline(object):
         """
         return self._project(bases, coefs) * self.norm_2d(coefs)
 
-def SplineDOF_wrapper(n_splines, degree):
-    l_E = n_splines - 1
-    return l_E - 2 * degree
+class BSpline_IJR():
 
-class BSplines():
-
-    def __init__(self, u_domain, P=4, l=None, knots=None, normalization=True, **kwargs):
-        """Class to construct the B-spline design matrix.
-
-        Args:
-            u_domain (array-like): lower and upper values for the domain of interest
-            P (int): order of B-spline
-            l (int): l+1 number of B-splines
-            knots (array-like): knot vector (both exterior and interior knots)
-            normalization (bool): sets normalization of B-splines
-            book (bool): add wrapper to define DOF of B-splines
+    def __init__(self, ndof, domain, order, knots=None, normalize=True, **kwargs):
+        """Class to construct the B-spline design matrix
+        
+        Args: 
+            ndof (int): total number of basis functions/degrees of freedom
+            domain (tuple): minimum and maximum values of the domain
+            order (int): order of B-spline
+            knots (array-like): knot vector
+            normalize (bool): sets normalization of B-spline
         """
-        self.u_domain = u_domain
-        self.P = P
-        self.p = P - 1 # degree
-        self.l = l
-        self.l_E = self.l + 2*self.p # l_E+1 number of extended B-splines
-        self.knots  = knots
-        self.L = self.l + self.p + 1 # L+1 number of knots in domain
-        self.L_E = self.L + 2*self.p # L_E+1 number of extended knots in and out of domain
-        self.normalization = normalization
+        self.ndof = ndof
+        self.domain = domain
+        self.order = order
+        self.degree = order - 1
+        self.knots = knots
+        self.n_iknots = ndof - order + 2 # number of interior knots
+        self.n_eknots = ndof + order # number of exterior + interior knots
+        self.normalize = normalize
         if self.knots is not None:
-            assert len(self.knots) == self.L_E + 1, "The number of knots must satisfy the relation L = l + p + 1."
+            assert len(self.knots) == self.n_eknots, "The number of knots must be equal to the degrees of freedom plus the order"
         elif self.knots is None:
-            interior_knots = jnp.linspace(self.u_domain[0], self.u_domain[1], self.L + 1)
+            interior_knots = jnp.linspace(*domain, self.n_iknots)
             dx = interior_knots[1] - interior_knots[0]
-            self.knots = jnp.linspace(self.u_domain[0] - self.p*dx, self.u_domain[1] + self.p*dx, self.L_E + 1)
-        if normalization:
-            self.integration_domain = jnp.linspace(self.u_domain[0], self.u_domain[1], 1000)
-            self.norm_bases = jnp.array([trapezoid(self._basis(self.integration_domain, self.P, k, self.knots), self.integration_domain) for k in range(self.l_E + 1)])
-    
-    def _basis(self, u_domain, P, k, knots):
-        """Calculates the kth P-order B-spline basis function 
+            self.knots = jnp.linspace(domain[0] - self.degree*dx, domain[1] + self.degree*dx, self.n_eknots)
+        if normalize:
+            self.integration_domain = jnp.linspace(*domain, 1000)
+            self.norm_bases = jnp.array([self.design_matrix(self.integration_domain)[i] for i in range(ndof)])
 
+    def _basis(self, domain_vals, order, index, knots):
+        """Calculates the index-th B-spline basis function of order `order`
+        
         Args:
-            u_domain (array-like): u value(s) to evaluate the function at
-            P (int): order of the B-spline basis function
-            k (int): B-spline BF index (k = 0 to the total number of B-spline BFs)
-            knots (array-like): knot vector in and out of the domain
+            domain_vals (array-like): value(s) to evaluate the basis functions at
+            order (int): order of B-spline
+            index (int): index of B-spline basis function (index = 0 to `ndof`)
+            knots (array-like): knot vector
         """
-        if P == 1:
-            b1 = jnp.zeros_like(u_domain)
-            q = (u_domain >= knots[k]) & (u_domain < knots[k+1])
+        def omega(domain_vals, order, index, knots):
+            return (domain_vals - knots[index]) / (knots[index+order-1] - knots[index])
+        def norm_factor(order, index, knots):
+            return order / (knots[index+order] - knots[index])
+        if order == 1:
+            b1 = jnp.zeros_like(domain_vals)
+            q = (domain_vals >= knots[index]) & (domain_vals < knots[index+1])
             b1 += q*1
+            b1 *= norm_factor(order, index, knots)
             return b1
         else:
-            if knots[k+P-1] - knots[k] < 1e-6:
-                term_1 = jnp.zeros_like(u_domain)
+            if knots[index+order-1] - knots[index] < 1e-6:
+                term_1 = jnp.zeros_like(domain_vals)
             else:
-                term_1 = ((u_domain - knots[k]) / (knots[k+P-1] - knots[k])) * self._basis(u_domain, P-1, k, knots)
-            if knots[k+1+P-1] - knots[k+1] < 1e-6:
-                term_2 = jnp.zeros_like(u_domain)
+                term_1 = omega(domain_vals, order, index, knots) * self._basis(domain_vals, order-1, index, knots)
+            if knots[index+1+order-1] - knots[index+1] < 1e-6:
+                term_2 = jnp.zeros_like(domain_vals)
             else:
-                term_2 = (1 - ((u_domain - knots[k+1]) / (knots[k+1+P-1] - knots[k+1]))) * self._basis(u_domain, P-1, k+1, knots)
-            base = term_1 + term_2
-            return base
+                term_2 = (1 - omega(domain_vals, order, index+1, knots)) * self._basis(domain_vals, order-1, index+1, knots)
+            basis = term_1 + term_2
+            # basis *= norm_factor(order, index, knots)
+            return basis
+    
+    def _design_matrix(self, domain_vals):
+        """Calculates the design matrix for the set of points in `domain_vals`
         
-    def _design_matrix(self, u_domain):
-        """Calculates the design matrix for the set of points contained in u_domain
+        Args:
+            domain_vals (array-like): value(s) to evaluate the design matrix at
+        """
+        return jnp.array([self._basis(domain_vals, order=self.order, index=i, knots=self.knots) for i in range(self.ndof)])
+    
+    def design_matrix(self, domain_vals):
+        """Sets the values of the design matrix outside the domain to zero
+        
+        Args:
+            domain_vals (array-like): value(s) to evaluate the design matrix at
+        """
+        design_matrix = self._design_matrix(domain_vals)
+        return jnp.where(jnp.less(domain_vals, self.domain[0]) | jnp.greater(domain_vals, self.domain[1]), 0.0, design_matrix)
+    
+    def _spline(self, coeffs, design_matrix):
+        """Calculates the spline given a set of coefficients and a design matrix
 
         Args:
-            u_domain (array-like): u value(s) to evaluate the function at
+            coeffs (array-like): coefficients of the B-spline
+            design_matrix (array-like): design matrix of the basis functions
         """
-        return jnp.array([self._basis(u_domain, self.P, k, self.knots) for k in range(self.l_E + 1)])
+        assert coeffs.shape[0] == design_matrix.shape[0], "The number of coefficients must match the degrees of freedom"
+        return jnp.einsum('i...,i->...', design_matrix, coeffs)
     
-    def design_matrix(self, u_domain):
-        """Calculates the design matrix for the set of points contained in u_domain, and sets values outside the domain of interest to zero.
-
+    def normalization(self, coeffs):
+        """Evaluates the normalization factor of a spline
+        
         Args:
-            u_domain (array-like): u value(s) to evaluate the function at
+            coeffs (array-like): coefficients of the B-spline
         """
-        design_matrix = self._design_matrix(u_domain)
-        return jnp.where(jnp.less(u_domain, self.u_domain[0]) | jnp.greater(u_domain, self.u_domain[1]), 0.0, design_matrix)
-    
-    def normalize(self, coeffs):
-        return 1.0 / jnp.einsum('i,i->', self.norm_bases, coeffs) if self.normalization else 1.0
+        if self.normalize: 
+            spline = self._spline(coeffs, self.norm_bases)
+            n = trapezoid(spline, self.integration_domain)
+            return 1.0 / n
+        else: return 1.0
     
     def spline(self, coeffs, design_matrix):
-        """Calculates the spine given a set of coefficients and a design matrix
+        """Calculates the (normalized) spline given a set of coefficients and a design matrix
 
         Args:
-            coeffs (array-like): coefficients for the B-splines
-            design_matrix (array-like): B-splines
+            coeffs (array-like): coefficients of the B-spline
+            design_matrix (array-like): design matrix of the basis functions
         """
-        assert coeffs.shape[0] == design_matrix.shape[0], "The number of coefficients must match the number of B-splines."
-        spline = jnp.einsum('i...,i->...', design_matrix, coeffs)
-        return spline * self.normalize(coeffs)
+        return self._spline(coeffs, design_matrix) * self.normalization(coeffs)
     
-class LogYBSplines(BSplines):
+class LogYBSpline_IJR(BSpline_IJR):
 
-    def __init__(self, u_domain, P=4, l=None, knots=None, normalization=True, **kwargs):
-        """Class to construct the B-spline design matrix.
-
+    def __init__(self, ndof, domain, order, knots=None, normalize=True, **kwargs):
+        """Class to construct the B-spline design matrix in logspace
         Args:
-            u_domain (array-like): lower and upper values for the domain of interest
-            P (int): order of B-spline
-            l (int): l+1 number of B-splines
-            knots (array-like): knot vector (both exterior and interior knots)
-            normalization (bool): sets normalization of B-splines
-            book (bool): add wrapper to define DOF of B-splines
+            ndof (int): total number of basis functions/degrees of freedom
+            domain (tuple): minimum and maximum values of the domain
+            order (int): order of B-spline
+            knots (array-like): knot vector
+            normalize (bool): sets normalization of B-spline
         """
-        super().__init__(u_domain = u_domain, P = P, l = l, knots = knots, **kwargs)
-        self.normalization = normalization
-        if normalization:
-            self.integration_domain = jnp.linspace(*u_domain, 1000)
-            self.norm_bases = jnp.array([trapezoid(self._basis(self.integration_domain, self.P, k, self.knots), self.integration_domain) for k in range(self.l_E + 1)])
+        super().__init__(ndof=ndof, domain=domain, order=order, knots=knots, normalize=normalize, **kwargs)
+        self.normalize = normalize
+        if normalize:
+            self.integration_domain = jnp.linspace(*domain, 1000)
+            self.norm_bases = jnp.array([self.design_matrix(self.integration_domain)[i] for i in range(ndof)])
 
-    def spline(self, coeffs, design_matrix):
+    def design_matrix(self, domain_vals):
+        """Sets the values of the design matrix outside the domain to -inf
+        
+        Args:
+            domain_vals (array-like): value(s) to evaluate the design matrix at
+        """
+        design_matrix = super()._design_matrix(domain_vals)
+        return jnp.where(jnp.less(domain_vals, self.domain[0]) | jnp.greater(domain_vals, self.domain[1]), -jnp.inf, design_matrix)
+
+    def _spline(self, coeffs, design_matrix):
+        """Calculates the log-spline given a set of coefficients and a design matrix
+        
+        Args:
+            coeffs (array-like): coefficients of the B-spline
+            design_matrix (array-like): design matrix of the basis functions
+        """
+        assert coeffs.shape[0] == design_matrix.shape[0], "The number of coefficients must match the degrees of freedom"
         log_spline = jnp.nan_to_num(jnp.einsum('i...,i->...', design_matrix, coeffs), nan = -jnp.inf, posinf = -jnp.inf)
         return jnp.exp(log_spline)
-    
-    def design_matrix(self, u_domain):
-        design_matrix = super().design_matrix(u_domain)
-        return jnp.where(jnp.less(u_domain, self.u_domain[0]) | jnp.greater(u_domain, self.u_domain[1]), -jnp.inf, design_matrix)
 
 class BivariateBSpline():
 
-    def __init__(self,
-                 u_domain, v_domain,
-                 u_order = 4, v_order = 4,
-                 u_l = None, v_l = None,
-                 u_knots=None, v_knots=None,
-                 normalization=True,
-                 basis = BSplines
-                 ):
-                 # TODO: Add argument for class to use when setting up B-spline?
-        """Base class to construct the 2D B-spline design tensor.
+    def __init__(self, ndofs, domains, orders, knots=(None, None), normalize=True, basis = BSpline_IJR, **kwargs):
+        """Class to construct the B-spline design tensor in 2D. 
+        
+        Args:
+            ndofs (tuple): pair of the total number of basis functions/degrees of freedom 
+            domains (array-like): pair of tuples of the minimum and maximum values of the domains
+            orders (tuple): pair of the orders of the B-splines
+            knots (array-like, default: tuple of None): pair of knot vectors
+            normalize (bool): sets normalization of B-splines
+            basis (class): interpolator basis class used to construct the design matrices
+        """
+        self.ndofs = ndofs
+        self.domains = domains
+        self.orders = orders
+        self.normalize = normalize
+        self.u_interpolator = basis(ndof=ndofs[0], domain=domains[0], order=orders[0], knots=knots[0], normalize=normalize, **kwargs)
+        self.v_interpolator = basis(ndof=ndofs[1], domain=domains[1], order=orders[1], knots=knots[1], normalize=normalize, **kwargs)
+        if normalize:
+            self.norm_bases = jnp.tensordot(self.u_interpolator.norm_bases, self.v_interpolator.norm_bases, axes = 0)
+        
+    def design_tensor(self, u_domain, v_domain, full_product=False):
+        """"Calculates the design tensor for the set of points in `u_domain` and `v_domain`
+        
+        Args:
+            u_domain, v_domain (array-like): value(s) in `domain[0]` and `domain[1]` to evaluate the design tensor at, respectively
+            full_product (bool): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+        """
+        u_dm = self.u_interpolator.design_matrix(domain_vals=u_domain)
+        v_dm = self.v_interpolator.design_matrix(domain_vals=v_domain)
+        if full_product:
+            return jnp.tensordot(u_dm, v_dm, axes=0)
+        else:
+            dt = jnp.array([u_dm[i] * v_dm[j] for i in range(self.u_interpolator.ndof) for j in range(self.v_interpolator.ndof)]).reshape(self.u_interpolator.ndof, self.v_interpolator.ndof, *u_domain.shape)
+            return dt
+        
+    def _spline(self, coeffs, design_tensor, full_product=False):
+        """Calculates the spline given a set of coefficients and a design tensor
 
         Args:
-            u_domain (array-like): lower and upper values for the u domain of interest
-            v_domain (array-like): lower and upper values for the v domain of interest
-            u_order (int): order of B-spline in the u-direction
-            v_order (int): order of B-spline in the v-direction
-            u_l (int): u_l+1 number of B-splines
-            v_l (int): v_l+1 number of B-splines
-            u_knots (array-like, optional): knot vector in the u-direction (both exterior and interior knots)
-            v_knots (array-like, optional): knot vector in the v-direction (both exterior and interior knots)
-            normalization (bool, optional): flag to numerically normalize the spline.
-            independent (bool, optional): flag to construct 2D B-splines with all points (True), or pairs of points (False)
+            coeffs (array-like): coefficients of the B-spline
+            design_tensor (array-like): design tensor of the basis functions
+            full_product (bool): flag to compute spline between all points (`True`), or pairs of points (`False`)
         """
-        self.domain = np.array([u_domain, v_domain])
-        self.ls = np.array([u_l, v_l])
-        self.orders = np.array([u_order, v_order])
-        self.degrees = np.array([u_order - 1, v_order - 1])
-        self.normalization = normalization
-        # TODO: Modify BSplines class that is called?
-        self.u_BSpline = basis(u_domain = u_domain, P = u_order, l = u_l, knots = u_knots, normalization=self.normalization)
-        self.v_BSpline = basis(u_domain = v_domain, P = v_order, l = v_l, knots = v_knots, normalization=self.normalization)
-
-    def design_tensor(self, u_domain, v_domain, independent=False):
-        u_BSpline_dm = self.u_BSpline.design_matrix(u_domain)
-        v_BSpline_dm = self.v_BSpline.design_matrix(v_domain)
-        if independent:
-            return np.tensordot(u_BSpline_dm, v_BSpline_dm, axes = 0)
-        else:
-            uv_BSpline = np.empty((self.u_BSpline.l_E + 1, self.v_BSpline.l_E + 1, u_BSpline_dm.shape[1]))
-            # TODO: Figure out how to not use a nested for-loop to perform this operation 
-            for s in range(self.v_BSpline.l_E + 1):
-                for k in range(self.u_BSpline.l_E + 1):
-                    uv_BSpline = uv_BSpline.at[k,s,:].set(u_BSpline_dm[k,:] * v_BSpline_dm[s,:])
-            return uv_BSpline
-    
-    def spline(self, coeffs, design_tensor, independent=False, **kwargs,):
-        if independent:
-            assert coeffs.shape[0] == design_tensor.shape[0] and coeffs.shape[1] == design_tensor.shape[2], "The number of coefficients must match the number of B-splines."
+        if full_product:
+            assert coeffs.shape[0] == design_tensor.shape[0] and coeffs.shape[1] == design_tensor.shape[2], "The number of coefficients must match the degrees of freedom"
             return jnp.einsum('kisj,ks->ij', design_tensor, coeffs)
         else:
-            assert coeffs.shape[0] == design_tensor.shape[0] and coeffs.shape[1] == design_tensor.shape[1], "The number of coefficients must match the number of B-splines."
+            assert coeffs.shape[0] == design_tensor.shape[0] and coeffs.shape[1] == design_tensor.shape[1], "The number of coefficients must match the degrees of freedom"
             return jnp.einsum('ks...,ks->...', design_tensor, coeffs)
+        
+    def normalization(self, coeffs):
+        """Evaluates the normalization factor of a spline
+        
+        Args:
+            coeffs (array-like): coefficients of the B-spline
+        """
+        # if self.normalize:
+        #     spline = self._spline(coeffs, self.norm_bases, full_product=True)
+        #     n = trapezoid(trapezoid(spline, self.v_interpolator.integration_domain, axis=1), self.u_interpolator.integration_domain, axis=0)
+        #     return 1.0 / n
+        # else: return 1.0
+        # TODO: Running MCMC and numerically normalizing spline makes MCMC run really long. For now, do not numerically normalize!
+        # TODO: Normalize the basis functions instead!
+        return 1.0
+
+    def spline(self, coeffs, design_tensor, full_product=False):
+        """Calculates the (normalized) spline given a set of coefficients and a design tensor
+
+        Args:
+            coeffs (array-like): coefficients of the B-spline
+            design_tensor (array-like): design tensor of the basis functions
+            full_product (bool): flag to compute spline between all points (`True`), or pairs of points (`False`)
+        """
+        return self._spline(coeffs, design_tensor, full_product) * self.normalization(coeffs)
+    
