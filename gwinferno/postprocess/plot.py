@@ -86,35 +86,37 @@ def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=Tru
         plt.savefig(result_dir + f"/cos_tilt{comp}_pdf_{label}.png", dpi=100)
     plt.close()
 
-def plot_2dspin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=True, colors=["red", "blue", "green"]):
-    fig = plt.figure(figsize=(10,7), layout = 'tight')
-    ax1 = fig.add_subplot(1, 2, 1, projection = '3d')
-    ax2 = fig.add_subplot(1, 2, 2)
-    for i in range(len(a_pdfs)):
-        wireframe, contour = plot_2dpdf(ax1, ax2, aa, aa, a_pdfs[i], label = label, color=colors[i])
-    ax1.set_xlabel('a1')
-    ax1.set_ylabel('a2')
-    ax2.set_xlabel('a1')
-    ax2.set_ylabel('a2')
+def plot_2dspin_pdfs(a_tilt_1_pdfs, a_tilt_2_pdfs, aa, cc, names, label, result_dir, save=True):
+    fig = plt.figure(figsize=(10,7), layout='constrained')
+    ax1 = fig.addsubplot(121, projection='3d')
+    ax2 = fig.addsubplot(122, projection='3d')
+    wireframe, contour = plot_2dpdf(ax1, ax2, aa, cc, a_tilt_1_pdfs, label)
+    ax1.set_xlabel(r'$a_1$')
+    ax1.set_ylabel(r'$\cos\theta_1')
+    ax1.set_zlabel(r'$p(a_1,\cos\theta_1)$')
+    ax2.set_xlabel(r'$a_1$')
+    ax2.set_ylabel(r'$\cos\theta_1')
+    # ax2.set_zlabel(r'$p(a,\cos\theta)$')
     fig.colorbar(contour, ax = ax2)
     plt.show()
     if save:
-        fig.savefig(result_dir + f"/spin_mag2d_pdf_{label}.png", dpi = 100)
+        fig.savefig(result_dir + f"/spin_mag_tilt1_2d_pdf_{label}.png", dpi = 100)
     plt.close()
 
-    fig = plt.figure(figsize=(10,7), layout = 'tight')
-    ax1 = fig.add_subplot(1, 2, 1, projection = '3d')
-    ax2 = fig.add_subplot(1, 2, 2)
-    for i in range(len(tilt_pdfs)):
-        wireframe, contour = plot_2dpdf(ax1, ax2, cc, cc, tilt_pdfs[i], label = label, color=colors[i])
-    ax1.set_xlabel(r'cos$\theta_1$')
-    ax1.set_ylabel(r'cos$\theta_2$')
-    ax2.set_xlabel(r'cos$\theta_1$')
-    ax2.set_ylabel(r'cos$\theta_2$')
+    fig = plt.figure(figsize=(10,7), layout='constrained')
+    ax1 = fig.addsubplot(121, projection='3d')
+    ax2 = fig.addsubplot(122, projection='3d')
+    wireframe, contour = plot_2dpdf(ax1, ax2, aa, cc, a_tilt_2_pdfs, label)
+    ax1.set_xlabel(r'$a_2$')
+    ax1.set_ylabel(r'$\cos\theta_2')
+    ax1.set_zlabel(r'$p(a_2,\cos\theta_2)$')
+    ax2.set_xlabel(r'$a_2$')
+    ax2.set_ylabel(r'$\cos\theta_2')
+    # ax2.set_zlabel(r'$p(a,\cos\theta)$')
     fig.colorbar(contour, ax = ax2)
     plt.show()
     if save:
-        fig.savefig(result_dir + f"/cos_tilt2d_pdf_{label}.png", dpi = 100)
+        fig.savefig(result_dir + f"/spin_mag_tilt2_2d_pdf_{label}.png", dpi = 100)
     plt.close()
 
 def plot_rate_of_z_pdfs(z_pdfs, z, label, result_dir, save=True):
