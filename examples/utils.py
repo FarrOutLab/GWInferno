@@ -1,6 +1,8 @@
 import os
 
 import numpyro
+import arviz as az
+import matplotlib.pyplot as plt
 from jax import random
 from numpyro.infer import MCMC
 from numpyro.infer import NUTS
@@ -8,6 +10,7 @@ from numpyro.infer import NUTS
 from gwinferno.pipeline.utils import setup_bspline_mass_models
 from gwinferno.pipeline.utils import setup_bspline_spin_models
 from gwinferno.pipeline.utils import setup_bspline_spin_models_2d
+from gwinferno.pipeline.utils import setup_bspline_primary_massratio_chieff_models
 from gwinferno.pipeline.utils import setup_powerlaw_spline_redshift_model
 
 from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
@@ -144,6 +147,62 @@ def run_bspline_analysis_2d(numpyro_model, pedict, injdict, constants, param_nam
 
         return posterior, z_model
 
+    else:
+        return z_model
+    
+def run_massratio_chieff_bspline_analysis_2d(numpyro_model, pedict, injdict, constants, param_names, nspline_dict, parsargs, skip_inference=False):
+    """run MCMC
+    
+    Args:
+        numpyro_model (func): numpyro model that defines priors, population model, and likelihood
+        pedict (dict): dictionary of PE samples
+        injdict (dict): dictionary of injecitons
+        constants (dict): dictionary of relevant constants
+        param_names (list of strs): list of parameters
+        nspline_dict (dict): dictionary containing the number of splines for each parameter
+        parsargs (ArgumentParser): args from ArgumentParser.parse_args()
+        skip_inference (bool, optional): If True, does not perform inference. Defaults to False.
+
+    Returns:
+        if skip_inference == False:
+            posterior (dict): dictionary of posterior samples
+            z_model (obj): redshift model (needed for later calculations)
+        if skip_inference == True:
+            z_model
+    """
+    primary_chiq_model = setup_bspline_primary_massratio_chieff_models(pedict, injdict, nspline_dict["m1"], nspline_dict["chi_eff"], nspline_dict["q"],
+                                                                     mmin=parsargs.mmin, mmax=parsargs.mmax)
+    z_model = setup_powerlaw_spline_redshift_model(pedict, injdict, nspline_dict["redshift"])
+
+    if not skip_inference:
+        nChains = parsargs.chains
+        numpyro.set_host_device_count(nChains)
+        kernel = NUTS(numpyro_model)
+        mcmc = MCMC(kernel, num_warmup=parsargs.warmup, num_samples=parsargs.samples, num_chains=nChains)
+
+        rng_key = random.PRNGKey(parsargs.rngkey)
+        rng_key, catkey, rng_key_ = random.split(rng_key, num=3)
+
+        mcmc.run(
+            rng_key_,
+            pedict,
+            injdict,
+            constants["nObs"],
+            constants["obs_time"],
+            constants["total_inj"],
+            primary_chiq_model,
+            z_model,
+            parsargs.mmin,
+            parsargs.mmax,
+            nspline_dict,
+            param_names,
+        )
+        mcmc.print_summary()
+        posterior = mcmc.get_samples()
+        trace_plots = az.plot_trace(mcmc, compact=True)
+
+        return mcmc, posterior, z_model, trace_plots
+    
     else:
         return z_model
 
