@@ -1,5 +1,6 @@
 import jax.numpy as jnp
 import numpy as np
+import xarray as xr
 from jax import jit
 from jax.scipy.integrate import trapezoid
 from tqdm import trange
@@ -16,10 +17,10 @@ from gwinferno.models.bsplines.single import BSplineRatio
 from gwinferno.models.parametric.parametric import mixture_isoalign_spin_tilt
 from gwinferno.models.parametric.parametric import plpeak_primary_ratio_pdf
 from gwinferno.models.bsplines.separable import BSplineIndependentSpinTilts_IJR
-from gwinferno.models.bsplines.joint import Base2DBSplineModel
 from gwinferno.models.bsplines.joint import BivariateBSplineSpinMag
 from gwinferno.models.bsplines.joint import BivariateBSplineSpinTilt
 from gwinferno.models.bsplines.separable import BivariateBSplineIIDSpinMagTilt
+from gwinferno.models.bsplines.separable import BSplinePrimaryBivariateBSplineMassRatioChiEff
 
 def calculate_bspline_mass_ppds(m_cs, q_cs, nspline_dict, mmin, mmax, rate=None, pop_frac=None):
 
@@ -278,19 +279,50 @@ def calculate_2d_bspline_spin_ppds(a_tilt_cs, nspline_dict, rate=None, pop_frac=
         p_a_ct_sec = spin_mag_tilt_model.secondary_model(a_ct_cs)
         
         P_a_ct = r * f * p_a_ct / trapezoid(trapezoid(p_a_ct, cc, axis=1), aa, axis=0)
-        P_a_ct_prim = p_a_ct_prim / trapezoid(trapezoid(p_a_ct_prim, cc, axis=1), aa, axis=0)
-        P_a_ct_prim = p_a_ct_sec / trapezoid(trapezoid(p_a_ct_sec, cc, axis=1), aa, axis=0)
+        P_a_ct_prim = r * f * p_a_ct_prim / trapezoid(trapezoid(p_a_ct_prim, cc, axis=1), aa, axis=0)
+        P_a_ct_prim = r * f * p_a_ct_sec / trapezoid(trapezoid(p_a_ct_sec, cc, axis=1), aa, axis=0)
         return P_a_ct, P_a_ct_prim, P_a_ct_prim
     
     calc_pdf = jit(calc_pdf)
 
     for i in trange(actpdfs.shape[0]):
             # apdfs[i], ctpdfs[i] = calc_pdf(a1_cs[i], tilt1_cs[i], rate[i], pop_frac[i])
-            actpdfs[i], act_prim_pdfs, act_sec_pdfs = calc_pdf(a_tilt_cs[i], rate[i], pop_frac[i])
+            actpdfs[i], act_prim_pdfs[i], act_sec_pdfs[i] = calc_pdf(a_tilt_cs[i], rate[i], pop_frac[i])
 
     # return apdfs, aa, ctpdfs, cc
     return actpdfs, aa, cc, act_prim_pdfs, act_sec_pdfs
 
+def calculate_bspline_primary_chiq_ppds(m_cs, chiq_cs, nspline_dict, mmin, mmax, rate=None, pop_frac=None):
+
+    ms = jnp.linspace(mmin, mmax, 800)
+    qs = jnp.linspace(mmin / mmax, 1, 800)
+    chi_effs = jnp.linspace(-1, 1, 800)
+
+    if rate is None:
+        rate = jnp.ones(m_cs.shape[0])
+    if pop_frac is None:
+        pop_frac = jnp.ones(m_cs.shape[0])
+
+    primary_chiq_model = BSplinePrimaryBivariateBSplineMassRatioChiEff(nspline_dict["m1"], (nspline_dict["chi_eff"], nspline_dict["q"]),
+                                                                       ms, ms, (chi_effs, qs), (chi_effs, qs),
+                                                                       mmax=mmax, m1min=mmin, m2min=mmin, kwargs_chiq={"full_product":True})
+    mpdfs = np.zeros((m_cs.shape[0], len(ms)))
+    chiqpdfs = np.zeros((chiq_cs.shape[0], len(chi_effs), len(qs)))
+
+    def calc_pdf(m_cs, chiq_cs, r, frac):
+        p_m = primary_chiq_model.primary_model(m_cs)
+        p_chiq = primary_chiq_model.chiq_model(chiq_cs)
+
+        P_m = r * frac * p_m / trapezoid(p_m, ms)
+        P_chiq = r * frac * p_chiq / trapezoid(trapezoid(p_chiq, qs, axis=1), chi_effs, axis=0)
+        return P_m, P_chiq
+    
+    calc_pdf = jit(calc_pdf)
+
+    for i in trange(mpdfs.shape[0]):
+        mpdfs[i], chiqpdfs[i] = calc_pdf(m_cs[i], chiq_cs[i], rate[i], pop_frac[i])
+
+    return mpdfs, ms, chiqpdfs, chi_effs, qs
 
 def calculate_powerlaw_rate_of_z_ppds(lamb, rate, z_model, pop_frac=None):
 
@@ -325,3 +357,17 @@ def calculate_powerlaw_spline_rate_of_z_ppds(lamb, z_cs, rate, z_model, pop_frac
     for ii in trange(lamb.shape[0]):
         rs[ii] = calc_rz(z_cs[ii], lamb[ii], rate[ii], pop_frac[ii])
     return rs, zs
+
+def postprocess_min_neff_cut(posteriors, Nobs_cut: bool = True):
+    Nobs = posteriors["log_nEffs"].shape[-1]
+    # minimum N_eff cut
+    min_neff_cut = (jnp.log(4*Nobs), 10) if Nobs_cut else (jnp.log(4), 10)
+    # cut to injections
+    min_n_effs = xr.ufuncs.exp(posteriors.log_nEffs.fillna(0.0).min(dim='log_nEffs_dim_0'))
+    injection_mask = posteriors.log_nEff_inj >= min_neff_cut[0]
+    # cut to pe samples
+    pe_mask = min_n_effs >= min_neff_cut[1]
+    mask_cut = (injection_mask) & (pe_mask)
+    posteriors_cut = posteriors.where(mask_cut, drop=True)
+    print('Total samples after cut:', posteriors_cut.draw.shape)
+    return posteriors_cut
