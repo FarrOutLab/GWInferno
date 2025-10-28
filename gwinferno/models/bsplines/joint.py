@@ -2,10 +2,7 @@ import jax.numpy as jnp
 
 from ...interpolation import BSpline_IJR
 from ...interpolation import BivariateBSpline
-from .single import Base1DBSplineModel_IJR
-from .single import LogYBSpline_IJR     
-from .single import BSplineSpinTilt_IJR
-from .single import BSplineSpinMagnitude_IJR
+from ...interpolation import LogYBSpline_IJR
    
 class Base2DBSplineModel():
 
@@ -17,14 +14,14 @@ class Base2DBSplineModel():
             domains (array-like): pair of tuples of the minimum and maximum values of the domains
             pe_vals, inj_vals (array-like): pair of parameter estimation and injection samples for basis evaluation, respectively
             orders (tuple): pair of the orders of the B-splines
-            basis (class): interpolator basis class used to construct the design matrices
-            full_product (bool): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+            basis (class, default=`BSpline_IJR`): interpolator basis class used to construct the design matrices
+            full_product (bool, default=`False`): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
         """
         self.ndofs = ndofs
         self.domains = domains
         self.orders = orders
         self.full_product = full_product
-        self.interpolator = BivariateBSpline(ndofs=ndofs, domains=domains, orders=orders, basis=basis)
+        self.interpolator = BivariateBSpline(ndofs=ndofs, domains=domains, orders=orders, basis=basis, **kwargs)
         self.pe_dt = self.interpolator.design_tensor(pe_vals[0], pe_vals[1], full_product)
         self.inj_dt = self.interpolator.design_tensor(inj_vals[0], inj_vals[1], full_product)
         self.funcs = [self.inj_pdf, self.pe_pdf]
@@ -74,9 +71,9 @@ class BivariateBSplineSpinMagTilt(Base2DBSplineModel):
         Args:
             ndofs (tuple): pair (primary, primary) of the total number of basis functions/degrees of freedom
             pe_vals, inj_vals (array-like): pair (spin mag, spin tilt) of parameter estimation and injection samples for basis evaluation, respectively
-            orders (tuple): pair of the orders of the B-splines
-            basis (class): interpolator basis class used to construct the design matrices
-            full_product (bool): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+            orders (tuple, default=(4,4)): pair of the orders of the B-splines
+            basis (class, default=`BSpline_IJR`): interpolator basis class used to construct the design matrices
+            full_product (bool, default=`False`): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
         """
         spin_mag_domain = (0.0, 1.0)
         spin_tilt_domain = (-1.0, 1.0)
@@ -92,9 +89,9 @@ class BivariateBSplineSpinTilt(Base2DBSplineModel):
         Args:
             ndofs (tuple): pair (primary, secondary) of the total number of basis functions/degrees of freedom
             pe_vals, inj_vals (array-like): pair (spin tilt, spin tilt) of parameter estimation and injection samples for basis evaluation, respectively
-            orders (tuple): pair of the orders of the B-splines
-            basis (class): interpolator basis class used to construct the design matrices
-            full_product (bool): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+            orders (tuple, default=(4,4)): pair of the orders of the B-splines
+            basis (class, default=`LogYBSpline_IJR`): interpolator basis class used to construct the design matrices
+            full_product (bool, default=`False`): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
         """
         spin_tilt_domain = (-1.0, 1.0)
         spin_tilt_tilt_domain = jnp.array([spin_tilt_domain, spin_tilt_domain])
@@ -109,11 +106,30 @@ class BivariateBSplineSpinMag(Base2DBSplineModel):
         Args:
             ndofs (tuple): pair (primary, secondary) of the total number of basis functions/degrees of freedom
             pe_vals, inj_vals (array-like): pair (spin mag, spin mag) of parameter estimation and injection samples for basis evaluation, respectively
-            orders (tuple): pair of the orders of the B-splines
-            basis (class): interpolator basis class used to construct the design matrices
-            full_product (bool): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+            orders (tuple, default=(4,4)): pair of the orders of the B-splines
+            basis (class, default=`LogYBSpline_IJR`): interpolator basis class used to construct the design matrices
+            full_product (bool, default=`False`): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
         """
         spin_mag_domain = (0.0, 1.0)
         spin_mag_mag_domain = jnp.array([spin_mag_domain, spin_mag_domain])
         domains = kwargs.pop("domains", spin_mag_mag_domain)
+        super().__init__(ndofs, domains, pe_vals, inj_vals, orders, basis, full_product, **kwargs)
+
+class BivariateBSplineMassRatioChiEff(Base2DBSplineModel):
+
+    def __init__(self, ndofs, pe_vals, inj_vals, q_min, orders=(4,4), basis=LogYBSpline_IJR, full_product=False, **kwargs):
+        """A 2D B-spline model for the effective spin and mass ratio of a binary pair
+        
+        Args:
+            ndofs (tuple): pair (effective spin, mass ratio) of the total number of basis functions/degrees of freedom
+            pe_vals, inj_vals (array-like): pair (effective spin, mass ratio) of parameter estimation and injection samples for basis evaluation, respectively
+            q_min (float): minimum mass ratio
+            orders (tuple, default=(4,4)): pair of the orders of the B-splines
+            basis (class, default=`LogYBSpline_IJR`): interpolator basis class used to construct the design matrices
+            full_product (bool, default=`False`): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+        """
+        spin_eff_domain = (-1.0, 1.0)
+        mass_ratio_domain = (q_min, 1.0)
+        spin_eff_mass_ratio_domain = jnp.array([spin_eff_domain, mass_ratio_domain])
+        domains = kwargs.pop("domains", spin_eff_mass_ratio_domain)
         super().__init__(ndofs, domains, pe_vals, inj_vals, orders, basis, full_product, **kwargs)
