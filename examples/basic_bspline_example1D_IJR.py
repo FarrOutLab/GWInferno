@@ -47,8 +47,7 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model,
     mass_cs, q_cs = bspline_mass_prior(m_nsplines=nspline_dict["m1"], q_nsplines=nspline_dict["q"], m_tau=1, q_tau=1)
 
     a1_cs, tilt1_cs, a2_cs, tilt2_cs = bspline_spin_prior(
-        a_nsplines=nspline_dict["a1"], ct_nsplines=nspline_dict["tilt1"], a_tau=25, ct_tau=25, IID=False, bivariate=False
-    )
+        a_nsplines=nspline_dict["a1"], ct_nsplines=nspline_dict["tilt1"], a_tau=25, ct_tau=25, IID=False)
 
     z_cs = bspline_redshift_prior(z_nsplines=nspline_dict["redshift"], z_tau=1)
     lamb = numpyro.sample("lamb", dist.Normal(0, 3))
@@ -136,7 +135,7 @@ def main():
         posterior = xr.load_dataset(result_dir + f"/{label}_posterior_samples.h5")
 
     else:
-        posterior_dict, z_model = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args, bivariate=False)
+        posterior_dict, z_model = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args)
         print(f"posteriors file saved: {result_dir}/{label}_posterior_samples.h5")
         posterior = posterior_dict_to_xarray(posterior_dict)
         posterior.to_netcdf(result_dir + f"/{label}_posterior_samples.h5")
