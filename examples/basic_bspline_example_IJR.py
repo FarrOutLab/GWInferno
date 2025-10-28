@@ -168,10 +168,13 @@ def main():
         q_pdfs.append(mass_ratio)
 
     """
-    Calculate Mass pdfs (for loop necessary for multiple subpopulations)
+    Calculate spin pdfs (for loop necessary for multiple subpopulations)
     """
     print("calculating spin ppds:")
     print("a_tilt_cs shape:", posterior[f"a_ct_cs"].shape)
+    mag_tilt_pdfs = []
+    prim_mag_tilt_pdfs = []
+    sec_mag_tilt_pdfs = []
     for i in range(len(names)):
         # mag1, mags, tilt1, tilts = calculate_bspline_spin_ppds(
         mag_tilt1, mags, tilts, prim_mag_tilt, sec_mag_tilt = calculate_2d_bspline_spin_ppds(
@@ -180,7 +183,9 @@ def main():
         )
         # mag_pdfs = mag1
         # tilt_pdfs = tilt1
-        mag_tilt_pdfs = mag_tilt1
+        mag_tilt_pdfs.append(mag_tilt1)
+        prim_mag_tilt_pdfs.append(prim_mag_tilt)
+        sec_mag_tilt_pdfs.append(sec_mag_tilt)
 
     """
     Calculate rate as a funciton of redshift
@@ -194,8 +199,8 @@ def main():
     print("plotting mass distributions:")
     plot_mass_pdfs(mass_pdfs, q_pdfs, m1s, qs, names, label, result_dir, save=args.save_plots, colors=colors)
 
-    print("plotting primary spin distributions:")
-    plot_2dspin_pdfs(prim_mag_tilt, sec_mag_tilt, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors)
+    print("plotting spin distributions:")
+    plot_2dspin_pdfs(prim_mag_tilt_pdfs, sec_mag_tilt_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots)
 
     # print("plotting secondary spin distributions:")
     # plot_spin_pdfs(mag2_pdfs, tilt2_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors, secondary=True)
@@ -207,8 +212,8 @@ def main():
     Convert dictionary of pdfs and params to an xarray Dataset
     """
     pdf_dict = {
-        "mag": mag_pdfs,
-        "cos_tilt": tilt_pdfs,
+        "primary_mag_tilt": prim_mag_tilt_pdfs[0],
+        "secondary_mag_tilt": sec_mag_tilt_pdfs[0],
         "mass_1": mass_pdfs[0],
         "mass_ratio": q_pdfs[0],
         "redshift": r_of_z,
