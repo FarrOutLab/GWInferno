@@ -27,7 +27,7 @@ from gwinferno.postprocess.plot import plot_chiq_pdfs_samples
 from gwinferno.postprocess.plot import plot_chiq_pdfs_rng_stats
 from gwinferno.postprocess.plot import plot_rate_of_z_pdfs
 
-def model(pedict, injdict, Nobs, Tobs, Ninj, mass_model, chiq_model, z_model, mmin, mmax, nspline_dict, param_names, hyper_params_dict):
+def model(pedict, injdict, Nobs, Tobs, Ninj, primary_chiq_model, z_model, mmin, mmax, nspline_dict, param_names, hyper_params_dict):
     """Numpyro model
 
     Args:
@@ -36,7 +36,7 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_model, chiq_model, z_model, mm
         Nobs (int): Number of CBC events
         Tobs (float): analysis time
         Ninj (int): total number of generated injections
-        m_chiq_models (list of objs): list containing initialized b-splines for primary mass and effective spin-mass ratio
+        primary_chiq_models (list of objs): list containing initialized b-splines for primary mass and effective spin-mass ratio
         z_model (obj): initialized b-spline-powerlaw for redshift
         mmin (float): minimum mass
         mmax (float): maximum mass
@@ -48,7 +48,9 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_model, chiq_model, z_model, mm
 
     mass_cs = bspline_mass_prior(m_nsplines=nspline_dict["m1"], m_tau=1)
 
-    chiq_cs = bspline_massratio_chieff_prior_2d(chi_eff_nsplines=nspline_dict["chi_eff"], q_nsplines=nspline_dict["q"], tau=, order=1)
+    chiq_cs = bspline_massratio_chieff_prior_2d(chi_eff_nsplines=nspline_dict["chi_eff"], q_nsplines=nspline_dict["q"],
+                                                tau_row=hyper_params_dict["chiq_tau_row"], tau_column=hyper_params_dict["chiq_tau_column"],
+                                                order=hyper_params_dict["chiq_diff_order"])
 
     z_cs = bspline_redshift_prior(z_nsplines=nspline_dict["redshift"], z_tau=1)
     lamb = numpyro.sample("lamb", dist.Normal(0,3))
@@ -57,12 +59,11 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_model, chiq_model, z_model, mm
 
     def get_weights(datadict, pe_samples=True):
 
-        p_m = mass_model(mass_cs, pe_samples=pe_samples)
-        p_chiq = chiq_model(chiq_cs, pe_samples=pe_samples)
+        p_m_chiq = primary_chiq_model(mass_cs, chiq_cs, pe_samples=pe_samples)
 
         p_z = z_model(datadict["redshift"], lamb, z_cs)
 
-        weights_1 = p_m * p_chiq * p_z / datadict["prior"]
+        weights_1 = p_m_chiq * p_z / datadict["prior"]
 
         return weights_1
     
@@ -109,8 +110,8 @@ def main():
         "redshift": args.z_nsplines
     }
     hyper_params_dict = {
-        "chiq_tau_row": args.chiq_tau_r,
-        "chiq_tau_column": args.chiq_tau_c,
+        "chiq_tau_row": args.chiq_tau_row,
+        "chiq_tau_column": args.chiq_tau_column,
         "chiq_diff_order": args.chiq_diff
     }
 
@@ -125,7 +126,7 @@ def main():
     Setup directory where results will be stored.
     """
     label, result_dir = setup_result_dir(args)
-    dof_label = f'n-chi-eff-{nspline_dict['chi_eff']}_n-q-{nspline_dict['q']}_chiq-tau-{args.chiq_tau}_chiq-diff-{args.chiq_diff}'
+    dof_label = f'n-chi-eff-{nspline_dict['chi_eff']}_n-q-{nspline_dict['q']}_chiq-tau-r-{hyper_params_dict['chiq_tau_row']}_chiq-tau-c-{hyper_params_dict['chiq_tau_column']}_chiq-diff-{hyper_params_dict['chiq_diff_order']}'
     full_dir = f'{result_dir}/{dof_label}'
     if not os.path.exists(full_dir):
         os.makedirs(full_dir)
@@ -140,7 +141,7 @@ def main():
         mcmc_posterior = xr.load_dataset(result_dir + f"/{dof_label}/{label}_posterior_samples.h5")
 
     else:
-        mcmc, posterior_dict, z_model, trace_plots = run_massratio_chieff_bspline_analysis_2d(model, pedict, injdict, constants, param_names, nspline_dict, args)
+        mcmc, posterior_dict, z_model, trace_plots = run_massratio_chieff_bspline_analysis_2d(model, pedict, injdict, constants, param_names, nspline_dict, args, hyper_params_dict)
         fig = plt.gcf()
         fig.tight_layout()
         print(f"posteriors file saved: {result_dir}/{dof_label}/{label}_posterior_samples.h5")
