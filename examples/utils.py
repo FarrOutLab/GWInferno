@@ -150,7 +150,7 @@ def run_bspline_analysis_2d(numpyro_model, pedict, injdict, constants, param_nam
     else:
         return z_model
     
-def run_massratio_chieff_bspline_analysis_2d(numpyro_model, pedict, injdict, constants, param_names, nspline_dict, parsargs, skip_inference=False):
+def run_massratio_chieff_bspline_analysis_2d(numpyro_model, pedict, injdict, constants, param_names, nspline_dict, parsargs, hyper_params_dict, skip_inference=False):
     """run MCMC
     
     Args:
@@ -196,6 +196,7 @@ def run_massratio_chieff_bspline_analysis_2d(numpyro_model, pedict, injdict, con
             parsargs.mmax,
             nspline_dict,
             param_names,
+            hyper_params_dict,
         )
         mcmc.print_summary()
         posterior = mcmc.get_samples()
