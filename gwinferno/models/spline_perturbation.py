@@ -314,7 +314,7 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
         """
         super().__init__(z_pe=z_pe, z_inj=z_inj)
         self.n_splines = n_splines
-        self.interpolator = basis(n_splines, xrange=(self.zmin, self.zmax), k=4, normalize=False)
+        self.interpolator = basis(n_splines, xrange=(self.zmin, self.zmax), k=4, normalize=True)
         self.pe_design_matrix = jnp.array(self.interpolator.bases(z_pe))
         self.inj_design_matrix = jnp.array(self.interpolator.bases(z_inj))
         self.dmats = [self.inj_design_matrix, self.pe_design_matrix]
