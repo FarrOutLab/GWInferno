@@ -684,7 +684,7 @@ class LogYBSpline_IJR(BSpline_IJR):
         Args:
             domain_vals (array-like): value(s) to evaluate the design matrix at
         """
-        design_matrix = super()._design_matrix(domain_vals)
+        design_matrix = super().design_matrix(domain_vals)
         return jnp.where(jnp.less(domain_vals, self.domain[0]) | jnp.greater(domain_vals, self.domain[1]), -jnp.inf, design_matrix)
 
     def _spline(self, coeffs, design_matrix):
@@ -756,14 +756,13 @@ class BivariateBSpline():
         Args:
             coeffs (array-like): coefficients of the B-spline
         """
-        # if self.normalize:
-        #     spline = self._spline(coeffs, self.norm_bases, full_product=True)
-        #     n = trapezoid(trapezoid(spline, self.v_interpolator.integration_domain, axis=1), self.u_interpolator.integration_domain, axis=0)
-        #     return 1.0 / n
-        # else: return 1.0
+        if self.normalize:
+            spline = self._spline(coeffs, self.norm_bases, full_product=True)
+            n = trapezoid(trapezoid(spline, self.v_interpolator.integration_domain, axis=1), self.u_interpolator.integration_domain, axis=0)
+            return 1.0 / n
+        else: return 1.0
         # TODO: Running MCMC and numerically normalizing spline makes MCMC run really long. For now, do not numerically normalize!
         # TODO: Normalize the basis functions instead!
-        return 1.0
 
     def spline(self, coeffs, design_tensor, full_product=False):
         """Calculates the (normalized) spline given a set of coefficients and a design tensor
