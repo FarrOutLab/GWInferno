@@ -14,6 +14,7 @@ from .single import BSplineSpinMagnitude
 from .single import BSplineSpinTilt
 from .single import BSplineSpinTilt_IJR
 from .joint import BivariateBSplineSpinMagTilt
+from .joint import BivariateBSplineMassRatioChiEff
 
 class BSplineIIDSpinMagnitudes(object):
     r"""A B-Spline model for the spin magnitude of both binary components assuming
@@ -784,13 +785,13 @@ class BSplineIndependentSpinTilts_IJR():
                  normalize=True, **kwargs):
         r"""A B-spline model for the cosine of spin tilts of the components of a binary pair assuming
         they are independently but not identically distributed, following
-        $p(\cos\theta_1, \cos\theta_2 \mid \alpha_1, \alpha_2)=p(\cos\theta_1 \mid \alpha_1)p(\cos\theta_2 \mid \alpha_2)$
+        $p(\cos\theta_1, \cos\theta_2 \mid \alpha_1, \alpha_2)=p(\cos\theta_1 \mid \alpha_1) p(\cos\theta_2 \mid \alpha_2)$
 
         Args:
             ndofs (tuple): pair (primary, secondary) of the total number of basis functions/degrees of freedom
             primary_pe_vals, primary_inj_vals (array-like): primary parameter estimation and injection samples for basis evaluation, respectively
             secondary_pe_vals, secondary_inj_vals (array-like): secondary parameter estimation and injection samples for basis evaluation, respectively
-            normalize (bool): sets normalization of B-splines
+            normalize (bool, default=`True`): sets normalization of B-splines
         """
         self.primary_model = BSplineSpinTilt_IJR(ndofs[0], primary_pe_vals, primary_inj_vals, normalize=normalize, **kwargs)
         self.secondary_model = BSplineSpinTilt_IJR(ndofs[1], secondary_pe_vals, secondary_inj_vals, normalize=normalize, **kwargs)
@@ -815,13 +816,13 @@ class BivariateBSplineIIDSpinMagTilt():
                  normalize=True, **kwargs):
         r"""A B-spline model for the spin magnitude and spin tilt of the components of a binary pair assuming
         they are independently and identically distributed (IID), following
-        $p(a_1, a_2, \cos\theta_1, \cos\theta_2 \mid \alpha)=p(a_1, \cos\theta_1 \mid \alpha)p(a_2, \cos\theta_2 \mid \alpha)$
+        $p(a_1, a_2, \cos\theta_1, \cos\theta_2 \mid \alpha) = p(a_1, \cos\theta_1 \mid \alpha) p(a_2, \cos\theta_2 \mid \alpha)$
 
         Args:
             ndofs (tuple): pair (primary, secondary) of the total number of basis functions/degrees of freedom
             primary_pe_vals, primary_inj_vals (array-like): pair (spin mag, spin tilt) of primary parameter estimation and injection samples for basis evaluation, respectively
             secondary_pe_vals, secondary_inj_vals (array-like): pair (spin mag, spin tilt) of secondary parameter estimation and injection samples for basis evaluation, respectively
-            normalize (bool): sets normalization of B-splines
+            normalize (bool, default=`True`): sets normalization of B-splines
         """
         self.primary_model = BivariateBSplineSpinMagTilt(ndofs, primary_pe_vals, primary_inj_vals, normalize=normalize, **kwargs)
         self.secondary_model = BivariateBSplineSpinMagTilt(ndofs, secondary_pe_vals, secondary_inj_vals, normalize=normalize, **kwargs)
@@ -832,10 +833,45 @@ class BivariateBSplineIIDSpinMagTilt():
         
         Args:
             coeffs (array_like): coefficients of the B-splines
-            pe_samples (bool):
+            pe_samples (bool, default=`True`):
                 If `True`, design tensor is evaluated across parameter estimation samples
                 If `False`, design tensor is evaluated across injection samples
         """
         p_1 = self.primary_model(coeffs=coeffs, pe_samples=pe_samples, **kwargs)
         p_2 = self.secondary_model(coeffs=coeffs, pe_samples=pe_samples, **kwargs)
         return p_1 * p_2
+    
+class BSplinePrimaryBivariateBSplineMassRatioChiEff():
+    def __init__(self, m_ndofs, chiq_ndofs, primary_pe_vals, primary_inj_vals, chiq_pe_vals, chiq_inj_vals,
+                 mmax=100.0, m1min=3.0, m2min=3.0, kwargs_m={}, kwargs_chiq={}, **kwargs):
+        r"""A B-spline model for the primary mass and effective spin-mass ratio, following
+        $p(m_1, q, \chi_\text{eff} \mid \mathbf{c}_m, \alpha) = p(m_1 \mid \mathbf{c}_m) p(q, \chi_\text{eff} \mid \alpha)$
+
+        Args:
+            m_ndofs (int): total number of basis functions/degrees of freedom for the primary mass B-spline
+            chiq_ndofs (tuple): pair (effective spin, mass ratio) of the total number of basis functions/degrees of freedom
+            primary_pe_vals, primary_inj_vals (array-like): primary mass parameter estimation and injection samples for basis evaluation, respectively
+            chiq_pe_vals, chiq_inj_vals (array-like): pair (effective spin, mass ratio) of parameter estimation and injection samples for basis evaluation, respectively
+            mmax (float, default=100.0): maximum component mass
+            m1min (float, default=3.0): minimum primary component mass
+            m2min (float, default=3.0): minimum secondary component mass, setting lower bound on the mass ratio: $q>m_{2,\mathrm{min}}/m_\mathrm{max}$
+            kwargs_m, kwargs_chiq (dict): additional keyword arguments to pass to the basis spline models for the primary component mass and effective spin-mass ratio, respectively
+            **kwargs (dict): additional keyword arguments to pass to both basis spline models
+        """
+        self.primary_model = BSplineMass(m_ndofs, primary_pe_vals, primary_inj_vals, mmin=m1min, mmax=mmax, **kwargs_m, **kwargs,)
+        self.chiq_model = BivariateBSplineMassRatioChiEff(chiq_ndofs, chiq_pe_vals, chiq_inj_vals, q_min=m2min/mmax, **kwargs_chiq, **kwargs,)
+
+    def __call__(self, mcoeffs, chiqcoeffs, pe_samples=True):
+        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
+
+        Args:
+            mcoeffs (array_like): coefficients for the primary component mass B-spline
+            chiqcoeffs (array-like): coefficients for the effective spin-mass ratio B-spline
+            pe_samples (bool, default=`True`):
+                If `True`, design tensor is evaluated across parameter estimation samples
+                If `False`, design tensor is evaluated across injection samples
+        """
+        p_1 = self.primary_model(coefs=mcoeffs, pe_samples=pe_samples)
+        p_chiq = self.chiq_model(coeffs=chiqcoeffs, pe_samples=pe_samples)
+        return p_1 * p_chiq
