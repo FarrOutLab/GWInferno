@@ -10,8 +10,8 @@ import xarray as xr
 from gwinferno.interpolation import BSpline
 from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
-from gwinferno.interpolation import LogYBSpline_IJR
-from gwinferno.interpolation import BSpline_IJR
+# from gwinferno.interpolation import LogYBSpline_IJR
+# from gwinferno.interpolation import BSpline_IJR
 from gwinferno.models.bsplines.separable import BSplineIIDSpinMagnitudes
 from gwinferno.models.bsplines.separable import BSplineIIDSpinTilts
 from gwinferno.models.bsplines.separable import BSplineIndependentSpinMagnitudes
