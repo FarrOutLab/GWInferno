@@ -1,8 +1,12 @@
 import jax.numpy as jnp
 
+from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology as Planck15
+
 from ...interpolation import BSpline_IJR
 from ...interpolation import BivariateBSpline
 from ...interpolation import LogYBSpline_IJR
+from .single import Base1DBSplineModel_IJR
+from ...models.parametric.parametric import PowerlawRedshiftModel
    
 class Base2DBSplineModel():
 
@@ -117,7 +121,7 @@ class BivariateBSplineSpinMag(Base2DBSplineModel):
 
 class BivariateBSplineMassRatioChiEff(Base2DBSplineModel):
 
-    def __init__(self, ndofs, pe_vals, inj_vals, q_min, orders=(4,4), basis=LogYBSpline_IJR, full_product=False, **kwargs):
+    def __init__(self, ndofs, pe_vals, inj_vals, q_min, orders=(4,4), basis=BSpline_IJR, full_product=False, **kwargs):
         """A 2D B-spline model for the effective spin and mass ratio of a binary pair
         
         Args:
@@ -125,7 +129,7 @@ class BivariateBSplineMassRatioChiEff(Base2DBSplineModel):
             pe_vals, inj_vals (array-like): pair (effective spin, mass ratio) of parameter estimation and injection samples for basis evaluation, respectively
             q_min (float): minimum mass ratio
             orders (tuple, default=(4,4)): pair of the orders of the B-splines
-            basis (class, default=`LogYBSpline_IJR`): interpolator basis class used to construct the design matrices
+            basis (class, default=`BSpline_IJR`): interpolator basis class used to construct the design matrices
             full_product (bool, default=`False`): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
         """
         spin_eff_domain = (-1.0, 1.0)
@@ -133,3 +137,36 @@ class BivariateBSplineMassRatioChiEff(Base2DBSplineModel):
         spin_eff_mass_ratio_domain = jnp.array([spin_eff_domain, mass_ratio_domain])
         domains = kwargs.pop("domains", spin_eff_mass_ratio_domain)
         super().__init__(ndofs, domains, pe_vals, inj_vals, orders, basis, full_product, **kwargs)
+
+class BivariateBSplineChiEffRedshift():
+
+    def __init__(self, ndofs, pe_vals, inj_vals, orders=(4,4), basis=BSpline_IJR, full_product=False, **kwargs):
+        """A 2D B-spline model for the mass ratio and redshift of a binary pair
+        
+        Args:
+            ndofs (tuple): pair (effective spin, redshift) of the total number of basis functions/degrees of freedom
+            pe_vals, inj_vals (array-like): pair (effective spin, redshift) of parameter estimation and injection samples for basis evaluation, respectively
+            orders (tuple, default=(4,4)): pair of the orders of the B-splines
+            basis (class, default=`BSpline_IJR`): interpolator basis class used to construct the design matrices
+            full_product (bool, default=`False`): flag to compute the design tensor between all points (`True`), or pairs of points (`False`)
+        """
+        self.redshift_model = PowerlawRedshiftModel(pe_vals[1], inj_vals[1])
+        spin_eff_domain = (-1.0, 1.0)
+        redshift_domain = (self.redshift_model.zmin, self.redshift_model.zmax)
+        spin_eff_redshift_domain = jnp.array([spin_eff_domain, redshift_domain])
+        domains = kwargs.pop("domains", spin_eff_redshift_domain)
+        self.uni_interpolator = Base1DBSplineModel_IJR(ndofs[0], spin_eff_domain, pe_vals[0], inj_vals[0], orders[0], basis=basis, normalize=False)
+        self.biv_interpolator = Base2DBSplineModel(ndofs, domains, pe_vals, inj_vals, orders, basis, full_product, normalize=False)
+
+    def normalization(self, chieff_coeffs, lamb, chiz_coeffs):
+        pass
+
+    def __call__(self, chieff_coeffs, z, lamb, chiz_coeffs, pe_samples):
+        chieff_spline = self.uni_interpolator(chieff_coeffs, pe_samples)
+        # Redshift powerlaw
+        ndim = len(z.shape)
+        dVdz = self.redshift_model.dVdzs[ndim - 1]
+        redshift_powerlaw = jnp.where(jnp.less_equal(z, self.redshift_model.zmax), self.redshift_model.prob(z, dVdz, lamb), 0)
+        # 2D B-spline perturbation
+        biv_spline_perturb = self.biv_interpolator(chiz_coeffs, pe_samples)
+        return chieff_spline * redshift_powerlaw * jnp.exp(biv_spline_perturb)
