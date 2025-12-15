@@ -187,7 +187,7 @@ def plot_primary_chiq_pdfs(mpdfs, chiqpdfs, ms, chi_effs, qs, names, label, resu
     plt.close()
 
 def plot_marginal_chi_q_pdfs(chieffpdfs, qpdfs, chi_effs, qs, chieff_lims, qmin, label, result_dir, save=True):
-    fig = plt.figure(figsize=(16,9), layout='constrained')
+    plt.figure(figsize=(16,9), layout='constrained')
     for i in range(len(chieffpdfs)):
         plot_pdf(chi_effs, chieffpdfs[i], label, loglog=False)
     plt.xlabel(r'$\chi\textsubscript{eff}$')#_\text{eff}$')
@@ -198,7 +198,7 @@ def plot_marginal_chi_q_pdfs(chieffpdfs, qpdfs, chi_effs, qs, chieff_lims, qmin,
         plt.savefig(result_dir + f"/marginal_effective_spin_pdf_{label}.png", dpi=100)
     plt.close()
 
-    fig = plt.figure(figsize=(16,9), layout='constrained')
+    plt.figure(figsize=(16,9), layout='constrained')
     for i in range(len(qpdfs)):
         plot_pdf(qs, qpdfs[i], label, loglog=False)
     plt.xlabel(r'$q$')
