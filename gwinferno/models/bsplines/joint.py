@@ -1,6 +1,7 @@
 import jax.numpy as jnp
 
-from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology as Planck15
+# TODO: Planck15 to be used in effective spin redshift model
+# from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology as Planck15
 
 from ...interpolation import BSpline_IJR
 from ...interpolation import BivariateBSpline
