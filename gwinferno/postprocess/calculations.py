@@ -18,9 +18,8 @@ from gwinferno.models.parametric.parametric import mixture_isoalign_spin_tilt
 from gwinferno.models.parametric.parametric import plpeak_primary_pdf
 from gwinferno.models.parametric.parametric import plpeak_primary_ratio_pdf
 from gwinferno.models.bsplines.joint import BivariateBSplineMassRatioChiEff
-from gwinferno.models.bsplines.separable import BSplineIndependentSpinTilts_IJR
-from gwinferno.models.bsplines.joint import BivariateBSplineSpinMag
-from gwinferno.models.bsplines.joint import BivariateBSplineSpinTilt
+# from gwinferno.models.bsplines.joint import BivariateBSplineSpinMag
+# from gwinferno.models.bsplines.joint import BivariateBSplineSpinTilt
 from gwinferno.models.bsplines.separable import BivariateBSplineIIDSpinMagTilt
 from gwinferno.models.bsplines.separable import BSplinePrimaryBivariateBSplineMassRatioChiEff
 
