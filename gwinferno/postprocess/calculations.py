@@ -15,7 +15,9 @@ from gwinferno.models.bsplines.separable import BSplineIndependentSpinTilts
 from gwinferno.models.bsplines.separable import BSplinePrimaryBSplineRatio
 from gwinferno.models.bsplines.single import BSplineRatio
 from gwinferno.models.parametric.parametric import mixture_isoalign_spin_tilt
+from gwinferno.models.parametric.parametric import plpeak_primary_pdf
 from gwinferno.models.parametric.parametric import plpeak_primary_ratio_pdf
+from gwinferno.models.bsplines.joint import BivariateBSplineMassRatioChiEff
 from gwinferno.models.bsplines.separable import BSplineIndependentSpinTilts_IJR
 from gwinferno.models.bsplines.joint import BivariateBSplineSpinMag
 from gwinferno.models.bsplines.joint import BivariateBSplineSpinTilt
@@ -220,7 +222,6 @@ def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs=None, tilt2
         mag_model = BSplineIndependentSpinMagnitudes(nspline_dict["a1"], nspline_dict["a2"], aa, aa, aa, aa, normalize=True)
 
         tilt_model = BSplineIndependentSpinTilts(nspline_dict["tilt1"], nspline_dict["tilt2"], cc, cc, cc, cc, normalize=True)
-        # tilt_model = BSplineIndependentSpinTilts_IJR((nspline_dict["tilt1"], nspline_dict["tilt2"]), cc, cc, cc , cc, normalize=True)
 
         apdfs_1 = np.zeros((a1_cs.shape[0], len(aa)))
         ctpdfs_1 = np.zeros((tilt1_cs.shape[0], len(cc)))
@@ -292,11 +293,63 @@ def calculate_2d_bspline_spin_ppds(a_tilt_cs, nspline_dict, rate=None, pop_frac=
     # return apdfs, aa, ctpdfs, cc
     return actpdfs, aa, cc, act_prim_pdfs, act_sec_pdfs
 
-def calculate_bspline_primary_chiq_ppds(m_cs, chiq_cs, nspline_dict, mmin, mmax, rate=None, pop_frac=None):
+def calculate_plpluspeak_primary_bbspline_chiq_ppds(primary_index, primary_mmin, primary_mmax,
+                                                    primary_mu, primary_sig, primary_lamb, primary_delta, chiq_cs,
+                                                    nspline_dict, hyper_params_dict, mmin, mmax, qmin=0.2, chieff_lims=(-0.6,0.6),
+                                                    rate=None, pop_frac=None): 
+    
+    ms = jnp.linspace(mmin, mmax, 800)
+    qs = jnp.linspace(mmin / mmax, 1, 800)
+    chi_effs = jnp.linspace(-1, 1, 800)
+
+    qs_mask = qs >= qmin
+    chieffs_mask = (chi_effs >= chieff_lims[0]) & (chi_effs <= chieff_lims[-1])
+    lims_dict = {'chieff_lims':chieff_lims, 'chieffs_mask':chieffs_mask, 'qmin':qmin, 'qs_mask':qs_mask}
+
+    if rate is None:
+        rate = jnp.ones(primary_index.shape[0])
+    if pop_frac is None:
+        pop_frac = jnp.ones(primary_index.shape[0])
+
+    chiq_model = BivariateBSplineMassRatioChiEff((nspline_dict["chi_eff"], nspline_dict["q"]),
+                                                 (chi_effs, qs), (chi_effs, qs), q_min=mmin/mmax,
+                                                 orders=hyper_params_dict['chiq_order'], full_product=True)
+    
+    mpdfs = np.zeros((primary_index.shape[0], len(ms)))
+    chiqpdfs = np.zeros((chiq_cs.shape[0], len(chi_effs), len(qs)))
+    chieffpdfs = np.zeros((chiq_cs.shape[0], len(chi_effs)))
+    qpdfs = np.zeros((chiq_cs.shape[0], len(qs)))
+    
+    def calc_pdf(primary_index, primary_mmin, primary_mmax, primary_mu, primary_sig, primary_lamb, primary_delta, chiq_cs, r, frac):
+        p_m = plpeak_primary_pdf(ms, primary_index, primary_mmin, primary_mmax, primary_mu, primary_sig, primary_lamb, primary_delta)
+        p_chiq = chiq_model(chiq_cs)
+        # TODO: axis should be 1 and 0 respectively
+        p_chi_eff = trapezoid(p_chiq[:, qs_mask], qs[qs_mask], axis=1)
+        p_q = trapezoid(p_chiq[chieffs_mask, :], chi_effs[chieffs_mask], axis=0)
+
+        P_m = r * frac * p_m / trapezoid(p_m, ms)
+        P_chiq = r * frac * p_chiq / trapezoid(trapezoid(p_chiq, qs, axis=1), chi_effs, axis=0)
+        # TODO: do not normalize marginal distributions with trapezoid?
+        P_chi_eff = r * frac * p_chi_eff / trapezoid(p_chi_eff, chi_effs)
+        P_q = r * frac * p_q / trapezoid(p_q, qs)
+        return P_m, P_chiq, P_chi_eff, P_q
+    
+    calc_pdf = jit(calc_pdf)
+
+    for i in trange(mpdfs.shape[0]):
+        mpdfs[i], chiqpdfs[i], chieffpdfs[i], qpdfs[i] = calc_pdf(primary_index[i], primary_mmin[i], primary_mmax[i], primary_mu[i], primary_sig[i], primary_lamb[i], primary_delta, chiq_cs[i], rate[i], pop_frac[i])
+
+    return mpdfs, ms, chiqpdfs, chieffpdfs, qpdfs, chi_effs, qs, lims_dict
+
+def calculate_bspline_primary_chiq_ppds(m_cs, chiq_cs, nspline_dict, mmin, mmax, qmin=0.2, chieff_lims=(-0.6,0.6), rate=None, pop_frac=None):
 
     ms = jnp.linspace(mmin, mmax, 800)
     qs = jnp.linspace(mmin / mmax, 1, 800)
     chi_effs = jnp.linspace(-1, 1, 800)
+
+    qs_mask = qs >= qmin
+    chieffs_mask = (chi_effs >= chieff_lims[0]) & (chi_effs <= chieff_lims[-1])
+    lims_dict = {'chieff_lims':chieff_lims, 'chieffs_mask':chieffs_mask, 'qmin':qmin, 'qs_mask':qs_mask}
 
     if rate is None:
         rate = jnp.ones(m_cs.shape[0])
@@ -305,24 +358,32 @@ def calculate_bspline_primary_chiq_ppds(m_cs, chiq_cs, nspline_dict, mmin, mmax,
 
     primary_chiq_model = BSplinePrimaryBivariateBSplineMassRatioChiEff(nspline_dict["m1"], (nspline_dict["chi_eff"], nspline_dict["q"]),
                                                                        ms, ms, (chi_effs, qs), (chi_effs, qs),
-                                                                       mmax=mmax, m1min=mmin, m2min=mmin, kwargs_chiq={"full_product":True})
+                                                                       mmax=mmax, m1min=mmin, m2min=mmin, kwargs_chiq={"orders":(1,1), "full_product":True})
     mpdfs = np.zeros((m_cs.shape[0], len(ms)))
     chiqpdfs = np.zeros((chiq_cs.shape[0], len(chi_effs), len(qs)))
+    chieffpdfs = np.zeros((chiq_cs.shape[0], len(chi_effs)))
+    qpdfs = np.zeros((chiq_cs.shape[0], len(qs)))
 
     def calc_pdf(m_cs, chiq_cs, r, frac):
         p_m = primary_chiq_model.primary_model(m_cs)
         p_chiq = primary_chiq_model.chiq_model(chiq_cs)
+        # TODO: axis should be 1 and 0 respectively
+        p_chi_eff = trapezoid(p_chiq[:, qs_mask], qs[qs_mask], axis=1)
+        p_q = trapezoid(p_chiq[chieffs_mask, :], chi_effs[chieffs_mask], axis=0)
 
         P_m = r * frac * p_m / trapezoid(p_m, ms)
         P_chiq = r * frac * p_chiq / trapezoid(trapezoid(p_chiq, qs, axis=1), chi_effs, axis=0)
-        return P_m, P_chiq
+        # TODO: do not normalize marginal distributions with trapezoid?
+        P_chi_eff = r * frac * p_chi_eff / trapezoid(p_chi_eff, chi_effs)
+        P_q = r * frac * p_q / trapezoid(p_q, qs)
+        return P_m, P_chiq, P_chi_eff, P_q
     
     calc_pdf = jit(calc_pdf)
 
     for i in trange(mpdfs.shape[0]):
-        mpdfs[i], chiqpdfs[i] = calc_pdf(m_cs[i], chiq_cs[i], rate[i], pop_frac[i])
+        mpdfs[i], chiqpdfs[i], chieffpdfs[i], qpdfs[i] = calc_pdf(m_cs[i], chiq_cs[i], rate[i], pop_frac[i])
 
-    return mpdfs, ms, chiqpdfs, chi_effs, qs
+    return mpdfs, ms, chiqpdfs, chieffpdfs, qpdfs, chi_effs, qs, lims_dict
 
 def calculate_powerlaw_rate_of_z_ppds(lamb, rate, z_model, pop_frac=None):
 
@@ -369,5 +430,10 @@ def postprocess_min_neff_cut(posteriors, Nobs_cut: bool = True):
     pe_mask = min_n_effs >= min_neff_cut[1]
     mask_cut = (injection_mask) & (pe_mask)
     posteriors_cut = posteriors.where(mask_cut, drop=True)
+    print('Total samples after cut:', posteriors_cut.draw.shape)
+    return posteriors_cut
+
+def postprocess_max_variance_cut(posteriors):
+    posteriors_cut = posteriors.where(posteriors.variance_log_likelihood < 1, drop = True)
     print('Total samples after cut:', posteriors_cut.draw.shape)
     return posteriors_cut
