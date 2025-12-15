@@ -20,9 +20,6 @@ from gwinferno.models.bsplines.separable import BSplinePrimaryBSplineRatio
 from gwinferno.models.bsplines.smoothing import apply_difference_prior
 from gwinferno.models.bsplines.smoothing import apply_2d_difference_prior
 from gwinferno.models.spline_perturbation import PowerlawSplineRedshiftModel
-from gwinferno.models.bsplines.separable import BSplineIndependentSpinTilts_IJR
-from gwinferno.models.bsplines.joint import BivariateBSplineSpinMag
-from gwinferno.models.bsplines.joint import BivariateBSplineSpinTilt
 from gwinferno.models.bsplines.separable import BivariateBSplineIIDSpinMagTilt
 from gwinferno.models.bsplines.separable import BSplinePrimaryBivariateBSplineMassRatioChiEff
 
@@ -35,21 +32,24 @@ def load_base_parser():
     )
     parser.add_argument("--run-label", type=str)
     parser.add_argument("--result-dir", type=str)
-    parser.add_argument("--m-nsplines", type=str, default=50)
+    parser.add_argument("--m-nsplines", type=int, default=50)
     parser.add_argument("--q-nsplines", type=int, default=30)
-    parser.add_argument("--a-nsplines", type=str, default=16)
-    parser.add_argument("--tilt-nsplines", type=str, default=16)
+    parser.add_argument("--a-nsplines", type=int, default=16)
+    parser.add_argument("--tilt-nsplines", type=int, default=16)
     parser.add_argument("--chi-eff-nsplines", type=int, default=16)
+    parser.add_argument("--chiq-order", type=int, nargs=2, default=[4, 4])
     parser.add_argument("--chiq-tau-row", type=float, default=10.0)
     parser.add_argument("--chiq-tau-column", type=float, default=10.0)
     parser.add_argument("--chiq-diff", type=int, default=2)
-    parser.add_argument("--z-nsplines", type=str, default=20)
+    parser.add_argument("--z-nsplines", type=int, default=20)
     parser.add_argument("--mmin", type=float, default=3.0)
     parser.add_argument("--mmax", type=float, default=100.0)
     parser.add_argument("--chains", type=int, default=1)
     parser.add_argument("--samples", type=int, default=1500)
     parser.add_argument("--thinning", type=int, default=1)
     parser.add_argument("--warmup", type=int, default=1000)
+    parser.add_argument("--remove-threshold", action="store_true", default=False)
+    parser.add_argument("--threshold", type=str, default="min_N_eff")
     parser.add_argument("--skip-inference", action="store_true", default=False)
     parser.add_argument("--rngkey", type=int, default=1)
     parser.add_argument("--save-plots", type=bool, default=True)
@@ -131,13 +131,16 @@ def setup_bspline_mass_models(pedict, injdict, m_nsplines, q_nsplines, mmin, mma
     )
 
 def setup_bspline_primary_massratio_chieff_models(pedict, injdict, m_nsplines, chi_eff_nsplines, q_nsplines, mmin, mmax):
-    print("initializing spline effective spin mass-ratio design tensors")
+    print("initializing spline effective spin-mass ratio design tensors")
+    # TODO: add kwargs_m and kwargs_chiq to function 
 
     model = BSplinePrimaryBivariateBSplineMassRatioChiEff(m_nsplines, (chi_eff_nsplines, q_nsplines),
                                                          primary_pe_vals=pedict['mass_1'], primary_inj_vals=injdict['mass_1'],
                                                          chiq_pe_vals=(pedict['chi_eff'], pedict['mass_ratio']), chiq_inj_vals=(injdict['chi_eff'], injdict['mass_ratio']),
-                                                         mmax=mmax, m1min=mmin, m2min=mmin, kwargs_m={"basis": LogXLogYBSpline})#, kwargs_chiq={"orders":(1,1)})
-    return model
+                                                         mmax=mmax, m1min=mmin, m2min=mmin, kwargs_m={"basis": LogXLogYBSpline}, kwargs_chiq={"orders":(1,1)})
+    primary_model = model.primary_model
+    chiq_model = model.chiq_model
+    return primary_model, chiq_model
 
 def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=False, a2_nsplines=None, ct2_nsplines=None):
     print("initializing spline spin design matrices")
@@ -151,8 +154,6 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
 
     else:
 
-        # tilt_model = BSplineIndependentSpinTilts_IJR((ct1_nsplines, ct2_nsplines), pedict["cos_tilt_1"], injdict["cos_tilt_1"],
-        #                                              pedict["cos_tilt_2"], injdict["cos_tilt_2"], normalize=True)
         tilt_model = BSplineIndependentSpinTilts(
             ct1_nsplines,
             ct2_nsplines,
@@ -242,7 +243,6 @@ def bspline_spin_prior(a_nsplines=None, ct_nsplines=None, a_tau=None, ct_tau=Non
 def bspline_spin_prior_2d(a_nsplines=None, ct_nsplines=None, a_tau=None, ct_tau=None, name=None, IID=False, a_cs_sig=5, ct_cs_sig=5, a_deg=2, ct_deg=2):
 
     name = "_" + name if name is not None else ""
-    print('Bivariate: yes')
     if IID:
         # TODO: ct and a sigs, degs, and taus are the same in `basic_bspline_example_IJR`, so we choose one to set for the sample below.
         # Eventually, want to make this separate from either ct and a, as its own thing!
@@ -253,7 +253,6 @@ def bspline_spin_prior_2d(a_nsplines=None, ct_nsplines=None, a_tau=None, ct_tau=
 def bspline_massratio_chieff_prior_2d(chi_eff_nsplines=None, q_nsplines=None, tau_row:float=10.0, tau_column:float=10.0, name=None, order=2):
 
     name = "_" + name if name is not None else ""
-    print('Bivariate: yes')
     chi_eff_q_cs = numpyro.sample("chi_eff_q_cs" + name, dist.Dirichlet(jnp.ones((chi_eff_nsplines, q_nsplines), dtype='float32')))
     numpyro.factor("chi_eff_q_smoothing_prior" + name, apply_2d_difference_prior(chi_eff_q_cs, inv_var_row=tau_row, inv_var_column=tau_column, order=order))
     return chi_eff_q_cs
