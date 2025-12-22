@@ -50,7 +50,7 @@ def plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam, delta=None):
     if delta is None:
         return (1 - lam) * powerlaw_pdf(m1, alpha, mmin, mmax) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax)
     else:
-        return (1 - lam) * powerlaw_pdf(m1, alpha, mmin, mmax) * smooth(delta, m1, mmin) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax)
+        return ( (1 - lam) * powerlaw_pdf(m1, alpha, mmin, mmax) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax) ) * smooth(delta, m1, mmin)
 
 
 """
