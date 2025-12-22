@@ -18,7 +18,8 @@ def smooth(dx, x, xmin):
     func = jnp.exp(dx / (x - xmin) + dx / (x - xmin - dx))
     s1 = jnp.where(jnp.less(x, xmin), 0, 1)
     s2 = jnp.where(jnp.less(x, xmin + dx) | jnp.greater_equal(x, xmin), (func + 1) ** (-1), s1)
-    return s2
+    s3 = jnp.where(jnp.greater_equal(x, xmin + dx), 1, s2)
+    return s3
 
 
 def logistic_function(x, L, k, x0):
