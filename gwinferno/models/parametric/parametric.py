@@ -53,6 +53,13 @@ def plpeak_primary_pdf(m1, alpha, mmin, mmax, mpp, sigpp, lam, delta=None):
         return ( (1 - lam) * powerlaw_pdf(m1, alpha, mmin, mmax) + lam * truncnorm_pdf(m1, mpp, sigpp, mmin, mmax) ) * smooth(delta, m1, mmin)
 
 
+def brokenpl_twopeaks_primary_pdf(m1, alpha1, alpha2, mmin, mmax, mbreak, mpp1, sigpp1, mpp2, sigpp2, lam0, lam1, delta=None):
+    if delta is None:
+        return lam0 * broken_powerlaw_pdf(m1, alpha1, alpha2, mmin, mbreak, mmax) + lam1 * truncnorm_pdf(m1, mpp1, sigpp1, mmin, high=jnp.inf) + (1-lam0-lam1) * truncnorm_pdf(m1, mpp2, sigpp2, mmin, high=jnp.inf)
+    else:
+        return ( lam0 * broken_powerlaw_pdf(m1, alpha1, alpha2, mmin, mbreak, mmax) + lam1 * truncnorm_pdf(m1, mpp1, sigpp1, mmin, high=jnp.inf) + (1-lam0-lam1) * truncnorm_pdf(m1, mpp2, sigpp2, mmin, high=jnp.inf) ) * smooth(delta, m1, mmin)
+
+
 """
 ***************************************
 SPIN MODELS
