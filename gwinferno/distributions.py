@@ -133,14 +133,14 @@ def truncnorm_pdf(xx, mu, sig, low, high, log=False):
     if log:
         prob = jnp.exp(-jnp.power(jnp.log(xx) - mu, 2) / (2 * sig**2))
         continuous_norm = 1 / (xx * sig * (2 * jnp.pi) ** 0.5)
-        left_tail_cdf = 0 if low == -jnp.inf else 0.5 * (1 + erf((jnp.log(low) - mu) / (sig * (2**0.5))))
-        right_tail_cdf = 1 if high == jnp.inf else 0.5 * (1 + erf((jnp.log(high) - mu) / (sig * (2**0.5))))
+        left_tail_cdf = jnp.where(low > -jnp.inf, 0.5 * (1 + erf((jnp.log(low) - mu) / (sig * (2**0.5)))), 0)
+        right_tail_cdf = jnp.where(high < jnp.inf, 0.5 * (1 + erf((jnp.log(high) - mu) / (sig * (2**0.5)))), 1)
         denom = right_tail_cdf - left_tail_cdf
     else:
         prob = jnp.exp(-jnp.power(xx - mu, 2) / (2 * sig**2))
         continuous_norm = 1 / (sig * (2 * jnp.pi) ** 0.5)
-        left_tail_cdf = 0 if low == -jnp.inf else 0.5 * (1 + erf((low - mu) / (sig * (2**0.5))))
-        right_tail_cdf = 1 if high == jnp.inf else 0.5 * (1 + erf((high - mu) / (sig * (2**0.5))))
+        left_tail_cdf = jnp.where(low > -jnp.inf, 0.5 * (1 + erf((low - mu) / (sig * (2**0.5)))), 0)
+        right_tail_cdf = jnp.where(high < jnp.inf, 0.5 * (1 + erf((high - mu) / (sig * (2**0.5)))), 1)
         denom = right_tail_cdf - left_tail_cdf
 
     norm = continuous_norm / denom
