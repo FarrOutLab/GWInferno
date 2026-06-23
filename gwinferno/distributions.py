@@ -18,7 +18,8 @@ def smooth(dx, x, xmin):
     func = jnp.exp(dx / (x - xmin) + dx / (x - xmin - dx))
     s1 = jnp.where(jnp.less(x, xmin), 0, 1)
     s2 = jnp.where(jnp.less(x, xmin + dx) | jnp.greater_equal(x, xmin), (func + 1) ** (-1), s1)
-    return s2
+    s3 = jnp.where(jnp.greater_equal(x, xmin + dx), 1, s2)
+    return s3
 
 
 def logistic_function(x, L, k, x0):
@@ -124,19 +125,22 @@ def truncnorm_pdf(xx, mu, sig, low, high, log=False):
     $$ p(x) \propto \mathcal{N}(x | \mu, \sigma)\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$
 
     `log=True` makes this a log-normal distribution!
+
+    If 'low == -jnp.inf', then return a right-truncated norm
+    If 'high == jnp.inf', then return a left-truncated norm
     """
 
     if log:
         prob = jnp.exp(-jnp.power(jnp.log(xx) - mu, 2) / (2 * sig**2))
         continuous_norm = 1 / (xx * sig * (2 * jnp.pi) ** 0.5)
-        left_tail_cdf = 0.5 * (1 + erf((jnp.log(low) - mu) / (sig * (2**0.5))))
-        right_tail_cdf = 0.5 * (1 + erf((jnp.log(high) - mu) / (sig * (2**0.5))))
+        left_tail_cdf = jnp.where(low > -jnp.inf, 0.5 * (1 + erf((jnp.log(low) - mu) / (sig * (2**0.5)))), 0)
+        right_tail_cdf = jnp.where(high < jnp.inf, 0.5 * (1 + erf((jnp.log(high) - mu) / (sig * (2**0.5)))), 1)
         denom = right_tail_cdf - left_tail_cdf
     else:
         prob = jnp.exp(-jnp.power(xx - mu, 2) / (2 * sig**2))
         continuous_norm = 1 / (sig * (2 * jnp.pi) ** 0.5)
-        left_tail_cdf = 0.5 * (1 + erf((low - mu) / (sig * (2**0.5))))
-        right_tail_cdf = 0.5 * (1 + erf((high - mu) / (sig * (2**0.5))))
+        left_tail_cdf = jnp.where(low > -jnp.inf, 0.5 * (1 + erf((low - mu) / (sig * (2**0.5)))), 0)
+        right_tail_cdf = jnp.where(high < jnp.inf, 0.5 * (1 + erf((high - mu) / (sig * (2**0.5)))), 1)
         denom = right_tail_cdf - left_tail_cdf
 
     norm = continuous_norm / denom
