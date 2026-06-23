@@ -700,6 +700,11 @@
 <dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.__call__" title="Link to this definition">#</a></dt>
 <dd><p>Call self as a function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool_</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">number</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]</span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -735,7 +740,7 @@ overridden to extend subclasses.</p>
 <dd class="field-odd"><p>batch shape of the distribution.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dd class="field-even"><p>tuple[int, …]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -758,6 +763,11 @@ overridden to extend subclasses.</p>
 <dt class="sig sig-object py" id="gwinferno.numpyro_distributions.BSplineDistribution.entropy">
 <span class="sig-name descname"><span class="pre">entropy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.entropy" title="Link to this definition">#</a></dt>
 <dd><p>Returns the entropy of the distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool_</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">number</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]</span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -765,6 +775,11 @@ overridden to extend subclasses.</p>
 <span class="sig-name descname"><span class="pre">enumerate_support</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expand</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#gwinferno.numpyro_distributions.BSplineDistribution.enumerate_support" title="Link to this definition">#</a></dt>
 <dd><p>Returns an array with shape <cite>len(support) x batch_shape</cite>
 containing all values in the support.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Array</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool_</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">number</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">complex</span></code>]</span></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -790,7 +805,7 @@ batching.</p>
 <dd class="field-odd"><p>event shape of the distribution.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>tuple</p>
+<dd class="field-even"><p>tuple[int, …]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -902,7 +917,7 @@ shapes.</p>
 <dd class="field-even"><p>an array with shape <cite>value.shape[:-self.event_shape]</cite></p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy.ndarray</p>
+<dd class="field-odd"><p>ArrayLike</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1007,7 +1022,7 @@ distribution.</p>
 dependent event dimensions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>reinterpreted_batch_ndims</strong> – Number of rightmost batch dims to
+<dd class="field-odd"><p><strong>reinterpreted_batch_ndims</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]</span>) – Number of rightmost batch dims to
 interpret as event dims.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
