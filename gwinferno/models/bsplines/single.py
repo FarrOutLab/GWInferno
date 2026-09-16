@@ -47,7 +47,7 @@ class Base1DBSplineModel(object):
         self.interpolator = basis(
             n_splines,
             xrange=xrange,
-            k=degree + 1,
+            degree=degree,
             **kwargs,
         )
         self._valid_xx = (xx >= self.xmin) & (xx <= self.xmax)

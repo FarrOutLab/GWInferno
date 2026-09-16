@@ -6,13 +6,14 @@ import numpy as np
 from scipy.interpolate import BSpline as scipy_BSpline
 from scipy.interpolate import CubicSpline
 
-from gwinferno.interpolation import BasisSpline
 from gwinferno.interpolation import BSpline
 from gwinferno.interpolation import in_bounds
 from gwinferno.interpolation import LogXBSpline
 from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
+from gwinferno.interpolation import MSpline
 from gwinferno.interpolation import NaturalCubicUnivariateSpline
+from gwinferno.interpolation import SplineBasis
 
 
 class TestNaturalCubicUnivariateSpline(unittest.TestCase):
@@ -58,7 +59,7 @@ class TestBSplines(unittest.TestCase):
             self.assertTrue(np.allclose(dmat[:, i], dmat2[:, i]), f"{i}: {dmat[:, i]}, {dmat2[:, i]}")
 
     def test_basis_spline_norm(self):
-        spl = BasisSpline(self.N, normalize=True)
+        spl = MSpline(self.N, normalize=True)
         dmat = spl.bases(self.gr)
         norm = np.trapz(spl.project(dmat, self.cs), self.gr)
         self.assertAlmostEqual(norm, 1.0, places=3)
@@ -166,3 +167,120 @@ class TestOutOfBoundsHandling(unittest.TestCase):
                     np.asarray(in_bounds(spl.bases(probe))),
                     np.array([True] * self.N_IN + [False] * self.N_OUT),
                 )
+
+
+class TestBasisIdentities(unittest.TestCase):
+    """Identities that distinguish the M-spline basis from the B-spline basis.
+
+    These are what stop a rename or restructure from silently swapping the two. The defining
+    relation is exact in float32, so any drift at all is a real error rather than noise.
+    """
+
+    N = 10
+
+    def setUp(self) -> None:
+        self.xs = np.linspace(0.0, 1.0, 500)
+
+    def test_bspline_is_mspline_scaled_by_knot_span(self):
+        # B_i(x) == (t_{i+k} - t_i) / k * M_i(x) -- the M -> B conversion, applied in BSpline._bases.
+        mspline = MSpline(self.N, normalize=False)
+        bspline = BSpline(self.N, normalize=False)
+        knots, order = np.asarray(mspline.knots), mspline.order
+        scale = np.array([(knots[i + order] - knots[i]) / order for i in range(self.N)])[:, None]
+        np.testing.assert_array_equal(np.asarray(mspline.bases(self.xs)) * scale, np.asarray(bspline.bases(self.xs)))
+
+    def test_only_the_bspline_basis_is_a_partition_of_unity(self):
+        bspline = BSpline(self.N, normalize=False)
+        np.testing.assert_allclose(np.asarray(bspline.bases(self.xs)).sum(axis=0), 1.0, atol=1e-6)
+
+    def test_only_the_mspline_basis_has_unit_integral(self):
+        # Interior functions only: those overlapping a boundary are truncated by the xrange clip in
+        # bases(), so their integral over the domain is legitimately less than 1.
+        mspline = MSpline(self.N, normalize=True)
+        np.testing.assert_allclose(np.asarray(mspline.basis_vols)[3:7], 1.0, rtol=1e-5)
+        bspline = BSpline(self.N, normalize=True)
+        self.assertFalse(np.allclose(np.asarray(bspline.basis_vols)[3:7], 1.0, rtol=1e-5))
+
+
+class TestSplineBasisStructure(unittest.TestCase):
+    """The contract the subclasses are written against, and the sibling relationship.
+
+    MSpline and BSpline share a knot vector and the Cox-de Boor recursion but differ in how the
+    basis functions are normalized, so neither is a specialization of the other.
+    """
+
+    N = 10
+    CASES = [
+        (MSpline, (0.0, 1.0)),
+        (BSpline, (0.0, 1.0)),
+        (LogXBSpline, (0.01, 1.0)),
+        (LogYBSpline, (0.0, 1.0)),
+        (LogXLogYBSpline, (0.01, 1.0)),
+    ]
+
+    def test_mspline_and_bspline_are_siblings(self):
+        self.assertFalse(issubclass(BSpline, MSpline))
+        self.assertFalse(issubclass(MSpline, BSpline))
+        for cls in (MSpline, BSpline):
+            self.assertTrue(issubclass(cls, SplineBasis))
+
+    def test_project_equals_unnormalized_projection_times_norm(self):
+        coefs = jnp.asarray(np.random.default_rng(1).normal(size=self.N))
+        xs = np.linspace(0.05, 0.95, 100)
+        for cls, xrange in self.CASES:
+            for normalize in (False, True):
+                spl = cls(self.N, xrange=xrange, normalize=normalize)
+                with self.subTest(basis=cls.__name__, normalize=normalize):
+                    dmat = spl.bases(xs)
+                    np.testing.assert_allclose(
+                        np.asarray(spl.project(dmat, coefs)),
+                        np.asarray(spl._project(dmat, coefs)) * float(spl.norm(coefs)),
+                        rtol=1e-6,
+                    )
+
+    def test_get_coefficients_recovers_known_coefficients(self):
+        spl = BSpline(self.N, normalize=False)
+        xs = np.linspace(0.05, 0.95, 300)
+        truth = jnp.asarray(np.random.default_rng(0).normal(size=self.N))
+        ys = spl.project(spl.bases(xs), truth)
+        alpha, fit, design_matrix = spl.get_coefficients(xs, ys)
+        np.testing.assert_allclose(np.asarray(alpha), np.asarray(truth), atol=1e-4)
+        np.testing.assert_allclose(np.asarray(fit), np.asarray(ys), atol=1e-5)
+        self.assertEqual(design_matrix.shape, (xs.size, self.N))
+
+    def test_removed_names_explain_themselves(self):
+        import gwinferno.interpolation as interpolation
+
+        for name, expected in [("BasisSpline", "MSpline"), ("RectBivariateBasisSpline", "removed"), ("OOB_VAL", "in_bounds")]:
+            with self.subTest(name=name):
+                with self.assertRaises(AttributeError) as ctx:
+                    getattr(interpolation, name)
+                self.assertIn(expected, str(ctx.exception))
+        with self.assertRaises(AttributeError):
+            interpolation.NoSuchThing
+
+
+class TestDegreeParameter(unittest.TestCase):
+    """``degree`` follows scipy's convention; ``order`` stays derived from it."""
+
+    def test_order_is_derived_from_degree(self):
+        for degree in (1, 2, 3, 4, 5):
+            with self.subTest(degree=degree):
+                spl = BSpline(10, degree=degree, normalize=False)
+                self.assertEqual(spl.order, degree + 1)
+                self.assertEqual(len(spl.knots), spl.N + spl.order)
+
+    def test_degree_matches_scipy(self):
+        # scipy's BSpline takes the degree directly, so the two conventions must line up.
+        for degree in (2, 3, 4):
+            spl = BSpline(10, degree=degree, normalize=False)
+            with self.subTest(degree=degree):
+                xs = np.linspace(0.0, 1.0, 200)
+                expected = scipy_BSpline(spl.knots, np.eye(10), degree)(xs)
+                np.testing.assert_allclose(np.asarray(spl.bases(xs)).T, expected, atol=1e-6)
+
+    def test_wrong_knot_count_raises_rather_than_asserting(self):
+        # An assert would vanish under python -O, silently building a broken basis.
+        with self.assertRaises(ValueError) as ctx:
+            BSpline(10, knots=np.linspace(0, 1, 3), degree=3, normalize=False)
+        self.assertIn("expected 14 knots", str(ctx.exception))
