@@ -284,3 +284,38 @@ class TestDegreeParameter(unittest.TestCase):
         with self.assertRaises(ValueError) as ctx:
             BSpline(10, knots=np.linspace(0, 1, 3), degree=3, normalize=False)
         self.assertIn("expected 14 knots", str(ctx.exception))
+
+
+class TestTransformFlags(unittest.TestCase):
+    """The log_x / log_y flags that the Log* subclasses are now thin wrappers around."""
+
+    N = 10
+
+    def test_flags_reproduce_the_named_subclasses(self):
+        for cls, kwargs, xrange in [
+            (LogXBSpline, dict(log_x=True), (0.01, 1.0)),
+            (LogYBSpline, dict(log_y=True), (0.0, 1.0)),
+            (LogXLogYBSpline, dict(log_x=True, log_y=True, n_grid=1500), (0.1, 1.0)),
+        ]:
+            with self.subTest(basis=cls.__name__):
+                named = cls(self.N, xrange=xrange, normalize=True)
+                flagged = BSpline(self.N, xrange=xrange, normalize=True, **kwargs)
+                xs = np.linspace(max(xrange[0], 1e-3), xrange[1], 200)
+                coefs = jnp.asarray(np.random.default_rng(5).normal(size=self.N))
+                np.testing.assert_array_equal(np.asarray(named.bases(xs)), np.asarray(flagged.bases(xs)))
+                np.testing.assert_array_equal(
+                    np.asarray(named.project(named.bases(xs), coefs)),
+                    np.asarray(flagged.project(flagged.bases(xs), coefs)),
+                )
+
+    def test_log_x_rejects_a_non_positive_lower_bound(self):
+        # Previously this silently produced an all -inf knot vector.
+        with self.assertRaises(ValueError) as ctx:
+            BSpline(self.N, xrange=(0.0, 1.0), log_x=True, normalize=False)
+        self.assertIn("positive lower bound", str(ctx.exception))
+
+    def test_mspline_rejects_log_y(self):
+        # MSpline.norm is built on basis_vols, which assumes a linear y.
+        with self.assertRaises(ValueError) as ctx:
+            MSpline(self.N, log_y=True, normalize=False)
+        self.assertIn("log_y", str(ctx.exception))

@@ -156,6 +156,9 @@ class SplineBasis(object):
         xrange=(0, 1),
         degree=3,
         normalize=True,
+        n_grid=1000,
+        log_x=False,
+        log_y=False,
     ):
         """
         Construct the knot vector and, when normalizing, the integration grid
@@ -174,7 +177,23 @@ class SplineBasis(object):
             degree (int, optional): polynomial degree of the spline, i.e. 3 for cubic. Defaults to 3.
                 Note this is scipy's convention; the order used internally is degree + 1.
             normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
+            n_grid (int, optional): number of points in the numerical normalization grid. Defaults to 1000.
+            log_x (bool, optional): place the knots in log(x) and take the log of inputs to
+                ``bases``, so the spline is a function of log(x). Requires a positive lower bound.
+                Defaults to False.
+            log_y (bool, optional): treat the projection as log(y) and exponentiate it, so the
+                spline models the log of the quantity of interest. Defaults to False.
         """
+        # Set first: bases() reads these, and __init__ calls bases() below to build the grid.
+        self.log_x, self.log_y = log_x, log_y
+        if log_x and xrange[0] <= 0:
+            raise ValueError(f"a log-x spline needs a strictly positive lower bound, got xrange={tuple(xrange)}")
+        if log_x:
+            # Knots, breakpoints and the domain all live in the spline's internal coordinates.
+            xrange = np.log(xrange)
+            knots = None if knots is None else np.log(knots)
+            breakpoints = None if breakpoints is None else np.log(breakpoints)
+
         self.degree = degree
         k = self.order
         self.N = n_df
@@ -193,9 +212,12 @@ class SplineBasis(object):
             )
 
         self.normalize = normalize
+        self.n_grid = n_grid
         self.basis_vols = np.ones(self.N)
         if normalize:
-            self.grid = jnp.linspace(*xrange, 1000)
+            # Always in user coordinates: norm() integrates dx there, and bases() re-applies log_x.
+            lo, hi = np.exp(self.xrange) if self.log_x else self.xrange
+            self.grid = jnp.linspace(lo, hi, n_grid)
             self.grid_bases = jnp.array(self.bases(self.grid))
             self.basis_vols = jnp.array([trapezoid(self.grid_bases[i, :], self.grid) for i in range(self.N)])
 
@@ -271,6 +293,7 @@ class SplineBasis(object):
         Returns:
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
+        xs = jnp.log(xs) if self.log_x else jnp.asarray(xs)
         design_matrix = jnp.concatenate(self._bases(xs)).reshape(self.N, *xs.shape)
         return jnp.where(self._out_of_bounds(xs), 0.0, design_matrix)
 
@@ -320,7 +343,12 @@ class SplineBasis(object):
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
-        return jnp.einsum("i...,i->...", bases, coefs)
+        values = jnp.einsum("i...,i->...", bases, coefs)
+        if not self.log_y:
+            return values
+        # The spline models log(y), so exponentiate. Out-of-bounds points are marked by an all-zero
+        # column, and must give 0 rather than exp(0) == 1.
+        return jnp.where(in_bounds(bases), jnp.exp(values), 0.0)
 
     def project(self, bases, coefs):
         """
@@ -374,6 +402,11 @@ class MSpline(SplineBasis):
     partition-of-unity sibling.
     """
 
+    def __init__(self, *args, log_y=False, **kwargs):
+        if log_y:
+            raise ValueError("MSpline does not support log_y: its norm() is built on basis_vols, which assumes a linear y")
+        super().__init__(*args, log_y=False, **kwargs)
+
     def _bases(self, xs):
         """
         _bases construct the set of M-spline basis components
@@ -404,40 +437,20 @@ class MSpline(SplineBasis):
 
 
 class BSpline(SplineBasis):
-    def __init__(
-        self,
-        n_df,
-        knots=None,
-        breakpoints=None,
-        xrange=(0, 1),
-        degree=3,
-        normalize=False,
-    ):
-        """
-        Class to construct a basis spline (B-Spline)
+    """
+    The canonical B-spline basis: the basis functions sum to 1 across the domain, so the
+    coefficients are control points rather than mixture weights.
 
-        Args:
-            n_df (int): number of degrees of freedom for the spline
-            knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-            breakpoints (array_like, optional): the points where the polynomial pieces join,
-                spanning the domain with both boundaries included. There are n_df - degree + 1 of
-                them. Defaults to None, i.e. uniform spacing. Note these are not "interior knots"
-                in scipy's sense, which excludes the two boundary points; see the module docstring
-                for the knot layout. A non-uniform array controls only the interior, since the
-                exterior knots are always spaced uniformly using this array's first gap.
-            xrange (tuple, optional): domain of spline. Defaults to (0, 1).
-            degree (int, optional): polynomial degree of the spline, i.e. 3 for cubic. Defaults to 3.
-            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to False.
-        """
-        super().__init__(
-            n_df=n_df,
-            knots=knots,
-            breakpoints=breakpoints,
-            xrange=xrange,
-            degree=degree,
-            normalize=normalize,
-        )
+    These are the M-spline components rescaled by (t[i+k] - t[i])/k. See :class:`MSpline` for the
+    unit-integral sibling, and :class:`SplineBasis` for the constructor arguments.
+
+    ``normalize`` defaults to False here because a B-spline is most often used as a building block
+    inside an exponent, where 1 / int sum_i c_i B_i(x) dx is not a meaningful scaling and can
+    approach zero or change sign for unconstrained real coefficients.
+    """
+
+    def __init__(self, *args, normalize=False, **kwargs):
+        super().__init__(*args, normalize=normalize, **kwargs)
 
     def _bases(self, xs):
         """
@@ -466,129 +479,33 @@ class BSpline(SplineBasis):
 
 
 class LogXBSpline(BSpline):
+    """
+    A B-spline in log(x): the knots are placed in log space and ``bases`` takes the log of its
+    input, so the spline is a function of log(x) while still being normalized over dx.
+
+    The default ``xrange`` lower bound is positive because log(0) is undefined.
+    """
+
     def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.01, 1), normalize=True, **kwargs):
-        """
-        Class to construct a basis spline (B-Spline) in the log space of the domain (X)
-
-        Args:
-            n_df (int): number of degrees of freedom for the spline
-            knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-            breakpoints (array_like, optional): the points where the polynomial pieces join,
-                spanning the domain with both boundaries included. There are n_df - degree + 1 of
-                them. Defaults to None, i.e. uniform spacing. Note these are not "interior knots"
-                in scipy's sense, which excludes the two boundary points; see the module docstring
-                for the knot layout. A non-uniform array controls only the interior, since the
-                exterior knots are always spaced uniformly using this array's first gap.
-            xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).
-            degree (int, optional): polynomial degree of the spline, i.e. 3 for cubic. Defaults to 3.
-            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
-        """
-        knots = None if knots is None else np.log(knots)
-        breakpoints = None if breakpoints is None else np.log(breakpoints)
-        xrange = np.log(xrange)
-        super().__init__(n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, **kwargs)
-
-        self.normalize = normalize
-        self.basis_vols = np.ones(self.N)
-        if normalize:
-            self.grid = jnp.linspace(*np.exp(xrange), 1000)
-            self.grid_bases = jnp.array(self.bases(self.grid))
-
-    def bases(self, xs):
-        """
-        bases form the basis spline design matrix evaluated at xs (in log space). All basis values outside the range
-        of the spline are set to zero.
-
-        Args:
-            xs (array_like): input values to evaluate the basis spline at
-
-        Returns:
-            array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
-        """
-        return super().bases(jnp.log(xs))
+        super().__init__(n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, log_x=True, **kwargs)
 
 
 class LogYBSpline(BSpline):
+    """
+    A B-spline in log(y): the projection is exponentiated, so the coefficients describe the log of
+    the quantity of interest and it stays positive for any real coefficients.
+    """
+
     def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0, 1), normalize=True, **kwargs):
-        """
-        Class to construct a basis spline (B-Spline) in the log space of the range (Y)
-
-        Args:
-            n_df (int): number of degrees of freedom for the spline
-            knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-            breakpoints (array_like, optional): the points where the polynomial pieces join,
-                spanning the domain with both boundaries included. There are n_df - degree + 1 of
-                them. Defaults to None, i.e. uniform spacing. Note these are not "interior knots"
-                in scipy's sense, which excludes the two boundary points; see the module docstring
-                for the knot layout. A non-uniform array controls only the interior, since the
-                exterior knots are always spaced uniformly using this array's first gap.
-            xrange (tuple, optional): domain of spline. Defaults to (0, 1).
-            degree (int, optional): polynomial degree of the spline, i.e. 3 for cubic. Defaults to 3.
-            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
-        """
-        super().__init__(n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, **kwargs)
-        self.normalize = normalize
-        if normalize:
-            self.grid = jnp.linspace(*xrange, 1000)
-            self.grid_bases = jnp.array(self.bases(self.grid))
-
-    def _project(self, bases, coefs):
-        """
-        _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline.
-        The spline models log(y), so the linear combination is exponentiated. Out-of-bounds points --
-        marked by an all-zero column in the design matrix -- return 0 rather than exp(0) == 1.
-
-        Args:
-            bases (array_like): The set of basis components or design matrix to project onto
-            coefs (array_like): coefficients for the basis components
-
-        Returns:
-            array_like: The linear combination of the basis components given the coefficients
-        """
-        return jnp.where(in_bounds(bases), jnp.exp(jnp.einsum("i...,i->...", bases, coefs)), 0.0)
+        super().__init__(n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, log_y=True, **kwargs)
 
 
-class LogXLogYBSpline(LogYBSpline):
-    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.1, 1), normalize=True, **kwargs):
-        """
-        Class to construct a basis spline (B-Spline) in the log-log space of the domain and range (X and Y)
+class LogXLogYBSpline(BSpline):
+    """
+    A B-spline in both log(x) and log(y). See :class:`LogXBSpline` and :class:`LogYBSpline`.
+    """
 
-        Args:
-            n_df (int): number of degrees of freedom for the spline
-            knots (array_like, optional): array of knots, if non-uniform knot placing is preferred.
-                Defaults to None.
-            breakpoints (array_like, optional): the points where the polynomial pieces join,
-                spanning the domain with both boundaries included. There are n_df - degree + 1 of
-                them. Defaults to None, i.e. uniform spacing. Note these are not "interior knots"
-                in scipy's sense, which excludes the two boundary points; see the module docstring
-                for the knot layout. A non-uniform array controls only the interior, since the
-                exterior knots are always spaced uniformly using this array's first gap.
-            xrange (tuple, optional): domain of spline. Defaults to (0.01, 1).
-            degree (int, optional): polynomial degree of the spline, i.e. 3 for cubic. Defaults to 3.
-            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
-        """
-        knots = None if knots is None else np.log(knots)
-        breakpoints = None if breakpoints is None else np.log(breakpoints)
-        xrange = np.log(xrange)
-        super().__init__(n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, **kwargs)
-
-        self.normalize = normalize
-        self.basis_vols = np.ones(self.N)
-        if normalize:
-            self.grid = jnp.linspace(*jnp.exp(xrange), 1500)
-            self.grid_bases = jnp.array(self.bases(self.grid))
-
-    def bases(self, xs):
-        """
-        bases form the basis spline design matrix evaluated at xs (in log space). Values outside the
-        domain, including non-positive x, give an all-zero column.
-
-        Args:
-            xs (array_like): input values to evaluate the basis spline at
-
-        Returns:
-            array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
-        """
-        return super().bases(jnp.log(xs))
+    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.1, 1), normalize=True, n_grid=1500, **kwargs):
+        super().__init__(
+            n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, n_grid=n_grid, log_x=True, log_y=True, **kwargs
+        )
