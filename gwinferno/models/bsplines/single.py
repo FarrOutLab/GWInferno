@@ -8,7 +8,6 @@ from jax.scipy.integrate import trapezoid
 from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology as Planck15
 
 from ...interpolation import BSpline
-from ...interpolation import LogXBSpline
 from ...interpolation import LogXLogYBSpline
 from ...interpolation import LogYBSpline
 
@@ -418,8 +417,23 @@ class BSplineRedshift(Base1DBSplineModel):
         Differential co-moving volume for each injection sample.
     zmax : float, default=2.3
         Maximum redshift. Ignored if ``xrange`` is provided.
-    basis : class, default=LogXBSpline
-        Type of basis to use.
+    basis : class, default=LogXLogYBSpline
+        Type of basis to use. The basis determines how :math:`r(z)` is parameterized; see Notes.
+
+    Notes
+    -----
+    :math:`r(z)` is whatever the chosen basis projects, i.e.
+    ``basis.project(design_matrix, coefs)``, so the basis alone decides the parameterization:
+
+    * A log-:math:`y` basis (:class:`~gwinferno.interpolation.LogXLogYBSpline`, the default, or
+      :class:`~gwinferno.interpolation.LogYBSpline`) models :math:`\ln r(z)`, which keeps
+      :math:`r(z)` positive for any real coefficients.
+    * A linear-:math:`y` basis (:class:`~gwinferno.interpolation.BSpline`,
+      :class:`~gwinferno.interpolation.LogXBSpline`) models :math:`r(z)` directly, and the
+      coefficients must be constrained to keep it non-negative.
+
+    The basis' own ``normalize`` flag has no effect on :math:`R(z)`: it scales :math:`r(z)` by a
+    constant that cancels between :meth:`__call__` and :meth:`normalization`.
     """
 
     def __init__(
@@ -430,7 +444,7 @@ class BSplineRedshift(Base1DBSplineModel):
         dVdc,
         dVdc_inj,
         zmax=2.3,
-        basis=LogXBSpline,
+        basis=LogXLogYBSpline,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (1e-4, zmax))
@@ -464,7 +478,7 @@ class BSplineRedshift(Base1DBSplineModel):
             The redshift normalization constant.
         """
         return trapezoid(
-            self.dVcdzgrid / (1 + self.zgrid) * jnp.exp(jnp.einsum("i...,i->...", self.grid_bases, cs)),
+            self.dVcdzgrid / (1 + self.zgrid) * self.interpolator.project(self.grid_bases, cs),
             self.zgrid,
         )
 
@@ -485,8 +499,5 @@ class BSplineRedshift(Base1DBSplineModel):
         array_like
             Merger-rate per unit redshift in the detector-frame :math:`R`.
         """
-        return (
-            jnp.exp(self.funcs[1](coefs)) * self.differential_comov_vols[1] / (1 + self.zs[1]) / self.normalization(coefs)
-            if pe_samples
-            else jnp.exp(self.funcs[0](coefs)) * self.differential_comov_vols[0] / (1 + self.zs[0]) / self.normalization(coefs)
-        )
+        idx = 1 if pe_samples else 0
+        return self.funcs[idx](coefs) * self.differential_comov_vols[idx] / (1 + self.zs[idx]) / self.normalization(coefs)
