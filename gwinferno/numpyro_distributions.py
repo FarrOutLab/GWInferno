@@ -14,6 +14,7 @@ from numpyro.distributions.util import is_prng_key
 from numpyro.distributions.util import promote_shapes
 from numpyro.distributions.util import validate_sample
 
+from .interpolation import in_bounds
 from .models.bsplines.smoothing import apply_difference_prior
 
 
@@ -269,8 +270,9 @@ class BSplineDistribution(Distribution):
         batch_shape = lax.broadcast_shapes(jnp.shape(maximum), jnp.shape(minimum), jnp.shape(cs))
         super(BSplineDistribution, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
         self.grid = grid
-        # grid_dmat will contain nan's where the grid is outside the support
-        self.lpdfs = jnp.nan_to_num(jnp.einsum("i,i...->...", self.cs, grid_dmat), nan=-jnp.inf)
+        # An all-zero column of grid_dmat marks a grid point outside the spline's domain; those must
+        # get zero density rather than exp(0) == 1.
+        self.lpdfs = jnp.where(in_bounds(grid_dmat), jnp.einsum("i,i...->...", self.cs, grid_dmat), -jnp.inf)
         self.pdfs = jnp.exp(self.lpdfs)
         self.norm = trapezoid(self.pdfs, self.grid)
         self.pdfs /= self.norm

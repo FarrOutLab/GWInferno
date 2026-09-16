@@ -1,5 +1,20 @@
 """
 a module for interpolation calculations using jax
+
+Out-of-bounds convention
+------------------------
+``.bases()`` always returns a **finite** design matrix. Every basis function is zero outside the
+spline's domain, so an all-zero column marks an out-of-bounds point. ``_project()`` recovers that
+mask with ``jnp.any(bases != 0, axis=0)`` and forces the projected value to zero there. The mask is
+derived from the design matrix rather than stored on the instance, so a design matrix stays valid
+however many times ``.bases()`` is called.
+
+This approach works with autograd while, e.g., encoding out-of-bounds as ``-inf`` in the design
+matrix breaks it.
+
+Note that ``bases()`` is a host-side operation, as it branches on knot values and uses in-place NumPy
+assignment, so it cannot be traced. Build design matrices outside ``jit``, as only ``project()`` and
+``norm()`` are jax operations.
 """
 
 import jax.numpy as jnp
@@ -7,7 +22,22 @@ import numpy as np
 from jax.scipy.integrate import trapezoid
 from jax.tree_util import register_pytree_node_class
 
-OOB_VAL = -9  # Value to return for out-of-bounds values.  nan or -inf breaks autograd, so we use this instead.
+
+def in_bounds(bases):
+    """
+    in_bounds recover the in-domain mask from a design matrix.
+
+    Every basis function vanishes outside the spline's domain, so an all-zero column marks an
+    out-of-bounds point. Inside the domain the B-spline basis is a partition of unity (the
+    M-spline basis is strictly positive), so at least one entry per column is non-zero.
+
+    Args:
+        bases (array_like): design matrix of shape (N, *xs.shape)
+
+    Returns:
+        array_like: boolean mask of shape xs.shape, True where the point is inside the domain
+    """
+    return jnp.any(bases != 0.0, axis=0)
 
 
 @register_pytree_node_class
@@ -163,7 +193,8 @@ class BasisSpline(object):
     def bases(self, xs):
         """
         bases form the basis spline design matrix evaluated at xs.  All basis values outside the range
-        of the spline are set to zero.
+        of the spline are set to zero, as are any non-finite inputs (which is how a log-x spline sees
+        a non-positive x). The result is always finite; see the module docstring for why.
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
@@ -172,7 +203,22 @@ class BasisSpline(object):
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
         design_matrix = jnp.concatenate(self._bases(xs)).reshape(self.N, *xs.shape)
-        return jnp.where(jnp.less(xs, self.xrange[0]) | jnp.greater(xs, self.xrange[1]), 0.0, design_matrix)
+        return jnp.where(self._out_of_bounds(xs), 0.0, design_matrix)
+
+    def _out_of_bounds(self, xs):
+        """
+        _out_of_bounds mask of inputs lying outside the spline's domain.
+
+        ``xs`` is in the spline's internal coordinates, so for a log-x basis this is already
+        ``log(x)``: a non-positive x arrives here as ``-inf`` or ``nan`` and is masked either way.
+
+        Args:
+            xs (array_like): input values, in the spline's internal coordinates
+
+        Returns:
+            array_like: boolean mask, True where xs is out of bounds
+        """
+        return jnp.less(xs, self.xrange[0]) | jnp.greater(xs, self.xrange[1]) | ~jnp.isfinite(xs)
 
     def get_coefficients(self, xs, ys):
         """
@@ -381,7 +427,8 @@ class LogYBSpline(BSpline):
     def _project(self, bases, coefs):
         """
         _project given a design matrix (or bases) and coefficients, project the coefficients onto the spline.
-        Any inf's in the bases (positive or negative) will be treated as -inf, and 0. will be returned.
+        The spline models log(y), so the linear combination is exponentiated. Out-of-bounds points,
+        marked by an all-zero column in the design matrix, return 0 rather than exp(0) == 1.
 
         Args:
             bases (array_like): The set of basis components or design matrix to project onto
@@ -390,21 +437,7 @@ class LogYBSpline(BSpline):
         Returns:
             array_like: The linear combination of the basis components given the coefficients
         """
-        logvals = jnp.nan_to_num(jnp.einsum("i...,i->...", bases, coefs), nan=-jnp.inf, posinf=-jnp.inf)
-        return jnp.exp(logvals)
-
-    def bases(self, xs):
-        """
-        Evaluate the basis spline design matrix at xs. -inf will be used for out-of-range values.
-
-        Args:
-            xs (array_like): input values to evaluate the basis spline at
-
-        Returns:
-            array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
-        """
-        design_matrix = super().bases(xs)
-        return jnp.where(jnp.less(xs, self.xrange[0]) | jnp.greater(xs, self.xrange[1]), -jnp.inf, design_matrix)
+        return jnp.where(in_bounds(bases), jnp.exp(jnp.einsum("i...,i->...", bases, coefs)), 0.0)
 
 
 class LogXLogYBSpline(LogYBSpline):
@@ -435,8 +468,8 @@ class LogXLogYBSpline(LogYBSpline):
 
     def bases(self, xs):
         """
-        bases form the basis spline design matrix evaluated at xs (in log space).
-        -inf will be used for out-of-range values.
+        bases form the basis spline design matrix evaluated at xs (in log space). Values outside the
+        domain, including non-positive x, give an all-zero column.
 
         Args:
             xs (array_like): input values to evaluate the basis spline at
@@ -444,9 +477,7 @@ class LogXLogYBSpline(LogYBSpline):
         Returns:
             array_like: the design matrix evaluated at xs. shape (N, *xs.shape)
         """
-        logxs = jnp.log(xs)
-        design_matrix = super().bases(logxs)
-        return jnp.where(jnp.less(logxs, self.xrange[0]) | jnp.greater(logxs, self.xrange[1]), -jnp.inf, design_matrix)
+        return super().bases(jnp.log(xs))
 
 
 class RectBivariateBasisSpline(object):
