@@ -55,7 +55,7 @@ class PowerlawBasisSplinePrimaryPowerlawRatio(object):
         )
         self.knots = knots
         self.interpolator = basis(
-            n_splines_m, knots=knots, breakpoints=breakpoints, xrange=(np.log(mmin), np.log(mmax)), degree=k - 1, **kwargs
+            n_splines_m, knots=knots, breakpoints=breakpoints, xrange=(np.log(mmin), np.log(mmax)), degree=k - 1, normalize=False, **kwargs
         )
         self.pe_design_matrix = jnp.array(self.interpolator.bases(np.log(m1pe)))
         self.inj_design_matrix = jnp.array(self.interpolator.bases(np.log(m1inj)))

@@ -29,6 +29,11 @@ class Base1DBSplineModel(object):
         Domain of the spline.
     basis : class, default=BSpline
         Type of basis to use, e.g., `LogYBSpline`.
+    normalize : bool, default=False
+        Whether the basis normalizes itself. Every concrete model below states this explicitly and
+        sets it True, since each is a factor of a separable population density. It is False here
+        only because this base class defaults to a linear-y basis, which cannot represent a density
+        for unconstrained coefficients.
     """
 
     def __init__(
@@ -39,6 +44,7 @@ class Base1DBSplineModel(object):
         xrange=(0.0, 1.0),
         degree=3,
         basis=BSpline,
+        normalize=False,
         **kwargs,
     ):
         self.n_splines = n_splines
@@ -48,6 +54,7 @@ class Base1DBSplineModel(object):
             n_splines,
             xrange=xrange,
             degree=degree,
+            normalize=normalize,
             **kwargs,
         )
         self._valid_xx = (xx >= self.xmin) & (xx <= self.xmax)
@@ -148,6 +155,7 @@ class BSplineSpinMagnitude(Base1DBSplineModel):
         a,
         a_inj,
         basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (0.0, 1.0))
@@ -156,6 +164,7 @@ class BSplineSpinMagnitude(Base1DBSplineModel):
             a,
             a_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -182,6 +191,7 @@ class BSplineSpinTilt(Base1DBSplineModel):
         ct,
         ct_inj,
         basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (-1.0, 1.0))
@@ -190,6 +200,7 @@ class BSplineSpinTilt(Base1DBSplineModel):
             ct,
             ct_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -225,6 +236,7 @@ class BSplineChiEffective(Base1DBSplineModel):
         chieff,
         chieff_inj,
         basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (-1.0, 1.0))
@@ -233,6 +245,7 @@ class BSplineChiEffective(Base1DBSplineModel):
             chieff,
             chieff_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -269,6 +282,7 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
         chieff,
         chieff_inj,
         basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (0.0, 1.0))
@@ -277,6 +291,7 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
             jnp.abs(chieff),
             jnp.abs(chieff_inj),
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -322,6 +337,7 @@ class BSplineChiPrecess(Base1DBSplineModel):
         chip,
         chip_inj,
         basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (0.0, 1.0))
@@ -330,6 +346,7 @@ class BSplineChiPrecess(Base1DBSplineModel):
             chip,
             chip_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -359,6 +376,7 @@ class BSplineRatio(Base1DBSplineModel):
         q_inj,
         qmin=0,
         basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (qmin, 1))
@@ -367,6 +385,7 @@ class BSplineRatio(Base1DBSplineModel):
             q,
             q_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -399,6 +418,7 @@ class BSplineMass(Base1DBSplineModel):
         mmin=2,
         mmax=100,
         basis=LogXLogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (mmin, mmax))
@@ -407,6 +427,7 @@ class BSplineMass(Base1DBSplineModel):
             m,
             m_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -463,6 +484,7 @@ class BSplineRedshift(Base1DBSplineModel):
         dVdc_inj,
         zmax=2.3,
         basis=LogXLogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (1e-4, zmax))
@@ -472,6 +494,7 @@ class BSplineRedshift(Base1DBSplineModel):
             z_inj,
             xrange=xrange,
             basis=basis,
+            normalize=normalize,
             **kwargs,
         )
         self.zmin = jnp.max(jnp.array([jnp.min(z), jnp.min(z_inj)]))
