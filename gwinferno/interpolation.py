@@ -505,7 +505,7 @@ class LogXLogYBSpline(BSpline):
     A B-spline in both log(x) and log(y). See :class:`LogXBSpline` and :class:`LogYBSpline`.
     """
 
-    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.1, 1), normalize=True, n_grid=1500, **kwargs):
+    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.1, 1), normalize=True, **kwargs):
         super().__init__(
-            n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, n_grid=n_grid, log_x=True, log_y=True, **kwargs
+            n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, log_x=True, log_y=True, **kwargs
         )

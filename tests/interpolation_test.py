@@ -295,7 +295,7 @@ class TestTransformFlags(unittest.TestCase):
         for cls, kwargs, xrange in [
             (LogXBSpline, dict(log_x=True), (0.01, 1.0)),
             (LogYBSpline, dict(log_y=True), (0.0, 1.0)),
-            (LogXLogYBSpline, dict(log_x=True, log_y=True, n_grid=1500), (0.1, 1.0)),
+            (LogXLogYBSpline, dict(log_x=True, log_y=True), (0.1, 1.0)),
         ]:
             with self.subTest(basis=cls.__name__):
                 named = cls(self.N, xrange=xrange, normalize=True)
