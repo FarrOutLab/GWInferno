@@ -3,6 +3,7 @@ import unittest
 import jax
 import jax.numpy as jnp
 import numpy as np
+from scipy.integrate import trapezoid
 from scipy.interpolate import BSpline as scipy_BSpline
 from scipy.interpolate import CubicSpline
 
@@ -61,31 +62,31 @@ class TestBSplines(unittest.TestCase):
     def test_basis_spline_norm(self):
         spl = MSpline(self.N, normalize=True)
         dmat = spl.bases(self.gr)
-        norm = np.trapz(spl.project(dmat, self.cs), self.gr)
+        norm = trapezoid(spl.project(dmat, self.cs), self.gr)
         self.assertAlmostEqual(norm, 1.0, places=3)
 
     def test_b_spline_norm(self):
         spl = BSpline(self.N, normalize=True)
         dmat = spl.bases(self.gr)
-        norm = np.trapz(spl.project(dmat, self.cs), self.gr)
+        norm = trapezoid(spl.project(dmat, self.cs), self.gr)
         self.assertAlmostEqual(norm, 1.0, places=3)
 
     def test_logyb_spline_norm(self):
         spl = LogYBSpline(self.N, normalize=True)
         dmat = spl.bases(self.gr)
-        norm = np.trapz(spl.project(dmat, self.cs_pn), self.gr)
+        norm = trapezoid(spl.project(dmat, self.cs_pn), self.gr)
         self.assertAlmostEqual(norm, 1.0, places=3)
 
     def test_logxb_spline_norm(self):
         spl = LogXBSpline(self.N, xrange=(0.001, 1), normalize=True)
         dmat = spl.bases(self.grid)
-        norm = np.trapz(spl.project(dmat, self.cs), self.grid)
+        norm = trapezoid(spl.project(dmat, self.cs), self.grid)
         self.assertAlmostEqual(norm, 1.0, places=3)
 
     def test_logxlogyb_spline_norm(self):
         spl = LogXLogYBSpline(self.N, xrange=(0.001, 1), normalize=True)
         dmat = spl.bases(self.grid)
-        norm = np.trapz(spl.project(dmat, self.cs_pn), self.grid)
+        norm = trapezoid(spl.project(dmat, self.cs_pn), self.grid)
         self.assertAlmostEqual(norm, 1.0, places=3)
 
 

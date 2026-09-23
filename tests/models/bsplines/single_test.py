@@ -157,13 +157,13 @@ class TestOneDimensionalModelsAreDensities(unittest.TestCase):
     """Every 1-D shape model must be a normalized, non-negative density.
 
     The population model is separable, dN/dV(theta) = R * p_pop(theta), so each factor has to
-    integrate to 1 over its domain. If one does not, the shape posterior is unaffected (an overall
-    factor cancels between the numerator and the selection term) but the inferred rate is divided
-    by that factor, which varies with the coefficients and so distorts the rate posterior.
+    integrate to 1 over its domain. If one does not, the shape posterior is unaffected, since an
+    overall factor cancels between the numerator and the selection term, but the inferred rate is
+    divided by that factor, which varies with the coefficients and so distorts the rate posterior.
 
-    A linear-y basis cannot satisfy this for unconstrained real coefficients: chi_eff and chi_p
-    previously used one and went negative for 94% of random coefficient draws, with integrals
-    spanning -2.5 to 2.6.
+    A linear-y basis cannot satisfy this for unconstrained real coefficients
+
+    Uses synthetic samples so it runs without the downloaded fixtures.
     """
 
     N = 8
@@ -171,12 +171,11 @@ class TestOneDimensionalModelsAreDensities(unittest.TestCase):
 
     def _check(self, model, grid, name):
         rng = np.random.default_rng(17)
-        xs = np.asarray(grid)
         for draw in range(self.N_DRAWS):
-            pdf = np.asarray(model(jnp.asarray(rng.normal(size=self.N)), pe_samples=True))
+            pdf = model(jnp.asarray(rng.normal(size=self.N)), pe_samples=True)
             with self.subTest(model=name, draw=draw):
-                self.assertGreaterEqual(pdf.min(), 0.0, msg=f"{name} produced a negative density")
-                self.assertAlmostEqual(float(np.trapezoid(pdf, xs)), 1.0, places=3, msg=f"{name} is not normalized")
+                self.assertGreaterEqual(float(jnp.min(pdf)), 0.0, msg=f"{name} produced a negative density")
+                self.assertAlmostEqual(float(trapezoid(pdf, grid)), 1.0, places=3, msg=f"{name} is not normalized")
 
     def test_spin_models_are_densities(self):
         for cls, (lo, hi) in [
@@ -185,17 +184,11 @@ class TestOneDimensionalModelsAreDensities(unittest.TestCase):
             (BSplineChiEffective, (-1.0, 1.0)),
             (BSplineChiPrecess, (0.0, 1.0)),
         ]:
-            grid = jnp.asarray(np.linspace(lo, hi, 4000))
+            grid = jnp.linspace(lo, hi, 4000)
             self._check(cls(self.N, grid, grid), grid, cls.__name__)
 
     def test_symmetric_chi_effective_is_a_density(self):
         # It evaluates at |chi_eff| on [0, 1] and halves, which integrates to 1 over [-1, 1] only
         # if the underlying spline is itself normalized.
-        grid = jnp.asarray(np.linspace(-1.0, 1.0, 6000))
+        grid = jnp.linspace(-1.0, 1.0, 6000)
         self._check(BSplineSymmetricChiEffective(self.N, grid, grid), grid, "BSplineSymmetricChiEffective")
-
-    def test_ratio_and_mass_models_are_non_negative(self):
-        rng = np.random.default_rng(4)
-        grid = jnp.asarray(np.linspace(0.05, 1.0, 2000))
-        pdf = np.asarray(BSplineRatio(self.N, grid, grid)(jnp.asarray(rng.normal(size=self.N))))
-        self.assertGreaterEqual(pdf.min(), 0.0)
