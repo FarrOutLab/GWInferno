@@ -5,7 +5,7 @@ import numpy as np
 from astropy.cosmology import Planck15
 from jax import random
 from jax.scipy.integrate import trapezoid
-from scipy.integrate import cumtrapz as scipy_cumtrapz
+from scipy.integrate import cumulative_trapezoid
 from scipy.stats import truncnorm
 
 from gwinferno.interpolation import BSpline
@@ -27,9 +27,13 @@ class TestJaxCumtrapz(unittest.TestCase):
         self.tn = truncnorm(-1, 1, loc=0.5, scale=0.1)
 
     def test_cumtrapz(self):
-        scipy_int = scipy_cumtrapz(np.exp(self.tn.logpdf(self.gr)), self.gr).tolist()
-        gwinf_int = cumtrapz(jnp.exp(self.tn.logpdf(self.gr)), self.gr).tolist()
-        for s, g in zip(scipy_int, gwinf_int):
+        # initial=0 makes scipy return n values with a leading zero, matching gwinferno's
+        # cumtrapz. Without it scipy returns n-1 and zip() silently compared misaligned
+        # arrays, pairing each scipy value with the previous gwinferno one.
+        scipy_int = cumulative_trapezoid(np.exp(self.tn.logpdf(self.gr)), self.gr, initial=0)
+        gwinf_int = cumtrapz(jnp.exp(self.tn.logpdf(self.gr)), self.gr)
+        self.assertEqual(len(scipy_int), len(gwinf_int))
+        for s, g in zip(scipy_int.tolist(), gwinf_int.tolist()):
             self.assertAlmostEqual(s, g, places=4)
 
     def tearDown(self) -> None:
@@ -116,7 +120,7 @@ class TestNPDistributions(unittest.TestCase):
         self.assertTrue(jnp.all((samps >= 0.0) & (samps <= 1.0)))
 
     def test_logx_bspline_distribution(self):
-        grid_dmat = LogXBSpline(20, normalize=True).bases(self.grid)
+        grid_dmat = LogXBSpline(20, xrange=(0.001, 1), normalize=True).bases(self.grid)
         d = BSplineDistribution(minimum=0.001, maximum=1.0, cs=self.cs, grid=self.grid, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.grid)
         norm = trapezoid(jnp.exp(lpdfs), self.grid)
@@ -125,7 +129,7 @@ class TestNPDistributions(unittest.TestCase):
         self.assertTrue(jnp.all((samps >= 0.001) & (samps <= 1.0)))
 
     def test_logxy_bspline_distribution(self):
-        grid_dmat = LogXLogYBSpline(20, normalize=True).bases(self.grid)
+        grid_dmat = LogXLogYBSpline(20, xrange=(0.001, 1), normalize=True).bases(self.grid)
         d = BSplineDistribution(minimum=0.001, maximum=1.0, cs=self.cs_pn, grid=self.grid, grid_dmat=grid_dmat)
         lpdfs = d.log_prob(self.grid)
         norm = trapezoid(jnp.exp(lpdfs), self.grid)

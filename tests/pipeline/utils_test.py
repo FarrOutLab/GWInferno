@@ -28,7 +28,22 @@ from gwinferno.preprocess.data_collection import load_injection_dataset
 
 
 class TestModelUtils(unittest.TestCase):
+    """Checks over the pipeline setup helpers.
+
+    As in inference_test, the fixture is built once for the whole class rather than in setUp, which
+    runs before every test: reloading both HDF5 files each time was most of this module's runtime.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        prototype = object.__new__(cls)
+        prototype._build_fixture()
+        cls._fixture = vars(prototype).copy()
+
     def setUp(self) -> None:
+        self.__dict__.update(self._fixture)
+
+    def _build_fixture(self) -> None:
         self.inj_file = "tests/data/injections.h5"
         self.param_names = ["mass_1", "mass_ratio", "redshift", "prior", "a_1", "a_2", "cos_tilt_1", "cos_tilt_2"]
         self.pedict, self.Nobs, self.Nsamples = self.load_data()

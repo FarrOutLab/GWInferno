@@ -7,7 +7,6 @@ import jax.numpy as jnp
 import numpy as np
 import numpyro
 import numpyro.distributions as dist
-import pytest
 import xarray as xr
 from jax import random
 from jax import value_and_grad
@@ -39,7 +38,24 @@ def norm_mass_model(alpha, beta, mmin, mmax):
 
 
 class TestModelInference(unittest.TestCase):
+    """Inference-level checks over the downloaded PE and injection sets.
+
+    The fixture is built once for the whole class. Previously it was built in setUp, so every test
+    reloaded both HDF5 files and rebuilt the mass and redshift design matrices from scratch. Nothing
+    here mutates the fixture, and the arrays are jax arrays and so immutable, but each test still
+    gets its own attribute dict so that tearDown's deletions cannot leak between tests.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        prototype = object.__new__(cls)
+        prototype._build_fixture()
+        cls._fixture = vars(prototype).copy()
+
     def setUp(self) -> None:
+        self.__dict__.update(self._fixture)
+
+    def _build_fixture(self) -> None:
         self.mmin = 5.0
         self.mmax = 100.0
 
@@ -364,7 +380,7 @@ class TestModelInference(unittest.TestCase):
     #     self.assertTrue(jnp.isfinite(pe), msg="Potential energy is not finite for test case")
     #     self.assertTrue(jnp.all(jnp.isfinite(z_grad_flat)), msg="Gradient is not finite; don't expect to find valid initial parameters")
 
-    @pytest.mark.skip(reason="slow...")
+    @unittest.skip("slow...")
     def test_parametric_prior_sample(self):
         RNG = random.PRNGKey(3)
         kernel = NUTS(self.parametric_model, max_tree_depth=2, adapt_mass_matrix=False)
@@ -375,7 +391,7 @@ class TestModelInference(unittest.TestCase):
         self.assertEqual(samples["beta"].shape, (5,))
         self.assertEqual(samples["lamb"].shape, (5,))
 
-    @pytest.mark.skip(reason="slow...")
+    @unittest.skip("slow...")
     def test_bspline_prior_sample(self):
         RNG = random.PRNGKey(4)
         kernel = NUTS(self.bspline_model, max_tree_depth=2, adapt_mass_matrix=False)
@@ -387,7 +403,7 @@ class TestModelInference(unittest.TestCase):
         self.assertEqual(samples["z_coefs"].shape, (5, self.z_nbases))
         self.assertEqual(samples["lamb"].shape, (5,))
 
-    @pytest.mark.skip(reason="slow...")
+    @unittest.skip("slow...")
     def test_parametric_posterior_sample(self):
         RNG = random.PRNGKey(5)
         kernel = NUTS(self.parametric_model, max_tree_depth=2, adapt_mass_matrix=False)
@@ -398,7 +414,7 @@ class TestModelInference(unittest.TestCase):
         self.assertEqual(samples["beta"].shape, (5,))
         self.assertEqual(samples["lamb"].shape, (5,))
 
-    @pytest.mark.skip(reason="slow...")
+    @unittest.skip("slow...")
     def test_bspline_posterior_sample(self):
         RNG = random.PRNGKey(6)
         kernel = NUTS(self.bspline_model, max_tree_depth=2, adapt_mass_matrix=False)
