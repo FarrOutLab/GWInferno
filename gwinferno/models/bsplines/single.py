@@ -207,8 +207,17 @@ class BSplineChiEffective(Base1DBSplineModel):
         Effective spin parameter estimation samples for basis evaluation.
     chieff_inj : array_like
         Effective spin injection samples for basis evaluation.
-    basis : class, default=BSpline
-        Type of basis to use.
+    basis : class, default=LogYBSpline
+        Type of basis to use. Must yield a normalized, non-negative density; see Notes.
+
+    Notes
+    -----
+    This is a population shape p(chi_eff), used as one factor of a separable
+    dN/dV(theta) = R * p_pop(theta), so it must integrate to 1 over its domain and stay
+    non-negative. A linear-y basis such as :class:`~gwinferno.interpolation.BSpline` satisfies
+    neither for unconstrained real coefficients: the projection goes negative, and its integral
+    varies with the coefficients, which biases the inferred rate by that integral. A log-y basis
+    models log p, so it is positive by construction, and normalize makes it integrate to 1.
     """
 
     def __init__(
@@ -216,7 +225,7 @@ class BSplineChiEffective(Base1DBSplineModel):
         n_splines,
         chieff,
         chieff_inj,
-        basis=BSpline,
+        basis=LogYBSpline,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (-1.0, 1.0))
@@ -242,8 +251,17 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
         Effective spin parameter estimation samples for basis evaluation.
     chieff_inj : array_like
         Effective spin injection samples for basis evaluation.
-    basis : class, default=BSpline
-        Type of basis to use.
+    basis : class, default=LogYBSpline
+        Type of basis to use. Must yield a normalized, non-negative density; see Notes.
+
+    Notes
+    -----
+    This is a population shape p(chi_eff), used as one factor of a separable
+    dN/dV(theta) = R * p_pop(theta), so it must integrate to 1 over its domain and stay
+    non-negative. A linear-y basis such as :class:`~gwinferno.interpolation.BSpline` satisfies
+    neither for unconstrained real coefficients: the projection goes negative, and its integral
+    varies with the coefficients, which biases the inferred rate by that integral. A log-y basis
+    models log p, so it is positive by construction, and normalize makes it integrate to 1.
     """
 
     def __init__(
@@ -251,7 +269,7 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
         n_splines,
         chieff,
         chieff_inj,
-        basis=BSpline,
+        basis=LogYBSpline,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (0.0, 1.0))
@@ -295,8 +313,8 @@ class BSplineChiPrecess(Base1DBSplineModel):
         Effective precession parameter estimation samples for basis evaluation.
     chip_inj : array_like
         Effective precession injection samples for basis evaluation.
-    basis : class, default=BSpline
-        Type of basis to use.
+    basis : class, default=LogYBSpline
+        Type of basis to use. Must yield a normalized, non-negative density; see Notes.
     """
 
     def __init__(
@@ -304,7 +322,7 @@ class BSplineChiPrecess(Base1DBSplineModel):
         n_splines,
         chip,
         chip_inj,
-        basis=BSpline,
+        basis=LogYBSpline,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (0.0, 1.0))
