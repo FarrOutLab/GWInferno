@@ -73,7 +73,7 @@ def log_logistic_unit(x, x0, sgn=1, sc=4):
 
 
 def powerlaw_logit_pdf(xx, alpha, low=None, high=None, low_fall_off=4.0, high_fall_off=4.0):
-    """
+    r"""
     powerlaw_logit_pdf pdf of high mass soft truncation powerlaw:
         $$ p(x) \propto x^{\alpha}\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$
 
@@ -120,7 +120,7 @@ def powerlaw_pdf(xx, alpha, low, high, floor=0.0):
 
 
 def truncnorm_pdf(xx, mu, sig, low, high, log=False):
-    """
+    r"""
     $$ p(x) \propto \mathcal{N}(x | \mu, \sigma)\Theta(x-x_\mathrm{min})\Theta(x_\mathrm{max}-x) $$
 
     `log=True` makes this a log-normal distribution!

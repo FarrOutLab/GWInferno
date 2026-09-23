@@ -252,7 +252,7 @@ class BSplineChiEffective(Base1DBSplineModel):
 
 
 class BSplineSymmetricChiEffective(Base1DBSplineModel):
-    """A B-Spline model for the binary effective spin :math:`\chi_\mathrm{eff}`
+    r"""A B-Spline model for the binary effective spin :math:`\chi_\mathrm{eff}`
     that is symmetric about :math:`\chi_\mathrm{eff} = 0`.
 
     Parameters

@@ -34,7 +34,7 @@ def chieff_from_q_component_spins(q, a1, a2, ct1, ct2):
 
 
 def chip_from_q_component_spins(q, a1, a2, ct1, ct2, math=np):
-    """Calculate the effective precessing spin, :math:`\chi_\mathrm{p}`, from
+    r"""Calculate the effective precessing spin, :math:`\chi_\mathrm{p}`, from
     the mass ratio, component spin magnitudes and tilts.
 
     Parameters
