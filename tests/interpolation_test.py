@@ -52,7 +52,7 @@ class TestBSplines(unittest.TestCase):
         del self.N
 
     def test_bspline_matches_scipy(self):
-        bspl = BSpline(self.N)
+        bspl = BSpline(self.N, normalize=False)
         dmat = bspl.bases(self.gr).T
         dmat2 = scipy_BSpline(bspl.knots, np.eye(self.N), 3)(self.gr)
         for i in range(self.N):
@@ -319,3 +319,15 @@ class TestTransformFlags(unittest.TestCase):
         with self.assertRaises(ValueError) as ctx:
             MSpline(self.N, log_y=True, normalize=False)
         self.assertIn("log_y", str(ctx.exception))
+
+    def test_normalize_is_required_and_keyword_only(self):
+        # Whether a basis is a density is a modelling decision, so it cannot be inherited from a
+        # default. A linear-y basis cannot be normalized meaningfully for unconstrained
+        # coefficients, while a log-y one always can, so there is no safe value to assume.
+        for cls in (MSpline, BSpline, LogXBSpline, LogYBSpline, LogXLogYBSpline):
+            with self.subTest(basis=cls.__name__):
+                with self.assertRaises(TypeError) as ctx:
+                    cls(self.N)
+                self.assertIn("normalize", str(ctx.exception))
+        with self.assertRaises(TypeError):
+            BSpline(self.N, None, None, (0.0, 1.0), 3, False)  # cannot be passed positionally

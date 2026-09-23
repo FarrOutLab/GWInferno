@@ -155,7 +155,8 @@ class SplineBasis(object):
         breakpoints=None,
         xrange=(0, 1),
         degree=3,
-        normalize=True,
+        *,
+        normalize,
         n_grid=1000,
         log_x=False,
         log_y=False,
@@ -176,7 +177,8 @@ class SplineBasis(object):
             xrange (tuple, optional): domain of spline. Defaults to (0, 1).
             degree (int, optional): polynomial degree of the spline, i.e. 3 for cubic. Defaults to 3.
                 Note this is scipy's convention; the order used internally is degree + 1.
-            normalize (bool, optional): flag whether or not to numerically normalize the spline. Defaults to True.
+            normalize (bool): whether to numerically normalize the spline. Required, and keyword-only:
+                whether a basis is a density is a modelling decision.
             n_grid (int, optional): number of points in the numerical normalization grid. Defaults to 1000.
             log_x (bool, optional): place the knots in log(x) and take the log of inputs to
                 ``bases``, so the spline is a function of log(x). Requires a positive lower bound.
@@ -444,13 +446,10 @@ class BSpline(SplineBasis):
     These are the M-spline components rescaled by (t[i+k] - t[i])/k. See :class:`MSpline` for the
     unit-integral sibling, and :class:`SplineBasis` for the constructor arguments.
 
-    ``normalize`` defaults to False here because a B-spline is most often used as a building block
-    inside an exponent, where 1 / int sum_i c_i B_i(x) dx is not a meaningful scaling and can
-    approach zero or change sign for unconstrained real coefficients.
+    ``normalize`` is required rather than defaulted: for a B-spline used as a building block inside
+    an exponent, 1 / int sum_i c_i B_i(x) dx is not a meaningful scaling and can approach zero or
+    change sign for unconstrained real coefficients, so the caller has to say what it wants.
     """
-
-    def __init__(self, *args, normalize=False, **kwargs):
-        super().__init__(*args, normalize=normalize, **kwargs)
 
     def _bases(self, xs):
         """
@@ -486,7 +485,7 @@ class LogXBSpline(BSpline):
     The default ``xrange`` lower bound is positive because log(0) is undefined.
     """
 
-    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.01, 1), normalize=True, **kwargs):
+    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.01, 1), *, normalize, **kwargs):
         super().__init__(n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, log_x=True, **kwargs)
 
 
@@ -496,7 +495,7 @@ class LogYBSpline(BSpline):
     the quantity of interest and it stays positive for any real coefficients.
     """
 
-    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0, 1), normalize=True, **kwargs):
+    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0, 1), *, normalize, **kwargs):
         super().__init__(n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, log_y=True, **kwargs)
 
 
@@ -505,7 +504,7 @@ class LogXLogYBSpline(BSpline):
     A B-spline in both log(x) and log(y). See :class:`LogXBSpline` and :class:`LogYBSpline`.
     """
 
-    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.1, 1), normalize=True, **kwargs):
+    def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.1, 1), *, normalize, **kwargs):
         super().__init__(
             n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, log_x=True, log_y=True, **kwargs
         )
