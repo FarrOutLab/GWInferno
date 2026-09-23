@@ -34,6 +34,7 @@ Because the padding is derived from the breakpoints' first gap, a non-uniform br
 controls only the interior; the exterior knots stay uniformly spaced.
 """
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 from jax.scipy.integrate import trapezoid
@@ -65,13 +66,21 @@ def in_bounds(bases):
     out-of-bounds point. Inside the domain the B-spline basis is a partition of unity (the
     M-spline basis is strictly positive), so at least one entry per column is non-zero.
 
+    Design matrices are built outside ``jit`` and so reach traced code as compile-time constants.
+    Reducing over one inside the graph makes XLA constant-fold it, which on a large matrix costs
+    seconds of compile time per call site. When the matrix is concrete the mask is therefore
+    computed eagerly with NumPy, entering the graph as a constant instead of a reduction. The jax
+    path remains for the rare case of a traced design matrix.
+
     Args:
         bases (array_like): design matrix of shape (N, *xs.shape)
 
     Returns:
         array_like: boolean mask of shape xs.shape, True where the point is inside the domain
     """
-    return jnp.any(bases != 0.0, axis=0)
+    if isinstance(bases, jax.core.Tracer):
+        return jnp.any(bases != 0.0, axis=0)
+    return jnp.asarray(np.any(np.asarray(bases) != 0.0, axis=0))
 
 
 @register_pytree_node_class
