@@ -206,7 +206,7 @@ def main():
     plot_spin_pdfs(mag2_pdfs, tilt2_pdfs, mags, tilts, names, label, result_dir, save=args.save_plots, colors=colors, secondary=True)
 
     print("plotting mass distributions:")
-    plot_rate_of_z_pdfs(r_of_z, zs, label, result_dir, save=args.save_plots)
+    plot_rate_of_z_pdfs([r_of_z], zs, names, label, result_dir, save=args.save_plots)
 
     """
     Convert dictionary of pdfs and params to an xarray Dataset

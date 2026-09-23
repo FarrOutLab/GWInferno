@@ -97,7 +97,7 @@ class TestModelUtils(unittest.TestCase):
 
         plot_mass_pdfs([m_pdfs], [q_pdfs], ms, qs, ["test"], "test", "tests", save=False)
         plot_spin_pdfs([apdfs], [ctpdfs], aa, cc, ["test"], "test", "tests", save=False)
-        plot_rate_of_z_pdfs(rs, zs, "test", "tests", save=False)
+        plot_rate_of_z_pdfs([rs], zs, ["test"], "test", "tests", save=False)
 
         posterior_dict_to_xarray(samples)
 
