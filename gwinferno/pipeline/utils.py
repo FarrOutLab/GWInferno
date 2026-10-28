@@ -7,7 +7,6 @@ import numpyro
 import numpyro.distributions as dist
 import xarray as xr
 
-from gwinferno.interpolation import LogXBSpline
 from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
 from gwinferno.models.bsplines.separable import BSplineIIDSpinMagnitudes
@@ -146,7 +145,7 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
     return mag_model, tilt_model
 
 
-def setup_powerlaw_spline_redshift_model(pedict, injdict, z_nsplines, basis=LogXBSpline):
+def setup_powerlaw_spline_redshift_model(pedict, injdict, z_nsplines, basis=LogXLogYBSpline):
     print("initializing redshift model")
     return PowerlawSplineRedshiftModel(z_nsplines, pedict["redshift"], injdict["redshift"], basis=basis)
 

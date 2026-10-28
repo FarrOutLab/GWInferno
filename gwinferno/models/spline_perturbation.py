@@ -8,7 +8,7 @@ from jax.scipy.integrate import trapezoid
 
 from ..distributions import powerlaw_pdf
 from ..interpolation import BSpline
-from ..interpolation import LogXBSpline
+from ..interpolation import LogXLogYBSpline
 from .parametric.parametric import PowerlawRedshiftModel
 
 
@@ -153,7 +153,7 @@ class PowerlawBasisSplinePrimaryPowerlawRatio(object):
 
 
 class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
-    def __init__(self, n_splines: int, z_pe: dict, z_inj: dict, basis: LogXBSpline = LogXBSpline):
+    def __init__(self, n_splines: int, z_pe: dict, z_inj: dict, basis: LogXLogYBSpline = LogXLogYBSpline):
         """
         __init__
 
@@ -161,7 +161,9 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
             n_splines (int): Number of basis functions used to create B-Spline
             z_pe (dict): Redshift parameter estimation
             z_inj (dict): Redshift injections
-            basis (LogXBSpline, optional): Bases to be used in the spline perturbation. Defaults to LogXBSpline.
+            basis (class, optional): Bases to be used in the spline perturbation. Defaults to LogXLogYBSpline.
+                The basis' projection is the perturbation itself, so a log-y basis models its log and a
+                linear-y one models it directly. It is zero outside [zmin, zmax].
         """
         super().__init__(z_pe=z_pe, z_inj=z_inj)
         self.n_splines = n_splines
@@ -183,7 +185,7 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
             _type_:
         """
         pz = self.dVdz_ * jnp.power(1.0 + self.zs, lamb - 1)
-        pz *= jnp.exp(self.interpolator.project(self.norm_design_matrix, cs))
+        pz *= self.interpolator.project(self.norm_design_matrix, cs)
         return trapezoid(pz, self.zs)
 
     def prob(self, z: jnp.ndarray, dVdz: jnp.ndarray, lamb: float, cs: jnp.ndarray):
@@ -200,7 +202,20 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
             _type_:
         """
         ndim = len(z.shape)
-        return dVdz * jnp.power(1.0 + z, lamb - 1.0) * jnp.exp(self.interpolator.project(self.dmats[ndim - 1], cs))
+        return dVdz * jnp.power(1.0 + z, lamb - 1.0) * self.interpolator.project(self.dmats[ndim - 1], cs)
+
+    def rate_of_z(self, lamb: float, cs: jnp.ndarray) -> jnp.ndarray:
+        """
+        rate_of_z Source-frame volumetric rate density on self.zs, up to the overall rate
+
+        Args:
+            lamb (float): Power-law exponent for redshift model
+            cs (jnp.ndarray): B-Spline coefficients
+
+        Returns:
+            jnp.ndarray: (1 + z)^lamb times the spline perturbation, evaluated on self.zs
+        """
+        return jnp.power(1.0 + self.zs, lamb) * self.interpolator.project(self.norm_design_matrix, cs)
 
     def __call__(self, z: jnp.ndarray, lamb: float, cs: jnp.ndarray) -> jnp.ndarray:
         """
