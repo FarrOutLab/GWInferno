@@ -7,6 +7,7 @@ import xarray as xr
 from astropy.cosmology import Planck15 as Planck15_astropy
 from jax.scipy.integrate import trapezoid
 
+from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology
 from gwinferno.interpolation import BSpline
 from gwinferno.interpolation import LogXBSpline
 from gwinferno.interpolation import LogXLogYBSpline
@@ -20,9 +21,8 @@ from gwinferno.models.bsplines.single import BSplineRedshift
 from gwinferno.models.bsplines.single import BSplineSpinMagnitude
 from gwinferno.models.bsplines.single import BSplineSpinTilt
 from gwinferno.models.bsplines.single import BSplineSymmetricChiEffective
-from gwinferno.preprocess.data_collection import load_injection_dataset
 from gwinferno.models.bsplines.single import Planck15
-from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology
+from gwinferno.preprocess.data_collection import load_injection_dataset
 
 
 class TestBase1DBSplineModel(unittest.TestCase):

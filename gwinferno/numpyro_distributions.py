@@ -16,7 +16,6 @@ from numpyro.distributions.util import validate_sample
 from .interpolation import in_bounds
 from .models.bsplines.smoothing import apply_difference_prior
 
-
 _LOG_ZERO = -1e30  # stands in for log(0) where a finite value is needed
 
 

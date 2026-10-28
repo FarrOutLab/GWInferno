@@ -8,13 +8,13 @@ from scipy.interpolate import BSpline as scipy_BSpline
 from scipy.interpolate import CubicSpline
 
 from gwinferno.interpolation import BSpline
-from gwinferno.interpolation import in_bounds
 from gwinferno.interpolation import LogXBSpline
 from gwinferno.interpolation import LogXLogYBSpline
 from gwinferno.interpolation import LogYBSpline
 from gwinferno.interpolation import MSpline
 from gwinferno.interpolation import NaturalCubicUnivariateSpline
 from gwinferno.interpolation import SplineBasis
+from gwinferno.interpolation import in_bounds
 
 
 class TestNaturalCubicUnivariateSpline(unittest.TestCase):
@@ -149,7 +149,8 @@ class TestOutOfBoundsHandling(unittest.TestCase):
             probe = self._probe(xrange)
             with self.subTest(basis=cls.__name__):
                 projected = np.asarray(spl.project(spl.bases(probe), self.coefs))
-                np.testing.assert_array_equal(projected[self.N_IN :], np.zeros(self.N_OUT))
+                n_in = self.N_IN
+                np.testing.assert_array_equal(projected[n_in:], np.zeros(self.N_OUT))
 
     def test_non_positive_x_is_out_of_bounds_for_log_x_bases(self):
         # Previously LogXBSpline returned NaN here while the other variants returned 0.

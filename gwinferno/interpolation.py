@@ -40,7 +40,6 @@ import numpy as np
 from jax.scipy.integrate import trapezoid
 from jax.tree_util import register_pytree_node_class
 
-
 # Names removed by the rename and restructure, with what to use instead. This exists because
 # pipeline/parser.py resolves models by dotted string out of YAML config, so a stale config would
 # otherwise fail with a bare AttributeError naming neither the cause nor the fix.
@@ -218,9 +217,7 @@ class SplineBasis(object):
         self.knots = knots
         self.breakpoints = breakpoints
         if len(self.knots) != self.N + self.order:
-            raise ValueError(
-                f"expected {self.N + self.order} knots for n_df={self.N} and degree={self.degree}, got {len(self.knots)}"
-            )
+            raise ValueError(f"expected {self.N + self.order} knots for n_df={self.N} and degree={self.degree}, got {len(self.knots)}")
 
         self.normalize = normalize
         self.n_grid = n_grid
@@ -514,6 +511,4 @@ class LogXLogYBSpline(BSpline):
     """
 
     def __init__(self, n_df, knots=None, breakpoints=None, xrange=(0.1, 1), *, normalize, **kwargs):
-        super().__init__(
-            n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, log_x=True, log_y=True, **kwargs
-        )
+        super().__init__(n_df, knots=knots, breakpoints=breakpoints, xrange=xrange, normalize=normalize, log_x=True, log_y=True, **kwargs)

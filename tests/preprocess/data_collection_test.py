@@ -1,7 +1,7 @@
 import unittest
 
-from gwinferno.preprocess.data_collection import cosmo
 from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology
+from gwinferno.preprocess.data_collection import cosmo
 
 
 class TestBase1DBSplineModel(unittest.TestCase):
