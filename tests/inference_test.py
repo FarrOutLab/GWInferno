@@ -99,6 +99,8 @@ class TestModelInference(unittest.TestCase):
 
     def test_load_pe_samples(self):
         fns = glob.glob(f"{self.data_dir}/S*.h5")
+        if not fns:
+            self.skipTest(f"no PE files in {self.data_dir}; run tests/download_test_data.sh")
         evs = [s.split("/")[-1].replace(".h5", "") for s in fns]
         run_map = {}
 
