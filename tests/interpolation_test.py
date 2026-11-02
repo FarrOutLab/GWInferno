@@ -287,6 +287,16 @@ class TestDegreeParameter(unittest.TestCase):
             BSpline(10, knots=np.linspace(0, 1, 3), degree=3, normalize=False)
         self.assertIn("expected 14 knots", str(ctx.exception))
 
+    def test_breakpoints_are_derived_from_explicit_knots(self):
+        for cls, xrange, to_user in ((BSpline, (0, 1), np.asarray), (LogXBSpline, (0.1, 1), np.exp)):
+            for degree in (1, 2, 3, 4):
+                with self.subTest(cls=cls.__name__, degree=degree):
+                    default = cls(10, xrange=xrange, degree=degree, normalize=False)
+                    # knots are given in user coordinates, so undo the log for LogXBSpline
+                    from_knots = cls(10, knots=to_user(default.knots), xrange=xrange, degree=degree, normalize=False)
+                    self.assertEqual(len(from_knots.breakpoints), 10 - degree + 1)
+                    np.testing.assert_allclose(from_knots.breakpoints, default.breakpoints, atol=1e-6)
+
 
 class TestTransformFlags(unittest.TestCase):
     """The log_x / log_y flags that the Log* subclasses are now thin wrappers around."""

@@ -213,6 +213,9 @@ class SplineBasis(object):
                 breakpoints = np.linspace(xrange[0], xrange[1], n_df - k + 2)
             dx = breakpoints[1] - breakpoints[0]
             knots = jnp.linspace(xrange[0] - dx * (k - 1), xrange[1] + dx * (k - 1), len(breakpoints) + (k - 1) * 2)
+        elif breakpoints is None:
+            end = len(knots) - degree  # not knots[degree:-degree], which is empty for degree 0
+            breakpoints = knots[degree:end]
 
         self.knots = knots
         self.breakpoints = breakpoints
