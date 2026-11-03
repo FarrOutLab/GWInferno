@@ -1,9 +1,11 @@
 import os
 import unittest
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 import xarray as xr
+from jax.scipy.integrate import trapezoid
 
 from gwinferno.models.bsplines.separable import BSplineEffectiveSpinDims
 from gwinferno.models.bsplines.separable import BSplineIIDComponentMasses
@@ -185,15 +187,20 @@ class TestBase1DBSplineModel(unittest.TestCase):
 class TestBSplinePrimaryBSplineRatioPPD(unittest.TestCase):
     """ppd delegates to the component models, keeping per-model settings, using synthetic samples."""
 
-    def test_ppd_matches_components(self):
-        n_m, n_q, n_draws = 10, 6, 4
+    n_m, n_q, n_draws = 10, 6, 4
+
+    def setUp(self) -> None:
+        rng = np.random.default_rng(0)
+        self.mcoefs = jnp.asarray(rng.normal(size=(self.n_draws, self.n_m)))
+        self.qcoefs = jnp.asarray(rng.normal(size=(self.n_draws, self.n_q)))
+
+    def test_ppd_matches_components_without_m2min(self):
+        n_m, n_q, n_draws = self.n_m, self.n_q, self.n_draws
+        mcoefs, qcoefs = self.mcoefs, self.qcoefs
         m1 = jnp.linspace(3.0, 120.0, 400)
         q = jnp.linspace(0.01, 1.0, 300)
         knots_m = np.geomspace(1.0, 300.0, n_m + 4)  # custom, non-uniform knots for the mass spline
-        model = BSplinePrimaryBSplineRatio(n_m, n_q, m1, m1, q, q, mmax=100.0, m1min=5.0, m2min=5.0, kwargs_m={"knots": knots_m})
-        rng = np.random.default_rng(0)
-        mcoefs = jnp.asarray(rng.normal(size=(n_draws, n_m)))
-        qcoefs = jnp.asarray(rng.normal(size=(n_draws, n_q)))
+        model = BSplinePrimaryBSplineRatio(n_m, n_q, m1, m1, q, q, mmax=100.0, m1min=5.0, m2min=None, qmin=0.05, kwargs_m={"knots": knots_m})
 
         ppds = model.ppd(m1, q, mcoefs, qcoefs)
 
@@ -205,3 +212,51 @@ class TestBSplinePrimaryBSplineRatioPPD(unittest.TestCase):
             np.testing.assert_allclose(np.asarray(ppds["mass_ratio"][i]), np.asarray(model.ratio_model(qcoefs[i])), rtol=1e-6)
         self.assertTrue(np.all(np.asarray(ppds["mass_1"][:, (m1 < 5.0) | (m1 > 100.0)]) == 0.0))
         self.assertTrue(np.all(np.asarray(ppds["mass_ratio"][:, q < 0.05]) == 0.0))
+
+    def test_m2min_truncates_and_normalizes_the_joint(self):
+        m2min, mmax = 5.0, 100.0
+        ms = jnp.linspace(m2min, mmax, 800)
+        qs = jnp.linspace(m2min / mmax, 1.0, 800)
+        M, Q = jnp.meshgrid(ms, qs)  # samples on a grid, so the joint can be integrated
+        model = BSplinePrimaryBSplineRatio(self.n_m, self.n_q, M, M, Q, Q, mmax=mmax, m1min=m2min, m2min=m2min)
+        ppds = model.ppd(ms, qs, self.mcoefs, self.qcoefs)
+
+        for i in range(self.n_draws):
+            joint = model(self.mcoefs[i], self.qcoefs[i])
+            with self.subTest(draw=i):
+                self.assertTrue(np.all(np.asarray(joint)[np.asarray(Q * M) < m2min] == 0.0))
+                self.assertAlmostEqual(float(trapezoid(trapezoid(joint, qs, axis=0), ms)), 1.0, places=2)
+                # ppd returns the marginals of that same joint
+                np.testing.assert_allclose(ppds["mass_1"][i], trapezoid(joint, qs, axis=0), rtol=2e-2, atol=1e-4)
+                # skipping q = qmin, where the exact marginal is 0 but the grid reference keeps one cell at m1 = mmax
+                np.testing.assert_allclose(ppds["mass_ratio"][i, 1:], trapezoid(joint, ms, axis=1)[1:], rtol=2e-2, atol=1e-3)
+                self.assertAlmostEqual(float(trapezoid(ppds["mass_1"][i], ms)), 1.0, places=3)
+                self.assertAlmostEqual(float(trapezoid(ppds["mass_ratio"][i], qs)), 1.0, places=3)
+
+    def test_qmin_is_required_without_m2min(self):
+        x = jnp.linspace(0.1, 1.0, 10)
+        with self.assertRaises(ValueError):
+            BSplinePrimaryBSplineRatio(self.n_m, self.n_q, x, x, x, x, m2min=None)
+
+
+class TestPLPeakPrimaryBSplineRatioM2min(unittest.TestCase):
+    """m2min truncates the joint to q * m1 >= m2min and renormalizes it, using samples on a grid."""
+
+    def test_m2min_truncates_and_normalizes_the_joint(self):
+        m2min, mmin, mmax, n_q = 5.0, 4.0, 100.0, 6
+        ms = jnp.linspace(mmin, mmax, 800)
+        qs = jnp.linspace(m2min / mmax, 1.0, 800)
+        M, Q = jnp.meshgrid(ms, qs)
+        coefs = jnp.asarray(np.random.default_rng(1).normal(size=n_q))
+        hyper = dict(alpha=-2.5, mmax=mmax, peak_mean=30.0, peak_sd=4.0, peak_frac=0.1, coefs=coefs)
+
+        untruncated = PLPeakPrimaryBSplineRatio(n_q, Q, Q, qmin=m2min / mmax)
+        model = PLPeakPrimaryBSplineRatio(n_q, Q, Q, m2min=m2min, qmin=m2min / mmax)
+        # mmin is a hyperparameter, so the normalization must trace under jit
+        joint = jax.jit(lambda mmin: model(M, mmin=mmin, **hyper))(mmin)
+
+        self.assertTrue(np.all(np.asarray(joint)[np.asarray(Q * M) < m2min] == 0.0))
+        self.assertAlmostEqual(float(trapezoid(trapezoid(joint, qs, axis=0), ms)), 1.0, places=2)
+        allowed = np.asarray(Q * M) >= m2min
+        ratio = np.asarray(joint)[allowed] / np.asarray(untruncated(M, mmin=mmin, **hyper))[allowed]
+        np.testing.assert_allclose(ratio, ratio[0], rtol=1e-5)  # the same density, rescaled by 1 / Z

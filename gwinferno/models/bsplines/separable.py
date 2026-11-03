@@ -2,7 +2,9 @@
 A collection of 2-D separable (i.e. independent) population models involving basis splines
 """
 
+import jax
 import jax.numpy as jnp
+from jax.scipy.integrate import trapezoid
 
 from ...distributions import powerlaw_pdf
 from ..parametric.parametric import plpeak_primary_pdf
@@ -12,6 +14,13 @@ from .single import BSplineMass
 from .single import BSplineRatio
 from .single import BSplineSpinMagnitude
 from .single import BSplineSpinTilt
+
+
+def _tail_integral(y, x):
+    """The integral of ``y`` from a point up to ``x[-1]``, as a function of that point (0 above the grid, all of it below)."""
+    # cumulative trapezoid, as numpyro_distributions.cumtrapz, which can't be imported here (circular import)
+    cdf = jnp.concatenate([jnp.zeros(1), jnp.cumsum(jnp.diff(x) * (y[:-1] + y[1:]) / 2.0)])
+    return lambda x0: cdf[-1] - jnp.interp(x0, x, cdf)
 
 
 class BSplineIIDSpinMagnitudes(object):
@@ -366,16 +375,19 @@ class BSplinePrimaryPowerlawRatio(object):
 
 
 class PLPeakPrimaryBSplineRatio(object):
-    r"""A powerlaw + gaussian peak primary mass model and B-Spline model in mass ratio.
+    r"""A powerlaw + gaussian peak primary mass model and B-Spline model in mass ratio, optionally truncated to a
+    minimum secondary mass,
 
     .. math::
         p(m_1, q \mid \mathbf{c}, \alpha, \mu_\mathrm{peak}, \sigma_\mathrm{peak}, f_\mathrm{peak}) =
-        p(m_1 \mid \alpha, \mu_\mathrm{peak}, \sigma_\mathrm{peak}, f_\mathrm{peak}) p(q \mid \mathbf{c}, m_1, m_{\mathrm{min}}),
+        \frac{1}{Z} p(m_1 \mid \alpha, \mu_\mathrm{peak}, \sigma_\mathrm{peak}, f_\mathrm{peak}) p(q \mid \mathbf{c})
+        \Theta(q m_1 - m_{2,\mathrm{min}}),
 
     where :math:`\mathbf{c}` is a vector of the ``n_splines`` basis spline coefficients,
     :math:`\alpha` is the powerlaw slope of the primary component mass distribution, :math:`\mu_\mathrm{peak}` and
-    :math:`\sigma_\mathrm{peak}` the mean and standard deviation of the peak in mass, and :math:`f_\mathrm{peak}`
-    is the mixing fraction between the powerlaw and peak in mass.
+    :math:`\sigma_\mathrm{peak}` the mean and standard deviation of the peak in mass, :math:`f_\mathrm{peak}`
+    is the mixing fraction between the powerlaw and peak in mass, and :math:`Z` normalizes the truncated density.
+    With ``m2min=None`` there is no truncation and :math:`Z=1`.
 
     See Also
     --------
@@ -389,6 +401,9 @@ class PLPeakPrimaryBSplineRatio(object):
         Mass ratio parameter estimation samples for basis evaluation.
     q_inj : array_like
         Mass ratio injection samples for basis evaluation.
+    m2min : float or None, default=None
+        Minimum secondary component mass, imposed as the :math:`m_1`-dependent bound
+        :math:`q \geq m_{2,\mathrm{min}}/m_1`. ``None`` imposes no bound on the secondary mass.
     **kwargs : dict, optional
         Additional keyword arguments to pass to the basis spline model.
     """
@@ -398,14 +413,20 @@ class PLPeakPrimaryBSplineRatio(object):
         n_splines,
         q,
         q_inj,
+        m2min=None,
         **kwargs,
     ):
+        self.m2min = m2min
         self.ratio_model = BSplineRatio(
             n_splines,
             q,
             q_inj,
             **kwargs,
         )
+        if m2min is not None:
+            self._qs = [q_inj, q]
+            self._q_grid = jnp.linspace(self.ratio_model.xmin, self.ratio_model.xmax, 1000)
+            self._q_grid_bases = self.ratio_model.interpolator.bases(self._q_grid)
 
     def __call__(self, m1, alpha, mmin, mmax, peak_mean, peak_sd, peak_frac, coefs, pe_samples=True):
         """Evaluate the joint probability density over the parameter estimation or injection samples.
@@ -440,17 +461,27 @@ class PLPeakPrimaryBSplineRatio(object):
         """
         p_q = self.ratio_model(coefs, pe_samples=pe_samples)
         p_m1 = plpeak_primary_pdf(m1, alpha, mmin, mmax, peak_mean, peak_sd, peak_frac)
-        return p_m1 * p_q
+        if self.m2min is None:
+            return p_m1 * p_q
+        # mmin and mmax are hyperparameters here, so the m1 grid for Z is built on each call
+        m1_grid = jnp.linspace(mmin, mmax, 1000)
+        q_tail = _tail_integral(self.ratio_model.eval_spline(self._q_grid_bases, coefs), self._q_grid)
+        p_m1_grid = plpeak_primary_pdf(m1_grid, alpha, mmin, mmax, peak_mean, peak_sd, peak_frac)
+        Z = trapezoid(p_m1_grid * q_tail(self.m2min / m1_grid), m1_grid)
+        in_bounds = self._qs[1 if pe_samples else 0] * m1 >= self.m2min
+        return jnp.where(in_bounds, p_m1 * p_q, 0.0) / Z
 
 
 class BSplinePrimaryBSplineRatio(object):
-    r"""B-Spline models for the primary mass and mass ratio,
+    r"""B-Spline models for the primary mass and mass ratio, optionally truncated to a minimum secondary mass,
 
     .. math::
-        p(m_1, q \mid \mathbf{c}_m, \mathbf{c}_q) = p(m_1 \mid \mathbf{c}_m) p(q \mid \mathbf{c}_q),
+        p(m_1, q \mid \mathbf{c}_m, \mathbf{c}_q) = \frac{1}{Z} p(m_1 \mid \mathbf{c}_m) p(q \mid \mathbf{c}_q)
+        \Theta(q m_1 - m_{2,\mathrm{min}}),
 
     where :math:`\mathbf{c}_m` and :math:`\mathbf{c}_q` are vectors of the ``n_splines_m`` and ``n_splines_q``
-    basis spline coefficients for the primary mass and mass ratio, respectively.
+    basis spline coefficients for the primary mass and mass ratio, respectively, and :math:`Z` normalizes the
+    truncated density. With ``m2min=None`` there is no truncation and :math:`Z=1`.
 
     Parameters
     ----------
@@ -469,8 +500,12 @@ class BSplinePrimaryBSplineRatio(object):
         Maximum component mass.
     m1min : float, default=3
         Minimum primary component mass.
-    m2min : float, default=3
-        Minimum secondary component mass, setting lower bound on the mass ratio (:math:`q>m_{2,\mathrm{min}}/m_\mathrm{max}`).
+    m2min : float or None, default=3
+        Minimum secondary component mass, imposed as the :math:`m_1`-dependent bound
+        :math:`q \geq m_{2,\mathrm{min}}/m_1`. ``None`` imposes no bound on the secondary mass.
+    qmin : float, optional
+        Lower end of the mass ratio spline's domain. Defaults to :math:`m_{2,\mathrm{min}}/m_\mathrm{max}`,
+        the smallest mass ratio ``m2min`` allows; required if ``m2min`` is ``None``.
     kwargs_m, kwargs_q : dict, optional
         Additional keyword arguments to pass to the basis spline models for the primary component mass and mass ratio.
     **kwargs : dict, optional
@@ -488,10 +523,16 @@ class BSplinePrimaryBSplineRatio(object):
         mmax=100.0,
         m1min=3.0,
         m2min=3.0,
+        qmin=None,
         kwargs_m={},
         kwargs_q={},
         **kwargs,
     ):
+        if qmin is None:
+            if m2min is None:
+                raise ValueError("qmin is required when m2min is None")
+            qmin = m2min / mmax
+        self.m2min = m2min
         self.primary_model = BSplineMass(
             n_splines_m,
             m1,
@@ -505,10 +546,25 @@ class BSplinePrimaryBSplineRatio(object):
             n_splines_q,
             q,
             q_inj,
-            qmin=m2min / mmax,
+            qmin=qmin,
             **kwargs_q,
             **kwargs,
         )
+        if m2min is not None:
+            self._m2_in_bounds = [q_inj * m1_inj >= m2min, q * m1 >= m2min]
+            # Grids over each spline's domain for Z and the marginals, built once on the host.
+            self._m1_grid = jnp.linspace(self.primary_model.xmin, self.primary_model.xmax, 1000)
+            self._q_grid = jnp.linspace(self.ratio_model.xmin, self.ratio_model.xmax, 1000)
+            self._m1_grid_bases = self.primary_model.interpolator.bases(self._m1_grid)
+            self._q_grid_bases = self.ratio_model.interpolator.bases(self._q_grid)
+
+    def _truncation(self, mcoefs, qcoefs):
+        """Tail integrals of p(m1) and p(q) above a point, and the normalization Z of the truncated density."""
+        p_m1 = self.primary_model.eval_spline(self._m1_grid_bases, mcoefs)
+        m1_tail = _tail_integral(p_m1, self._m1_grid)
+        q_tail = _tail_integral(self.ratio_model.eval_spline(self._q_grid_bases, qcoefs), self._q_grid)
+        Z = trapezoid(p_m1 * q_tail(self.m2min / self._m1_grid), self._m1_grid)
+        return m1_tail, q_tail, Z
 
     def __call__(self, mcoefs, qcoefs, pe_samples=True):
         """Evaluate the joint probability density over the parameter estimation or injection samples.
@@ -527,12 +583,17 @@ class BSplinePrimaryBSplineRatio(object):
         array_like
             Joint probability density for parameter estimation or injection samples.
         """
-        return self.ratio_model(qcoefs, pe_samples=pe_samples) * self.primary_model(mcoefs, pe_samples=pe_samples)
+        p = self.ratio_model(qcoefs, pe_samples=pe_samples) * self.primary_model(mcoefs, pe_samples=pe_samples)
+        if self.m2min is None:
+            return p
+        _, _, Z = self._truncation(mcoefs, qcoefs)
+        return jnp.where(self._m2_in_bounds[1 if pe_samples else 0], p, 0.0) / Z
 
     def ppd(self, m1, q, mcoefs, qcoefs):
-        """Evaluate the primary mass and mass ratio densities for each draw.
+        r"""Evaluate the primary mass and mass ratio marginal densities for each draw.
 
-        The model is separable, so these are its marginals: :math:`p(q)` does not depend on :math:`m_1`.
+        Without ``m2min`` these are the component densities. With it, each is the component density times the
+        fraction of the other component's density allowed by :math:`q m_1 \geq m_{2,\mathrm{min}}`, divided by :math:`Z`.
 
         Parameters
         ----------
@@ -547,7 +608,17 @@ class BSplinePrimaryBSplineRatio(object):
         dict
             ``{"mass_1": (n_draws, len(m1)), "mass_ratio": (n_draws, len(q))}``.
         """
-        return {"mass_1": self.primary_model.ppd(m1, mcoefs), "mass_ratio": self.ratio_model.ppd(q, qcoefs)}
+        p_m1 = self.primary_model.ppd(m1, mcoefs)
+        p_q = self.ratio_model.ppd(q, qcoefs)
+        if self.m2min is None:
+            return {"mass_1": p_m1, "mass_ratio": p_q}
+
+        def factors(mcs, qcs):
+            m1_tail, q_tail, Z = self._truncation(mcs, qcs)
+            return q_tail(self.m2min / m1) / Z, m1_tail(self.m2min / q) / Z
+
+        f_m1, f_q = jax.vmap(factors)(mcoefs, qcoefs)
+        return {"mass_1": p_m1 * f_m1, "mass_ratio": p_q * f_q}
 
 
 class BSplineIIDComponentMasses(object):
