@@ -254,6 +254,11 @@ def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs=None, tilt2
 
 
 def calculate_powerlaw_rate_of_z_ppds(lamb, rate, z_model, pop_frac=None):
+    warnings.warn(
+        "calculate_powerlaw_rate_of_z_ppds is deprecated; use rate[:, None] * z_model.ppd(zs, lamb)",
+        FutureWarning,
+        stacklevel=2,
+    )
 
     if pop_frac is None:
         pop_frac = jnp.ones(lamb.shape[0])
@@ -272,7 +277,7 @@ def calculate_powerlaw_rate_of_z_ppds(lamb, rate, z_model, pop_frac=None):
 
 def calculate_powerlaw_spline_rate_of_z_ppds(lamb, z_cs, rate, z_model, pop_frac=None):
     warnings.warn(
-        "calculate_powerlaw_spline_rate_of_z_ppds is deprecated; use rate[:, None] * jax.vmap(z_model.rate_of_z)(lamb, z_cs)",
+        "calculate_powerlaw_spline_rate_of_z_ppds is deprecated; use rate[:, None] * z_model.ppd(zs, lamb, z_cs)",
         FutureWarning,
         stacklevel=2,
     )

@@ -158,7 +158,7 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
 
 def setup_powerlaw_spline_redshift_model(pedict, injdict, z_nsplines, basis=LogXLogYBSpline):
     warnings.warn(
-        "setup_powerlaw_spline_redshift_model is deprecated; construct PowerlawSplineRedshiftModel directly and use its rate_of_z method",
+        "setup_powerlaw_spline_redshift_model is deprecated; construct PowerlawSplineRedshiftModel directly and use its ppd method",
         FutureWarning,
         stacklevel=2,
     )

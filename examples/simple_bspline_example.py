@@ -1,6 +1,5 @@
 import os
 
-import jax
 import jax.numpy as jnp
 import numpyro
 import numpyro.distributions as dist
@@ -192,9 +191,9 @@ def main():
     tilt1_pdfs = [tilt_model.primary_model.ppd(tilts, posterior["tilt1_cs"].values)]
     tilt2_pdfs = [tilt_model.secondary_model.ppd(tilts, posterior["tilt2_cs"].values)]
 
-    # rate_of_z is the source-frame rate density up to the overall rate, evaluated on z_model.zs
-    zs = z_model.zs
-    r_of_z = posterior["rate"].values[:, None] * jax.vmap(z_model.rate_of_z)(posterior["lamb"].values, posterior["z_cs"].values)
+    # Redshift models' ppd returns r(z) up to the overall rate, and takes the same hyperparameters as their normalization
+    zs = jnp.linspace(z_model.zmin, z_model.zmax, 1000)
+    r_of_z = posterior["rate"].values[:, None] * z_model.ppd(zs, posterior["lamb"].values, posterior["z_cs"].values)
 
     """
     Save PDF plots of each parameter

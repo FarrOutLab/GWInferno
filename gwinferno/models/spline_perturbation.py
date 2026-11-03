@@ -2,6 +2,7 @@
 a module that stores spline perturbation related population models
 """
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 from jax.scipy.integrate import trapezoid
@@ -216,6 +217,24 @@ class PowerlawSplineRedshiftModel(PowerlawRedshiftModel):
             jnp.ndarray: (1 + z)^lamb times the spline perturbation, evaluated on self.zs
         """
         return jnp.power(1.0 + self.zs, lamb) * self.interpolator.project(self.norm_design_matrix, cs)
+
+    def ppd(self, z: jnp.ndarray, lamb: jnp.ndarray, cs: jnp.ndarray) -> jnp.ndarray:
+        """
+        ppd Source-frame volumetric rate density r(z) for each draw, up to the overall rate
+
+        Multiply by the ``rate`` draws to get R(z) in Gpc^-3 yr^-1. Call outside ``jit``/``vmap``: the
+        design matrix at ``z`` is built on the host.
+
+        Args:
+            z (jnp.ndarray): Redshifts to evaluate at
+            lamb (jnp.ndarray): Prior or posterior draws of the power-law exponent, shape (n_draws,)
+            cs (jnp.ndarray): Prior or posterior draws of the B-Spline coefficients, shape (n_draws, n_splines)
+
+        Returns:
+            jnp.ndarray: (1 + z)^lamb times the spline perturbation, shape (n_draws, len(z)); zero outside [zmin, zmax]
+        """
+        dmat = self.interpolator.bases(z)
+        return super().ppd(z, lamb) * jax.vmap(lambda c: self.interpolator.project(dmat, c))(cs)
 
     def __call__(self, z: jnp.ndarray, lamb: float, cs: jnp.ndarray) -> jnp.ndarray:
         """
