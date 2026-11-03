@@ -1,6 +1,7 @@
 import os
 import unittest
 
+import jax
 import jax.numpy as jnp
 import numpy as np
 import xarray as xr
@@ -192,3 +193,56 @@ class TestOneDimensionalModelsAreDensities(unittest.TestCase):
         # if the underlying spline is itself normalized.
         grid = jnp.linspace(-1.0, 1.0, 6000)
         self._check(BSplineSymmetricChiEffective(self.N, grid, grid), grid, "BSplineSymmetricChiEffective")
+
+
+class TestPPD(unittest.TestCase):
+    """ppd must reproduce the model as fit, including a non-default basis and custom breakpoints.
+
+    Uses synthetic samples so it runs without the downloaded fixtures.
+    """
+
+    N = 8
+    N_DRAWS = 5
+
+    def setUp(self) -> None:
+        self.coefs = jnp.asarray(np.random.default_rng(3).normal(size=(self.N_DRAWS, self.N)))
+
+    def _assert_ppd_matches_model(self, model, x):
+        ppd = model.ppd(x, self.coefs)
+        self.assertEqual(ppd.shape, (self.N_DRAWS, len(x)))
+        expected = jax.vmap(lambda cs: model(cs, pe_samples=True))(self.coefs)
+        np.testing.assert_allclose(np.asarray(ppd), np.asarray(expected), rtol=1e-6)
+        return ppd
+
+    def test_matches_model_with_custom_basis_and_breakpoints(self):
+        # Non-uniform breakpoints in q; n_df - degree + 1 = 6 of them for a cubic with 8 dof.
+        breakpoints = np.array([0.05, 0.1, 0.2, 0.4, 0.7, 1.0])
+        x = jnp.linspace(0.01, 1.2, 500)  # extends past both ends of the domain (0.05, 1)
+        model = BSplineRatio(self.N, x, x, qmin=0.05, basis=LogXLogYBSpline, breakpoints=breakpoints)
+        ppd = self._assert_ppd_matches_model(model, x)
+
+        outside = (x < 0.05) | (x > 1.0)
+        self.assertTrue(np.all(np.asarray(ppd[:, outside]) == 0.0))
+        self.assertTrue(np.all(np.asarray(ppd[:, ~outside]) > 0.0))
+        # The default model differs, which is why helpers that rebuild it from defaults are deprecated.
+        default = BSplineRatio(self.N, x, x, qmin=0.05)
+        self.assertFalse(np.allclose(np.asarray(default.ppd(x, self.coefs)), np.asarray(ppd)))
+
+    def test_symmetric_chi_effective_matches_model(self):
+        x = jnp.linspace(-1.0, 1.0, 301)
+        self._assert_ppd_matches_model(BSplineSymmetricChiEffective(self.N, x, x), x)
+
+    def test_redshift_ppd_times_rate_follows_likelihood_convention(self):
+        # hierarchical_likelihood reports rate = N / det_eff / VT with VT = normalization(cs) / 1e9 * Tobs,
+        # so rate * r(z) integrated over comoving volume and source-frame time must give rate * VT.
+        z = jnp.linspace(0.01, 2.0, 2000)
+        dVdc = PLANCK_2015_LVK_Cosmology.dVcdz(z)
+        model = BSplineRedshift(self.N, z, z, dVdc, dVdc)
+        rate, Tobs = 30.0, 1.5
+        r_of_z = model.ppd(z, self.coefs)
+        for cs, r in zip(self.coefs, r_of_z):
+            vt = model.normalization(cs) / 1e9 * Tobs
+            n_expected = trapezoid(rate * r * dVdc / (1 + z), z) / 1e9 * Tobs
+            self.assertAlmostEqual(float(n_expected / (rate * vt)), 1.0, places=3)
+            # and it is the same r(z) that the likelihood weights use
+            np.testing.assert_allclose(np.asarray(r * dVdc / (1 + z) / model.normalization(cs)), np.asarray(model(cs)), rtol=1e-5)

@@ -1,3 +1,5 @@
+import warnings
+
 import jax.numpy as jnp
 import numpy as np
 from jax import jit
@@ -18,6 +20,11 @@ from gwinferno.models.parametric.parametric import plpeak_primary_ratio_pdf
 
 
 def calculate_bspline_mass_ppds(m_cs, q_cs, nspline_dict, mmin, mmax, rate=None, pop_frac=None):
+    warnings.warn(
+        "calculate_bspline_mass_ppds is deprecated: it rebuilds the model with default settings. Use BSplinePrimaryBSplineRatio.ppd on the model you fit",
+        FutureWarning,
+        stacklevel=2,
+    )
 
     ms = jnp.linspace(mmin, mmax, 800)
     qs = jnp.linspace(mmin / mmax, 1, 800)
@@ -179,6 +186,11 @@ def calculate_mixture_iso_aligned_spin_tilt(sig_ct, lambda_ct, rate=None, pop_fr
 
 
 def calculate_bspline_spin_ppds(a1_cs, tilt1_cs, nspline_dict, a2_cs=None, tilt2_cs=None, rate=None, pop_frac=None):
+    warnings.warn(
+        "calculate_bspline_spin_ppds is deprecated: it rebuilds the models with default settings. Use the ppd method of the spin models you fit, e.g. mag_model.primary_model.ppd",
+        FutureWarning,
+        stacklevel=2,
+    )
 
     aa = jnp.linspace(0, 1, 800)
     cc = jnp.linspace(-1, 1, 800)
@@ -259,6 +271,11 @@ def calculate_powerlaw_rate_of_z_ppds(lamb, rate, z_model, pop_frac=None):
 
 
 def calculate_powerlaw_spline_rate_of_z_ppds(lamb, z_cs, rate, z_model, pop_frac=None):
+    warnings.warn(
+        "calculate_powerlaw_spline_rate_of_z_ppds is deprecated; use rate[:, None] * jax.vmap(z_model.rate_of_z)(lamb, z_cs)",
+        FutureWarning,
+        stacklevel=2,
+    )
 
     if pop_frac is None:
         pop_frac = jnp.ones(z_cs.shape[0])

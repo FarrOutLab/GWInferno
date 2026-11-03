@@ -1,11 +1,17 @@
 import os
 
+import jax
+import jax.numpy as jnp
 import numpyro
 import numpyro.distributions as dist
 import xarray as xr
 from utils import run_bspline_analysis
 from utils import setup_result_dir
 
+from gwinferno.models.bsplines.separable import BSplineIndependentSpinMagnitudes
+from gwinferno.models.bsplines.separable import BSplineIndependentSpinTilts
+from gwinferno.models.bsplines.separable import BSplinePrimaryBSplineRatio
+from gwinferno.models.spline_perturbation import PowerlawSplineRedshiftModel
 from gwinferno.pipeline.analysis import hierarchical_likelihood
 from gwinferno.pipeline.utils import bspline_mass_prior
 from gwinferno.pipeline.utils import bspline_redshift_prior
@@ -14,9 +20,6 @@ from gwinferno.pipeline.utils import load_base_parser
 from gwinferno.pipeline.utils import load_pe_and_injections_as_dict
 from gwinferno.pipeline.utils import pdf_dict_to_xarray
 from gwinferno.pipeline.utils import posterior_dict_to_xarray
-from gwinferno.postprocess.calculations import calculate_bspline_mass_ppds
-from gwinferno.postprocess.calculations import calculate_bspline_spin_ppds
-from gwinferno.postprocess.calculations import calculate_powerlaw_spline_rate_of_z_ppds
 from gwinferno.postprocess.plot import plot_mass_pdfs
 from gwinferno.postprocess.plot import plot_rate_of_z_pdfs
 from gwinferno.postprocess.plot import plot_spin_pdfs
@@ -78,8 +81,7 @@ def model(pedict, injdict, Nobs, Tobs, Ninj, mass_models, mag_model, tilt_model,
         float(Ninj),
         Nobs,
         Tobs,
-        surv_hypervolume_fct=z_model.normalization,
-        vtfct_kwargs=dict(lamb=lamb, cs=z_cs),
+        surveyed_hypervolume=z_model.normalization(lamb, z_cs),
         param_names=param_names,
         pedata=pedict,
         injdata=injdict,
@@ -128,16 +130,37 @@ def main():
     label, result_dir = setup_result_dir(args)
 
     """
+    Construct the population models. The same objects are used for inference and, below, for the PPDs,
+    so the PPDs always come from the model that was fit (same basis, knots and domains).
+    """
+    mass_model = BSplinePrimaryBSplineRatio(
+        nspline_dict["m1"],
+        nspline_dict["q"],
+        pedict["mass_1"],
+        injdict["mass_1"],
+        pedict["mass_ratio"],
+        injdict["mass_ratio"],
+        m1min=args.mmin,
+        m2min=args.mmin,
+        mmax=args.mmax,
+    )
+    mag_model = BSplineIndependentSpinMagnitudes(nspline_dict["a1"], nspline_dict["a2"], pedict["a_1"], pedict["a_2"], injdict["a_1"], injdict["a_2"])
+    tilt_model = BSplineIndependentSpinTilts(
+        nspline_dict["tilt1"], nspline_dict["tilt2"], pedict["cos_tilt_1"], pedict["cos_tilt_2"], injdict["cos_tilt_1"], injdict["cos_tilt_2"]
+    )
+    z_model = PowerlawSplineRedshiftModel(nspline_dict["redshift"], pedict["redshift"], injdict["redshift"])
+
+    """
     Run inference and save posterior samples to file. If flag --skip-inference present, then don't perform inference and load posterior samples from existing file.
     """
 
     if args.skip_inference:
-        z_model = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args, skip_inference=True)
         print(f"loading posterior file: {result_dir}/{label}_posterior_samples.h5")
         posterior = xr.load_dataset(result_dir + f"/{label}_posterior_samples.h5")
 
     else:
-        posterior_dict, z_model = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args)
+        models = (mass_model, mag_model, tilt_model, z_model)
+        posterior_dict = run_bspline_analysis(model, pedict, injdict, constants, param_names, nspline_dict, args, models)
         print(f"posteriors file saved: {result_dir}/{label}_posterior_samples.h5")
         posterior = posterior_dict_to_xarray(posterior_dict)
         posterior.to_netcdf(result_dir + f"/{label}_posterior_samples.h5")
@@ -153,45 +176,25 @@ def main():
     colors = ["tab:blue"]
 
     """
-    Calculate Mass pdfs (for loop necessary for multiple subpopulations)
+    Calculate the PPDs with the fitted models' own ppd methods (one list entry per subpopulation)
     """
+    print("calculating ppds:")
+    m1s = jnp.linspace(args.mmin, args.mmax, 800)
+    qs = jnp.linspace(args.mmin / args.mmax, 1, 800)
+    mags = jnp.linspace(0, 1, 800)
+    tilts = jnp.linspace(-1, 1, 800)
 
-    print("calculating mass ppds:")
-    mass_pdfs = []
-    q_pdfs = []
-    for i in range(len(names)):
-        mass, m1s, mass_ratio, qs = calculate_bspline_mass_ppds(
-            posterior[f"mass_cs"].values, posterior[f"q_cs"].values, nspline_dict, args.mmin, args.mmax
-        )
-        mass_pdfs.append(mass)
-        q_pdfs.append(mass_ratio)
+    mass_ppds = mass_model.ppd(m1s, qs, posterior["mass_cs"].values, posterior["q_cs"].values)
+    mass_pdfs = [mass_ppds["mass_1"]]
+    q_pdfs = [mass_ppds["mass_ratio"]]
+    mag1_pdfs = [mag_model.primary_model.ppd(mags, posterior["a1_cs"].values)]
+    mag2_pdfs = [mag_model.secondary_model.ppd(mags, posterior["a2_cs"].values)]
+    tilt1_pdfs = [tilt_model.primary_model.ppd(tilts, posterior["tilt1_cs"].values)]
+    tilt2_pdfs = [tilt_model.secondary_model.ppd(tilts, posterior["tilt2_cs"].values)]
 
-    """
-    Calculate Mass pdfs (for loop necessary for multiple subpopulations)
-    """
-    print("calculating spin ppds:")
-    mag1_pdfs = []
-    mag2_pdfs = []
-    tilt1_pdfs = []
-    tilt2_pdfs = []
-    for i in range(len(names)):
-        mag1, mag2, mags, tilt1, tilt2, tilts = calculate_bspline_spin_ppds(
-            posterior[f"a1_cs"].values,
-            posterior[f"tilt1_cs"].values,
-            nspline_dict,
-            a2_cs=posterior[f"a2_cs"].values,
-            tilt2_cs=posterior[f"tilt2_cs"].values,
-        )
-        mag1_pdfs.append(mag1)
-        mag2_pdfs.append(mag2)
-        tilt1_pdfs.append(tilt1)
-        tilt2_pdfs.append(tilt2)
-
-    """
-    Calculate rate as a funciton of redshift
-    """
-    print("calculating rate(z) ppds:")
-    r_of_z, zs = calculate_powerlaw_spline_rate_of_z_ppds(posterior["lamb"].values, posterior["z_cs"].values, posterior["rate"].values, z_model)
+    # rate_of_z is the source-frame rate density up to the overall rate, evaluated on z_model.zs
+    zs = z_model.zs
+    r_of_z = posterior["rate"].values[:, None] * jax.vmap(z_model.rate_of_z)(posterior["lamb"].values, posterior["z_cs"].values)
 
     """
     Save PDF plots of each parameter

@@ -529,6 +529,26 @@ class BSplinePrimaryBSplineRatio(object):
         """
         return self.ratio_model(qcoefs, pe_samples=pe_samples) * self.primary_model(mcoefs, pe_samples=pe_samples)
 
+    def ppd(self, m1, q, mcoefs, qcoefs):
+        """Evaluate the primary mass and mass ratio densities for each draw.
+
+        The model is separable, so these are its marginals: :math:`p(q)` does not depend on :math:`m_1`.
+
+        Parameters
+        ----------
+        m1, q : array_like
+            Primary masses and mass ratios to evaluate the model at.
+        mcoefs, qcoefs : array_like
+            Prior or posterior draws of the primary mass and mass ratio coefficients, shapes ``(n_draws, n_splines_m)``
+            and ``(n_draws, n_splines_q)``.
+
+        Returns
+        -------
+        dict
+            ``{"mass_1": (n_draws, len(m1)), "mass_ratio": (n_draws, len(q))}``.
+        """
+        return {"mass_1": self.primary_model.ppd(m1, mcoefs), "mass_ratio": self.ratio_model.ppd(q, qcoefs)}
+
 
 class BSplineIIDComponentMasses(object):
     r"""B-Spline model for the masses of both binary components assuming they are independently and identically distributed (IID),
