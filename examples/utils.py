@@ -5,10 +5,6 @@ from jax import random
 from numpyro.infer import MCMC
 from numpyro.infer import NUTS
 
-from gwinferno.pipeline.utils import setup_bspline_mass_models
-from gwinferno.pipeline.utils import setup_bspline_spin_models
-from gwinferno.pipeline.utils import setup_powerlaw_spline_redshift_model
-
 from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
 
 
@@ -31,7 +27,7 @@ def setup_result_dir(parsargs):
     return label, full_dir
 
 
-def run_bspline_analysis(numpyro_model, pedict, injdict, constants, param_names, nspline_dict, parsargs, skip_inference=False):
+def run_bspline_analysis(numpyro_model, pedict, injdict, constants, param_names, nspline_dict, parsargs, models):
     """run MCMC
 
     Args:
@@ -42,52 +38,38 @@ def run_bspline_analysis(numpyro_model, pedict, injdict, constants, param_names,
         param_names (list of strs): list of parameters
         nspline_dict (dict): dictionary containing the number of splines for each parameter
         parsargs (ArgumentParser): args from ArgumentParser.parse_args()
-        skip_inference (bool, optional): If True, does not perform inference. Defaults to False.
+        models (tuple of objs): initialized (mass, spin magnitude, spin tilt, redshift) models
 
     Returns:
-        if skip_inference == False:
-            posterior (dict): dictionary of posterior samples
-            z_model (obj): redshift model (needed for later calculations)
-        if skip_inference == True:
-            z_model
+        posterior (dict): dictionary of posterior samples
     """
-    mass_models = setup_bspline_mass_models(pedict, injdict, nspline_dict["m1"], nspline_dict["q"], mmin=parsargs.mmin, mmax=parsargs.mmax)
-    mag_model, tilt_model = setup_bspline_spin_models(
-        pedict, injdict, nspline_dict["a1"], nspline_dict["tilt1"], IID=False, a2_nsplines=nspline_dict["a2"], ct2_nsplines=nspline_dict["tilt2"]
+    mass_models, mag_model, tilt_model, z_model = models
+
+    nChains = parsargs.chains
+    numpyro.set_host_device_count(nChains)
+    kernel = NUTS(numpyro_model)
+    mcmc = MCMC(kernel, num_warmup=parsargs.warmup, num_samples=parsargs.samples, num_chains=nChains)
+
+    rng_key = random.PRNGKey(parsargs.rngkey)
+    rng_key, catkey, rng_key_ = random.split(rng_key, num=3)
+
+    mcmc.run(
+        rng_key_,
+        pedict,
+        injdict,
+        constants["nObs"],
+        constants["obs_time"],
+        constants["total_inj"],
+        mass_models,
+        mag_model,
+        tilt_model,
+        z_model,
+        parsargs.mmin,
+        parsargs.mmax,
+        nspline_dict,
+        param_names,
     )
-    z_model = setup_powerlaw_spline_redshift_model(pedict, injdict, nspline_dict["redshift"])
-
-    if not skip_inference:
-        nChains = parsargs.chains
-        numpyro.set_host_device_count(nChains)
-        kernel = NUTS(numpyro_model)
-        mcmc = MCMC(kernel, num_warmup=parsargs.warmup, num_samples=parsargs.samples, num_chains=nChains)
-
-        rng_key = random.PRNGKey(parsargs.rngkey)
-        rng_key, catkey, rng_key_ = random.split(rng_key, num=3)
-
-        mcmc.run(
-            rng_key_,
-            pedict,
-            injdict,
-            constants["nObs"],
-            constants["obs_time"],
-            constants["total_inj"],
-            mass_models,
-            mag_model,
-            tilt_model,
-            z_model,
-            parsargs.mmin,
-            parsargs.mmax,
-            nspline_dict,
-            param_names,
-        )
-        posterior = mcmc.get_samples()
-
-        return posterior, z_model
-
-    else:
-        return z_model
+    return mcmc.get_samples()
 
 
 def run_powerlawpeak_analysis(numpyro_model, pedict, injdict, constants, param_names, parsargs, skip_inference=False):

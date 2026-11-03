@@ -2,6 +2,7 @@
 a module that stores 1D population models constructed from BSplines
 """
 
+import jax
 import jax.numpy as jnp
 from jax.scipy.integrate import trapezoid
 
@@ -132,6 +133,26 @@ class Base1DBSplineModel(object):
             The linear combination of the basis components evaluated at the parameter estimation or injection samples given the coefficients.
         """
         return self.funcs[1](coefs) if pe_samples else self.funcs[0](coefs)
+
+    def ppd(self, x, coefs):
+        """Evaluate the model at points ``x`` for each draw of the coefficients.
+
+        The design matrix is built once on the host, so call this outside ``jit``/``vmap``.
+
+        Parameters
+        ----------
+        x : array_like
+            Points to evaluate the model at, e.g. a grid for plotting.
+        coefs : array_like
+            Prior or posterior draws of the basis spline coefficients, shape ``(n_draws, n_splines)``.
+
+        Returns
+        -------
+        array_like
+            The model evaluated at ``x`` for each draw, shape ``(n_draws, len(x))``. Zero outside the spline domain.
+        """
+        dmat = self.interpolator.bases(x)
+        return jax.vmap(lambda cs: self.eval_spline(dmat, cs))(coefs)
 
 
 class BSplineSpinMagnitude(Base1DBSplineModel):
@@ -315,6 +336,13 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
         """
         return 0.5 * self.funcs[1](coefs) if pe_samples else 0.5 * self.funcs[0](coefs)
 
+    def ppd(self, x, coefs):
+        r"""Evaluate the symmetric density at points ``x`` for each draw; see :meth:`Base1DBSplineModel.ppd`.
+
+        ``x`` is :math:`\chi_\mathrm{eff}` itself, not its absolute value.
+        """
+        return 0.5 * super().ppd(jnp.abs(x), coefs)
+
 
 class BSplineChiPrecess(Base1DBSplineModel):
     r"""A B-Spline model for the binary effective precession :math:`\chi_\mathrm{p}`.
@@ -473,6 +501,11 @@ class BSplineRedshift(Base1DBSplineModel):
 
     The basis' own ``normalize`` flag has no effect on :math:`R(z)`: it scales :math:`r(z)` by a
     constant that cancels between :meth:`__call__` and :meth:`normalization`.
+
+    :meth:`ppd` returns :math:`r(z)` itself, not :math:`R(z)`. Multiply it by ``rate``
+    draws from :func:`~gwinferno.pipeline.analysis.hierarchical_likelihood` (with
+    ``surveyed_hypervolume=model.normalization(cs)``) to get the source-frame rate density in
+    :math:`\mathrm{Gpc}^{-3}\,\mathrm{yr}^{-1}`; no extra :math:`1/(1+z)` or normalization is needed.
     """
 
     def __init__(

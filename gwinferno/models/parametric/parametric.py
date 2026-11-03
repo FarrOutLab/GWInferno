@@ -143,3 +143,7 @@ class PowerlawRedshiftModel(object):
             self.prob(z, dVdz, lamb) / self.normalization(lamb),
             0,
         )
+
+    def ppd(self, z, lamb):
+        # r(z) = (1 + z)^lamb for each draw of lamb, shape (n_draws, len(z)); rate * r(z) is R(z) in Gpc^-3 yr^-1
+        return jnp.where(jnp.less_equal(z, self.zmax), jnp.power(1.0 + z, jnp.asarray(lamb)[:, None]), 0.0)

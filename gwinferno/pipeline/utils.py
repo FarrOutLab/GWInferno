@@ -1,3 +1,4 @@
+import warnings
 from argparse import ArgumentParser
 
 import arviz as az
@@ -101,6 +102,11 @@ Setup B-Spline models
 
 
 def setup_bspline_mass_models(pedict, injdict, m_nsplines, q_nsplines, mmin, mmax):
+    warnings.warn(
+        "setup_bspline_mass_models is deprecated; construct BSplinePrimaryBSplineRatio directly, with the basis and knots you fit, and use its ppd method",
+        FutureWarning,
+        stacklevel=2,
+    )
     print("initializing spline mass design matrices")
     return BSplinePrimaryBSplineRatio(
         m_nsplines,
@@ -118,6 +124,11 @@ def setup_bspline_mass_models(pedict, injdict, m_nsplines, q_nsplines, mmin, mma
 
 
 def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=False, a2_nsplines=None, ct2_nsplines=None):
+    warnings.warn(
+        "setup_bspline_spin_models is deprecated; construct the BSpline spin magnitude and tilt models directly and use the ppd method of their component models",
+        FutureWarning,
+        stacklevel=2,
+    )
     print("initializing spline spin design matrices")
 
     if IID:
@@ -146,6 +157,11 @@ def setup_bspline_spin_models(pedict, injdict, a1_nsplines, ct1_nsplines, IID=Fa
 
 
 def setup_powerlaw_spline_redshift_model(pedict, injdict, z_nsplines, basis=LogXLogYBSpline):
+    warnings.warn(
+        "setup_powerlaw_spline_redshift_model is deprecated; construct PowerlawSplineRedshiftModel directly and use its ppd method",
+        FutureWarning,
+        stacklevel=2,
+    )
     print("initializing redshift model")
     return PowerlawSplineRedshiftModel(z_nsplines, pedict["redshift"], injdict["redshift"], basis=basis)
 

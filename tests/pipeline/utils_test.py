@@ -76,14 +76,18 @@ class TestModelUtils(unittest.TestCase):
         load_base_parser()
 
     def test_setup_bspline_mass_models(self):
-        setup_bspline_mass_models(self.pedict, self.injdict, 10, 10, 5.0, 100.0)
+        with self.assertWarns(FutureWarning):
+            setup_bspline_mass_models(self.pedict, self.injdict, 10, 10, 5.0, 100.0)
 
     def test_setup_bspline_spin_models(self):
-        setup_bspline_spin_models(self.pedict, self.injdict, 10, 10, IID=False, a2_nsplines=10, ct2_nsplines=10)
-        setup_bspline_spin_models(self.pedict, self.injdict, 10, 10, IID=True)
+        with self.assertWarns(FutureWarning):
+            setup_bspline_spin_models(self.pedict, self.injdict, 10, 10, IID=False, a2_nsplines=10, ct2_nsplines=10)
+        with self.assertWarns(FutureWarning):
+            setup_bspline_spin_models(self.pedict, self.injdict, 10, 10, IID=True)
 
     def test_prior_model(self):
-        zmodel = setup_powerlaw_spline_redshift_model(self.pedict, self.injdict, 10)
+        with self.assertWarns(FutureWarning):
+            zmodel = setup_powerlaw_spline_redshift_model(self.pedict, self.injdict, 10)
 
         def model():
             bspline_mass_prior(m_nsplines=10, q_nsplines=10, name="test_mass")
@@ -98,17 +102,23 @@ class TestModelUtils(unittest.TestCase):
         mcmc.run(RNG)
         samples = mcmc.get_samples()
 
-        m_pdfs, ms, q_pdfs, qs = calculate_bspline_mass_ppds(samples["mass_cs_test_mass"], samples["q_cs_test_mass"], self.nspline_dict, 5.0, 100.0)
-        apdfs, aa, ctpdfs, cc = calculate_bspline_spin_ppds(samples["a_cs_test_iid"], samples["tilt_cs_test_iid"], self.nspline_dict_iid)
-        apdfs_1, apdfs_2, aa, ctpdfs_1, ctpdfs_2, cc = calculate_bspline_spin_ppds(
-            samples["a1_cs_test_ind"],
-            samples["tilt1_cs_test_ind"],
-            self.nspline_dict,
-            a2_cs=samples["a2_cs_test_ind"],
-            tilt2_cs=samples["tilt2_cs_test_ind"],
-        )
+        with self.assertWarns(FutureWarning):
+            m_pdfs, ms, q_pdfs, qs = calculate_bspline_mass_ppds(
+                samples["mass_cs_test_mass"], samples["q_cs_test_mass"], self.nspline_dict, 5.0, 100.0
+            )
+        with self.assertWarns(FutureWarning):
+            apdfs, aa, ctpdfs, cc = calculate_bspline_spin_ppds(samples["a_cs_test_iid"], samples["tilt_cs_test_iid"], self.nspline_dict_iid)
+        with self.assertWarns(FutureWarning):
+            apdfs_1, apdfs_2, aa, ctpdfs_1, ctpdfs_2, cc = calculate_bspline_spin_ppds(
+                samples["a1_cs_test_ind"],
+                samples["tilt1_cs_test_ind"],
+                self.nspline_dict,
+                a2_cs=samples["a2_cs_test_ind"],
+                tilt2_cs=samples["tilt2_cs_test_ind"],
+            )
 
-        rs, zs = calculate_powerlaw_spline_rate_of_z_ppds(samples["lamb"], samples["z_cs_test_z"], jnp.ones_like(samples["lamb"]), zmodel)
+        with self.assertWarns(FutureWarning):
+            rs, zs = calculate_powerlaw_spline_rate_of_z_ppds(samples["lamb"], samples["z_cs_test_z"], jnp.ones_like(samples["lamb"]), zmodel)
 
         plot_mass_pdfs([m_pdfs], [q_pdfs], ms, qs, ["test"], "test", "tests", save=False)
         plot_spin_pdfs([apdfs], [ctpdfs], aa, cc, ["test"], "test", "tests", save=False)

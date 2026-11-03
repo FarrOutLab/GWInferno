@@ -2,6 +2,7 @@ import os
 import unittest
 
 import jax.numpy as jnp
+import numpy as np
 import xarray as xr
 
 from gwinferno.models.bsplines.separable import BSplineEffectiveSpinDims
@@ -179,3 +180,28 @@ class TestBase1DBSplineModel(unittest.TestCase):
 
         self.assertEqual(self.pedict["a_1"].shape, pe_pdf.shape, msg="PE sample shape different than PE PDF shape")
         self.assertEqual(self.injdict["cos_tilt_1"].shape, inj_pdf.shape, msg="Inj sample shape different than Inj PDF shape")
+
+
+class TestBSplinePrimaryBSplineRatioPPD(unittest.TestCase):
+    """ppd delegates to the component models, keeping per-model settings, using synthetic samples."""
+
+    def test_ppd_matches_components(self):
+        n_m, n_q, n_draws = 10, 6, 4
+        m1 = jnp.linspace(3.0, 120.0, 400)
+        q = jnp.linspace(0.01, 1.0, 300)
+        knots_m = np.geomspace(1.0, 300.0, n_m + 4)  # custom, non-uniform knots for the mass spline
+        model = BSplinePrimaryBSplineRatio(n_m, n_q, m1, m1, q, q, mmax=100.0, m1min=5.0, m2min=5.0, kwargs_m={"knots": knots_m})
+        rng = np.random.default_rng(0)
+        mcoefs = jnp.asarray(rng.normal(size=(n_draws, n_m)))
+        qcoefs = jnp.asarray(rng.normal(size=(n_draws, n_q)))
+
+        ppds = model.ppd(m1, q, mcoefs, qcoefs)
+
+        self.assertEqual(set(ppds), {"mass_1", "mass_ratio"})
+        self.assertEqual(ppds["mass_1"].shape, (n_draws, len(m1)))
+        self.assertEqual(ppds["mass_ratio"].shape, (n_draws, len(q)))
+        for i in range(n_draws):
+            np.testing.assert_allclose(np.asarray(ppds["mass_1"][i]), np.asarray(model.primary_model(mcoefs[i])), rtol=1e-6)
+            np.testing.assert_allclose(np.asarray(ppds["mass_ratio"][i]), np.asarray(model.ratio_model(qcoefs[i])), rtol=1e-6)
+        self.assertTrue(np.all(np.asarray(ppds["mass_1"][:, (m1 < 5.0) | (m1 > 100.0)]) == 0.0))
+        self.assertTrue(np.all(np.asarray(ppds["mass_ratio"][:, q < 0.05]) == 0.0))
