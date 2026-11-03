@@ -5,10 +5,10 @@ import jax.numpy as jnp
 import xarray as xr
 from jax.scipy.integrate import trapezoid
 
+from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology
+from gwinferno.models.parametric.parametric import Planck15
 from gwinferno.models.parametric.parametric import PowerlawRedshiftModel
 from gwinferno.preprocess.data_collection import load_injection_dataset
-from gwinferno.models.parametric.parametric import Planck15
-from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology
 
 
 class TestPowerlawRedshift(unittest.TestCase):

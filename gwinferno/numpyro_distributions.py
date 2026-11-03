@@ -5,7 +5,6 @@ a module defining additional numpyro distributions
 import jax.numpy as jnp
 from jax import lax
 from jax import random
-from jax import vmap
 from jax.lax import broadcast_shapes
 from jax.scipy.integrate import trapezoid
 from numpyro.distributions import Distribution
@@ -14,14 +13,20 @@ from numpyro.distributions.util import is_prng_key
 from numpyro.distributions.util import promote_shapes
 from numpyro.distributions.util import validate_sample
 
+from .interpolation import in_bounds
 from .models.bsplines.smoothing import apply_difference_prior
+
+_LOG_ZERO = -1e30  # stands in for log(0) where a finite value is needed
 
 
 def cumtrapz(y, x):
-    difs = jnp.diff(x)
-    idxs = jnp.array([i for i in range(1, len(y))])
-    res = jnp.cumsum(vmap(lambda i, d: d * (y[i] + y[i + 1]) / 2.0)(idxs, difs))
-    return jnp.concatenate([jnp.array([0]), res])
+    """Cumulative trapezoidal integral of y over x.
+
+    Returns one value per point, with a leading zero, matching
+    ``scipy.integrate.cumulative_trapezoid(y, x, initial=0)``.
+    """
+    steps = jnp.diff(x) * (y[:-1] + y[1:]) / 2.0
+    return jnp.concatenate([jnp.zeros((1,), dtype=steps.dtype), jnp.cumsum(steps)])
 
 
 class Sine(Distribution):
@@ -269,8 +274,9 @@ class BSplineDistribution(Distribution):
         batch_shape = lax.broadcast_shapes(jnp.shape(maximum), jnp.shape(minimum), jnp.shape(cs))
         super(BSplineDistribution, self).__init__(batch_shape=batch_shape, validate_args=validate_args)
         self.grid = grid
-        # grid_dmat will contain nan's where the grid is outside the support
-        self.lpdfs = jnp.nan_to_num(jnp.einsum("i,i...->...", self.cs, grid_dmat), nan=-jnp.inf)
+        # An all-zero column of grid_dmat marks a grid point outside the spline's domain; those must
+        # get zero density rather than exp(0) == 1.
+        self.lpdfs = jnp.where(in_bounds(grid_dmat), jnp.einsum("i,i...->...", self.cs, grid_dmat), -jnp.inf)
         self.pdfs = jnp.exp(self.lpdfs)
         self.norm = trapezoid(self.pdfs, self.grid)
         self.pdfs /= self.norm
@@ -286,7 +292,11 @@ class BSplineDistribution(Distribution):
         return self.icdf(random.uniform(key, shape=sample_shape + self.batch_shape))
 
     def _log_prob_nonorm(self, value):
-        return jnp.interp(value, self.grid, self.lpdfs)
+        # jnp.interp returns NaN wherever it straddles a -inf sample, which happens when the grid
+        # extends past the spline's domain. Interpolate a floored copy: points outside the domain
+        # still exponentiate to zero, but nothing downstream sees a NaN.
+        floored = jnp.where(jnp.isneginf(self.lpdfs), _LOG_ZERO, self.lpdfs)
+        return jnp.interp(value, self.grid, floored)
 
     @validate_sample
     def log_prob(self, value):

@@ -154,7 +154,7 @@ class BSplineIndependentSpinMagnitudes(object):
 
 
 class BSplineIIDSpinTilts(object):
-    """A B-Spline model for the (cosine of) spin tilts of both binary components assuming
+    r"""A B-Spline model for the (cosine of) spin tilts of both binary components assuming
     they are independently and identically distributed (IID),
 
     .. math::
@@ -219,7 +219,7 @@ class BSplineIIDSpinTilts(object):
 
 
 class BSplineIndependentSpinTilts(object):
-    """A B-Spline model for the (cosine of) spin tilts of the primary and secondary components assuming
+    r"""A B-Spline model for the (cosine of) spin tilts of the primary and secondary components assuming
     they are independently distributed,
 
     .. math::
@@ -340,7 +340,7 @@ class BSplinePrimaryPowerlawRatio(object):
         )
 
     def __call__(self, m1, q, beta, mmin, coefs, pe_samples=True):
-        """Evaluate the joint probability density over the parameter estimation or injection samples.
+        r"""Evaluate the joint probability density over the parameter estimation or injection samples.
         Use flag `pe_samples` to specify which samples are being evaluated (parameter estimation or injection).
 
         Parameters

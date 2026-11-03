@@ -8,7 +8,6 @@ from jax.scipy.integrate import trapezoid
 from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology as Planck15
 
 from ...interpolation import BSpline
-from ...interpolation import LogXBSpline
 from ...interpolation import LogXLogYBSpline
 from ...interpolation import LogYBSpline
 
@@ -30,6 +29,11 @@ class Base1DBSplineModel(object):
         Domain of the spline.
     basis : class, default=BSpline
         Type of basis to use, e.g., `LogYBSpline`.
+    normalize : bool, default=False
+        Whether the basis normalizes itself. Every concrete model below states this explicitly and
+        sets it True, since each is a factor of a separable population density. It is False here
+        only because this base class defaults to a linear-y basis, which cannot represent a density
+        for unconstrained coefficients.
     """
 
     def __init__(
@@ -40,6 +44,7 @@ class Base1DBSplineModel(object):
         xrange=(0.0, 1.0),
         degree=3,
         basis=BSpline,
+        normalize=False,
         **kwargs,
     ):
         self.n_splines = n_splines
@@ -48,7 +53,8 @@ class Base1DBSplineModel(object):
         self.interpolator = basis(
             n_splines,
             xrange=xrange,
-            k=degree + 1,
+            degree=degree,
+            normalize=normalize,
             **kwargs,
         )
         self._valid_xx = (xx >= self.xmin) & (xx <= self.xmax)
@@ -149,6 +155,7 @@ class BSplineSpinMagnitude(Base1DBSplineModel):
         a,
         a_inj,
         basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (0.0, 1.0))
@@ -157,6 +164,7 @@ class BSplineSpinMagnitude(Base1DBSplineModel):
             a,
             a_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -183,6 +191,7 @@ class BSplineSpinTilt(Base1DBSplineModel):
         ct,
         ct_inj,
         basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (-1.0, 1.0))
@@ -191,6 +200,7 @@ class BSplineSpinTilt(Base1DBSplineModel):
             ct,
             ct_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -207,8 +217,17 @@ class BSplineChiEffective(Base1DBSplineModel):
         Effective spin parameter estimation samples for basis evaluation.
     chieff_inj : array_like
         Effective spin injection samples for basis evaluation.
-    basis : class, default=BSpline
-        Type of basis to use.
+    basis : class, default=LogYBSpline
+        Type of basis to use. Must yield a normalized, non-negative density; see Notes.
+
+    Notes
+    -----
+    This is a population shape p(chi_eff), used as one factor of a separable
+    dN/dV(theta) = R * p_pop(theta), so it must integrate to 1 over its domain and stay
+    non-negative. A linear-y basis such as :class:`~gwinferno.interpolation.BSpline` satisfies
+    neither for unconstrained real coefficients: the projection goes negative, and its integral
+    varies with the coefficients, which biases the inferred rate by that integral. A log-y basis
+    models log p, so it is positive by construction, and normalize makes it integrate to 1.
     """
 
     def __init__(
@@ -216,7 +235,8 @@ class BSplineChiEffective(Base1DBSplineModel):
         n_splines,
         chieff,
         chieff_inj,
-        basis=BSpline,
+        basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (-1.0, 1.0))
@@ -225,13 +245,14 @@ class BSplineChiEffective(Base1DBSplineModel):
             chieff,
             chieff_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
 
 
 class BSplineSymmetricChiEffective(Base1DBSplineModel):
-    """A B-Spline model for the binary effective spin :math:`\chi_\mathrm{eff}`
+    r"""A B-Spline model for the binary effective spin :math:`\chi_\mathrm{eff}`
     that is symmetric about :math:`\chi_\mathrm{eff} = 0`.
 
     Parameters
@@ -242,8 +263,17 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
         Effective spin parameter estimation samples for basis evaluation.
     chieff_inj : array_like
         Effective spin injection samples for basis evaluation.
-    basis : class, default=BSpline
-        Type of basis to use.
+    basis : class, default=LogYBSpline
+        Type of basis to use. Must yield a normalized, non-negative density; see Notes.
+
+    Notes
+    -----
+    This is a population shape p(chi_eff), used as one factor of a separable
+    dN/dV(theta) = R * p_pop(theta), so it must integrate to 1 over its domain and stay
+    non-negative. A linear-y basis such as :class:`~gwinferno.interpolation.BSpline` satisfies
+    neither for unconstrained real coefficients: the projection goes negative, and its integral
+    varies with the coefficients, which biases the inferred rate by that integral. A log-y basis
+    models log p, so it is positive by construction, and normalize makes it integrate to 1.
     """
 
     def __init__(
@@ -251,7 +281,8 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
         n_splines,
         chieff,
         chieff_inj,
-        basis=BSpline,
+        basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (0.0, 1.0))
@@ -260,6 +291,7 @@ class BSplineSymmetricChiEffective(Base1DBSplineModel):
             jnp.abs(chieff),
             jnp.abs(chieff_inj),
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -295,8 +327,8 @@ class BSplineChiPrecess(Base1DBSplineModel):
         Effective precession parameter estimation samples for basis evaluation.
     chip_inj : array_like
         Effective precession injection samples for basis evaluation.
-    basis : class, default=BSpline
-        Type of basis to use.
+    basis : class, default=LogYBSpline
+        Type of basis to use. Must yield a normalized, non-negative density; see Notes.
     """
 
     def __init__(
@@ -304,7 +336,8 @@ class BSplineChiPrecess(Base1DBSplineModel):
         n_splines,
         chip,
         chip_inj,
-        basis=BSpline,
+        basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (0.0, 1.0))
@@ -313,6 +346,7 @@ class BSplineChiPrecess(Base1DBSplineModel):
             chip,
             chip_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -342,6 +376,7 @@ class BSplineRatio(Base1DBSplineModel):
         q_inj,
         qmin=0,
         basis=LogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (qmin, 1))
@@ -350,6 +385,7 @@ class BSplineRatio(Base1DBSplineModel):
             q,
             q_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -382,6 +418,7 @@ class BSplineMass(Base1DBSplineModel):
         mmin=2,
         mmax=100,
         basis=LogXLogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (mmin, mmax))
@@ -390,6 +427,7 @@ class BSplineMass(Base1DBSplineModel):
             m,
             m_inj,
             basis=basis,
+            normalize=normalize,
             xrange=xrange,
             **kwargs,
         )
@@ -418,8 +456,23 @@ class BSplineRedshift(Base1DBSplineModel):
         Differential co-moving volume for each injection sample.
     zmax : float, default=2.3
         Maximum redshift. Ignored if ``xrange`` is provided.
-    basis : class, default=LogXBSpline
-        Type of basis to use.
+    basis : class, default=LogXLogYBSpline
+        Type of basis to use. The basis determines how :math:`r(z)` is parameterized; see Notes.
+
+    Notes
+    -----
+    :math:`r(z)` is whatever the chosen basis projects, i.e.
+    ``basis.project(design_matrix, coefs)``, so the basis alone decides the parameterization:
+
+    * A log-:math:`y` basis (:class:`~gwinferno.interpolation.LogXLogYBSpline`, the default, or
+      :class:`~gwinferno.interpolation.LogYBSpline`) models :math:`\ln r(z)`, which keeps
+      :math:`r(z)` positive for any real coefficients.
+    * A linear-:math:`y` basis (:class:`~gwinferno.interpolation.BSpline`,
+      :class:`~gwinferno.interpolation.LogXBSpline`) models :math:`r(z)` directly, and the
+      coefficients must be constrained to keep it non-negative.
+
+    The basis' own ``normalize`` flag has no effect on :math:`R(z)`: it scales :math:`r(z)` by a
+    constant that cancels between :meth:`__call__` and :meth:`normalization`.
     """
 
     def __init__(
@@ -430,7 +483,8 @@ class BSplineRedshift(Base1DBSplineModel):
         dVdc,
         dVdc_inj,
         zmax=2.3,
-        basis=LogXBSpline,
+        basis=LogXLogYBSpline,
+        normalize=True,
         **kwargs,
     ):
         xrange = kwargs.pop("xrange", (1e-4, zmax))
@@ -440,6 +494,7 @@ class BSplineRedshift(Base1DBSplineModel):
             z_inj,
             xrange=xrange,
             basis=basis,
+            normalize=normalize,
             **kwargs,
         )
         self.zmin = jnp.max(jnp.array([jnp.min(z), jnp.min(z_inj)]))
@@ -464,7 +519,7 @@ class BSplineRedshift(Base1DBSplineModel):
             The redshift normalization constant.
         """
         return trapezoid(
-            self.dVcdzgrid / (1 + self.zgrid) * jnp.exp(jnp.einsum("i...,i->...", self.grid_bases, cs)),
+            self.dVcdzgrid / (1 + self.zgrid) * self.interpolator.project(self.grid_bases, cs),
             self.zgrid,
         )
 
@@ -485,8 +540,5 @@ class BSplineRedshift(Base1DBSplineModel):
         array_like
             Merger-rate per unit redshift in the detector-frame :math:`R`.
         """
-        return (
-            jnp.exp(self.funcs[1](coefs)) * self.differential_comov_vols[1] / (1 + self.zs[1]) / self.normalization(coefs)
-            if pe_samples
-            else jnp.exp(self.funcs[0](coefs)) * self.differential_comov_vols[0] / (1 + self.zs[0]) / self.normalization(coefs)
-        )
+        idx = 1 if pe_samples else 0
+        return self.funcs[idx](coefs) * self.differential_comov_vols[idx] / (1 + self.zs[idx]) / self.normalization(coefs)

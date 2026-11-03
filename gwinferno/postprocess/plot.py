@@ -15,7 +15,7 @@ def plot_pdf(x, pdf, label, color="blue", loglog=True, alpha=1.0):
     plt.fill_between(x, low, high, color=color, alpha=0.1)
 
 
-def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, save=True, colors=["red", "blue", "green"], alt_label=""):
+def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, save=True, show=False, colors=["red", "blue", "green"], alt_label=""):
 
     plt.figure(figsize=(15, 5))
     for i in range(len(mpdfs)):
@@ -24,9 +24,10 @@ def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, save=True, col
     plt.xlabel("m1")
     plt.legend()
     plt.xlim(m1[0], m1[-1])
-    plt.show()
     if save:
         plt.savefig(result_dir + f"/mass_pdf_{label}.png", dpi=100)
+    if show:
+        plt.show()
     plt.close()
 
     plt.figure(figsize=(10, 7))
@@ -37,13 +38,16 @@ def plot_mass_pdfs(mpdfs, qpdfs, m1, q, names, label, result_dir, save=True, col
     plt.xlabel("q")
     plt.legend()
     plt.xlim(0, 1)
-    plt.show()
     if save:
         plt.savefig(result_dir + f"/mass_ratio_pdf_{label}_{alt_label}.png", dpi=100)
+    if show:
+        plt.show()
     plt.close()
 
 
-def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=True, colors=["red", "blue", "green"], secondary=False, alt_label=""):
+def plot_spin_pdfs(
+    a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=True, show=False, colors=["red", "blue", "green"], secondary=False, alt_label=""
+):
 
     if secondary:
         comp = "2"
@@ -57,9 +61,10 @@ def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=Tru
     plt.xlabel(f"a{comp}")
     plt.legend()
     plt.xlim(0, 1)
-    plt.show()
     if save:
         plt.savefig(result_dir + f"/spin_mag{comp}_pdf_{label}_{alt_label}.png", dpi=100)
+    if show:
+        plt.show()
     plt.close()
 
     plt.figure(figsize=(10, 7))
@@ -69,13 +74,14 @@ def plot_spin_pdfs(a_pdfs, tilt_pdfs, aa, cc, names, label, result_dir, save=Tru
     plt.xlabel(rf"cos$\theta${comp}")
     plt.legend()
     plt.xlim(-1, 1)
-    plt.show()
     if save:
         plt.savefig(result_dir + f"/cos_tilt{comp}_pdf_{label}_{alt_label}.png", dpi=100)
+    if show:
+        plt.show()
     plt.close()
 
 
-def plot_rate_of_z_pdfs(z_pdfs, z, names, label, result_dir, colors=["red", "blue", "green"], save=True):
+def plot_rate_of_z_pdfs(z_pdfs, z, names, label, result_dir, colors=["red", "blue", "green"], save=True, show=False):
 
     plt.figure(figsize=(10, 7))
     for i in range(len(z_pdfs)):
@@ -86,7 +92,8 @@ def plot_rate_of_z_pdfs(z_pdfs, z, names, label, result_dir, colors=["red", "blu
     plt.yscale("log")
     plt.xlim(0, 1.5)
     plt.ylim(5, 1e3)
-    plt.show()
     if save:
         plt.savefig(result_dir + f"/redshift_pdf_{label}.png", dpi=100)
+    if show:
+        plt.show()
     plt.close()

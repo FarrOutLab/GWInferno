@@ -2,9 +2,16 @@ import os
 import unittest
 
 import jax.numpy as jnp
+import numpy as np
 import xarray as xr
 from astropy.cosmology import Planck15 as Planck15_astropy
+from jax.scipy.integrate import trapezoid
 
+from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology
+from gwinferno.interpolation import BSpline
+from gwinferno.interpolation import LogXBSpline
+from gwinferno.interpolation import LogXLogYBSpline
+from gwinferno.interpolation import LogYBSpline
 from gwinferno.models.bsplines.single import Base1DBSplineModel
 from gwinferno.models.bsplines.single import BSplineChiEffective
 from gwinferno.models.bsplines.single import BSplineChiPrecess
@@ -14,9 +21,8 @@ from gwinferno.models.bsplines.single import BSplineRedshift
 from gwinferno.models.bsplines.single import BSplineSpinMagnitude
 from gwinferno.models.bsplines.single import BSplineSpinTilt
 from gwinferno.models.bsplines.single import BSplineSymmetricChiEffective
-from gwinferno.preprocess.data_collection import load_injection_dataset
 from gwinferno.models.bsplines.single import Planck15
-from gwinferno.cosmology import PLANCK_2015_LVK_Cosmology
+from gwinferno.preprocess.data_collection import load_injection_dataset
 
 
 class TestBase1DBSplineModel(unittest.TestCase):
@@ -84,3 +90,105 @@ class TestBase1DBSplineModel(unittest.TestCase):
 
     def test_cosmology(self):
         self.assertIs(Planck15, PLANCK_2015_LVK_Cosmology)
+
+
+class TestBSplineRedshiftNormalization(unittest.TestCase):
+    """Checks that R(z) is a properly normalized rate density for every basis choice.
+
+    Uses synthetic samples so it runs without the downloaded ``tests/data`` fixtures. Note that
+    ``coefs = ones(n)`` cannot detect these failures: the basis is a partition of unity, so
+    ``sum_i c_i B_i(z)`` is then constant in z and every normalization error degenerates to an
+    overall factor. Randomly drawn coefficients are required.
+    """
+
+    LOG_Y_BASES = (LogYBSpline, LogXLogYBSpline)
+    LINEAR_Y_BASES = (BSpline, LogXBSpline)
+
+    def setUp(self) -> None:
+        self.n_splines = 8
+        self.z = jnp.linspace(0.01, 2.0, 1000)
+        self.dVdc = PLANCK_2015_LVK_Cosmology.dVcdz(self.z)
+        rng = np.random.default_rng(12345)
+        # Linear-y bases model r(z) directly, so they need coefficients that keep it positive.
+        self.coefs = jnp.asarray(rng.normal(size=self.n_splines))
+        self.positive_coefs = jnp.asarray(rng.uniform(0.5, 1.5, size=self.n_splines))
+
+    def _model(self, basis, **kwargs):
+        return BSplineRedshift(self.n_splines, self.z, self.z, self.dVdc, self.dVdc, basis=basis, **kwargs)
+
+    def test_rate_integrates_to_unity_for_every_basis(self):
+        for basis in self.LOG_Y_BASES + self.LINEAR_Y_BASES:
+            coefs = self.coefs if basis in self.LOG_Y_BASES else self.positive_coefs
+            for normalize in (False, True):
+                with self.subTest(basis=basis.__name__, normalize=normalize):
+                    rate = self._model(basis, normalize=normalize)(coefs, pe_samples=True)
+                    self.assertAlmostEqual(float(trapezoid(rate, self.z)), 1.0, places=4)
+
+    def test_result_is_independent_of_basis_normalization(self):
+        # normalize scales r(z) by a constant that cancels between __call__ and normalization().
+        for basis in self.LOG_Y_BASES + self.LINEAR_Y_BASES:
+            coefs = self.coefs if basis in self.LOG_Y_BASES else self.positive_coefs
+            with self.subTest(basis=basis.__name__):
+                unnormed = np.asarray(self._model(basis, normalize=False)(coefs, pe_samples=True))
+                normed = np.asarray(self._model(basis, normalize=True)(coefs, pe_samples=True))
+                np.testing.assert_allclose(normed, unnormed, rtol=1e-4)
+
+    def test_log_y_bases_are_invariant_under_constant_coefficient_shift(self):
+        # Partition of unity gives sum_i (c_i + d) B_i(z) = sum_i c_i B_i(z) + d, so for a log-y
+        # basis a constant shift is an overall factor exp(d) that normalization() must cancel.
+        for basis in self.LOG_Y_BASES:
+            model = self._model(basis, normalize=False)
+            rate = np.asarray(model(self.coefs, pe_samples=True))
+            for shift in (1.0, -2.5):
+                with self.subTest(basis=basis.__name__, shift=shift):
+                    shifted = np.asarray(model(self.coefs + shift, pe_samples=True))
+                    np.testing.assert_allclose(shifted, rate, rtol=1e-4)
+
+    def test_out_of_range_samples_have_zero_rate(self):
+        # Samples outside xrange must contribute no rate. Projecting through the interpolator
+        # gives 0 there; exponentiating the zero-filled pdf would wrongly give 1.
+        z = jnp.array([0.5, 1.0, 5.0])  # 5.0 lies outside the default xrange=(1e-4, 2.3)
+        dVdc = PLANCK_2015_LVK_Cosmology.dVcdz(z)
+        model = BSplineRedshift(self.n_splines, z, z, dVdc, dVdc)
+        self.assertEqual(float(model(self.coefs, pe_samples=True)[2]), 0.0)
+
+
+class TestOneDimensionalModelsAreDensities(unittest.TestCase):
+    """Every 1-D shape model must be a normalized, non-negative density.
+
+    The population model is separable, dN/dV(theta) = R * p_pop(theta), so each factor has to
+    integrate to 1 over its domain. If one does not, the shape posterior is unaffected, since an
+    overall factor cancels between the numerator and the selection term, but the inferred rate is
+    divided by that factor, which varies with the coefficients and so distorts the rate posterior.
+
+    A linear-y basis cannot satisfy this for unconstrained real coefficients
+
+    Uses synthetic samples so it runs without the downloaded fixtures.
+    """
+
+    N = 8
+    N_DRAWS = 25
+
+    def _check(self, model, grid, name):
+        rng = np.random.default_rng(17)
+        for draw in range(self.N_DRAWS):
+            pdf = model(jnp.asarray(rng.normal(size=self.N)), pe_samples=True)
+            with self.subTest(model=name, draw=draw):
+                self.assertGreaterEqual(float(jnp.min(pdf)), 0.0, msg=f"{name} produced a negative density")
+                self.assertAlmostEqual(float(trapezoid(pdf, grid)), 1.0, places=3, msg=f"{name} is not normalized")
+
+    def test_spin_models_are_densities(self):
+        for cls, (lo, hi) in [
+            (BSplineSpinMagnitude, (0.0, 1.0)),
+            (BSplineSpinTilt, (-1.0, 1.0)),
+            (BSplineChiEffective, (-1.0, 1.0)),
+            (BSplineChiPrecess, (0.0, 1.0)),
+        ]:
+            grid = jnp.linspace(lo, hi, 4000)
+            self._check(cls(self.N, grid, grid), grid, cls.__name__)
+
+    def test_symmetric_chi_effective_is_a_density(self):
+        # It evaluates at |chi_eff| on [0, 1] and halves, which integrates to 1 over [-1, 1] only
+        # if the underlying spline is itself normalized.
+        grid = jnp.linspace(-1.0, 1.0, 6000)
+        self._check(BSplineSymmetricChiEffective(self.N, grid, grid), grid, "BSplineSymmetricChiEffective")

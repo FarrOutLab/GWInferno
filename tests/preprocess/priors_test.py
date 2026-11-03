@@ -2,6 +2,7 @@ import itertools
 
 import numpy as np
 from numpy.testing import assert_allclose
+from scipy.integrate import trapezoid
 
 from gwinferno.preprocess import priors
 
@@ -45,7 +46,7 @@ def test_chi_effective_prior_from_aligned_spins():
             err_msg="chi_eff prior not 0 for |χ| > {}".format(a_max),
         )
 
-        prob = np.trapz(pp, χχ, axis=1)
+        prob = trapezoid(pp, χχ, axis=1)
         assert_allclose(
             prob,
             1.0,
@@ -79,7 +80,7 @@ def test_chi_effective_prior_from_isotropic_spins():
             err_msg="chi_eff prior not 0 for |χ| > {}".format(a_max),
         )
 
-        prob = np.trapz(pp, χχ, axis=1)
+        prob = trapezoid(pp, χχ, axis=1)
         assert_allclose(
             prob,
             1.0,
@@ -113,7 +114,7 @@ def test_chi_p_prior_from_isotropic_spins():
             err_msg="chi_p prior not 0 for |χ| > {}".format(a_max),
         )
 
-        prob = np.trapz(pp, χχ, axis=1)
+        prob = trapezoid(pp, χχ, axis=1)
         assert_allclose(
             prob,
             1.0,
@@ -162,7 +163,7 @@ def test_chi_p_prior_given_chi_eff_q():
             err_msg="chi_p prior not 0 for |χ| > {}".format(a_max),
         )
 
-        prob = np.trapz(pdf, test_chi_p)
+        prob = trapezoid(pdf, test_chi_p)
         assert_allclose(
             prob,
             1.0,

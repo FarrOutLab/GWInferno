@@ -1,4 +1,5 @@
 astropy
 arviz
+h5netcdf
 funsor
 pre-commit

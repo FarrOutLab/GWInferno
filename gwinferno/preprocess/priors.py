@@ -2,6 +2,7 @@
 a module that stores useful prior functions to evaluate spin priors in terms of effective spin parameters
 """
 import numpy as np
+from scipy.integrate import trapezoid
 from scipy.special import spence as PL
 from scipy.stats import gaussian_kde
 
@@ -326,7 +327,7 @@ def chi_p_prior_given_chi_eff_q(chi_p, chi_eff, q, a_max=1.0, ndraws=10000, bw_m
     # Manually prepend/append zeros at the boundaries
     reference_grid = np.concatenate([[0], reference_grid, [max_chi_p]])
     reference_vals = np.concatenate([[0], reference_vals, [0]])
-    norm_constant = np.trapz(reference_vals, reference_grid)
+    norm_constant = trapezoid(reference_vals, reference_grid)
 
     # Interpolate!
     p_chi_p = np.interp(chi_p, reference_grid, reference_vals / norm_constant)

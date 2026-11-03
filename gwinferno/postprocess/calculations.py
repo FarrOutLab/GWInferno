@@ -267,7 +267,7 @@ def calculate_powerlaw_spline_rate_of_z_ppds(lamb, z_cs, rate, z_model, pop_frac
     rs = np.zeros((len(lamb), len(zs)))
 
     def calc_rz(cs, la, r, f):
-        return r * f * jnp.power(1.0 + zs, la) * jnp.exp(z_model.interpolator.project(z_model.norm_design_matrix, cs))
+        return r * f * z_model.rate_of_z(la, cs)
 
     calc_rz = jit(calc_rz)
     for ii in trange(lamb.shape[0]):
