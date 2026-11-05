@@ -116,7 +116,8 @@ def setup_bspline_mass_models(pedict, injdict, m_nsplines, q_nsplines, mmin, mma
         pedict["mass_ratio"],
         injdict["mass_ratio"],
         m1min=mmin,
-        m2min=mmin,
+        m2min=None,  # keep this deprecated helper's original, untruncated model
+        qmin=mmin / mmax,
         mmax=mmax,
         kwargs_m={"basis": LogXLogYBSpline},
         kwargs_q={"basis": LogYBSpline},
